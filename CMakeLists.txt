@@ -17,8 +17,7 @@ add_library(STRING STATIC
         /home/Develepment/CLionProjects/Librarys/STRING/Library/String/Error/IndexOutofRangeError/IndexOutofrange.cpp
         /home/Develepment/CLionProjects/Librarys/STRING/Library/String/MAIN/String.cpp)
 
-target_include_directories(STRING PUBLIC
-    ${CMAKE_SOURCE_DIR}/home/Develepment/CLionProjects/Librarys/STRING/Library/String/MAIN)
+target_include_directories(STRING PUBLIC /home/Develepment/CLionProjects/Librarys/STRING/Library/String/MAIN)
 ########################################################################
 
 # Set ##################################################################
