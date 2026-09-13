@@ -1,5 +1,9 @@
-//
-// Created by Develepment on 9/13/26.
-//
-
 #include "input.h"
+
+void input::Keyboard::GetKeyInputEvent() {
+#ifdef _WIN32
+
+#elifdef __linux__
+
+#endif
+}
