@@ -48,8 +48,6 @@ target_include_directories(MAP PUBLIC /home/Develepment/CLionProjects/Librarys/M
 add_library(HashMap STATIC
         /home/Develepment/CLionProjects/Librarys/MAP/HashMap.cpp
         /home/Develepment/CLionProjects/Librarys/MAP/NotFoundKeyError.cpp
-        Main/Assertion/Assertions.cpp
-        Main/Assertion/Assertions.h
 )
 target_include_directories(HashMap PUBLIC /home/Develepment/CLionProjects/Librarys/MAP
 )
@@ -63,10 +61,19 @@ target_include_directories(HashSet PUBLIC /home/Develepment/CLionProjects/Librar
 )
 ########################################################################
 
+# Assertion ############################################################
+add_library(ASSERT STATIC
+        Main/Assertion/Assertions.cpp
+)
+target_include_directories(ASSERT PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Main/Assertion
+)
+########################################################################
 
 add_executable(Lucid_Drift main.cpp glad.c
         Main/Engine/System/Input/input.cpp
-        Main/Engine/System/Input/input.h)
+        Main/Engine/System/Input/input.h
+)
 
 
 
@@ -90,5 +97,8 @@ target_link_libraries(Lucid_Drift PRIVATE HashMap)
 
 # Hash Set
 target_link_libraries(Lucid_Drift PRIVATE HashSet)
+
+# assert
+target_link_libraries(Lucid_Drift PRIVATE ASSERT)
 
 target_link_libraries(HashSet PUBLIC STRING)

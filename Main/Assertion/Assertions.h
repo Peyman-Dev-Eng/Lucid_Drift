@@ -1,5 +1,20 @@
 #ifndef LUCID_DRIFT_ASSERTIONS_H
 #define LUCID_DRIFT_ASSERTIONS_H
+#include <iostream>
+
+void PrintLog(const char* condition, const char* file, int line, const char* function, const char* message);
+
+// global assert
+#define GLB_assert(cond) \
+    cond ? (void)0 : PrintLog(#cond, __FILE__, __LINE__, __func__, nullptr);
+
+// can`t open file assert
+#define COF_assert(cond) \
+    cond ? (void)0 : PrintLog(#cond, __FILE__, __LINE__, __func__, "can not open file");
+
+// not available os assert
+#define NAO_assert(cond) \
+    cond ? (void)0 : PrintLog(#cond, __FILE__, __LINE__, __func__, "Our engine does not support your operating system.");
 
 
 

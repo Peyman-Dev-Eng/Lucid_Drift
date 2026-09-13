@@ -1,7 +1,9 @@
 #ifndef LUCID_DRIFT_INPUT_H
 #define LUCID_DRIFT_INPUT_H
+
+#define NOT_AVAILABLE_OS 0
 #include <HashMap.h>
-#include <cassert>
+#include <Assertions.h>
 
 using uint = unsigned int;
 
@@ -14,9 +16,10 @@ using uint = unsigned int;
 #include <unistd.h>
 #include <linux/input.h>
 #include <Vector.h>
+#define NO_EVENT_IS_AVAILABLE_TO_READ (-1)
 
 
-enum class LinuxKeyCode
+enum class LinuxKeyCode : uint
 {
     Key_RESERVED,
     Key_ESC,
@@ -149,24 +152,29 @@ inline int FileInputEvent; // this variable just can use on linux os
 
 
 void OpenFileInputEvent(); // open file input event of linux and save result this up variable
-
+void CloseFileInputEvent();
 
 #endif
 
-
-struct state
+enum Mouse : uint
 {
-    bool Pressed;
-    bool Held;
-    bool Released;
+    LButton,
+    RButton,
+    MButton
+};
+
+struct IsKeyPressedInFrame
+{
+    bool Before;
+    bool Current;
 };
 
 
 // Keyboard
-inline Mapping::HashMap<uint, state> keyboard;
+inline Vector<IsKeyPressedInFrame> keyboard;
 
 // Mouse
-inline Mapping::HashMap<uint, state> mouse;
+inline Vector<IsKeyPressedInFrame> mouse;
 
 
 namespace input
@@ -174,13 +182,14 @@ namespace input
     class Keyboard
     {
     public:
-        void GetKeyInputEvent();
-        [[nodiscard]] bool IsKeyPressed(uint key) const;
-        [[nodiscard]] bool IsKeyHeld(uint key) const;
-        [[nodiscard]] bool IsKeyReleased(uint key) const;
-        [[nodiscard]] Vector<uint> GetKeyPressed() const;
-        [[nodiscard]] Vector<uint> GetKeyHeld() const;
-        [[nodiscard]] Vector<uint> GetKeyReleased() const;
+        static void GetKeyInputEvent();
+        static bool IsKeyPressed(uint key);
+        static bool IsKeyHeld(uint key);
+        static bool IsKeyReleased(uint key);
+        static Vector<uint> GetKeyPressed();
+        static Vector<uint> GetKeyHeld();
+        static Vector<uint> GetKeyReleased();
+        static void Update();
     };
 
     class Mouse {};
