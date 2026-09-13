@@ -1,13 +1,20 @@
 #ifndef LUCID_DRIFT_INPUT_H
 #define LUCID_DRIFT_INPUT_H
 #include <HashMap.h>
+#include <cassert>
+
+using uint = unsigned int;
+
 
 #ifdef _WIN32
 #include <windows.h>
 
 #elifdef __linux__
+#include <fcntl.h>
+#include <unistd.h>
 #include <linux/input.h>
 #include <Vector.h>
+
 
 enum class LinuxKeyCode
 {
@@ -138,9 +145,14 @@ enum class LinuxKeyCode
     Key_RMETA,
 };
 
+inline int FileInputEvent; // this variable just can use on linux os
+
+
+void OpenFileInputEvent(); // open file input event of linux and save result this up variable
+
+
 #endif
 
-using uint = unsigned int;
 
 struct state
 {
@@ -151,10 +163,10 @@ struct state
 
 
 // Keyboard
-Mapping::HashMap<uint, state> keyboard;
+inline Mapping::HashMap<uint, state> keyboard;
 
 // Mouse
-Mapping::HashMap<uint, state> mouse;
+inline Mapping::HashMap<uint, state> mouse;
 
 
 namespace input
