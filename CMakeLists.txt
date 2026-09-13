@@ -14,11 +14,11 @@ target_include_directories(VECTOR PUBLIC
 
 # String ###############################################################
 add_library(STRING STATIC
-        Main/Library/STRING/Library/String/Error/IndexOutofRangeError/IndexOutofrange.cpp
-        Main/Library/STRING/Library/String/MAIN/String.cpp)
+        /home/Develepment/CLionProjects/Librarys/STRING/Library/String/Error/IndexOutofRangeError/IndexOutofrange.cpp
+        /home/Develepment/CLionProjects/Librarys/STRING/Library/String/MAIN/String.cpp)
 
 target_include_directories(STRING PUBLIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/Main/Library/STRING/Library/String/MAIN)
+    ${CMAKE_SOURCE_DIR}/home/Develepment/CLionProjects/Librarys/STRING/Library/String/MAIN)
 ########################################################################
 
 # Set ##################################################################

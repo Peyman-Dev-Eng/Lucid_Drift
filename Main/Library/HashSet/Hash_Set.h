@@ -26,7 +26,7 @@ namespace {
                 index = (index + 1) % len;
             }
             return result % PRIME_NUMBER;
-        } else if constexpr (std::is_same_v<data, std::string> || std::is_same_v<data, String>) {
+        } else if constexpr (std::is_same_v<data, std::string> || std::is_same_v<data, str::String>) {
             HashNumber result = 0;
             for (const char& ch : Data) {
                 result += (static_cast<int>(ch) + prime[index]) * 11;
@@ -211,7 +211,7 @@ public:
         if (temp->Val == target) {
             return FindTarget { .prev = nullptr, .current = temp, .BCK_NUM = hash_number };
         }
-        while (temp->next->next != nullptr) {
+        while (temp->next != nullptr) {
             if (temp->next->Val == target) {
                 return FindTarget { .prev = temp, .current = temp->next, .BCK_NUM = hash_number };
             }
@@ -237,7 +237,7 @@ public:
     }
 
     void Add(const elem& target) {
-        if (this->Found( target ) != FindTarget { .prev = nullptr, .current = nullptr }) {
+        if (this->Found( target ) != FindTarget { .prev = nullptr, .current = nullptr, .BCK_NUM = -1 }) {
             return;
         }
         if (NeedToHash()) {
