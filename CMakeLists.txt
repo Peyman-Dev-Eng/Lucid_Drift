@@ -55,7 +55,7 @@ add_library(HashMap STATIC
         Main/Library/MappingData/MAP/NotFoundKeyError.cpp
 )
 target_include_directories(HashMap PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Main/Library/MappingData/Map
+        ${CMAKE_CURRENT_SOURCE_DIR}/Main/Library/MappingData/MAP
 )
 ########################################################################
 

@@ -1,5 +1,5 @@
 #pragma once
-#include <String.h>
+#include "/home/Develepment/CLionProjects/Librarys/STRING/Library/String/MAIN/String.h"
 #include <algorithm>
 #include <cmath>
 #include <cstddef>

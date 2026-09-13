@@ -7,8 +7,9 @@
 #include <type_traits>
 #include <unordered_set>
 #include "NotFoundKeyError.h"
-#include "String.h"
+#include "/home/Develepment/CLionProjects/Librarys/STRING/Library/String/MAIN/String.h"
 #define PRIME 5091
+
 namespace Mapping {
     template<typename type>
     bool is_class() {
