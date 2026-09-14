@@ -1,6 +1,8 @@
 #ifndef LUCID_DRIFT_ASSERTIONS_H
 #define LUCID_DRIFT_ASSERTIONS_H
 #include <iostream>
+#define RED "\033[31m"
+#define RESET "\033[0m"
 
 void PrintLog(const char* condition, const char* file, int line, const char* function, const char* message);
 

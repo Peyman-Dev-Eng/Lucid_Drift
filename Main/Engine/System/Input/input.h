@@ -2,24 +2,38 @@
 #define LUCID_DRIFT_INPUT_H
 
 #define NOT_AVAILABLE_OS 0
-#include <HashMap.h>
+#include <unordered_map>
 #include <Assertions.h>
+#include <array>
 
-using uint = unsigned int;
-
-
+using LD_uint = unsigned int;
+using LD_lint = long int;
+using LD_ulint = unsigned long int;
+struct IsKeyPressedInFrame
+{
+    bool Before;
+    bool Current;
+};
 #ifdef _WIN32
 #include <windows.h>
+std::array<IsKeyPressedInFrame, 256> WindowsKeyCodes;
+void GetWindowsInputEvent() {
+    for (std::size_t KeyCode = 0; KeyCode < 256; ++KeyCode) {
+        if (GetAsyncKeyState(KeyCode) & 0x8000) {
+            WindowsKeyCodes[KeyCode] = true;
+        }
+    }
+}
 
 #elifdef __linux__
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/input.h>
-#include <Vector.h>
+#include <vector>
 #define NO_EVENT_IS_AVAILABLE_TO_READ (-1)
 
 
-enum class LinuxKeyCode : uint
+enum class LinuxKeyCode : long int
 {
     Key_RESERVED,
     Key_ESC,
@@ -154,41 +168,40 @@ inline int FileInputEvent; // this variable just can use on linux os
 void OpenFileInputEvent(); // open file input event of linux and save result this up variable
 void CloseFileInputEvent();
 
-#endif
-
-enum Mouse : uint
+enum Mouse : LD_uint
 {
     LButton,
     RButton,
     MButton
 };
 
-struct IsKeyPressedInFrame
-{
-    bool Before;
-    bool Current;
-};
 
 
 // Keyboard
-inline Vector<IsKeyPressedInFrame> keyboard;
+inline std::vector<IsKeyPressedInFrame> LinuxKeyboard;
 
 // Mouse
-inline Vector<IsKeyPressedInFrame> mouse;
+inline std::vector<IsKeyPressedInFrame> LinuxMouse;
+
+
+#endif
 
 
 namespace input
 {
     class Keyboard
     {
+    private:
+        static bool InputIsChar(const LD_lint& target);
     public:
+        static void init();
         static void GetKeyInputEvent();
-        static bool IsKeyPressed(uint key);
-        static bool IsKeyHeld(uint key);
-        static bool IsKeyReleased(uint key);
-        static Vector<uint> GetKeyPressed();
-        static Vector<uint> GetKeyHeld();
-        static Vector<uint> GetKeyReleased();
+        static bool IsKeyPressed(LD_lint key);
+        static bool IsKeyHeld(LD_lint key);
+        static bool IsKeyReleased(LD_lint key);
+        static std::vector<LD_lint> GetKeyPressed();
+        static std::vector<LD_lint> GetKeyHeld();
+        static std::vector<LD_lint> GetKeyReleased();
         static void Update();
     };
 
