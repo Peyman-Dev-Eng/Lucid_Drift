@@ -180,6 +180,7 @@ void input::Keyboard::Destroy() {
 
 void input::Mouse::Init() {
 #ifdef __linux__
+    OpenFileMouseInputEvent();
     for (LD_uint MouseCode = 0; MouseCode < 5; ++MouseCode) {
         LinuxMouse.push_back({.Before = false, .Current = false});
     }
@@ -195,10 +196,12 @@ void input::Mouse::GetMouseInputEvent() {
     input_event event{};
     while (true) {
         if (read(FileMouseInputEvent, &event, sizeof(input_event)) != NO_EVENT_IS_AVAILABLE_TO_READ) {
-            if (event.value == 1) {
-                LinuxMouse[event.code - 272].Current = true;
-            } else if (event.value == 0) {
-                LinuxMouse[event.code - 272].Current = false;
+            if (event.type == EV_KEY) {
+                if (event.value == 1) {
+                    LinuxMouse[event.code - 272].Current = true;
+                } else if (event.value == 0) {
+                    LinuxMouse[event.code - 272].Current = false;
+                }
             }
         } else {
             break;
