@@ -193,14 +193,6 @@ void OpenFileMouseInputEvent();
 inline void CloseFileMouseInputEvent();
 
 
-enum Mouse : LD_uint
-{
-    LButton,
-    RButton,
-    MButton
-};
-
-
 // Keyboard
 inline std::vector<IsKeyPressedInFrame> LinuxKeyboard;
 

@@ -223,6 +223,8 @@ bool input::Mouse::IsLeftMouseButtonPressed() {
 #ifdef __linux__
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == false && LinuxMouse[LeftMouseButton].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_LBUTTON].Before == false && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -230,18 +232,26 @@ bool input::Mouse::IsLeftMouseButtonHeld() {
 #ifdef __linux__
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == true && LinuxMouse[LeftMouseButton].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_LBUTTON].Before == true && WindowsKeyCodes[VK_RBUTTON].Current == true;
 #endif
 }
 
 bool input::Mouse::IsLeftMouseButtonReleased() {
+#ifdef __linux__
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == true && LinuxMouse[LeftMouseButton].Current == false;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_LBUTTON].Before == true && WindowsKeyCodes[VK_RBUTTON].Current == false;
+#endif
 }
 
 bool input::Mouse::IsRightMouseButtonPressed() {
 #ifdef __linux__
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == false && LinuxMouse[RightMouseButton].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_RBUTTON].Before == false && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -249,6 +259,8 @@ bool input::Mouse::IsRightMouseButtonHeld() {
 #ifdef __linux__
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == true && LinuxMouse[RightMouseButton].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_RBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -256,6 +268,8 @@ bool input::Mouse::IsRightMouseButtonReleased() {
 #ifdef __linux__
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == true && LinuxMouse[RightMouseButton].Current == false;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_RBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
 #endif
 }
 
@@ -263,6 +277,8 @@ bool input::Mouse::IsMiddleMouseButtonPressed() {
 #ifdef __linux__
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == false && LinuxMouse[MiddleMouseButton].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VM_MBUTTON].Before == false && WindowsKeyCodes[VM_MBUTTON].Current == true;
 #endif
 }
 
@@ -270,6 +286,8 @@ bool input::Mouse::IsMiddleMouseButtonHeld() {
 #ifdef __linux__
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == true && LinuxMouse[MiddleMouseButton].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_MBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -277,6 +295,8 @@ bool input::Mouse::IsMiddleMouseButtonReleased() {
 #ifdef __linux__
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == true && LinuxMouse[MiddleMouseButton].Current == false;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_MBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
 #endif
 }
 
@@ -284,6 +304,8 @@ bool input::Mouse::IsXButton1Pressed() {
 #ifdef __linux__
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == false && LinuxMouse[XButton1].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_XBUTTON1].Before == false && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -291,6 +313,8 @@ bool input::Mouse::IsXButton1Held() {
 #ifdef __linux__
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == true && LinuxMouse[XButton1].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_XBUTTON1].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -298,6 +322,8 @@ bool input::Mouse::IsXButton1Released() {
 #ifdef __linux__
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == true && LinuxMouse[XButton1].Current == false;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_XBUTTON1].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
 #endif
 }
 
@@ -305,6 +331,8 @@ bool input::Mouse::IsXButton2Pressed() {
 #ifdef __linux__
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == false && LinuxMouse[XButton2].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_XBUTTON2].Before == false && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -312,6 +340,8 @@ bool input::Mouse::IsXButton2Held() {
 #ifdef __linux__
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == true && LinuxMouse[XButton2].Current == true;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_XBUTTON2].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -319,6 +349,8 @@ bool input::Mouse::IsXButton2Released() {
 #ifdef __linux__
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == true && LinuxMouse[XButton2].Current == false;
+#elifdef _WIN32
+    return WindowsKeyCodes[VK_XBUTTON2].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
 #endif
 }
 
