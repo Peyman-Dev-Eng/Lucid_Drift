@@ -57,13 +57,8 @@ bool input::Keyboard::InputIsChar(const LD_lint& target) {
 void input::Keyboard::GetKeyInputEvent() {
 #ifdef _WIN32
     for (const LD_uint& key : TargetKeys) {
-        if (GetAsyncKeyState(key) & 0x8000) {
-            WindowsKeyCodes[key].Current = true;
-            ToUpdateValues.push_back(key);
-        }
-        if (input::Keyboard::IsKeyReleased(key)) {
-            ToUpdateValues.push_back(key);
-        }
+        WindowsKeyCodes[key].Current = (GetAsyncKeyState(key) & 0x8000) != 0;
+        ToUpdateValues.push_back(key);
     }
 #elifdef __linux__
     input_event event{};
@@ -188,7 +183,6 @@ void input::Keyboard::Update() {
 #elifdef _WIN32
     for (const LD_uint& value : ToUpdateValues) {
         WindowsKeyCodes[value].Before = WindowsKeyCodes[value].Current;
-        WindowsKeyCodes[value].Current = false;
     }
 #endif
     ToUpdateValues.clear();
@@ -213,6 +207,10 @@ void input::Mouse::Init() {
 #endif
 }
 
+void input::Mouse::SetKeyTarget(std::vector<LD_uint>&& keys) {
+    TargetKeys = std::move(keys);
+}
+
 void input::Mouse::GetMouseInputEvent() {
 #ifdef __linux__
     input_event event{};
@@ -233,13 +231,8 @@ void input::Mouse::GetMouseInputEvent() {
     }
 #elifdef _WIN32
     for (const LD_uint& key : TargetKeys) {
-        if (GetAsyncKeyState(key) & 0x8000) {
-            WindowsKeyCodes[key].Current = true;
-            ToUpdateValues.push_back(key);
-        }
-        if (WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == false) {
-            ToUpdateValues.push_back(key);
-        }
+        WindowsKeyCodes[key].Current = (GetAsyncKeyState(key) & 0x8000) != 0;
+        ToUpdateValues.push_back(key);
     }
 #endif
 }
@@ -400,7 +393,6 @@ void input::Mouse::Update() {
 #elifdef _WIN32
     for (const LD_uint& value : ToUpdateValues) {
         WindowsKeyCodes[value].Before = WindowsKeyCodes[value].Current;
-        WindowsKeyCodes[value].Current = false;
     }
 #endif
 }

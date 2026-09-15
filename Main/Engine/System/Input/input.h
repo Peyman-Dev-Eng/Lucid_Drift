@@ -30,14 +30,7 @@ inline std::vector<LD_uint> TargetKeys;
 
 #ifdef _WIN32
 #include <windows.h>
-std::array<IsKeyPressedInFrame, 256> WindowsKeyCodes;
-void GetWindowsInputEvent() {
-    for (std::size_t KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        if (GetAsyncKeyState(KeyCode) & 0x8000) {
-            WindowsKeyCodes[KeyCode] = true;
-        }
-    }
-}
+inline std::array<IsKeyPressedInFrame, 256> WindowsKeyCodes;
 
 #elifdef __linux__
 #include <fcntl.h>
@@ -245,6 +238,7 @@ namespace input
     {
     public:
         static void Init();
+        static void SetKeyTarget(std::vector<LD_uint>&& keys);
         static void GetMouseInputEvent();
         static VecPos2D GetCursorPos(GLFWwindow* window);
         static bool IsLeftMouseButtonPressed();
