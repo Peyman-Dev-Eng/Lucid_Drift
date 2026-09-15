@@ -1,21 +1,29 @@
 #include "input.h"
 
 void OpenFileKeyboardInputEvent() {
+#ifdef __linux__
     FileKeyboardInputEvent = open("/dev/input/by-id/usb-SEMICO_USB_Keyboard-event-kbd", O_RDONLY | O_NONBLOCK);
     COF_assert(FileKeyboardInputEvent != -1)
+#endif
 }
 
 void CloseFileKeyboardInputEvent() {
+#ifdef __linux__
     close(FileKeyboardInputEvent);
+#endif
 }
 
 void OpenFileMouseInputEvent() {
+#ifdef __linux__
     FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse", O_RDONLY | O_NONBLOCK);
     COF_assert(FileMouseInputEvent != -1)
+#endif
 }
 
 void CloseFileMouseInputEvent() {
+#ifdef __linux__
     close(FileMouseInputEvent);
+#endif
 }
 
 void input::Keyboard::Init() {
@@ -32,6 +40,10 @@ void input::Keyboard::Init() {
 #endif
 }
 
+void input::Keyboard::SetKeyTarget(std::vector<LD_uint>&& keys) {
+    TargetKeys = std::move(keys);
+}
+
 bool input::Keyboard::InputIsChar(const LD_lint& target) {
     if (target >= 65 && target <= 90) {
         return true;
@@ -44,9 +56,13 @@ bool input::Keyboard::InputIsChar(const LD_lint& target) {
 
 void input::Keyboard::GetKeyInputEvent() {
 #ifdef _WIN32
-    for (std::size_t KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        if (GetAsyncKeyState(KeyCode) & 0x8000) {
-            WindowsKeyCodes[KeyCode] = true;
+    for (const LD_uint& key : TargetKeys) {
+        if (GetAsyncKeyState(key) & 0x8000) {
+            WindowsKeyCodes[key].Current = true;
+            ToUpdateValues.push_back(key);
+        }
+        if (input::Keyboard::IsKeyReleased(key)) {
+            ToUpdateValues.push_back(key);
         }
     }
 #elifdef __linux__
@@ -56,8 +72,10 @@ void input::Keyboard::GetKeyInputEvent() {
             if (event.type == EV_KEY) {
                 if (event.value == 0) {
                     LinuxKeyboard[event.code].Current = false;
+                    ToUpdateValues.push_back(event.code);
                 } else if (event.value == 1) {
                     LinuxKeyboard[event.code].Current = true;
+                    ToUpdateValues.push_back(event.code);
                 }
             }
         } else {
@@ -101,17 +119,17 @@ bool input::Keyboard::IsKeyReleased(const LD_lint key) {
 std::vector<LD_lint> input::Keyboard::GetKeyPressed() {
 #ifdef __linux__
     std::vector<LD_lint> LKeyCodes; // linux key codes
-    for (LD_uint KeyCode = 0; KeyCode <= 125; ++KeyCode) {
-        if (LinuxKeyboard[KeyCode].Current == true && LinuxKeyboard[KeyCode].Before == false) {
-            LKeyCodes.push_back(KeyCode);
+    for (const LD_uint& key : TargetKeys) {
+        if (LinuxKeyboard[key].Current == true && LinuxKeyboard[key].Before == false) {
+            LKeyCodes.push_back(key);
         }
     }
     return LKeyCodes;
 #elifdef _WIN32
     std::vector<LD_lint> WKeyCodes; // windows key codes
-    for (int KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        if (WindowsKeyCodes[KeyCode].Before == false && WindowsKeyCodes[KeyCode].Current == true) {
-            WKeyCodes.push_back(KeyCode);
+    for (const LD_uint& key : TargetKeys) {
+        if (WindowsKeyCodes[key].Before == false && WindowsKeyCodes[key].Current == true) {
+            WKeyCodes.push_back(key);
         }
     }
     return WKeyCodes;
@@ -121,17 +139,17 @@ std::vector<LD_lint> input::Keyboard::GetKeyPressed() {
 std::vector<LD_lint> input::Keyboard::GetKeyHeld() {
 #ifdef __linux__
     std::vector<LD_lint> LKeyCodes; // linux key codes
-    for (LD_uint KeyCode = 0; KeyCode <= 125; ++KeyCode) {
-        if (LinuxKeyboard[KeyCode].Current == true && LinuxKeyboard[KeyCode].Before == true) {
-            LKeyCodes.push_back(KeyCode);
+    for (const LD_uint& key : TargetKeys) {
+        if (LinuxKeyboard[key].Current == true && LinuxKeyboard[key].Before == true) {
+            LKeyCodes.push_back(key);
         }
     }
     return LKeyCodes;
 #elifdef _WIN32
     std::vector<LD_lint> WKeyCodes; // windows key codes
-    for (LD_lint KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        if (WindowsKeyCodes[KeyCode].Before == true && WindowsKeyCodes[KeyCode].Current == true) {
-            WKeyCodes.push_back(KeyCode);
+    for (const LD_uint& key : TargetKeys) {
+        if (WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == true) {
+            WKeyCodes.push_back(key);
         }
     }
     return WKeyCodes;
@@ -141,17 +159,17 @@ std::vector<LD_lint> input::Keyboard::GetKeyHeld() {
 std::vector<LD_lint> input::Keyboard::GetKeyReleased() {
 #ifdef __linux__
     std::vector<LD_lint> LKeyCodes; // linux key codes
-    for (LD_uint KeyCode = 0; KeyCode <= 125; ++KeyCode) {
-        if (LinuxKeyboard[KeyCode].Current == false && LinuxKeyboard[KeyCode].Before == true) {
-            LKeyCodes.push_back(KeyCode);
+    for (const LD_uint& key : TargetKeys) {
+        if (LinuxKeyboard[key].Current == false && LinuxKeyboard[key].Before == true) {
+            LKeyCodes.push_back(key);
         }
     }
     return LKeyCodes;
 #elifdef _WIN32
     std::vector<LD_lint> WKeyCodes; // windows key codes
-    for (LD_lint KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        if (WindowsKeyCodes[KeyCode].Before == true && WindowsKeyCodes[KeyCode].Current == false) {
-            WKeyCodes.push_back(KeyCode);
+    for (const LD_uint& key : TargetKeys) {
+        if (WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == false) {
+            WKeyCodes.push_back(key);
         }
     }
     return WKeyCodes;
@@ -159,17 +177,21 @@ std::vector<LD_lint> input::Keyboard::GetKeyReleased() {
 }
 
 void input::Keyboard::Update() {
+    if (ToUpdateValues.empty()) {
+        return;
+    }
 #ifdef __linux__
-    for (LD_uint KeyCode = 0; KeyCode <= 125; ++KeyCode) {
-        LinuxKeyboard[KeyCode].Before = LinuxKeyboard[KeyCode].Current;
-        LinuxKeyboard[KeyCode].Current = LinuxKeyboard[KeyCode].Before ? true : false;
+    for (const LD_uint value : ToUpdateValues) {
+        LinuxKeyboard[value].Before = LinuxKeyboard[value].Current;
+        LinuxKeyboard[value].Current = LinuxKeyboard[value].Before ? true : false;
     }
 #elifdef _WIN32
-    for (LD_uint KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        WindowsKeyCodes[KeyCode].Before = WindowsKeyCodes[KeyCode].Current;
-        WindowsKeyCodes[KeyCode].Current = false;
+    for (const LD_uint& value : ToUpdateValues) {
+        WindowsKeyCodes[value].Before = WindowsKeyCodes[value].Current;
+        WindowsKeyCodes[value].Current = false;
     }
 #endif
+    ToUpdateValues.clear();
 }
 
 void input::Keyboard::Destroy() {
@@ -198,7 +220,9 @@ void input::Mouse::GetMouseInputEvent() {
         if (read(FileMouseInputEvent, &event, sizeof(input_event)) != NO_EVENT_IS_AVAILABLE_TO_READ) {
             if (event.type == EV_KEY) {
                 if (event.value == 1) {
-                    LinuxMouse[event.code - 272].Current = true;
+                    const LD_uint MouseCode = event.code - 272;
+                    LinuxMouse[MouseCode].Current = true;
+                    ToUpdateValues.push_back(MouseCode);
                 } else if (event.value == 0) {
                     LinuxMouse[event.code - 272].Current = false;
                 }
@@ -208,9 +232,13 @@ void input::Mouse::GetMouseInputEvent() {
         }
     }
 #elifdef _WIN32
-    for (LD_lint KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        if (GetAsyncKeyState(KeyCode) & 0x8000) {
-            WindowsKeyCodes[KeyCode].Current = true;
+    for (const LD_uint& key : TargetKeys) {
+        if (GetAsyncKeyState(key) & 0x8000) {
+            WindowsKeyCodes[key].Current = true;
+            ToUpdateValues.push_back(key);
+        }
+        if (WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == false) {
+            ToUpdateValues.push_back(key);
         }
     }
 #endif
@@ -236,7 +264,7 @@ bool input::Mouse::IsLeftMouseButtonHeld() {
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == true && LinuxMouse[LeftMouseButton].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_LBUTTON].Before == true && WindowsKeyCodes[VK_RBUTTON].Current == true;
+    return WindowsKeyCodes[VK_LBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
 #endif
 }
 
@@ -245,7 +273,7 @@ bool input::Mouse::IsLeftMouseButtonReleased() {
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == true && LinuxMouse[LeftMouseButton].Current == false;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_LBUTTON].Before == true && WindowsKeyCodes[VK_RBUTTON].Current == false;
+    return WindowsKeyCodes[VK_LBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
 #endif
 }
 
@@ -254,7 +282,7 @@ bool input::Mouse::IsRightMouseButtonPressed() {
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == false && LinuxMouse[RightMouseButton].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_RBUTTON].Before == false && WindowsKeyCodes[VK_LBUTTON].Current == true;
+    return WindowsKeyCodes[VK_RBUTTON].Before == false && WindowsKeyCodes[VK_RBUTTON].Current == true;
 #endif
 }
 
@@ -263,7 +291,7 @@ bool input::Mouse::IsRightMouseButtonHeld() {
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == true && LinuxMouse[RightMouseButton].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_RBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
+    return WindowsKeyCodes[VK_RBUTTON].Before == true && WindowsKeyCodes[VK_RBUTTON].Current == true;
 #endif
 }
 
@@ -272,7 +300,7 @@ bool input::Mouse::IsRightMouseButtonReleased() {
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == true && LinuxMouse[RightMouseButton].Current == false;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_RBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
+    return WindowsKeyCodes[VK_RBUTTON].Before == true && WindowsKeyCodes[VK_RBUTTON].Current == false;
 #endif
 }
 
@@ -290,7 +318,7 @@ bool input::Mouse::IsMiddleMouseButtonHeld() {
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == true && LinuxMouse[MiddleMouseButton].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_MBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
+    return WindowsKeyCodes[VK_MBUTTON].Before == true && WindowsKeyCodes[VM_MBUTTON].Current == true;
 #endif
 }
 
@@ -299,7 +327,7 @@ bool input::Mouse::IsMiddleMouseButtonReleased() {
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == true && LinuxMouse[MiddleMouseButton].Current == false;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_MBUTTON].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
+    return WindowsKeyCodes[VK_MBUTTON].Before == true && WindowsKeyCodes[VM_MBUTTON].Current == false;
 #endif
 }
 
@@ -308,7 +336,7 @@ bool input::Mouse::IsXButton1Pressed() {
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == false && LinuxMouse[XButton1].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_XBUTTON1].Before == false && WindowsKeyCodes[VK_LBUTTON].Current == true;
+    return WindowsKeyCodes[VK_XBUTTON1].Before == false && WindowsKeyCodes[VK_XBUTTON1].Current == true;
 #endif
 }
 
@@ -317,7 +345,7 @@ bool input::Mouse::IsXButton1Held() {
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == true && LinuxMouse[XButton1].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_XBUTTON1].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
+    return WindowsKeyCodes[VK_XBUTTON1].Before == true && WindowsKeyCodes[VK_XBUTTON1].Current == true;
 #endif
 }
 
@@ -326,7 +354,7 @@ bool input::Mouse::IsXButton1Released() {
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == true && LinuxMouse[XButton1].Current == false;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_XBUTTON1].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
+    return WindowsKeyCodes[VK_XBUTTON1].Before == true && WindowsKeyCodes[VK_XBUTTON1].Current == false;
 #endif
 }
 
@@ -335,7 +363,7 @@ bool input::Mouse::IsXButton2Pressed() {
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == false && LinuxMouse[XButton2].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_XBUTTON2].Before == false && WindowsKeyCodes[VK_LBUTTON].Current == true;
+    return WindowsKeyCodes[VK_XBUTTON2].Before == false && WindowsKeyCodes[VK_XBUTTON2].Current == true;
 #endif
 }
 
@@ -344,7 +372,7 @@ bool input::Mouse::IsXButton2Held() {
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == true && LinuxMouse[XButton2].Current == true;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_XBUTTON2].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == true;
+    return WindowsKeyCodes[VK_XBUTTON2].Before == true && WindowsKeyCodes[VK_XBUTTON2].Current == true;
 #endif
 }
 
@@ -353,20 +381,26 @@ bool input::Mouse::IsXButton2Released() {
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == true && LinuxMouse[XButton2].Current == false;
 #elifdef _WIN32
-    return WindowsKeyCodes[VK_XBUTTON2].Before == true && WindowsKeyCodes[VK_LBUTTON].Current == false;
+    return WindowsKeyCodes[VK_XBUTTON2].Before == true && WindowsKeyCodes[VK_XBUTTON2].Current == false;
 #endif
 }
 
 void input::Mouse::Update() {
+    if (ToUpdateValues.empty()) {
+        return;
+    }
 #ifdef __linux__
-    for (LD_lint KeyCode = 0; KeyCode < 5; ++KeyCode) {
-        LinuxMouse[KeyCode].Before = LinuxMouse[KeyCode].Current;
-        LinuxMouse[KeyCode].Current = LinuxMouse[KeyCode].Before ? true : false;
+    for (const LD_uint& value : ToUpdateValues) {
+        LinuxMouse[value].Before = LinuxMouse[value].Current;
+        LinuxMouse[value].Current = LinuxMouse[value].Before ? true : false;
+        if (LinuxMouse[value].Current == false) {
+            ToUpdateValues.erase(std::ranges::find(ToUpdateValues, value));
+        }
     }
 #elifdef _WIN32
-    for (LD_lint KeyCode = 0; KeyCode < 256; ++KeyCode) {
-        WindowsKeyCodes[KeyCode].Before = WindowsKeyCodes[KeyCode].Current;
-        WindowsKeyCodes[KeyCode].Current = false;
+    for (const LD_uint& value : ToUpdateValues) {
+        WindowsKeyCodes[value].Before = WindowsKeyCodes[value].Current;
+        WindowsKeyCodes[value].Current = false;
     }
 #endif
 }

@@ -2,9 +2,11 @@
 #define LUCID_DRIFT_INPUT_H
 
 #define NOT_AVAILABLE_OS 0
+#include <vector>
 #include <unordered_map>
 #include <Assertions.h>
 #include <array>
+#include <algorithm>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <VecPos.h>
@@ -18,6 +20,14 @@ struct IsKeyPressedInFrame
     bool Before;
     bool Current;
 };
+
+
+inline std::vector<LD_uint> ToUpdateValues;
+
+
+inline std::vector<LD_uint> TargetKeys;
+
+
 #ifdef _WIN32
 #include <windows.h>
 std::array<IsKeyPressedInFrame, 256> WindowsKeyCodes;
@@ -33,13 +43,20 @@ void GetWindowsInputEvent() {
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/input.h>
-#include <vector>
 #define NO_EVENT_IS_AVAILABLE_TO_READ (-1)
 
 
 namespace Event::Mouse
 {
-    enum LinuxMouseKeyCode : LD_lint
+    enum class WindowsMouseKeyCode : LD_lint
+    {
+        LeftButton = static_cast<LD_lint>(0x01),
+        RightButton = static_cast<LD_lint>(0x02),
+        MiddleButton = static_cast<LD_lint>(0x04),
+        XButton1 = static_cast<LD_lint>(0x05),
+        XButton2 = static_cast<LD_lint>(0x06)
+    };
+    enum class LinuxMouseKeyCode : LD_lint
     {
         LeftButton = static_cast<LD_lint>(272),
         RightButton = static_cast<LD_lint>(273),
@@ -51,7 +68,7 @@ namespace Event::Mouse
 
 namespace Event::Keyboard
 {
-    enum LinuxKeyboardKeyCode : LD_lint
+    enum class LinuxKeyboardKeyCode : LD_lint
     {
         Key_RESERVED,
         Key_ESC,
@@ -212,6 +229,7 @@ namespace input
 
     public:
         static void Init();
+        static void SetKeyTarget(std::vector<LD_uint>&& keys);
         static void GetKeyInputEvent();
         static bool IsKeyPressed(LD_lint key);
         static bool IsKeyHeld(LD_lint key);
