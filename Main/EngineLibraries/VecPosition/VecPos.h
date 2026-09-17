@@ -29,11 +29,11 @@ namespace LDDrift
     {
     private:
     public:
-        double Y{};
-        double X{};
+        float Y{};
+        float X{};
         explicit VecPos2D();
-        explicit VecPos2D(double x, double y);
-        explicit VecPos2D(std::initializer_list<double> list);
+        explicit VecPos2D(float x, float y);
+        explicit VecPos2D(std::initializer_list<float> list);
         static VecPos2D Normalize(const VecPos2D& vec);
         static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec);
         VecPos2D operator-(const VecPos2D& vec2) const;

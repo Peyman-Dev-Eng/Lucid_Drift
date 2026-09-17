@@ -20,5 +20,8 @@ namespace LDDrift::Assertions
 // not available os assert
 #define NAO_assert(cond) \
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "Our engine does not support your operating system.");
+// out of range assert
+#define OOR_assert(cond) \
+    cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "Out of range");
 
 #endif

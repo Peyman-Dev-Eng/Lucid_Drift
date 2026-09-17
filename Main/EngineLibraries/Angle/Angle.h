@@ -8,11 +8,11 @@ namespace LDDrift
     class Angle
     {
     private:
-        float angle{};
     public:
+        float angle{};
         Angle();
         Angle(float ANGLE);
-        float GetAngleRadians() const;
+        [[nodiscard]] float GetAngleRadians() const;
         static float GetAngleRadians(float ANGLE);
         ~Angle();
     };

@@ -2,12 +2,12 @@
 
 LDDrift::VecPos2D::VecPos2D() = default;
 
-LDDrift::VecPos2D::VecPos2D(const double x, const double y) {
+LDDrift::VecPos2D::VecPos2D(const float x, const float y) {
     X = x;
     Y = y;
 }
 
-LDDrift::VecPos2D::VecPos2D(const std::initializer_list<double> list) {
+LDDrift::VecPos2D::VecPos2D(const std::initializer_list<float> list) {
     GLB_assert(list.size() == 2)
     int counter = 0;
     for (const auto& elem : list) {
@@ -22,7 +22,7 @@ LDDrift::VecPos2D::VecPos2D(const std::initializer_list<double> list) {
 
 LDDrift::VecPos2D LDDrift::VecPos2D::Normalize(const VecPos2D& vec) {
     VecPos2D NormalizedPoint = vec;
-    const double length = std::sqrt(NormalizedPoint.X * NormalizedPoint.X + NormalizedPoint.Y * NormalizedPoint.Y);
+    const float length = std::sqrt(NormalizedPoint.X * NormalizedPoint.X + NormalizedPoint.Y * NormalizedPoint.Y);
     if (length == std::numeric_limits<double>::epsilon()) {
         return VecPos2D{0,0};
     }

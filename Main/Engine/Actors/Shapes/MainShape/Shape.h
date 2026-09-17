@@ -16,10 +16,11 @@ namespace LDDrift::Actors
     class Shape
     {
     private:
-        std::vector<LDDrift::VecPos2D> points;
+        LDDrift::VecPos2D OriginalPosition;
+        std::vector<LDDrift::VecPos2D> Points;
         std::vector<LDDrift::VecCol> ColorOfPoints;
-        uint PointCount = 0;
-        float Speed = 0.01;
+        uint PointCount;
+        float Speed;
 
     private: // private functions
         void MoveUp();
@@ -30,13 +31,14 @@ namespace LDDrift::Actors
     public:
         Shape();
         void SetPointCount(uint point_count);
-        uint GetPointCount();
-        void SetPoint(uint point_index, LDDrift::VecPos2D pos);
+        uint GetPointCount() const;
+        void SetPoint(uint point_index, const LDDrift::VecPos2D& pos);
         LDDrift::VecPos2D GetPoint(uint point_index);
         void Move(Dir direction);
         void Rotate(const Angle& angle);
         void SetSpeed(float spd);
-        void SetPointColor(uint point_index, LDDrift::VecCol color);
+        void SetOriginalPosition(const LDDrift::VecPos2D& pos);
+        void SetPointColor(uint point_index, const LDDrift::VecCol& color);
         LDDrift::VecCol GetPointColor(uint point_index);
         virtual ~Shape();
     };
