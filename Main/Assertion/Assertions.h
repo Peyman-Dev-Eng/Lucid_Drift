@@ -4,7 +4,10 @@
 #define RED "\033[31m"
 #define RESET "\033[0m"
 
-void PrintLog(const char* condition, const char* file, int line, const char* function, const char* message);
+namespace LDDrift::Assertions
+{
+    void PrintLog(const char* condition, const char* file, int line, const char* function, const char* message);
+}
 
 // global assert
 #define GLB_assert(cond) \
@@ -17,8 +20,5 @@ void PrintLog(const char* condition, const char* file, int line, const char* fun
 // not available os assert
 #define NAO_assert(cond) \
     cond ? (void)0 : PrintLog(#cond, __FILE__, __LINE__, __func__, "Our engine does not support your operating system.");
-
-
-
 
 #endif

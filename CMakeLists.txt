@@ -22,6 +22,15 @@ target_include_directories(VECPOS2D PUBLIC
 
 ########################################################################
 
+# Angle ################################################################
+add_library(ANGLE STATIC
+        Main/EngineLibraries/Angle/Angle.cpp
+)
+target_include_directories(ANGLE PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Main/EngineLibraries/Angle
+)
+########################################################################
+
 add_executable(Lucid_Drift main.cpp glad.c
         Main/Engine/System/Input/input.cpp
         Main/Engine/System/Input/input.h
@@ -39,5 +48,5 @@ target_include_directories(Lucid_Drift PRIVATE
 find_package(glfw3 REQUIRED)
 
 # assert
-target_link_libraries(Lucid_Drift PRIVATE ASSERT glfw VECPOS2D)
+target_link_libraries(Lucid_Drift PRIVATE ASSERT glfw VECPOS2D ANGLE)
 target_link_libraries(VECPOS2D PUBLIC ASSERT)
