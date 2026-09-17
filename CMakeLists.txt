@@ -27,6 +27,8 @@ add_executable(Lucid_Drift main.cpp glad.c
         Main/Engine/System/Input/input.h
         Main/EngineLibraries/VecPosition/VecPos.cpp
         Main/EngineLibraries/VecPosition/VecPos.h
+        Main/Engine/Actors/Shapes/MainShape/Shape.cpp
+        Main/Engine/Actors/Shapes/MainShape/Shape.h
 )
 
 target_include_directories(Lucid_Drift PRIVATE
