@@ -240,7 +240,7 @@ namespace LDDrift
             static void Init();
             static void SetKeyTarget(std::vector<LD_uint>&& keys);
             static void GetMouseInputEvent();
-            static VecPosition::VecPos2D GetCursorPos(GLFWwindow* window);
+            static VecPos2D GetCursorPos(GLFWwindow* window);
             static bool IsLeftMouseButtonPressed();
             static bool IsRightMouseButtonPressed();
             static bool IsMiddleMouseButtonPressed();

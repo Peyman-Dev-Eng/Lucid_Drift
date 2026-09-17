@@ -7,9 +7,13 @@ namespace LDDrift
 {
     class Angle
     {
+    private:
+        float angle{};
     public:
         Angle();
-        static float GetAngleRadians(float angle);
+        Angle(float ANGLE);
+        float GetAngleRadians() const;
+        static float GetAngleRadians(float ANGLE);
         ~Angle();
     };
 }

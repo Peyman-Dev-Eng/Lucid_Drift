@@ -31,6 +31,15 @@ target_include_directories(ANGLE PUBLIC
 )
 ########################################################################
 
+# Vector Color #########################################################
+add_library(VecColor STATIC
+        Main/EngineLibraries/VecColor/VecCol.cpp
+)
+target_include_directories(VecColor PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Main/EngineLibraries/VecColor
+)
+########################################################################
+
 add_executable(Lucid_Drift main.cpp glad.c
         Main/Engine/System/Input/input.cpp
         Main/Engine/System/Input/input.h
@@ -42,6 +51,8 @@ add_executable(Lucid_Drift main.cpp glad.c
         Main/EngineLibraries/Angle/Angle.h
         Main/EngineLibraries/VecColor/VecCol.cpp
         Main/EngineLibraries/VecColor/VecCol.h
+        Main/Engine/Actors/Shapes/Circle/CircleShape.cpp
+        Main/Engine/Actors/Shapes/Circle/CircleShape.h
 )
 
 target_include_directories(Lucid_Drift PRIVATE
@@ -50,5 +61,5 @@ target_include_directories(Lucid_Drift PRIVATE
 find_package(glfw3 REQUIRED)
 
 # assert
-target_link_libraries(Lucid_Drift PRIVATE ASSERT glfw VECPOS2D ANGLE)
+target_link_libraries(Lucid_Drift PRIVATE ASSERT glfw VECPOS2D ANGLE VecColor)
 target_link_libraries(VECPOS2D PUBLIC ASSERT)

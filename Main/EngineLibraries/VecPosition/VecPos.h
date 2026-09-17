@@ -4,7 +4,7 @@
 #include <Assertions.h>
 #include <cmath>
 
-namespace LDDrift::VecPosition
+namespace LDDrift
 {
     /**
      * VecPos2D class represents a two-dimensional vector with positive x and y coordinates.

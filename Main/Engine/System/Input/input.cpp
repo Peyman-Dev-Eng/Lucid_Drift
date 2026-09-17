@@ -237,8 +237,8 @@ void LDDrift::input::Mouse::GetMouseInputEvent() {
 #endif
 }
 
-LDDrift::VecPosition::VecPos2D LDDrift::input::Mouse::GetCursorPos(GLFWwindow* window) {
-    VecPosition::VecPos2D CursorPos;
+LDDrift::VecPos2D LDDrift::input::Mouse::GetCursorPos(GLFWwindow* window) {
+    VecPos2D CursorPos;
     glfwGetCursorPos(window, &CursorPos.X, &CursorPos.Y);
     return CursorPos;
 }
