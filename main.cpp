@@ -4,24 +4,24 @@
 
 
 int main() {
-    input::Mouse::Init();
+    LDDrift::input::Mouse::Init();
     while (true) {
-        input::Mouse::GetMouseInputEvent();
-        if (input::Mouse::IsLeftMouseButtonPressed()) {
+        LDDrift::input::Mouse::GetMouseInputEvent();
+        if (LDDrift::input::Mouse::IsLeftMouseButtonPressed()) {
             std::cout << "LeftButtonPressed" << std::endl;
         }
-        if (input::Mouse::IsLeftMouseButtonHeld()) {
+        if (LDDrift::input::Mouse::IsLeftMouseButtonHeld()) {
             std::cout << "LeftButtonHeld" << std::endl;
         }
-        if (input::Mouse::IsLeftMouseButtonReleased()) {
+        if (LDDrift::input::Mouse::IsLeftMouseButtonReleased()) {
             std::cout << "LeftButtonReleased" << std::endl;
         }
-        if (input::Mouse::IsRightMouseButtonPressed()) {
+        if (LDDrift::input::Mouse::IsRightMouseButtonPressed()) {
             break;
         }
-        input::Mouse::Update();
+        LDDrift::input::Mouse::Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
-    input::Mouse::Destroy();
+    LDDrift::input::Mouse::Destroy();
     return 0;
 }

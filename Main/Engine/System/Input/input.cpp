@@ -2,31 +2,31 @@
 
 void OpenFileKeyboardInputEvent() {
 #ifdef __linux__
-    FileKeyboardInputEvent = open("/dev/input/by-id/usb-SEMICO_USB_Keyboard-event-kbd", O_RDONLY | O_NONBLOCK);
-    COF_assert(FileKeyboardInputEvent != -1)
+    LDDrift::FileKeyboardInputEvent = open("/dev/input/by-id/usb-SEMICO_USB_Keyboard-event-kbd", O_RDONLY | O_NONBLOCK);
+    COF_assert(LDDrift::FileKeyboardInputEvent != -1)
 #endif
 }
 
 void CloseFileKeyboardInputEvent() {
 #ifdef __linux__
-    close(FileKeyboardInputEvent);
+    close(LDDrift::FileKeyboardInputEvent);
 #endif
 }
 
 void OpenFileMouseInputEvent() {
 #ifdef __linux__
-    FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse", O_RDONLY | O_NONBLOCK);
-    COF_assert(FileMouseInputEvent != -1)
+    LDDrift::FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse", O_RDONLY | O_NONBLOCK);
+    COF_assert(LDDrift::FileMouseInputEvent != -1)
 #endif
 }
 
 void CloseFileMouseInputEvent() {
 #ifdef __linux__
-    close(FileMouseInputEvent);
+    close(LDDrift::FileMouseInputEvent);
 #endif
 }
 
-void input::Keyboard::Init() {
+void LDDrift::input::Keyboard::Init() {
 #ifdef _WIN32
     for (std::size_t KeyCode = 0; KeyCode < 256; ++KeyCode) {
         WindowsKeyCodes[KeyCode] = {false, false};
@@ -40,11 +40,11 @@ void input::Keyboard::Init() {
 #endif
 }
 
-void input::Keyboard::SetKeyTarget(std::vector<LD_uint>&& keys) {
+void LDDrift::input::Keyboard::SetKeyTarget(std::vector<LD_uint>&& keys) {
     TargetKeys = std::move(keys);
 }
 
-bool input::Keyboard::InputIsChar(const LD_lint& target) {
+bool LDDrift::input::Keyboard::InputIsChar(const LD_lint& target) {
     if (target >= 65 && target <= 90) {
         return true;
     }
@@ -54,7 +54,7 @@ bool input::Keyboard::InputIsChar(const LD_lint& target) {
     return false;
 }
 
-void input::Keyboard::GetKeyInputEvent() {
+void LDDrift::input::Keyboard::GetKeyInputEvent() {
 #ifdef _WIN32
     for (const LD_uint& key : TargetKeys) {
         WindowsKeyCodes[key].Current = (GetAsyncKeyState(key) & 0x8000) != 0;
@@ -81,7 +81,7 @@ void input::Keyboard::GetKeyInputEvent() {
 #endif
 }
 
-bool input::Keyboard::IsKeyPressed(const LD_lint key) {
+bool LDDrift::input::Keyboard::IsKeyPressed(const LD_lint key) {
 #ifdef __linux__
     GLB_assert(key >= 0 && key <= 125)
     return ((LinuxKeyboard[key].Current == true) && (LinuxKeyboard[key].Before == false));
@@ -91,7 +91,7 @@ bool input::Keyboard::IsKeyPressed(const LD_lint key) {
 #endif
 }
 
-bool input::Keyboard::IsKeyHeld(const LD_lint key) {
+bool LDDrift::input::Keyboard::IsKeyHeld(const LD_lint key) {
 #ifdef __linux__
     GLB_assert(key >= 0 && key <= 125);
     return ((LinuxKeyboard[key].Current == true) && (LinuxKeyboard[key].Before == true));
@@ -101,7 +101,7 @@ bool input::Keyboard::IsKeyHeld(const LD_lint key) {
 #endif
 }
 
-bool input::Keyboard::IsKeyReleased(const LD_lint key) {
+bool LDDrift::input::Keyboard::IsKeyReleased(const LD_lint key) {
 #ifdef __linux__
     GLB_assert(key >= 0 && key <= 125);
     return ((LinuxKeyboard[key].Current == false) && (LinuxKeyboard[key].Before == true));
@@ -111,7 +111,7 @@ bool input::Keyboard::IsKeyReleased(const LD_lint key) {
 #endif
 }
 
-std::vector<LD_lint> input::Keyboard::GetKeyPressed() {
+std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyPressed() {
 #ifdef __linux__
     std::vector<LD_lint> LKeyCodes; // linux key codes
     for (const LD_uint& key : TargetKeys) {
@@ -131,7 +131,7 @@ std::vector<LD_lint> input::Keyboard::GetKeyPressed() {
 #endif
 }
 
-std::vector<LD_lint> input::Keyboard::GetKeyHeld() {
+std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyHeld() {
 #ifdef __linux__
     std::vector<LD_lint> LKeyCodes; // linux key codes
     for (const LD_uint& key : TargetKeys) {
@@ -151,7 +151,7 @@ std::vector<LD_lint> input::Keyboard::GetKeyHeld() {
 #endif
 }
 
-std::vector<LD_lint> input::Keyboard::GetKeyReleased() {
+std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyReleased() {
 #ifdef __linux__
     std::vector<LD_lint> LKeyCodes; // linux key codes
     for (const LD_uint& key : TargetKeys) {
@@ -171,7 +171,7 @@ std::vector<LD_lint> input::Keyboard::GetKeyReleased() {
 #endif
 }
 
-void input::Keyboard::Update() {
+void LDDrift::input::Keyboard::Update() {
     if (ToUpdateValues.empty()) {
         return;
     }
@@ -188,13 +188,13 @@ void input::Keyboard::Update() {
     ToUpdateValues.clear();
 }
 
-void input::Keyboard::Destroy() {
+void LDDrift::input::Keyboard::Destroy() {
     CloseFileKeyboardInputEvent();
 }
 
 //////////////// mouse input event ////////////////
 
-void input::Mouse::Init() {
+void LDDrift::input::Mouse::Init() {
 #ifdef __linux__
     OpenFileMouseInputEvent();
     for (LD_uint MouseCode = 0; MouseCode < 5; ++MouseCode) {
@@ -207,11 +207,11 @@ void input::Mouse::Init() {
 #endif
 }
 
-void input::Mouse::SetKeyTarget(std::vector<LD_uint>&& keys) {
+void LDDrift::input::Mouse::SetKeyTarget(std::vector<LD_uint>&& keys) {
     TargetKeys = std::move(keys);
 }
 
-void input::Mouse::GetMouseInputEvent() {
+void LDDrift::input::Mouse::GetMouseInputEvent() {
 #ifdef __linux__
     input_event event{};
     while (true) {
@@ -237,13 +237,13 @@ void input::Mouse::GetMouseInputEvent() {
 #endif
 }
 
-VecPos2D input::Mouse::GetCursorPos(GLFWwindow* window) {
+VecPos2D LDDrift::input::Mouse::GetCursorPos(GLFWwindow* window) {
     VecPos2D CursorPos;
     glfwGetCursorPos(window, &CursorPos.X, &CursorPos.Y);
     return CursorPos;
 }
 
-bool input::Mouse::IsLeftMouseButtonPressed() {
+bool LDDrift::input::Mouse::IsLeftMouseButtonPressed() {
 #ifdef __linux__
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == false && LinuxMouse[LeftMouseButton].Current == true;
@@ -252,7 +252,7 @@ bool input::Mouse::IsLeftMouseButtonPressed() {
 #endif
 }
 
-bool input::Mouse::IsLeftMouseButtonHeld() {
+bool LDDrift::input::Mouse::IsLeftMouseButtonHeld() {
 #ifdef __linux__
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == true && LinuxMouse[LeftMouseButton].Current == true;
@@ -261,7 +261,7 @@ bool input::Mouse::IsLeftMouseButtonHeld() {
 #endif
 }
 
-bool input::Mouse::IsLeftMouseButtonReleased() {
+bool LDDrift::input::Mouse::IsLeftMouseButtonReleased() {
 #ifdef __linux__
     constexpr LD_lint LeftMouseButton = 0;
     return LinuxMouse[LeftMouseButton].Before == true && LinuxMouse[LeftMouseButton].Current == false;
@@ -270,7 +270,7 @@ bool input::Mouse::IsLeftMouseButtonReleased() {
 #endif
 }
 
-bool input::Mouse::IsRightMouseButtonPressed() {
+bool LDDrift::input::Mouse::IsRightMouseButtonPressed() {
 #ifdef __linux__
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == false && LinuxMouse[RightMouseButton].Current == true;
@@ -279,7 +279,7 @@ bool input::Mouse::IsRightMouseButtonPressed() {
 #endif
 }
 
-bool input::Mouse::IsRightMouseButtonHeld() {
+bool LDDrift::input::Mouse::IsRightMouseButtonHeld() {
 #ifdef __linux__
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == true && LinuxMouse[RightMouseButton].Current == true;
@@ -288,7 +288,7 @@ bool input::Mouse::IsRightMouseButtonHeld() {
 #endif
 }
 
-bool input::Mouse::IsRightMouseButtonReleased() {
+bool LDDrift::input::Mouse::IsRightMouseButtonReleased() {
 #ifdef __linux__
     constexpr LD_lint RightMouseButton = 1;
     return LinuxMouse[RightMouseButton].Before == true && LinuxMouse[RightMouseButton].Current == false;
@@ -297,7 +297,7 @@ bool input::Mouse::IsRightMouseButtonReleased() {
 #endif
 }
 
-bool input::Mouse::IsMiddleMouseButtonPressed() {
+bool LDDrift::input::Mouse::IsMiddleMouseButtonPressed() {
 #ifdef __linux__
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == false && LinuxMouse[MiddleMouseButton].Current == true;
@@ -306,7 +306,7 @@ bool input::Mouse::IsMiddleMouseButtonPressed() {
 #endif
 }
 
-bool input::Mouse::IsMiddleMouseButtonHeld() {
+bool LDDrift::input::Mouse::IsMiddleMouseButtonHeld() {
 #ifdef __linux__
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == true && LinuxMouse[MiddleMouseButton].Current == true;
@@ -315,7 +315,7 @@ bool input::Mouse::IsMiddleMouseButtonHeld() {
 #endif
 }
 
-bool input::Mouse::IsMiddleMouseButtonReleased() {
+bool LDDrift::input::Mouse::IsMiddleMouseButtonReleased() {
 #ifdef __linux__
     constexpr LD_lint MiddleMouseButton = 2;
     return LinuxMouse[MiddleMouseButton].Before == true && LinuxMouse[MiddleMouseButton].Current == false;
@@ -324,7 +324,7 @@ bool input::Mouse::IsMiddleMouseButtonReleased() {
 #endif
 }
 
-bool input::Mouse::IsXButton1Pressed() {
+bool LDDrift::input::Mouse::IsXButton1Pressed() {
 #ifdef __linux__
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == false && LinuxMouse[XButton1].Current == true;
@@ -333,7 +333,7 @@ bool input::Mouse::IsXButton1Pressed() {
 #endif
 }
 
-bool input::Mouse::IsXButton1Held() {
+bool LDDrift::input::Mouse::IsXButton1Held() {
 #ifdef __linux__
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == true && LinuxMouse[XButton1].Current == true;
@@ -342,7 +342,7 @@ bool input::Mouse::IsXButton1Held() {
 #endif
 }
 
-bool input::Mouse::IsXButton1Released() {
+bool LDDrift::input::Mouse::IsXButton1Released() {
 #ifdef __linux__
     constexpr LD_lint XButton1 = 3;
     return LinuxMouse[XButton1].Before == true && LinuxMouse[XButton1].Current == false;
@@ -351,7 +351,7 @@ bool input::Mouse::IsXButton1Released() {
 #endif
 }
 
-bool input::Mouse::IsXButton2Pressed() {
+bool LDDrift::input::Mouse::IsXButton2Pressed() {
 #ifdef __linux__
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == false && LinuxMouse[XButton2].Current == true;
@@ -360,7 +360,7 @@ bool input::Mouse::IsXButton2Pressed() {
 #endif
 }
 
-bool input::Mouse::IsXButton2Held() {
+bool LDDrift::input::Mouse::IsXButton2Held() {
 #ifdef __linux__
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == true && LinuxMouse[XButton2].Current == true;
@@ -369,7 +369,7 @@ bool input::Mouse::IsXButton2Held() {
 #endif
 }
 
-bool input::Mouse::IsXButton2Released() {
+bool LDDrift::input::Mouse::IsXButton2Released() {
 #ifdef __linux__
     constexpr LD_lint XButton2 = 4;
     return LinuxMouse[XButton2].Before == true && LinuxMouse[XButton2].Current == false;
@@ -378,7 +378,7 @@ bool input::Mouse::IsXButton2Released() {
 #endif
 }
 
-void input::Mouse::Update() {
+void LDDrift::input::Mouse::Update() {
     if (ToUpdateValues.empty()) {
         return;
     }
@@ -397,6 +397,6 @@ void input::Mouse::Update() {
 #endif
 }
 
-void input::Mouse::Destroy() {
+void LDDrift::input::Mouse::Destroy() {
     CloseFileMouseInputEvent();
 }

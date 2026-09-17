@@ -1,7 +1,5 @@
 #include "VecPos.h"
 
-#include <bits/valarray_after.h>
-
 VecPos2D::VecPos2D() = default;
 
 VecPos2D::VecPos2D(const double x, const double y) {
