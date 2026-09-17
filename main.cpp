@@ -4,7 +4,6 @@
 
 
 int main() {
-    GLB_assert(false);
     LDDrift::input::Mouse::Init();
     while (true) {
         LDDrift::input::Mouse::GetMouseInputEvent();

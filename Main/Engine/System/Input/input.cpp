@@ -1,26 +1,26 @@
 #include "input.h"
 
-void OpenFileKeyboardInputEvent() {
+void LDDrift::OpenFileKeyboardInputEvent() {
 #ifdef __linux__
     LDDrift::FileKeyboardInputEvent = open("/dev/input/by-id/usb-SEMICO_USB_Keyboard-event-kbd", O_RDONLY | O_NONBLOCK);
     COF_assert(LDDrift::FileKeyboardInputEvent != -1)
 #endif
 }
 
-void CloseFileKeyboardInputEvent() {
+void LDDrift::CloseFileKeyboardInputEvent() {
 #ifdef __linux__
     close(LDDrift::FileKeyboardInputEvent);
 #endif
 }
 
-void OpenFileMouseInputEvent() {
+void LDDrift::OpenFileMouseInputEvent() {
 #ifdef __linux__
     LDDrift::FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse", O_RDONLY | O_NONBLOCK);
     COF_assert(LDDrift::FileMouseInputEvent != -1)
 #endif
 }
 
-void CloseFileMouseInputEvent() {
+void LDDrift::CloseFileMouseInputEvent() {
 #ifdef __linux__
     close(LDDrift::FileMouseInputEvent);
 #endif
@@ -32,7 +32,7 @@ void LDDrift::input::Keyboard::Init() {
         WindowsKeyCodes[KeyCode] = {false, false};
     }
 #elifdef __linux__
-    OpenFileKeyboardInputEvent();
+    LDDrift::OpenFileKeyboardInputEvent();
     constexpr IsKeyPressedInFrame Default = {.Before = false, .Current = false};
     for (LD_uint KeyCode = 0; KeyCode <= 125; ++KeyCode) {
         LinuxKeyboard.push_back(Default);
@@ -237,8 +237,8 @@ void LDDrift::input::Mouse::GetMouseInputEvent() {
 #endif
 }
 
-VecPos2D LDDrift::input::Mouse::GetCursorPos(GLFWwindow* window) {
-    VecPos2D CursorPos;
+LDDrift::VecPosition::VecPos2D LDDrift::input::Mouse::GetCursorPos(GLFWwindow* window) {
+    VecPosition::VecPos2D CursorPos;
     glfwGetCursorPos(window, &CursorPos.X, &CursorPos.Y);
     return CursorPos;
 }

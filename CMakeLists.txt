@@ -40,6 +40,8 @@ add_executable(Lucid_Drift main.cpp glad.c
         Main/Engine/Actors/Shapes/MainShape/Shape.h
         Main/EngineLibraries/Angle/Angle.cpp
         Main/EngineLibraries/Angle/Angle.h
+        Main/EngineLibraries/VecColor/VecCol.cpp
+        Main/EngineLibraries/VecColor/VecCol.h
 )
 
 target_include_directories(Lucid_Drift PRIVATE

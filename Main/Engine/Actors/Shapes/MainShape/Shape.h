@@ -2,7 +2,7 @@
 #define LUCID_DRIFT_SHAPE_H
 #include <vector>
 #include <VecPos.h>
-namespace LDDrift::Actors::Shapes
+namespace LDDrift::Actors
 {
     enum class Dir : uint
     {
@@ -15,6 +15,7 @@ namespace LDDrift::Actors::Shapes
     private:
         std::vector<LDDrift::VecPosition::VecPos2D> points;
         uint PointCount = 0;
+        float Speed = 0;
 
     private: // private functions
         void MoveUp();
