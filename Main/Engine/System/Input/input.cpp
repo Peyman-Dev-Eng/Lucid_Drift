@@ -1,5 +1,7 @@
 #include "input.h"
 
+#include <math.h>
+
 void LDDrift::OpenFileKeyboardInputEvent() {
 #ifdef __linux__
     LDDrift::FileKeyboardInputEvent = open("/dev/input/by-id/usb-SEMICO_USB_Keyboard-event-kbd", O_RDONLY | O_NONBLOCK);
@@ -238,9 +240,9 @@ void LDDrift::input::Mouse::GetMouseInputEvent() {
 }
 
 LDDrift::VecPos2D LDDrift::input::Mouse::GetCursorPos(GLFWwindow* window) {
-    VecPos2D CursorPos;
-    glfwGetCursorPos(window, &CursorPos.X, &CursorPos.Y);
-    return CursorPos;
+    double x = NAN, y = NAN;
+    glfwGetCursorPos(window, &x, &y);
+    return LDDrift::VecPos2D{static_cast<float>(x), static_cast<float>(y)};
 }
 
 bool LDDrift::input::Mouse::IsLeftMouseButtonPressed() {

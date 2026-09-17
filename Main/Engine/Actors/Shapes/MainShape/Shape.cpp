@@ -132,3 +132,5 @@ void LDDrift::Actors::Shape::SetPosition(const LDDrift::VecPos2D& pos) {
         point += pos;
     }
 }
+
+LDDrift::Actors::Shape::~Shape() = default;

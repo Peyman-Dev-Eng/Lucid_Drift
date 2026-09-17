@@ -36,7 +36,7 @@ namespace LDDrift::Actors
         void SetPoint(uint point_index, const LDDrift::VecPos2D& pos);
         LDDrift::VecPos2D GetPoint(uint point_index);
         void Move(Dir direction);
-        void Rotate(const Angle& angle);
+        virtual void Rotate(const Angle& angle);
         void SetSpeed(float spd);
         void SetOriginalPosition(const LDDrift::VecPos2D& pos);
         [[nodiscard]] LDDrift::VecPos2D GetOriginalPosition() const;
@@ -48,7 +48,7 @@ namespace LDDrift::Actors
         void ResetOriginalPosition();
         void SetPosition(const LDDrift::VecPos2D& pos);
         virtual void Rebuild() = 0;
-        virtual ~Shape() = 0;
+        virtual ~Shape();
     };
 }
 

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 4.3)
-project(Lucid_Drift)
+project(Lucid_Drift CXX C)
 
 set(CMAKE_CXX_STANDARD 26)
 

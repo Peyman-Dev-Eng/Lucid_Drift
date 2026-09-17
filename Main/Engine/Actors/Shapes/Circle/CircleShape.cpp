@@ -23,6 +23,16 @@ void LDDrift::Actors::CircleShape::SetRadius(const float& R) {
 }
 
 void LDDrift::Actors::CircleShape::Rebuild() {
+    const uint VectexAngle = 360 / this->GetPointCount();
+    uint PointIndex = 0;
+    for (uint angle = 0; angle < 360; angle += VectexAngle, ++PointIndex) {
+        const auto radians = static_cast<float>(angle * std::numbers::pi_v<double> / 180.0f);
+        this->SetPoint(PointIndex, LDDrift::VecPos2D{
+                           CenterPos.X + radius * std::cos(radians), CenterPos.Y + radius * std::sin(radians)
+                       });
+    }
 }
+
+void LDDrift::Actors::CircleShape::Rotate(const Angle& angle) {}
 
 LDDrift::Actors::CircleShape::~CircleShape() = default;
