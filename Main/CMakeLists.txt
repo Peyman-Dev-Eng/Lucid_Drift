@@ -1,6 +1,6 @@
 add_library(Engine STATIC
 
-        # System
+        # System - input
         Engine/System/Input/input.cpp
         Engine/System/Input/input.h
 
@@ -19,8 +19,14 @@ add_library(Engine STATIC
         # Actors - Line
         Engine/Actors/Line/Line.cpp
         Engine/Actors/Line/Line.h
+
+        # System - Window
         Engine/System/Window/Window.cpp
         Engine/System/Window/Window.h
+
+        # Renderer
+        Engine/Renderer/Renderer.cpp
+        Engine/Renderer/Renderer.h
 )
 
 target_include_directories(Engine PUBLIC
