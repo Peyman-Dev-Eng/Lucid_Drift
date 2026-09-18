@@ -24,7 +24,7 @@ LDDrift::VecPos2D LDDrift::VecPos2D::Normalize(const VecPos2D& vec) {
     VecPos2D NormalizedPoint = vec;
     const float length = std::sqrt(NormalizedPoint.X * NormalizedPoint.X + NormalizedPoint.Y * NormalizedPoint.Y);
     if (length == std::numeric_limits<double>::epsilon()) {
-        return VecPos2D{0,0};
+        return VecPos2D{0, 0};
     }
     NormalizedPoint.X /= length;
     NormalizedPoint.Y /= length;
@@ -75,6 +75,46 @@ LDDrift::VecPos2D& LDDrift::VecPos2D::operator*=(const VecPos2D& vec2) {
 LDDrift::VecPos2D& LDDrift::VecPos2D::operator/=(const VecPos2D& vec2) {
     this->X /= vec2.X;
     this->Y /= vec2.Y;
+    return *this;
+}
+
+LDDrift::VecPos2D LDDrift::VecPos2D::operator-(const float& value) const {
+    return VecPos2D{this->X - value, this->Y - value};
+}
+
+LDDrift::VecPos2D LDDrift::VecPos2D::operator+(const float& value) const {
+    return VecPos2D{this->X + value, this->Y + value};
+}
+
+LDDrift::VecPos2D& LDDrift::VecPos2D::operator-=(const float& value) {
+    this->X -= value;
+    this->Y -= value;
+    return *this;
+}
+
+LDDrift::VecPos2D& LDDrift::VecPos2D::operator+=(const float& value) {
+    this->X += value;
+    this->Y += value;
+    return *this;
+}
+
+LDDrift::VecPos2D LDDrift::VecPos2D::operator*(const float& value) const {
+    return VecPos2D{this->X * value, this->Y * value};
+}
+
+LDDrift::VecPos2D LDDrift::VecPos2D::operator/(const float& value) const {
+    return VecPos2D{this->X / value, this->Y / value};
+}
+
+LDDrift::VecPos2D& LDDrift::VecPos2D::operator*=(const float& value) {
+    this->X *= value;
+    this->Y *= value;
+    return *this;
+}
+
+LDDrift::VecPos2D& LDDrift::VecPos2D::operator/=(const float& value) {
+    this->X /= value;
+    this->Y /= value;
     return *this;
 }
 

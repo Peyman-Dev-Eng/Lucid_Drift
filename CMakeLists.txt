@@ -53,6 +53,10 @@ add_executable(Lucid_Drift main.cpp glad.c
         Main/EngineLibraries/VecColor/VecCol.h
         Main/Engine/Actors/Shapes/Circle/CircleShape.cpp
         Main/Engine/Actors/Shapes/Circle/CircleShape.h
+        Main/Engine/Actors/Shapes/Polygon/Polygon.cpp
+        Main/Engine/Actors/Shapes/Polygon/Polygon.h
+        Main/Engine/Actors/Line/Line.cpp
+        Main/Engine/Actors/Line/Line.h
 )
 
 target_include_directories(Lucid_Drift PRIVATE

@@ -21,6 +21,8 @@ namespace LDDrift::Actors
         std::vector<LDDrift::VecCol> ColorOfPoints;
         uint PointCount;
         float Speed;
+        bool FillShape;
+        float Thickness;
 
     private: // private functions
         void MoveUp();
@@ -46,6 +48,8 @@ namespace LDDrift::Actors
         void ResetPoints();
         void ResetColorOfPoints();
         void ResetOriginalPosition();
+        void SetFillColor(bool IsFillShape);
+        void SetThickness(float thickness);
         void SetPosition(const LDDrift::VecPos2D& pos);
         virtual void Rebuild() = 0;
         virtual ~Shape();

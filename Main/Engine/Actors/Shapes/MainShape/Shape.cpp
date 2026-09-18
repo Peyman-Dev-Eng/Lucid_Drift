@@ -1,6 +1,6 @@
 #include "Shape.h"
 
-LDDrift::Actors::Shape::Shape() : OriginalPosition(0, 0), PointCount(0), Speed(0.01) {}
+LDDrift::Actors::Shape::Shape() : OriginalPosition(0, 0), PointCount(0), Speed(0.01), FillShape(true), Thickness(0) {}
 
 void LDDrift::Actors::Shape::MoveUp() {
     for (VecPos2D& point : Points) {
@@ -131,6 +131,15 @@ void LDDrift::Actors::Shape::SetPosition(const LDDrift::VecPos2D& pos) {
     for (LDDrift::VecPos2D& point : Points) {
         point += pos;
     }
+}
+
+void LDDrift::Actors::Shape::SetFillColor(const bool IsFillShape) {
+    FillShape = IsFillShape;
+}
+
+void LDDrift::Actors::Shape::SetThickness(const float thickness) {
+    GLB_assert(thickness >= 0.0f)
+    Thickness = thickness;
 }
 
 LDDrift::Actors::Shape::~Shape() = default;

@@ -37,13 +37,21 @@ namespace LDDrift
         static VecPos2D Normalize(const VecPos2D& vec);
         static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec);
         VecPos2D operator-(const VecPos2D& vec2) const;
+        VecPos2D operator-(const float& value) const;
         VecPos2D operator+(const VecPos2D& vec2) const;
+        VecPos2D operator+(const float& value) const;
         VecPos2D& operator-=(const VecPos2D& vec2);
+        VecPos2D& operator-=(const float& value);
         VecPos2D& operator+=(const VecPos2D& vec2);
+        VecPos2D& operator+=(const float& value);
         VecPos2D operator*(const VecPos2D& vec2) const;
+        VecPos2D operator*(const float& value) const;
         VecPos2D operator/(const VecPos2D& vec2) const;
+        VecPos2D operator/(const float& value) const;
         VecPos2D& operator*=(const VecPos2D& vec2);
+        VecPos2D& operator*=(const float& value);
         VecPos2D& operator/=(const VecPos2D& vec2);
+        VecPos2D& operator/=(const float& value);
 
         ~VecPos2D();
     };
