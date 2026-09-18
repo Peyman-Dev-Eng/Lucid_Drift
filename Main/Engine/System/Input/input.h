@@ -215,6 +215,20 @@ namespace LDDrift
 
     namespace input
     {
+        /**
+         * @class Keyboard
+         * @brief Manages keyboard input events and provides utility functions to query the state of keyboard keys.
+         *
+         * This class provides functionalities to initialize, update, and query the state of keyboard keys.
+         * It supports both Windows and Linux platforms, handling different input mechanisms on each.
+         * Key functionalities include setting target keys, checking key states (pressed, held, released),
+         * and retrieving lists of pressed, held, and released keys.
+         *
+         * @note The class uses platform-specific implementations for handling keyboard input events.
+         * It also includes utility functions to identify if a key corresponds to a character.
+         *
+         * @see Mouse
+         */
         class Keyboard
         {
         private:
@@ -234,6 +248,19 @@ namespace LDDrift
             static void Destroy();
         };
 
+        /**
+         * @class Mouse
+         * @brief Manages mouse input events and provides utility functions to query the state of mouse buttons and cursor position.
+         *
+         * This class provides functionalities to initialize, update, and query the state of mouse buttons and cursor position.
+         * It supports both Windows and Linux platforms, handling different input mechanisms on each.
+         * Key functionalities include setting target keys, checking button states (pressed, held, released),
+         * and retrieving the current cursor position.
+         *
+         * @note The class uses platform-specific implementations for handling mouse input events.
+         *
+         * @see Keyboard
+         */
         class Mouse
         {
         public:

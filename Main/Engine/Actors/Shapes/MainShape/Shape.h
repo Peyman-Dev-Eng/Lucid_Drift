@@ -13,6 +13,21 @@ namespace LDDrift::Actors
         LEFT, RIGHT
     };
 
+    /**
+     * Shape class represents a geometric shape with various properties and operations.
+     *
+     * @class Shape
+     * @brief A base class for representing and manipulating geometric shapes.
+     *
+     * This class provides a framework for defining and manipulating geometric shapes.
+     * It includes properties such as points, colors, position, speed, and other attributes.
+     * Shapes can be moved, rotated, and rebuilt.
+     *
+     * @note This is an abstract base class and should not be instantiated directly.
+     * Derived classes should implement the Rebuild method to create the specific shape.
+     *
+     * @see LDDrift::VecPos2D, LDDrift::VecCol, LDDrift::Angle
+     */
     class Shape
     {
     private:
@@ -51,6 +66,8 @@ namespace LDDrift::Actors
         void SetFillColor(bool IsFillShape);
         void SetThickness(float thickness);
         void SetPosition(const LDDrift::VecPos2D& pos);
+        [[nodiscard]] bool IsFillShape() const;
+        [[nodiscard]] float GetThickness() const;
         virtual void Rebuild() = 0;
         virtual ~Shape();
     };

@@ -142,4 +142,12 @@ void LDDrift::Actors::Shape::SetThickness(const float thickness) {
     Thickness = thickness;
 }
 
+bool LDDrift::Actors::Shape::IsFillShape() const {
+    return FillShape;
+}
+
+float LDDrift::Actors::Shape::GetThickness() const {
+    return Thickness;
+}
+
 LDDrift::Actors::Shape::~Shape() = default;

@@ -6,6 +6,22 @@
 
 namespace LDDrift::Actors
 {
+    /**
+     * Line class represents a geometric line in a 2D space.
+     *
+     * @class Line
+     * @brief A class for creating and manipulating a line defined by two points.
+     *
+     * This class encapsulates the functionality needed to create a line between two
+     * points and provides methods to modify the line's endpoints and create
+     * triangular representations of the line.
+     *
+     * @note The class assumes that the endpoints are provided as VecPos2D objects,
+     * which are designed to handle only positive coordinates. Using non-positive
+     * coordinates will result in the values being clamped to zero.
+     *
+     * @see VecPos2D
+     */
     class Line
     {
     private:
