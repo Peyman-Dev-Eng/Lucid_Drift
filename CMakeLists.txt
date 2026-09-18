@@ -73,6 +73,9 @@ target_include_directories(SHAPE_DATA PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Main/EngineLibraries/ShapeData
 )
 
+target_link_libraries(SHAPE_DATA PUBLIC
+        VecColor
+)
 
 # ============================================================================
 # Dependencies
