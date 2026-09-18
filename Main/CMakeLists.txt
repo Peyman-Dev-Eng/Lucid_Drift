@@ -27,6 +27,8 @@ add_library(Engine STATIC
         # Renderer
         Engine/Renderer/Renderer.cpp
         Engine/Renderer/Renderer.h
+        EngineLibraries/ShapeData/ShapeData.cpp
+        EngineLibraries/ShapeData/ShapeData.h
 )
 
 target_include_directories(Engine PUBLIC
