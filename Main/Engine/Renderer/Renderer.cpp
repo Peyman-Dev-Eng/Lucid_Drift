@@ -3,16 +3,13 @@
 void LDDrift::Renderer::SetVertexShaderSource() {
     VertexShaderSource = R"(
 #version 460 core
-layout (location = 0) in vec2 aPos;
+layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec4 aColor;
-
-uniform mat4 uTransform;
-uniform mat4 uProjection;
 
 out vec4 outColor;
 
 void main() {
-    gl_Position = vec4(aPos, 0.0, 1.0) * uTransform * uProjection;
+    gl_Position = vec4(aPos, 1.0);
     outColor = aColor;
 }
 )";
@@ -62,5 +59,27 @@ GLuint LDDrift::Renderer::GetProgram() const {
     return program;
 }
 
+void LDDrift::Renderer::SetWidthScreen(const int WS) {
+    WidthScreen = WS;
+}
+
+void LDDrift::Renderer::SetHeightScreen(const int HS) {
+    HeightScreen = HS;
+}
+
+LDDrift::ShapeData LDDrift::Renderer::GetShapeData(const LDDrift::Actors::Shape* shape) const {
+    LDDrift::ShapeData shape_data;
+    const int HalfWidthScreen = WidthScreen / 2;
+    const int HalfHeightScreen = HeightScreen / 2;
+    for (std::size_t point = 0; point < shape->GetPointCount(); ++point) {
+        const float XinOpenGLCoordinateSystem = ((shape->GetPoint(point).X - static_cast<float>(HalfWidthScreen)) /
+            static_cast<float>(HalfWidthScreen));
+        const float YinCoordinateSystem = ((shape->GetPoint(point).Y - static_cast<float>(HalfHeightScreen)) /
+            static_cast<float>(HalfHeightScreen));
+        shape_data.Vertices.push_back(LDDrift::VecPos2D{XinOpenGLCoordinateSystem, YinCoordinateSystem, 0.0f});
+        shape_data.PointsColors.push_back(shape->GetPointColor(point));
+    }
+    return shape_data;
+}
 
 LDDrift::Renderer::~Renderer() = default;

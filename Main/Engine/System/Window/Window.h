@@ -4,8 +4,8 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <VecCol.h>
-
-#include "VecPos.h"
+#include <VecPos.h>
+#include <string>
 
 namespace LDDrift
 {
@@ -26,6 +26,7 @@ namespace LDDrift
     private:
         GLFWwindow* screen{nullptr};
         Settings settings;
+
     private: // functions
 
     public:

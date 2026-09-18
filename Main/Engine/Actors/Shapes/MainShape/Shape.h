@@ -47,18 +47,18 @@ namespace LDDrift::Actors
 
     public:
         Shape();
-        [[nodiscard]] std::vector<VecPos2D> GetPoints() const;
+        [[nodiscard]] const std::vector<VecPos2D>& GetPoints() const;
         void SetPointCount(uint point_count);
         [[nodiscard]] uint GetPointCount() const;
         void SetPoint(uint point_index, const LDDrift::VecPos2D& pos);
-        LDDrift::VecPos2D GetPoint(uint point_index);
+        [[nodiscard]] const LDDrift::VecPos2D& GetPoint(uint point_index) const;
         void Move(Dir direction);
         virtual void Rotate(const Angle& angle);
         void SetSpeed(float spd);
         void SetOriginalPosition(const LDDrift::VecPos2D& pos);
-        [[nodiscard]] LDDrift::VecPos2D GetOriginalPosition() const;
+        [[nodiscard]] const LDDrift::VecPos2D& GetOriginalPosition() const;
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
-        LDDrift::VecCol GetPointColor(uint point_index);
+        [[nodiscard]] const LDDrift::VecCol& GetPointColor(uint point_index) const;
         void ResetPointCount();
         void ResetPoints();
         void ResetColorOfPoints();

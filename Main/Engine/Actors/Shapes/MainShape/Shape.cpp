@@ -64,7 +64,7 @@ void LDDrift::Actors::Shape::SetPoint(const uint point_index, const LDDrift::Vec
     Points[point_index] = pos;
 }
 
-LDDrift::VecPos2D LDDrift::Actors::Shape::GetPoint(const uint point_index) {
+const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetPoint(const uint point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
     return Points[point_index];
 }
@@ -80,11 +80,11 @@ void LDDrift::Actors::Shape::SetPointColor(const uint point_index, const LDDrift
     ColorOfPoints[point_index] = color;
 }
 
-LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPosition() const {
+const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetOriginalPosition() const {
     return OriginalPosition;
 }
 
-LDDrift::VecCol LDDrift::Actors::Shape::GetPointColor(const uint point_index) {
+const LDDrift::VecCol& LDDrift::Actors::Shape::GetPointColor(const uint point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
     return ColorOfPoints[point_index];
 }
@@ -105,7 +105,7 @@ void LDDrift::Actors::Shape::Move(const Dir direction) {
     }
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetPoints() const {
+const std::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetPoints() const {
     return Points;
 }
 

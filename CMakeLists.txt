@@ -74,7 +74,7 @@ target_include_directories(SHAPE_DATA PUBLIC
 )
 
 target_link_libraries(SHAPE_DATA PUBLIC
-        VecColor
+        VecColor VECPOS2D
 )
 
 # ============================================================================

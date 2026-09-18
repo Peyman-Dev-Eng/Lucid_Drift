@@ -13,6 +13,8 @@ LDDrift::Window::Window() {
 }
 
 void LDDrift::Window::CreateWindow() {
+    std::string FinalTile = settings.title;
+    FinalTile += " ( Lucid-Drift )";
     screen = glfwCreateWindow(settings.width, settings.height, settings.title, nullptr, nullptr);
     if (screen == nullptr) {
         const char* description = nullptr;
