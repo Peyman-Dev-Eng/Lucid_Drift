@@ -23,8 +23,6 @@ namespace LDDrift
         void SetFragmentShaderSource();
         void SetVertexShaderSource();
         static GLuint Compile(GLenum type, const char* source);
-    private: // data
-
     public:
         Renderer();
         Renderer(int WS /* Width screen */, int HS /* height screen */);

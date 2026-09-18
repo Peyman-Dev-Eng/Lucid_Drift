@@ -62,6 +62,19 @@ target_include_directories(VecColor PUBLIC
 
 
 # ============================================================================
+# Shape Data
+# ============================================================================
+
+add_library(SHAPE_DATA STATIC
+        Main/EngineLibraries/ShapeData/ShapeData.cpp
+)
+
+target_include_directories(SHAPE_DATA PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Main/EngineLibraries/ShapeData
+)
+
+
+# ============================================================================
 # Dependencies
 # ============================================================================
 

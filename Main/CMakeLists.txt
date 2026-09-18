@@ -27,8 +27,6 @@ add_library(Engine STATIC
         # Renderer
         Engine/Renderer/Renderer.cpp
         Engine/Renderer/Renderer.h
-        EngineLibraries/ShapeData/ShapeData.cpp
-        EngineLibraries/ShapeData/ShapeData.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -42,4 +40,5 @@ target_link_libraries(Engine PUBLIC
         ANGLE
         VecColor
         glfw
+        SHAPE_DATA
 )
