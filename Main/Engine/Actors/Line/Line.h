@@ -40,6 +40,7 @@ namespace LDDrift::Actors
         [[nodiscard]] LDDrift::VecPos2D GetFirstPoint() const;
         [[nodiscard]] LDDrift::VecPos2D GetSecondPoint() const;
         [[nodiscard]] std::vector<PNT> GetPoints() const;
+        Line& SetThickness(float);
         ~Line();
     private:
         std::vector<PNT> Points;

@@ -33,7 +33,7 @@ static GLuint Compile(const GLenum type, const char* source) {
     return shader;
 }
 
-void SetToVertices(float* vertices, const std::vector<LDDrift::Actors::Line::PNT>& points) {
+void SetToVertices(float* vertices, const std::vector<LDDrift::Actors::Line::PNT>& points, const uint size) {
     static uint LastIndex = 0;
     vertices[LastIndex] = points[0].Point_1.X;
     vertices[LastIndex + 1] = points[0].Point_1.Y;
@@ -58,7 +58,9 @@ void SetToVertices(float* vertices, const std::vector<LDDrift::Actors::Line::PNT
     vertices[LastIndex] = points[1].Point_3.X;
     vertices[LastIndex + 1] = points[1].Point_3.Y;
     vertices[LastIndex + 2] = 0.0f;
+    LastIndex %= size;
 }
+
 
 int main() {
     if (!glfwInit()) {
@@ -94,7 +96,6 @@ int main() {
     glDeleteShader(FragmentShader);
 
     constexpr int PointCount = 45;
-    constexpr float Radius = 0.2f;
 
     float vertices[PointCount * 3];
 
@@ -106,6 +107,7 @@ int main() {
     for (float angle = 0.0f;
          angle < 360.0f;
          angle += VertexAngle, pointIndex += 3) {
+        constexpr float Radius = 0.1f;
         constexpr float CenterX = 0.0f;
         constexpr float CenterY = 0.0f;
 
@@ -125,9 +127,14 @@ int main() {
         const uint PreviousIndex = point == 0 ? (PointCount - 1) * 3 : (point - 1) * 3;
         const uint CurrentIndex = point * 3;
         std::vector<LDDrift::Actors::Line::PNT> PNTS = LDDrift::Actors::Line(
-            LDDrift::VecPos2D{vertices[PreviousIndex], vertices[PreviousIndex + 1]},
-            LDDrift::VecPos2D{vertices[CurrentIndex], vertices[CurrentIndex + 1]}).CreateTriangles().GetPoints();
-        SetToVertices(points, PNTS);
+                                                           LDDrift::VecPos2D{
+                                                               vertices[PreviousIndex], vertices[PreviousIndex + 1]
+                                                           },
+                                                           LDDrift::VecPos2D{
+                                                               vertices[CurrentIndex], vertices[CurrentIndex + 1]
+                                                           })
+                                                       .SetThickness(1).CreateTriangles().GetPoints();
+        SetToVertices(points, PNTS, sizeof(points) / sizeof(float));
     }
     GLuint VAO = 0, VBO = 0;
     glGenVertexArrays(1, &VAO);
@@ -143,11 +150,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(program);
         glBindVertexArray(VAO);
-        for (uint i = 0; i < sizeof(points) / sizeof(float); i += 3) {
-            for (uint j = 0; j < 3; ++j) {
-                glDrawArrays(GL_TRIANGLES, i, i + 3);
-            }
-        }
+        glDrawArrays(GL_TRIANGLES, 0, PointCount * 6);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
