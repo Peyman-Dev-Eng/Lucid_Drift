@@ -19,6 +19,8 @@ add_library(Engine STATIC
         # Actors - Line
         Actors/Line/Line.cpp
         Actors/Line/Line.h
+        System/Window/Window.cpp
+        System/Window/Window.h
 )
 
 target_include_directories(Engine PUBLIC
