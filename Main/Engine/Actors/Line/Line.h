@@ -53,7 +53,7 @@ namespace LDDrift::Actors
         float Thick{1};
 
     private: // functions
-        std::vector<PNT> Translate() const;
+        [[nodiscard]] std::vector<PNT> Translate() const;
     };
 }
 

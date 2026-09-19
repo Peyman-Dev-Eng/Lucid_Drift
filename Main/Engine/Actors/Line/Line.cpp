@@ -47,14 +47,14 @@ LDDrift::Actors::Line& LDDrift::Actors::Line::SetThickness(const float thick) {
 }
 
 LDDrift::Actors::Line& LDDrift::Actors::Line::SetScreenSize(const LDDrift::VecPos2D& WindowSize) {
-    WidthScreen = WindowSize.X;
-    HeightScreen = WindowSize.Y;
+    WidthScreen = static_cast<int>(WindowSize.X);
+    HeightScreen = static_cast<int>(WindowSize.Y);
     return *this;
 }
 
 std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::Translate() const {
-    const float HalfWidth = WidthScreen / 2.0f;
-    const float HalfHeight = HeightScreen / 2.0f;
+    const float HalfWidth = static_cast<float>(WidthScreen) / 2.0f;
+    const float HalfHeight = static_cast<float>(HeightScreen) / 2.0f;
     std::vector<LDDrift::Actors::Line::PNT> CopyPoints = Points;
     CopyPoints[0].Point_1.X = (CopyPoints[0].Point_1.X - HalfWidth) / HalfWidth;
     CopyPoints[0].Point_1.Y = (CopyPoints[0].Point_1.Y - HalfHeight) / HalfHeight;
