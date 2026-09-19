@@ -31,6 +31,7 @@ namespace LDDrift::Actors
     class Shape
     {
     private:
+        LDDrift::VecPos2D screenSize;
         LDDrift::VecPos2D OriginalPosition;
         std::vector<LDDrift::VecPos2D> Points;
         std::vector<LDDrift::VecCol> ColorOfPoints;
@@ -65,11 +66,14 @@ namespace LDDrift::Actors
         void ResetOriginalPosition();
         void SetFillColor(bool IsFillShape);
         void SetThickness(float thickness);
+        void SetScreenSize(const LDDrift::VecPos2D& size);
         void SetPosition(const LDDrift::VecPos2D& pos);
         [[nodiscard]] bool IsFillShape() const;
         [[nodiscard]] float GetThickness() const;
         virtual void Rebuild() = 0;
         virtual ~Shape();
+    protected:
+        [[nodiscard]] const LDDrift::VecPos2D& GetScreenSize() const;
     };
 }
 

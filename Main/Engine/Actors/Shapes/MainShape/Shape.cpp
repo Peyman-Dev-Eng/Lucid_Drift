@@ -1,6 +1,6 @@
 #include "Shape.h"
 
-LDDrift::Actors::Shape::Shape() : OriginalPosition(0, 0), PointCount(0), Speed(0.01), FillShape(true), Thickness(0) {}
+LDDrift::Actors::Shape::Shape() : screenSize(0,0), OriginalPosition(0, 0), PointCount(0), Speed(0.01), FillShape(true), Thickness(0) {}
 
 void LDDrift::Actors::Shape::MoveUp() {
     for (VecPos2D& point : Points) {
@@ -148,6 +148,14 @@ bool LDDrift::Actors::Shape::IsFillShape() const {
 
 float LDDrift::Actors::Shape::GetThickness() const {
     return Thickness;
+}
+
+void LDDrift::Actors::Shape::SetScreenSize(const LDDrift::VecPos2D& size) {
+    screenSize = size;
+}
+
+const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetScreenSize() const {
+    return screenSize;
 }
 
 LDDrift::Actors::Shape::~Shape() = default;

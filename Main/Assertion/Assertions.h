@@ -23,5 +23,8 @@ namespace LDDrift::Assertions
 // out of range assert
 #define OOR_assert(cond) \
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "value is out of range");
+// custom message assert
+#define CTM_assert(cond, msg) \
+    cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, msg);
 
 #endif

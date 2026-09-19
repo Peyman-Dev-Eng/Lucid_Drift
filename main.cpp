@@ -6,6 +6,10 @@
 #include <GLFW/glfw3.h>
 #include <cmath>
 #include <oneapi/tbb/task_group.h>
+#define SCREEN_WIDTH 1280
+#define SCREEN_HEIGHT 720
+#define HALF_SCREEN_WIDTH 640
+#define HALF_SCREEN_HEIGHT 360
 
 #include "Actors/Line/Line.h"
 #include "Actors/Shapes/Circle/CircleShape.h"
@@ -22,7 +26,7 @@ static const char* FragmentShaderSource = R"(
 #version 460 core
 out vec4 FragColor;
 void main() {
-    FragColor = vec4(1.0, 0.0, 0.0, 1.0);
+    FragColor = vec4(0.0, 1.0, 0.0, 1.0);
 }
 )";
 
@@ -65,163 +69,84 @@ static void SetToVertices(float* vertices, const std::vector<LDDrift::Actors::Li
 int main() {
     if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW." << std::endl;
-        return -1;
+        return 1;
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    GLFWwindow* window = glfwCreateWindow(1200, 900, "OpenGl", nullptr, nullptr);
+
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "TEST", nullptr, nullptr);
     if (!window) {
         std::cout << "Failed to create GLFW window." << std::endl;
         glfwTerminate();
-        return -1;
+        return 1;
     }
     glfwMakeContextCurrent(window);
-
     if (!gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress))) {
         std::cout << "Failed to initialize GLAD." << std::endl;
         glfwDestroyWindow(window);
         glfwTerminate();
-        return -1;
+        return 1;
     }
-    std::cout << "OpenGL: "
-          << glGetString(GL_VERSION)
-          << '\n';
-    int width = 1200, height = 900;
-    glfwGetFramebufferSize(window, &width, &height);
-    glViewport(0, 0, width, height);
-    glDisable(GL_CULL_FACE);
-    const GLuint VertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
-    const GLuint FragmentShader = Compile(GL_FRAGMENT_SHADER, FragmentShaderSource);
+
+    constexpr int pointCount = 45;
+
+    constexpr int angleRadian = 360 / pointCount;
+    constexpr int vertexCount = pointCount * 2 * 3;
+
+    constexpr float centerX = static_cast<float>((HALF_SCREEN_WIDTH - HALF_SCREEN_WIDTH)) / HALF_SCREEN_WIDTH;
+    constexpr float centerY = static_cast<float>((HALF_SCREEN_HEIGHT - HALF_SCREEN_HEIGHT)) / HALF_SCREEN_HEIGHT;
+
+    constexpr float RadiusX = 40.0f / HALF_SCREEN_WIDTH;
+    constexpr float RadiusY = 40.0f / HALF_SCREEN_HEIGHT;
+
+
+    float circlePoints[pointCount * 3];
+
+    int circlePointsIndex = 0;
+    for (int angle = 0; angle < 360; angle += angleRadian) {
+        const float radians = static_cast<float>(angle) * std::numbers::pi_v<float> / 180;
+        const float targetX = centerX + RadiusX * std::cos(radians);
+        const float targetY = centerY + RadiusY * std::sin(radians);
+        circlePoints[circlePointsIndex++] = targetX;
+        circlePoints[circlePointsIndex++] = targetY;
+        circlePoints[circlePointsIndex++] = 0.0f;
+    }
+
+    const GLuint vertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
+    const GLuint fragmentShader = Compile(GL_FRAGMENT_SHADER, FragmentShaderSource);
     const GLuint program = glCreateProgram();
-    glAttachShader(program, VertexShader);
-    glAttachShader(program, FragmentShader);
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
     glLinkProgram(program);
-    GLint linked = 0;
-    glGetProgramiv(program, GL_LINK_STATUS, &linked);
 
-    std::cout << "Program linked: "
-              << linked
-              << '\n';
 
-    glDeleteShader(VertexShader);
-    glDeleteShader(FragmentShader);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
 
-    constexpr int PointCount = 45;
-
-    float vertices[PointCount * 3];
-
-    constexpr float VertexAngle =
-        360.0f / PointCount;
-
-    uint pointIndex = 0;
-
-    for (float angle = 0.0f;
-         angle < 360.0f;
-         angle += VertexAngle, pointIndex += 3) {
-        constexpr float Radius = 0.5f;
-        constexpr float CenterX = 0.0f;
-        constexpr float CenterY = 0.0f;
-
-        const float radians =
-            angle * std::numbers::pi_v<float> / 180.0f;
-
-        vertices[pointIndex] =
-            CenterX + Radius * std::cos(radians);
-
-        vertices[pointIndex + 1] =
-            CenterY + Radius * std::sin(radians);
-
-        vertices[pointIndex + 2] = 0.0f;
-    }
-    float points[810];
-    for (uint point = 0; point < PointCount; ++point) {
-        const uint PreviousIndex = point == 0 ? (PointCount - 1) * 3 : (point - 1) * 3;
-        const uint CurrentIndex = point * 3;
-        std::vector<LDDrift::Actors::Line::PNT> PNTS = LDDrift::Actors::Line(
-                                                           LDDrift::VecPos2D{
-                                                               vertices[PreviousIndex], vertices[PreviousIndex + 1]
-                                                           },
-                                                           LDDrift::VecPos2D{
-                                                               vertices[CurrentIndex], vertices[CurrentIndex + 1]
-                                                           })
-                                                       .SetScreenSize(LDDrift::VecPos2D{1200, 900})
-                                                       .SetThickness(0.01f).CreateTriangles().GetPoints();
-        for (const auto& p : PNTS) {
-            std::cout
-    << "P1: "
-    << p.Point_1.X << ", "
-    << p.Point_1.Y << '\n';
-
-            std::cout
-                << "P2: "
-                << p.Point_2.X << ", "
-                << p.Point_2.Y << '\n';
-
-            std::cout
-                << "P3: "
-                << p.Point_3.X << ", "
-                << p.Point_3.Y << '\n';
-
-            std::cout << "----------------\n";
-        }
-        SetToVertices(points, PNTS, sizeof(points) / sizeof(float));
-    }
-    for (int i = 0; i < 18; i += 3) {
-        std::cout
-            << points[i] << ", "
-            << points[i + 1] << ", "
-            << points[i + 2] << '\n';
-    }
     GLuint VAO = 0, VBO = 0;
-    glGenVertexArrays(
-        1
-        ,
-        &
-        VAO
-    );
-    glGenBuffers(
-        1
-        ,
-        &
-        VBO
-    );
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
     glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-                 ,
-                 VBO
-    );
-    glBufferData(GL_ARRAY_BUFFER
-
-                 ,
-                 sizeof
-                 (points), points, GL_STATIC_DRAW
-
-    );
-    glEnableVertexAttribArray(
-        0
-    );
+    glBufferData(GL_ARRAY_BUFFER, sizeof(circlePoints), circlePoints, GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), static_cast<void*>(nullptr));
+    glEnableVertexAttribArray(0);
     glBindVertexArray(0);
-    while
-    (
-        !
-        glfwWindowShouldClose(window)
-    ) {
+
+
+    while (!glfwWindowShouldClose(window)) {
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(program);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 270);
+        glDrawArrays(GL_LINE_LOOP, 0, pointCount);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glDeleteProgram(program);
-    glDeleteBuffers(1, &VBO);
-    glDeleteVertexArrays(1, &VAO);
     glfwDestroyWindow(window);
     glfwTerminate();
-    return
-        0;
+    return 0;
 }

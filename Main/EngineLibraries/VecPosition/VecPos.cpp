@@ -23,7 +23,7 @@ LDDrift::VecPos2D::VecPos2D(const std::initializer_list<float> list) {
 LDDrift::VecPos2D LDDrift::VecPos2D::Normalize(const VecPos2D& vec) {
     VecPos2D NormalizedPoint = vec;
     const float length = std::sqrt(NormalizedPoint.X * NormalizedPoint.X + NormalizedPoint.Y * NormalizedPoint.Y);
-    if (length == std::numeric_limits<double>::epsilon()) {
+    if (length == std::numeric_limits<float>::epsilon() || length == 0.0f) {
         return VecPos2D{0, 0};
     }
     NormalizedPoint.X /= length;

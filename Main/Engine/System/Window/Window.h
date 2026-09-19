@@ -9,6 +9,24 @@
 
 namespace LDDrift
 {
+    /**
+     * Window class represents a graphical window in the application.
+     *
+     * @class Window
+     *
+     * @class LDDrift::Window
+     * @brief Represents a graphical window.
+     *
+     * The Window class provides a high-level interface for creating and managing
+     * a graphical window. It encapsulates various properties such as position,
+     * size, title, and color, as well as methods for window management and rendering.
+     *
+     * @note The class uses GLFW and GLAD for window and OpenGL context management.
+     * Ensure that these libraries are properly linked and initialized before using
+     * this class.
+     *
+     * @see LDDrift::VecCol
+     */
     class Window
     {
     private:
@@ -42,6 +60,7 @@ namespace LDDrift
         [[nodiscard]] VecPos2D GetWindowSize() const;
         void SetPosition(int x, int y);
         [[nodiscard]] VecPos2D GetPosition() const;
+        [[nodiscard]] LDDrift::VecPos2D GetCenterPosition() const;
         void Update();
         [[nodiscard]] bool ScreenIsOpen() const;
         ~Window();

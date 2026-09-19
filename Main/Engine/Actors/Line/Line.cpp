@@ -13,7 +13,7 @@ LDDrift::Actors::Line& LDDrift::Actors::Line::CreateTriangles() {
     Distance.Y = SaveX;
     Distance *= HalfThickness;
     Points.push_back({
-        .Point_1 = FirstPoint - Distance, .Point_2 = FirstPoint - Distance, .Point_3 = SecondPoint + Distance
+        .Point_1 = FirstPoint - Distance, .Point_2 = FirstPoint + Distance, .Point_3 = SecondPoint - Distance
     });
     Points.push_back({
         .Point_1 = FirstPoint + Distance, .Point_2 = SecondPoint - Distance, .Point_3 = SecondPoint + Distance
@@ -38,10 +38,10 @@ LDDrift::VecPos2D LDDrift::Actors::Line::GetSecondPoint() const {
 }
 
 std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::GetPoints() const {
-    return Points;
+    return Translate();
 }
 
-LDDrift::Actors::Line& LDDrift::Actors::Line::SetThickness(float thick) {
+LDDrift::Actors::Line& LDDrift::Actors::Line::SetThickness(const float thick) {
     Thick = thick;
     return *this;
 }
