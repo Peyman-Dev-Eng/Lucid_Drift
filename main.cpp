@@ -63,7 +63,27 @@ void SetToVertices(float* vertices, const std::vector<LDDrift::Actors::Line::PNT
 
 
 int main() {
-    if (!glfwInit()) {
+    const std::vector<LDDrift::Actors::Line::PNT> points = LDDrift::Actors::Line(
+        LDDrift::VecPos2D{40, 100}, LDDrift::VecPos2D{100, 100}).CreateTriangles().GetPoints();
+    std::cout << points[0].Point_1.X << ", " << points[0].Point_1.Y << std::endl;
+    std::cout << points[0].Point_2.X << ", " << points[0].Point_2.Y << std::endl;
+    std::cout << points[0].Point_3.X << ", " << points[0].Point_3.Y << std::endl;
+    std::cout << "-----------------------------------------------------------------" << std::endl;
+    std::cout << points[1].Point_1.X << ", " << points[1].Point_1.Y << std::endl;
+    std::cout << points[1].Point_2.X << ", " << points[1].Point_2.Y << std::endl;
+    std::cout << points[1].Point_3.X << ", " << points[1].Point_3.Y << std::endl;
+
+
+
+
+
+
+
+
+
+
+
+    /*if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW." << std::endl;
         return -1;
     }
@@ -133,7 +153,7 @@ int main() {
                                                            LDDrift::VecPos2D{
                                                                vertices[CurrentIndex], vertices[CurrentIndex + 1]
                                                            })
-                                                       .SetThickness(1).CreateTriangles().GetPoints();
+                                                       .SetThickness(0.009f).CreateTriangles().GetPoints();
         SetToVertices(points, PNTS, sizeof(points) / sizeof(float));
     }
     GLuint VAO = 0, VBO = 0;
@@ -156,6 +176,6 @@ int main() {
     }
     glDeleteProgram(program);
     glfwDestroyWindow(window);
-    glfwTerminate();
+    glfwTerminate();*/
     return 0;
 }

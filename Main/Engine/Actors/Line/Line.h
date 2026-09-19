@@ -31,6 +31,7 @@ namespace LDDrift::Actors
             LDDrift::VecPos2D Point_2;
             LDDrift::VecPos2D Point_3;
         };
+
     public:
         Line();
         Line(const LDDrift::VecPos2D&, const LDDrift::VecPos2D&);
@@ -41,12 +42,18 @@ namespace LDDrift::Actors
         [[nodiscard]] LDDrift::VecPos2D GetSecondPoint() const;
         [[nodiscard]] std::vector<PNT> GetPoints() const;
         Line& SetThickness(float);
+        Line& SetScreenSize(const LDDrift::VecPos2D&);
         ~Line();
+
     private:
         std::vector<PNT> Points;
         LDDrift::VecPos2D FirstPoint;
         LDDrift::VecPos2D SecondPoint;
+        int WidthScreen{500}, HeightScreen{500};
         float Thick{1};
+
+    private: // functions
+        std::vector<PNT> Translate() const;
     };
 }
 

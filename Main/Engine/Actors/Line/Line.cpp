@@ -38,12 +38,36 @@ LDDrift::VecPos2D LDDrift::Actors::Line::GetSecondPoint() const {
 }
 
 std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::GetPoints() const {
-    return Points;
+    return this->Translate();
 }
 
 LDDrift::Actors::Line& LDDrift::Actors::Line::SetThickness(float thick) {
     Thick = thick;
     return *this;
+}
+
+LDDrift::Actors::Line& LDDrift::Actors::Line::SetScreenSize(const LDDrift::VecPos2D& WindowSize) {
+    WidthScreen = WindowSize.X;
+    HeightScreen = WindowSize.Y;
+    return *this;
+}
+
+std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::Translate() const {
+    std::vector<LDDrift::Actors::Line::PNT> CopyPoints = Points;
+    CopyPoints[0].Point_1.X = (CopyPoints[0].Point_1.X - WidthScreen) / WidthScreen;
+    CopyPoints[0].Point_1.Y = (CopyPoints[0].Point_1.Y - HeightScreen) / HeightScreen;
+    CopyPoints[0].Point_2.X = (CopyPoints[0].Point_2.X - WidthScreen) / WidthScreen;
+    CopyPoints[0].Point_2.Y = (CopyPoints[0].Point_2.Y - HeightScreen) / HeightScreen;
+    CopyPoints[0].Point_3.X = (CopyPoints[0].Point_3.X - WidthScreen) / WidthScreen;
+    CopyPoints[0].Point_3.Y = (CopyPoints[0].Point_3.Y - HeightScreen) / HeightScreen;
+
+    CopyPoints[1].Point_1.X = (CopyPoints[0].Point_1.X - WidthScreen) / WidthScreen;
+    CopyPoints[1].Point_1.Y = (CopyPoints[0].Point_1.Y - HeightScreen) / HeightScreen;
+    CopyPoints[1].Point_2.X = (CopyPoints[0].Point_2.X - WidthScreen) / WidthScreen;
+    CopyPoints[1].Point_2.Y = (CopyPoints[0].Point_2.Y - HeightScreen) / HeightScreen;
+    CopyPoints[1].Point_3.X = (CopyPoints[0].Point_3.X - WidthScreen) / WidthScreen;
+    CopyPoints[1].Point_3.Y = (CopyPoints[0].Point_3.Y - HeightScreen) / HeightScreen;
+    return CopyPoints;
 }
 
 LDDrift::Actors::Line::~Line() = default;
