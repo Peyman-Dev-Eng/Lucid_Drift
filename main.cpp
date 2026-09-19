@@ -63,27 +63,7 @@ void SetToVertices(float* vertices, const std::vector<LDDrift::Actors::Line::PNT
 
 
 int main() {
-    const std::vector<LDDrift::Actors::Line::PNT> points = LDDrift::Actors::Line(
-        LDDrift::VecPos2D{40, 100}, LDDrift::VecPos2D{100, 100}).CreateTriangles().GetPoints();
-    std::cout << points[0].Point_1.X << ", " << points[0].Point_1.Y << std::endl;
-    std::cout << points[0].Point_2.X << ", " << points[0].Point_2.Y << std::endl;
-    std::cout << points[0].Point_3.X << ", " << points[0].Point_3.Y << std::endl;
-    std::cout << "-----------------------------------------------------------------" << std::endl;
-    std::cout << points[1].Point_1.X << ", " << points[1].Point_1.Y << std::endl;
-    std::cout << points[1].Point_2.X << ", " << points[1].Point_2.Y << std::endl;
-    std::cout << points[1].Point_3.X << ", " << points[1].Point_3.Y << std::endl;
-
-
-
-
-
-
-
-
-
-
-
-    /*if (!glfwInit()) {
+    if (!glfwInit()) {
         std::cout << "Failed to initialize GLFW." << std::endl;
         return -1;
     }
@@ -127,7 +107,7 @@ int main() {
     for (float angle = 0.0f;
          angle < 360.0f;
          angle += VertexAngle, pointIndex += 3) {
-        constexpr float Radius = 0.1f;
+        constexpr float Radius = 1.0f;
         constexpr float CenterX = 0.0f;
         constexpr float CenterY = 0.0f;
 
@@ -142,7 +122,7 @@ int main() {
 
         vertices[pointIndex + 2] = 0.0f;
     }
-    float points[PointCount * 18];
+    float points[810];
     for (uint point = 0; point < PointCount; ++point) {
         const uint PreviousIndex = point == 0 ? (PointCount - 1) * 3 : (point - 1) * 3;
         const uint CurrentIndex = point * 3;
@@ -153,7 +133,7 @@ int main() {
                                                            LDDrift::VecPos2D{
                                                                vertices[CurrentIndex], vertices[CurrentIndex + 1]
                                                            })
-                                                       .SetThickness(0.009f).CreateTriangles().GetPoints();
+                                                       .SetThickness(2).CreateTriangles().GetPoints();
         SetToVertices(points, PNTS, sizeof(points) / sizeof(float));
     }
     GLuint VAO = 0, VBO = 0;
@@ -176,6 +156,6 @@ int main() {
     }
     glDeleteProgram(program);
     glfwDestroyWindow(window);
-    glfwTerminate();*/
+    glfwTerminate();
     return 0;
 }
