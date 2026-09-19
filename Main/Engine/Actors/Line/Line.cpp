@@ -13,7 +13,7 @@ LDDrift::Actors::Line& LDDrift::Actors::Line::CreateTriangles() {
     Distance.Y = SaveX;
     Distance *= HalfThickness;
     Points.push_back({
-        .Point_1 = FirstPoint - Distance, .Point_2 = FirstPoint + Distance, .Point_3 = SecondPoint - Distance
+        .Point_1 = FirstPoint - Distance, .Point_2 = FirstPoint - Distance, .Point_3 = SecondPoint + Distance
     });
     Points.push_back({
         .Point_1 = FirstPoint + Distance, .Point_2 = SecondPoint - Distance, .Point_3 = SecondPoint + Distance
@@ -38,7 +38,7 @@ LDDrift::VecPos2D LDDrift::Actors::Line::GetSecondPoint() const {
 }
 
 std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::GetPoints() const {
-    return this->Translate();
+    return Points;
 }
 
 LDDrift::Actors::Line& LDDrift::Actors::Line::SetThickness(float thick) {
@@ -53,20 +53,22 @@ LDDrift::Actors::Line& LDDrift::Actors::Line::SetScreenSize(const LDDrift::VecPo
 }
 
 std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::Translate() const {
+    const float HalfWidth = WidthScreen / 2.0f;
+    const float HalfHeight = HeightScreen / 2.0f;
     std::vector<LDDrift::Actors::Line::PNT> CopyPoints = Points;
-    CopyPoints[0].Point_1.X = (CopyPoints[0].Point_1.X - WidthScreen) / WidthScreen;
-    CopyPoints[0].Point_1.Y = (CopyPoints[0].Point_1.Y - HeightScreen) / HeightScreen;
-    CopyPoints[0].Point_2.X = (CopyPoints[0].Point_2.X - WidthScreen) / WidthScreen;
-    CopyPoints[0].Point_2.Y = (CopyPoints[0].Point_2.Y - HeightScreen) / HeightScreen;
-    CopyPoints[0].Point_3.X = (CopyPoints[0].Point_3.X - WidthScreen) / WidthScreen;
-    CopyPoints[0].Point_3.Y = (CopyPoints[0].Point_3.Y - HeightScreen) / HeightScreen;
+    CopyPoints[0].Point_1.X = (CopyPoints[0].Point_1.X - HalfWidth) / HalfWidth;
+    CopyPoints[0].Point_1.Y = (CopyPoints[0].Point_1.Y - HalfHeight) / HalfHeight;
+    CopyPoints[0].Point_2.X = (CopyPoints[0].Point_2.X - HalfWidth) / HalfWidth;
+    CopyPoints[0].Point_2.Y = (CopyPoints[0].Point_2.Y - HalfHeight) / HalfHeight;
+    CopyPoints[0].Point_3.X = (CopyPoints[0].Point_3.X - HalfWidth) / HalfWidth;
+    CopyPoints[0].Point_3.Y = (CopyPoints[0].Point_3.Y - HalfHeight) / HalfHeight;
 
-    CopyPoints[1].Point_1.X = (CopyPoints[0].Point_1.X - WidthScreen) / WidthScreen;
-    CopyPoints[1].Point_1.Y = (CopyPoints[0].Point_1.Y - HeightScreen) / HeightScreen;
-    CopyPoints[1].Point_2.X = (CopyPoints[0].Point_2.X - WidthScreen) / WidthScreen;
-    CopyPoints[1].Point_2.Y = (CopyPoints[0].Point_2.Y - HeightScreen) / HeightScreen;
-    CopyPoints[1].Point_3.X = (CopyPoints[0].Point_3.X - WidthScreen) / WidthScreen;
-    CopyPoints[1].Point_3.Y = (CopyPoints[0].Point_3.Y - HeightScreen) / HeightScreen;
+    CopyPoints[1].Point_1.X = (CopyPoints[1].Point_1.X - HalfWidth) / HalfWidth;
+    CopyPoints[1].Point_1.Y = (CopyPoints[1].Point_1.Y - HalfHeight) / HalfHeight;
+    CopyPoints[1].Point_2.X = (CopyPoints[1].Point_2.X - HalfWidth) / HalfWidth;
+    CopyPoints[1].Point_2.Y = (CopyPoints[1].Point_2.Y - HalfHeight) / HalfHeight;
+    CopyPoints[1].Point_3.X = (CopyPoints[1].Point_3.X - HalfWidth) / HalfWidth;
+    CopyPoints[1].Point_3.Y = (CopyPoints[1].Point_3.Y - HalfHeight) / HalfHeight;
     return CopyPoints;
 }
 
