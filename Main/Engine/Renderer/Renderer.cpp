@@ -33,7 +33,7 @@ GLuint LDDrift::Renderer::Compile(const GLenum type, const char* source) {
     return shader;
 }
 
-LDDrift::Renderer::Renderer() : WidthScreen(500), HeightScreen(500) {
+LDDrift::Renderer::Renderer(const int& widthScreen, const int& heightScreen) : WidthScreen(widthScreen), HeightScreen(heightScreen) {
     this->SetVertexShaderSource();
     this->SetFragmentShaderSource();
     VertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
@@ -42,17 +42,16 @@ LDDrift::Renderer::Renderer() : WidthScreen(500), HeightScreen(500) {
     glAttachShader(program, VertexShader);
     glAttachShader(program, FragmentShader);
     glLinkProgram(program);
-}
 
-LDDrift::Renderer::Renderer(const int WS, const int HS) : WidthScreen(WS), HeightScreen(HS) {
-    this->SetVertexShaderSource();
-    this->SetFragmentShaderSource();
-    VertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
-    FragmentShader = Compile(GL_FRAGMENT_SHADER, FragmentShaderSource);
-    program = glCreateProgram();
-    glAttachShader(program, VertexShader);
-    glAttachShader(program, FragmentShader);
-    glLinkProgram(program);
+    // create vbo buffer
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // create vertex array
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+
 }
 
 GLuint LDDrift::Renderer::GetProgram() const {
@@ -82,4 +81,3 @@ LDDrift::ShapeData LDDrift::Renderer::GetShapeData(const LDDrift::Actors::Shape*
     return shape_data;
 }
 
-LDDrift::Renderer::~Renderer() = default;

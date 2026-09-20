@@ -73,37 +73,31 @@ int main() {
         glfwTerminate();
         return 1;
     }
-
     constexpr int pointCount = 90;
-    constexpr float pixelRadius = 100;
+    constexpr float pixelRadius = 300;
 
-    constexpr float centerNDC_X = 0;
-    constexpr float centerNDC_Y = 0;
-
-    constexpr float radiusNDC_X = pixelRadius / static_cast<float>(HALF_SCREEN_WIDTH);
-    constexpr float radiusNDC_Y = pixelRadius / static_cast<float>(HALF_SCREEN_HEIGHT);
-
-    constexpr int vertexCount = pointCount * 2 * 3;
+    constexpr int vertexCount = ((pointCount) * 2 * 3);
 
     float circleVertices[pointCount * 3];
 
     initCircleVerticesPixels(circleVertices, HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, pixelRadius, pointCount);
 
-    float lineCircleVertices[(vertexCount * 3)];
+    float lineCircleVertices[(vertexCount * 3) + 18];
     float mainLine[18];
     float mainLine2[18];
 
     constexpr int lastPoint = (pointCount - 1) * 3;
     unsigned int forLoopCounter = 0;
     for (int vertex = 0; vertex < pointCount * 3; vertex += 3) {
-        const float px = vertex == 0 ? circleVertices[lastPoint]     : circleVertices[vertex - 3];
+        const float px = vertex == 0 ? circleVertices[lastPoint] : circleVertices[vertex - 3];
         const float py = vertex == 0 ? circleVertices[lastPoint + 1] : circleVertices[vertex - 2];
-        const float cx = circleVertices[vertex];
-        const float cy = circleVertices[vertex + 1];
+        std::cout << vertex << std::endl;
+        const float cx = vertex == lastPoint ? circleVertices[0] : circleVertices[vertex];
+        const float cy = vertex == lastPoint ? circleVertices[1] : circleVertices[vertex + 1];
 
         std::vector<LDDrift::Actors::Line::PNT> triangles =
             LDDrift::Actors::Line(LDDrift::VecPos2D{px, py}, LDDrift::VecPos2D{cx, cy})
-            .SetThickness(3).SetScreenSize(LDDrift::VecPos2D{SCREEN_WIDTH, SCREEN_HEIGHT})
+            .SetThickness(10).SetScreenSize(LDDrift::VecPos2D{SCREEN_WIDTH, SCREEN_HEIGHT})
             .CreateTriangles().GetPoints();
         lineCircleVertices[forLoopCounter++] = triangles[0].Point_1.X;
         lineCircleVertices[forLoopCounter++] = triangles[0].Point_1.Y;
@@ -156,7 +150,7 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
         glUseProgram(program);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+        glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

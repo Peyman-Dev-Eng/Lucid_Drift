@@ -13,6 +13,7 @@ namespace LDDrift
     class Renderer final
     {
     private:
+        std::vector<ShapeData> Shapes;
         const char* VertexShaderSource{nullptr};
         const char* FragmentShaderSource{nullptr};
         GLuint VertexShader{}, FragmentShader{};
@@ -28,13 +29,11 @@ namespace LDDrift
         static GLuint Compile(GLenum type, const char* source);
 
     public:
-        Renderer();
-        Renderer(int WS /* Width screen */, int HS /* height screen */);
+        explicit Renderer(const int& widthScreen = 500 /* Width screen */, const int& heightScreen = 500 /* height screen */);
         void SetWidthScreen(int WS );
         void SetHeightScreen(int HS );
         [[nodiscard]] GLuint GetProgram() const;
         ShapeData GetShapeData(const LDDrift::Actors::Shape*) const;
-        ~Renderer();
     };
 }
 

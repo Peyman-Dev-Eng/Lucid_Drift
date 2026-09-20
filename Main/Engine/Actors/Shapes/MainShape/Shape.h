@@ -4,6 +4,7 @@
 #include <VecPos.h>
 #include <VecCol.h>
 #include <Angle.h>
+#include <codecvt>
 
 namespace LDDrift::Actors
 {
@@ -70,8 +71,10 @@ namespace LDDrift::Actors
         void SetPosition(const LDDrift::VecPos2D& pos);
         [[nodiscard]] bool IsFillShape() const;
         [[nodiscard]] float GetThickness() const;
+        [[nodiscard]] std::vector<LDDrift::VecPos2D> TransformPoints() const;
         virtual void Rebuild() = 0;
         virtual ~Shape();
+
     protected:
         [[nodiscard]] const LDDrift::VecPos2D& GetScreenSize() const;
     };
