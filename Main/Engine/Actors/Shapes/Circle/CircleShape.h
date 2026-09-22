@@ -7,7 +7,7 @@ namespace LDDrift::Actors
     /**
      * CircleShape class represents a geometric circle shape.
      *
-     * @class CircleShape
+     * @class Circle
      * @brief A class for representing and manipulating a circle shape.
      *
      * This class extends the base Shape class to represent a circle shape with a radius.
@@ -19,7 +19,7 @@ namespace LDDrift::Actors
      *
      * @see LDDrift::VecPos2D, LDDrift::VecCol, LDDrift::Angle, Shape
      */
-    class CircleShape final : public LDDrift::Actors::Shape
+    class Circle final : public LDDrift::Actors::Shape
     {
     private:
         float radiusNDC_X;
@@ -29,14 +29,16 @@ namespace LDDrift::Actors
         LDDrift::VecPos2D Position;
 
     public:
-        CircleShape();
-        explicit CircleShape(const float& R);
+        Circle();
+        explicit Circle(const float& R);
         void SetRadius(const float& R);
         [[nodiscard]] float GetRadius() const;
         void SetOriginalPositionToCenter();
+        [[nodiscard]] std::vector<float> CreateTriangles() const override;
+        [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
         void Rebuild() override;
         void Rotate(const Angle& angle) override;
-        ~CircleShape() override;
+        ~Circle() override;
     };
 }
 

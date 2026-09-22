@@ -35,6 +35,22 @@ namespace LDDrift
         void White();
         void Black();
         void SetColor(const float& red, const float& green, const float& blue, const float& alpha);
+        VecCol& operator+=(const VecCol& vec);
+        VecCol& operator-=(const VecCol& vec);
+        VecCol& operator*=(const VecCol& vec);
+        VecCol& operator/=(const VecCol& vec);
+        VecCol operator-(const VecCol& vec) const;
+        VecCol operator+(const VecCol& vec) const;
+        VecCol operator*(const VecCol& vec) const;
+        VecCol operator/(const VecCol& vec) const;
+        VecCol& operator-=(const float& color);
+        VecCol& operator+=(const float& color);
+        VecCol& operator*=(const float& color);
+        VecCol& operator/=(const float& color);
+        VecCol operator-(const float& color) const;
+        VecCol operator*(const float& color) const;
+        VecCol operator/(const float& color) const;
+        VecCol operator+(const float& color) const;
         ~VecCol();
     };
 }

@@ -5,6 +5,7 @@
 #include <VecCol.h>
 #include <Angle.h>
 #include <codecvt>
+#include <ShapeData.h>
 
 namespace LDDrift::Actors
 {
@@ -40,6 +41,7 @@ namespace LDDrift::Actors
         float Speed;
         bool FillShape;
         float Thickness;
+        bool HaveThickness;
 
     private: // private functions
         void MoveUp();
@@ -61,6 +63,7 @@ namespace LDDrift::Actors
         [[nodiscard]] const LDDrift::VecPos2D& GetOriginalPosition() const;
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
         [[nodiscard]] const LDDrift::VecCol& GetPointColor(uint point_index) const;
+        [[nodiscard]] const std::vector<LDDrift::VecCol>& GetColorOfPoints() const;
         void ResetPointCount();
         void ResetPoints();
         void ResetColorOfPoints();
@@ -69,9 +72,13 @@ namespace LDDrift::Actors
         void SetThickness(float thickness);
         void SetScreenSize(const LDDrift::VecPos2D& size);
         void SetPosition(const LDDrift::VecPos2D& pos);
+        void SetAllPointsColor(const LDDrift::VecCol& targetColor);
         [[nodiscard]] bool IsFillShape() const;
+        [[nodiscard]] bool IsHaveThickness() const;
         [[nodiscard]] float GetThickness() const;
         [[nodiscard]] std::vector<LDDrift::VecPos2D> TransformPoints() const;
+        [[nodiscard]] virtual LDDrift::VecCol CalculateAverageVertexColor() const = 0;
+        [[nodiscard]] virtual std::vector<float> CreateTriangles() const = 0;
         virtual void Rebuild() = 0;
         virtual ~Shape();
 

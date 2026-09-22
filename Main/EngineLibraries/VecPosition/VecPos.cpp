@@ -1,5 +1,7 @@
 #include "VecPos.h"
 
+#include "../VecColor/VecCol.h"
+
 LDDrift::VecPos2D::VecPos2D() = default;
 
 LDDrift::VecPos2D::VecPos2D(const float x, const float y) {
@@ -32,7 +34,7 @@ LDDrift::VecPos2D LDDrift::VecPos2D::Normalize(const VecPos2D& vec) {
 }
 
 LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const LDDrift::VecPos2D& FirstVec, const LDDrift::VecPos2D& SecondVec) {
-    VecPos2D edge = FirstVec - SecondVec;
+    VecPos2D edge = LDDrift::VecPos2D::Normalize(FirstVec - SecondVec);
     edge = VecPos2D{-edge.Y, edge.X};
     return edge;
 }

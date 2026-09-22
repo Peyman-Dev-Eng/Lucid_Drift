@@ -1,7 +1,7 @@
 #include "Shape.h"
 
 LDDrift::Actors::Shape::Shape() : screenSize(0, 0), OriginalPosition(0, 0), PointCount(0), Speed(0.01), FillShape(true),
-                                  Thickness(0) {}
+                                  Thickness(0), HaveThickness(false) {}
 
 void LDDrift::Actors::Shape::MoveUp() {
     for (VecPos2D& point : Points) {
@@ -44,9 +44,7 @@ void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
 }
 
 void LDDrift::Actors::Shape::SetPointCount(const uint point_count) {
-    if (point_count <= PointCount) {
-        Points.clear();
-    }
+    GLB_assert(point_count > PointCount)
     for (uint PointIndex = Points.empty() ? 0 : PointCount; PointIndex < point_count; ++PointIndex) {
         Points.emplace_back();
     }
@@ -141,6 +139,7 @@ void LDDrift::Actors::Shape::SetFillColor(const bool IsFillShape) {
 void LDDrift::Actors::Shape::SetThickness(const float thickness) {
     GLB_assert(thickness >= 0.0f)
     Thickness = thickness;
+    HaveThickness = true;
 }
 
 bool LDDrift::Actors::Shape::IsFillShape() const {
@@ -172,6 +171,22 @@ void LDDrift::Actors::Shape::SetScreenSize(const LDDrift::VecPos2D& size) {
 
 const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetScreenSize() const {
     return screenSize;
+}
+
+const std::vector<LDDrift::VecCol>& LDDrift::Actors::Shape::GetColorOfPoints() const {
+    return ColorOfPoints;
+}
+
+bool LDDrift::Actors::Shape::IsHaveThickness() const {
+    return HaveThickness;
+}
+
+void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColor) {
+    ColorOfPoints.clear();
+    ColorOfPoints.reserve(Points.size());
+    for (std::size_t point = 0; point < Points.size(); ++point) {
+        ColorOfPoints[point] = targetColor;
+    }
 }
 
 LDDrift::Actors::Shape::~Shape() = default;

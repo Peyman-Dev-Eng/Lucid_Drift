@@ -7,16 +7,13 @@ LDDrift::Actors::Line::Line(const LDDrift::VecPos2D& FPoint, const LDDrift::VecP
 
 LDDrift::Actors::Line& LDDrift::Actors::Line::CreateTriangles() {
     const float HalfThickness = Thick / 2.0f;
-    LDDrift::VecPos2D Distance = LDDrift::VecPos2D::Normalize(SecondPoint - FirstPoint);
-    const float SaveX = Distance.X;
-    Distance.X = -Distance.Y;
-    Distance.Y = SaveX;
-    Distance *= HalfThickness;
+    LDDrift::VecPos2D normal = LDDrift::VecPos2D::NormalLine(FirstPoint, SecondPoint);
+    normal *= HalfThickness;
     Points.push_back({
-        .Point_1 = FirstPoint - Distance, .Point_2 = FirstPoint + Distance, .Point_3 = SecondPoint - Distance
+        .Point_1 = FirstPoint - normal, .Point_2 = FirstPoint + normal, .Point_3 = SecondPoint - normal
     });
     Points.push_back({
-        .Point_1 = FirstPoint + Distance, .Point_2 = SecondPoint - Distance, .Point_3 = SecondPoint + Distance
+        .Point_1 = FirstPoint + normal, .Point_2 = SecondPoint - normal, .Point_3 = SecondPoint + normal
     });
     return *this;
 }

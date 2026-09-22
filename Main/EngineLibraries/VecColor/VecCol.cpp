@@ -1,5 +1,7 @@
 #include "VecCol.h"
 
+#include <sys/cdefs.h>
+
 LDDrift::VecCol::VecCol() = default;
 
 LDDrift::VecCol::VecCol(const float red, const float green, const float blue, const float alpha) :
@@ -66,6 +68,102 @@ void LDDrift::VecCol::SetColor(const float& red, const float& green, const float
     G = green;
     B = blue;
     A = alpha;
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator-(const float& color) const {
+    return VecCol{R - color, G - color, B - color, A - color};
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator+(const float& color) const {
+    return VecCol{R + color, G + color, B + color, A + color};
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator*(const float& color) const {
+    return VecCol{R * color, G * color, B * color, A * color};
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator/(const float& color) const {
+    return VecCol{R / color, G / color, B / color, A / color};
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator-=(const float& color) {
+    this->R -= color;
+    this->G -= color;
+    this->B -= color;
+    this->A -= color;
+    return *this;
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator+=(const float& color) {
+    this->R += color;
+    this->G += color;
+    this->B += color;
+    this->A += color;
+    return *this;
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator*=(const float& color) {
+    this->R *= color;
+    this->G *= color;
+    this->B *= color;
+    this->A *= color;
+    return *this;
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator/=(const float& color) {
+    this->R /= color;
+    this->G /= color;
+    this->B /= color;
+    this->A /= color;
+    return *this;
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator-(const VecCol& vec) const {
+    return VecCol{R - vec.R, G - vec.G, B - vec.B, A - vec.A};
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator+(const VecCol& vec) const {
+    return VecCol{R + vec.R, G + vec.G, B + vec.B, A + vec.A};
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator*(const VecCol& vec) const {
+    return VecCol{R * vec.R, G * vec.G, B * vec.B, A * vec.A};
+}
+
+LDDrift::VecCol LDDrift::VecCol::operator/(const VecCol& vec) const {
+    return VecCol{R / vec.R, G / vec.G, B / vec.B, A / vec.A};
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator-=(const VecCol& vec) {
+    this->R -= vec.R;
+    this->G -= vec.G;
+    this->B -= vec.B;
+    this->A -= vec.A;
+    return *this;
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator+=(const VecCol& vec) {
+    this->R += vec.R;
+    this->G += vec.G;
+    this->B += vec.B;
+    this->A += vec.A;
+    return *this;
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator*=(const VecCol& vec) {
+    this->R *= vec.R;
+    this->G *= vec.G;
+    this->B *= vec.B;
+    this->A *= vec.A;
+    return *this;
+}
+
+LDDrift::VecCol& LDDrift::VecCol::operator/=(const VecCol& vec) {
+    this->R /= vec.R;
+    this->G /= vec.G;
+    this->B /= vec.B;
+    this->A /= vec.A;
+    return *this;
 }
 
 LDDrift::VecCol::~VecCol() = default;

@@ -39,12 +39,12 @@ static GLuint Compile(const GLenum type, const char* source) {
 
 static void initCircleVerticesPixels(
     float* circleVertices,
-    float centerPixelX,
-    float centerPixelY,
-    float radiusPixels,
-    int pointCount) {
+    const float centerPixelX,
+    const float centerPixelY,
+    const float radiusPixels,
+    const int pointCount) {
     for (int i = 0; i < pointCount; ++i) {
-        const float radians = 2.0f * std::numbers::pi_v<float> * i / pointCount;
+        const float radians = 2.0f * std::numbers::pi_v<float> * static_cast<float>(i) / static_cast<float>(pointCount);
         circleVertices[i * 3 + 0] = centerPixelX + radiusPixels * std::cos(radians);
         circleVertices[i * 3 + 1] = centerPixelY + radiusPixels * std::sin(radians);
         circleVertices[i * 3 + 2] = 0.0f;
@@ -73,90 +73,12 @@ int main() {
         glfwTerminate();
         return 1;
     }
-    constexpr int pointCount = 90;
-    constexpr float pixelRadius = 300;
-
-    constexpr int vertexCount = ((pointCount) * 2 * 3);
-
-    float circleVertices[pointCount * 3];
-
-    initCircleVerticesPixels(circleVertices, HALF_SCREEN_WIDTH, HALF_SCREEN_HEIGHT, pixelRadius, pointCount);
-
-    float lineCircleVertices[(vertexCount * 3) + 18];
-    float mainLine[18];
-    float mainLine2[18];
-
-    constexpr int lastPoint = (pointCount - 1) * 3;
-    unsigned int forLoopCounter = 0;
-    for (int vertex = 0; vertex < pointCount * 3; vertex += 3) {
-        const float px = vertex == 0 ? circleVertices[lastPoint] : circleVertices[vertex - 3];
-        const float py = vertex == 0 ? circleVertices[lastPoint + 1] : circleVertices[vertex - 2];
-        std::cout << vertex << std::endl;
-        const float cx = vertex == lastPoint ? circleVertices[0] : circleVertices[vertex];
-        const float cy = vertex == lastPoint ? circleVertices[1] : circleVertices[vertex + 1];
-
-        std::vector<LDDrift::Actors::Line::PNT> triangles =
-            LDDrift::Actors::Line(LDDrift::VecPos2D{px, py}, LDDrift::VecPos2D{cx, cy})
-            .SetThickness(10).SetScreenSize(LDDrift::VecPos2D{SCREEN_WIDTH, SCREEN_HEIGHT})
-            .CreateTriangles().GetPoints();
-        lineCircleVertices[forLoopCounter++] = triangles[0].Point_1.X;
-        lineCircleVertices[forLoopCounter++] = triangles[0].Point_1.Y;
-        lineCircleVertices[forLoopCounter++] = 0.0f;
-        lineCircleVertices[forLoopCounter++] = triangles[0].Point_2.X;
-        lineCircleVertices[forLoopCounter++] = triangles[0].Point_2.Y;
-        lineCircleVertices[forLoopCounter++] = 0.0f;
-        lineCircleVertices[forLoopCounter++] = triangles[0].Point_3.X;
-        lineCircleVertices[forLoopCounter++] = triangles[0].Point_3.Y;
-        lineCircleVertices[forLoopCounter++] = 0.0f;
-        lineCircleVertices[forLoopCounter++] = triangles[1].Point_1.X;
-        lineCircleVertices[forLoopCounter++] = triangles[1].Point_1.Y;
-        lineCircleVertices[forLoopCounter++] = 0.0f;
-        lineCircleVertices[forLoopCounter++] = triangles[1].Point_2.X;
-        lineCircleVertices[forLoopCounter++] = triangles[1].Point_2.Y;
-        lineCircleVertices[forLoopCounter++] = 0.0f;
-        lineCircleVertices[forLoopCounter++] = triangles[1].Point_3.X;
-        lineCircleVertices[forLoopCounter++] = triangles[1].Point_3.Y;
-        lineCircleVertices[forLoopCounter++] = 0.0f;
-    }
-    const GLuint vertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
-    const GLuint fragmentShader = Compile(GL_FRAGMENT_SHADER, FragmentShaderSource);
-    const GLuint program = glCreateProgram();
-    glAttachShader(program, vertexShader);
-    glAttachShader(program, fragmentShader);
-    glLinkProgram(program);
-    GLint success = 0;
-    glGetProgramiv(program, GL_LINK_STATUS, &success);
-    if (!success) {
-        char log[1024];
-        glGetProgramInfoLog(program, 1024, nullptr, log);
-        std::cout << "Link error: " << log << std::endl;
-    }
-
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    GLuint VAO = 0, VBO = 0;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glBindVertexArray(VAO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-    glBufferData(GL_ARRAY_BUFFER, sizeof(lineCircleVertices), lineCircleVertices, GL_STATIC_DRAW);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-    glEnableVertexAttribArray(0);
-    glBindVertexArray(0);
     while (!glfwWindowShouldClose(window)) {
         glClearColor(0.0, 0.0, 0.0, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
-        glUseProgram(program);
-        glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, vertexCount);
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteProgram(program);
     glfwDestroyWindow(window);
     glfwTerminate();
     return 0;
