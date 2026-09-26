@@ -1,7 +1,10 @@
 #ifndef LUCID_DRIFT_TRIANGLE_H
 #define LUCID_DRIFT_TRIANGLE_H
+#define UPPER_BOUND 100
 #include <vector>
+#include <algorithm>
 #include <Actors/Shapes/MainShape/Shape.h>
+#include <SubSystems/PointHitTesting/PointHitTesting.h>
 
 namespace LDDrift
 {
@@ -14,17 +17,59 @@ namespace LDDrift
     private: // functions
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {
             const std::size_t shapePointNumber = shape->GetPointCount();
-            for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
-                const LDDrift::VecPos2D& pointA = shape->GetPoint((pointNumber) % shapePointNumber);
-                const LDDrift::VecPos2D& pointB = shape->GetPoint((pointNumber + 1) % shapePointNumber);
-                const LDDrift::VecPos2D& pointC = shape->GetPoint((pointNumber + 2) % shapePointNumber);
+            std::vector<std::size_t> targetNumberOfPoints;
+            for (std::size_t point = 0; point < shapePointNumber; ++point) {
+                targetNumberOfPoints.push_back(point);
+            }
+            std::size_t counter = 0;
+            while (targetNumberOfPoints.size() != 3 && counter != UPPER_BOUND) {
+                constexpr std::size_t pointNumber = 0;
+                const LDDrift::VecPos2D& pointA = shape->GetPoint(targetNumberOfPoints[pointNumber]);
+                const LDDrift::VecPos2D& pointB = shape->GetPoint(targetNumberOfPoints[pointNumber + 1]);
+                const LDDrift::VecPos2D& pointC = shape->GetPoint(targetNumberOfPoints[pointNumber + 2]);
                 const float cross =
                     (pointB.X - pointA.X) * (pointC.Y - pointB.Y)
                     - (pointB.Y - pointA.Y) * (pointC.X - pointA.X);
                 if (const bool isConvexCorner = cross * shape->ShapeIsConvex().pointDirection > 0.0f; !isConvexCorner) {
                     continue;
                 }
+                bool notFoundPointInTriangle = true;
+                for (std::size_t point = 0; point < shapePointNumber; ++point) {
+                    if (point == pointNumber || point == (pointNumber + 1) % shapePointNumber ||
+                        point == (pointNumber + 2) % shapePointNumber) { // رد کردن نقطه هایی که با انها مثلث ساختیم
+                        continue;
+                    }
+                    if (LDDrift::PointHitTesting::pointHitTesting(shape->GetPoint(point),
+                                                                  std::vector<LDDrift::VecPos2D>{
+                                                                      pointA, pointB, pointC
+                                                                  })) {
+                        notFoundPointInTriangle = false;
+                        break;
+                    }
+                }
+                if (notFoundPointInTriangle) {
+                    vertices.push_back(pointA.X);
+                    vertices.push_back(pointA.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointB.X);
+                    vertices.push_back(pointB.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointC.X);
+                    vertices.push_back(pointC.Y);
+                    vertices.push_back(0.0f);
+                    targetNumberOfPoints.erase(targetNumberOfPoints.begin() + 1);
+                }
+                ++counter;
             }
+            vertices.push_back(shape->GetPoint(targetNumberOfPoints[0]).X);
+            vertices.push_back(shape->GetPoint(targetNumberOfPoints[0]).Y);
+            vertices.push_back(0.0f);
+            vertices.push_back(shape->GetPoint(targetNumberOfPoints[1]).X);
+            vertices.push_back(shape->GetPoint(targetNumberOfPoints[1]).Y);
+            vertices.push_back(0.0f);
+            vertices.push_back(shape->GetPoint(targetNumberOfPoints[2]).X);
+            vertices.push_back(shape->GetPoint(targetNumberOfPoints[2]).Y);
+            vertices.push_back(0.0f);
         }
 
         void TrianglesForConvexShape(std::vector<float>& vertices) const {
@@ -90,7 +135,7 @@ namespace LDDrift
             }
         }
 
-        ~Triangulation();
+        ~Triangulation() = default;
     };
 }
 

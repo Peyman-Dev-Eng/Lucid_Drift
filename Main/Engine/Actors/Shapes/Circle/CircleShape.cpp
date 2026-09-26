@@ -22,6 +22,7 @@ void LDDrift::Actors::Circle::SetOriginalPositionToCenter() {
 void LDDrift::Actors::Circle::SetRadius(const float& R) {
     radius = R;
     const LDDrift::VecPos2D& ScreenSize = this->GetScreenSize();
+    std::cout << ScreenSize.X << " " << ScreenSize.Y << std::endl;
     CTM_assert(ScreenSize.X != 0 && ScreenSize.Y != 0, "Screen size is null");
     radiusNDC_X = radius / this->GetScreenSize().X;
     radiusNDC_Y = radius / this->GetScreenSize().Y;

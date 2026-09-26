@@ -166,6 +166,8 @@ std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::TransformPoints() const {
 }
 
 void LDDrift::Actors::Shape::SetScreenSize(const LDDrift::VecPos2D& size) {
+    std::cout << "Hello\n";
+    std::cout << size.X << ", " << size.Y << std::endl;
     screenSize = size;
 }
 
