@@ -213,7 +213,7 @@ void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColo
     ColorOfPoints.clear();
     ColorOfPoints.reserve(Points.size());
     for (std::size_t point = 0; point < Points.size(); ++point) {
-        ColorOfPoints[point] = targetColor;
+        ColorOfPoints.push_back(targetColor);
     }
 }
 

@@ -4,18 +4,29 @@
 #include "Actors/Shapes/Polygon/Polygon.h"
 #include "SubSystems/PointHitTesting/PointHitTesting.h"
 #include <System/Triangulation/Triangulation.h>
+#include <System/Window/Window.h>
+#include <Renderer/Renderer.h>
 
 int main() {
+    LDDrift::Window window;
+    window.CreateWindow();
+    window.SetTitle("TEST");
+    window.SetFillScreenColor({0,0,0,1});
+    window.SetSize(1200,900);
     LDDrift::Actors::Circle circle;
+    circle.SetScreenSize(window.GetWindowSize());
     circle.SetRadius(40);
-    circle.SetSpeed(10);
-    circle.SetScreenSize(LDDrift::VecPos2D{1920, 1080});
-    circle.SetPosition({960,540});
     circle.SetPointCount(45);
-    circle.SetAllPointsColor({1.0,0.0,0.0,0.0});
+    circle.SetFillColor(true);
+    circle.SetAllPointsColor({1,0,0,1});
     circle.SetOriginalPositionToCenter();
-    const LDDrift::Triangulation<LDDrift::ActorType::concave> triangulation(&circle);
-    const std::vector<float> vertices = triangulation.CreateTriangles();
-    std::cout << vertices.size() << std::endl;
+    LDDrift::Renderer renderer(window.GetWidth(), window.GetHeight());
+    renderer.AddShapeToRender(&circle);
+    while (window.ScreenIsOpen()) {
+        window.ClearBuffer();
+        renderer.render();
+        window.Update();
+    }
+    window.DestroyWindow();
     return 0;
 }

@@ -99,6 +99,14 @@ LDDrift::VecPos2D LDDrift::Window::GetCenterPosition() const {
     return LDDrift::VecPos2D{static_cast<float>(settings.width) / 2, static_cast<float>(settings.height) / 2};
 }
 
+int LDDrift::Window::GetWidth() const {
+    return settings.width;
+}
+
+int LDDrift::Window::GetHeight() const {
+    return settings.height;
+}
+
 LDDrift::Window::~Window() {
     this->DestroyWindow();
 }

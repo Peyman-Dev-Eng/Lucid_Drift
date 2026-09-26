@@ -61,6 +61,8 @@ namespace LDDrift
         void SetPosition(int x, int y);
         [[nodiscard]] VecPos2D GetPosition() const;
         [[nodiscard]] LDDrift::VecPos2D GetCenterPosition() const;
+        [[nodiscard]] int GetWidth() const;
+        [[nodiscard]] int GetHeight() const;
         void Update();
         [[nodiscard]] bool ScreenIsOpen() const;
         ~Window();
