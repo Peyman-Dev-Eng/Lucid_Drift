@@ -4,11 +4,12 @@
 
 namespace LDDrift::Actors
 {
-    class Polygon : public LDDrift::Actors::Shape
+    class Polygon final : public LDDrift::Actors::Shape
     {
-    private:
     public:
         Polygon();
+        [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
+        void Rebuild() override;
         ~Polygon() override;
     };
 }

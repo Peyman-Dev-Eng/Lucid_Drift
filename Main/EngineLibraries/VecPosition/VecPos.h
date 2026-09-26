@@ -32,8 +32,8 @@ namespace LDDrift
         float Y{};
         float X{};
         explicit VecPos2D();
-        explicit VecPos2D(float x, float y);
-        explicit VecPos2D(std::initializer_list<float> list);
+        VecPos2D(float x, float y);
+        VecPos2D(std::initializer_list<float> list);
         static VecPos2D Normalize(const VecPos2D& vec);
         static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec);
         VecPos2D operator-(const VecPos2D& vec2) const;

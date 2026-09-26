@@ -1,12 +1,15 @@
 #ifndef LUCID_DRIFT_ASSERTIONS_H
 #define LUCID_DRIFT_ASSERTIONS_H
 #include <iostream>
+#include <string>
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
 #define RED "\033[31m"
 #define RESET "\033[0m"
 
 namespace LDDrift::Assertions
 {
-    void PrintLog(const char* condition, const char* file, int line, const char* function, const char* message);
+    [[noreturn]] void PrintLog(const char* condition, const char* file, int line, const char* function, const char* message);
 }
 
 // global assert
@@ -26,5 +29,8 @@ namespace LDDrift::Assertions
 // custom message assert
 #define CTM_assert(cond, msg) \
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, msg);
+// null pointer value assert
+#define NPV_assert(cond) \
+    cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "pointer is null" );
 
 #endif

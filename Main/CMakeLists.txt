@@ -27,6 +27,14 @@ add_library(Engine STATIC
         # Renderer
         Engine/Renderer/Renderer.cpp
         Engine/Renderer/Renderer.h
+
+        # Triangulation
+        Engine/System/Triangulation/Triangulation.cpp
+        Engine/System/Triangulation/Triangulation.h
+
+        # Point Hit Testing
+        Engine/SubSystems/PointHitTesting/PointHitTesting.cpp
+        Engine/SubSystems/PointHitTesting/PointHitTesting.h
 )
 
 target_include_directories(Engine PUBLIC

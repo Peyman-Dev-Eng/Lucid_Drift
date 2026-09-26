@@ -34,7 +34,6 @@ namespace LDDrift::Actors
         void SetRadius(const float& R);
         [[nodiscard]] float GetRadius() const;
         void SetOriginalPositionToCenter();
-        [[nodiscard]] std::vector<float> CreateTriangles() const override;
         [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
         void Rebuild() override;
         void Rotate(const Angle& angle) override;

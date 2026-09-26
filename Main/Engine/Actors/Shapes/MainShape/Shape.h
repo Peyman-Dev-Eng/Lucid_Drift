@@ -7,6 +7,13 @@
 #include <codecvt>
 #include <ShapeData.h>
 
+namespace LDDrift::ActorType
+{
+    class convex {};
+
+    class concave {};
+}
+
 namespace LDDrift::Actors
 {
     enum class Dir : uint
@@ -33,6 +40,13 @@ namespace LDDrift::Actors
     class Shape
     {
     private:
+        struct isConvexData
+        {
+            bool isConvex;
+            int pointDirection;
+        };
+
+    private:
         LDDrift::VecPos2D screenSize;
         LDDrift::VecPos2D OriginalPosition;
         std::vector<LDDrift::VecPos2D> Points;
@@ -52,17 +66,17 @@ namespace LDDrift::Actors
     public:
         Shape();
         [[nodiscard]] const std::vector<VecPos2D>& GetPoints() const;
-        void SetPointCount(uint point_count);
-        [[nodiscard]] uint GetPointCount() const;
-        void SetPoint(uint point_index, const LDDrift::VecPos2D& pos);
-        [[nodiscard]] const LDDrift::VecPos2D& GetPoint(uint point_index) const;
+        void SetPointCount(std::size_t point_count);
+        [[nodiscard]] std::size_t GetPointCount() const;
+        void SetPoint(std::size_t point_index, const LDDrift::VecPos2D& pos);
+        [[nodiscard]] const LDDrift::VecPos2D& GetPoint(std::size_t point_index) const;
         void Move(Dir direction);
         virtual void Rotate(const Angle& angle);
         void SetSpeed(float spd);
         void SetOriginalPosition(const LDDrift::VecPos2D& pos);
         [[nodiscard]] const LDDrift::VecPos2D& GetOriginalPosition() const;
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
-        [[nodiscard]] const LDDrift::VecCol& GetPointColor(uint point_index) const;
+        [[nodiscard]] const LDDrift::VecCol& GetPointColor(std::size_t point_index) const;
         [[nodiscard]] const std::vector<LDDrift::VecCol>& GetColorOfPoints() const;
         void ResetPointCount();
         void ResetPoints();
@@ -78,9 +92,9 @@ namespace LDDrift::Actors
         [[nodiscard]] float GetThickness() const;
         [[nodiscard]] std::vector<LDDrift::VecPos2D> TransformPoints() const;
         [[nodiscard]] virtual LDDrift::VecCol CalculateAverageVertexColor() const = 0;
-        [[nodiscard]] virtual std::vector<float> CreateTriangles() const = 0;
         virtual void Rebuild() = 0;
         virtual ~Shape();
+        [[nodiscard]] isConvexData ShapeIsConvex() const;
 
     protected:
         [[nodiscard]] const LDDrift::VecPos2D& GetScreenSize() const;

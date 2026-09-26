@@ -43,15 +43,15 @@ void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
     }
 }
 
-void LDDrift::Actors::Shape::SetPointCount(const uint point_count) {
-    GLB_assert(point_count > PointCount)
+void LDDrift::Actors::Shape::SetPointCount(const std::size_t point_count) {
+    GLB_assert(point_count > PointCount && point_count >= 3)
     for (uint PointIndex = Points.empty() ? 0 : PointCount; PointIndex < point_count; ++PointIndex) {
         Points.emplace_back();
     }
     PointCount = point_count;
 }
 
-uint LDDrift::Actors::Shape::GetPointCount() const {
+std::size_t LDDrift::Actors::Shape::GetPointCount() const {
     return PointCount;
 }
 
@@ -59,11 +59,11 @@ void LDDrift::Actors::Shape::SetSpeed(const float spd) {
     Speed = spd;
 }
 
-void LDDrift::Actors::Shape::SetPoint(const uint point_index, const LDDrift::VecPos2D& pos) {
+void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
     Points[point_index] = pos;
 }
 
-const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetPoint(const uint point_index) const {
+const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetPoint(const std::size_t point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
     return Points[point_index];
 }
@@ -83,7 +83,7 @@ const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetOriginalPosition() const {
     return OriginalPosition;
 }
 
-const LDDrift::VecCol& LDDrift::Actors::Shape::GetPointColor(const uint point_index) const {
+const LDDrift::VecCol& LDDrift::Actors::Shape::GetPointColor(const std::size_t point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
     return ColorOfPoints[point_index];
 }
@@ -179,6 +179,32 @@ const std::vector<LDDrift::VecCol>& LDDrift::Actors::Shape::GetColorOfPoints() c
 
 bool LDDrift::Actors::Shape::IsHaveThickness() const {
     return HaveThickness;
+}
+
+LDDrift::Actors::Shape::isConvexData LDDrift::Actors::Shape::ShapeIsConvex() const {
+    bool hasPositive = false;
+    bool hasNegative = false;
+    for (std::size_t point = 0; point < PointCount; ++point) {
+        const LDDrift::VecPos2D& point_A = Points[point];
+        const LDDrift::VecPos2D& point_B = Points[(point + 1) % PointCount];
+        const LDDrift::VecPos2D& point_C = Points[(point + 2) % PointCount];
+        const float cross =
+            (point_B.X - point_A.X) * (point_C.Y - point_B.Y) -
+            (point_B.Y - point_A.Y) * (point_C.X - point_B.X);
+        if (cross > 0.0f) {
+            hasPositive = true;
+        }
+        if (cross < 0.0f) {
+            hasNegative = true;
+        }
+        if (hasPositive && hasNegative) {
+            return {.isConvex = false, .pointDirection = 0};
+        }
+    }
+    if (!hasPositive && !hasNegative) {
+        return {.isConvex = false, .pointDirection = 0};
+    }
+    return {.isConvex = true, .pointDirection = hasNegative ? 1 : -1};
 }
 
 void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColor) {

@@ -31,39 +31,17 @@ float LDDrift::Actors::Circle::GetRadius() const {
     return radius;
 }
 
-std::vector<float> LDDrift::Actors::Circle::CreateTriangles() const {
-    std::vector<float> verticesOfTriangles;
-    std::size_t vertexNumber = 0;
-    const std::size_t lastIndex = this->GetPointCount() - 1;
-    const std::vector<LDDrift::VecCol>& verticesColor = this->GetColorOfPoints();
-    for (const std::vector<LDDrift::VecPos2D>& points = this->GetPoints();
-         const LDDrift::VecPos2D& point : points) {
-        verticesOfTriangles.push_back(CenterPos.X);
-        verticesOfTriangles.push_back(CenterPos.Y);
-        verticesOfTriangles.push_back(0.0f);
-        verticesOfTriangles.push_back(point.X);
-        verticesOfTriangles.push_back(point.Y);
-        verticesOfTriangles.push_back(0.0f);
-        if (vertexNumber == lastIndex) {
-            verticesOfTriangles.push_back(points[0].X);
-            verticesOfTriangles.push_back(points[0].Y);
-            verticesOfTriangles.push_back(0.0f);
-        } else {
-            verticesOfTriangles.push_back(points[vertexNumber + 1].X);
-            verticesOfTriangles.push_back(points[vertexNumber + 1].Y);
-            verticesOfTriangles.push_back(0.0f);
-        }
-        ++vertexNumber;
-    }
-    return verticesOfTriangles;
-}
-
 LDDrift::VecCol LDDrift::Actors::Circle::CalculateAverageVertexColor() const {
     if (this->IsFillShape()) {
         return this->GetPointColor(0);
-    }
-    else {
+    } else {
         LDDrift::VecCol sumColor;
+        const std::size_t pointNumber = this->GetPointCount();
+        for (std::size_t point = 0; point < pointNumber; ++point) {
+            sumColor += this->GetPointColor(point);
+        }
+        sumColor /= static_cast<float>(pointNumber);
+        return sumColor;
     }
 }
 
