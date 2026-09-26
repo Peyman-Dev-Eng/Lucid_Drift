@@ -4,6 +4,7 @@
 #include <vector>
 #include <ShapeData.h>
 #include "Actors/Shapes/MainShape/Shape.h"
+#include <System/Triangulation/Triangulation.h>
 #define LUCID_DRIFT_SHAPE_RENDER_AS_FILLED 1
 #define LUCID_DRIFT_SHAPE_RENDER_AS_OUTLINE 2
 
@@ -19,6 +20,7 @@ namespace LDDrift
             std::size_t count;
         };
     private: // opengl data
+        std::vector<LDDrift::Actors::Shape*> shapePTRs;
         std::vector<ReadShapeVertices> howToReadShapeData;
         std::vector<float> vertices;
         const char* VertexShaderSource{nullptr};
@@ -41,8 +43,10 @@ namespace LDDrift
         void SetWidthScreen(int WS );
         void SetHeightScreen(int HS );
         [[nodiscard]] GLuint GetProgram() const;
-        void AddShapeToRender(const LDDrift::Actors::Shape*);
-        void render();
+        void SendDataToGPU() const;
+        void AddShapeToRender(LDDrift::Actors::Shape*);
+        void UpdateShapeData();
+        void render() const;
     };
 }
 

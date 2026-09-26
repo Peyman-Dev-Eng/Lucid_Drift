@@ -83,7 +83,7 @@ namespace LDDrift
             /////////////////////////////////////////////
             // create triangles
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
-                const std::size_t previousPointNumber = (pointNumber - 1) % shapePointNumber;
+                const std::size_t previousPointNumber = pointNumber == 0 ? shapePointNumber - 1 : pointNumber - 1;
                 const std::size_t currentPointNumber = pointNumber == (shapePointNumber - 1) ? 0 : pointNumber;
                 vertices.push_back(CenterPos.X);
                 vertices.push_back(CenterPos.Y);

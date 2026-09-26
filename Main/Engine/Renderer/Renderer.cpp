@@ -65,18 +65,22 @@ void LDDrift::Renderer::SetHeightScreen(const int HS) {
     HeightScreen = HS;
 }
 
-void LDDrift::Renderer::AddShapeToRender(const LDDrift::Actors::Shape* shape) {
-    const std::vector<LDDrift::VecPos2D>& shapeVerticesAddress = shape->GetPoints();
-    const std::vector<LDDrift::VecCol>& shapeVerticesColor = shape->GetColorOfPoints();
-    const std::size_t vertexCount = shapeVerticesAddress.size();
+void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
+    shapePTRs.push_back(shape);
+    const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
+    std::vector<float> VTC = {};
+    const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
+    VTC = triangulation.CreateTriangles();
+    const std::size_t vertexCount = VTC.size() / 3;
     for (std::size_t vertex = 0; vertex < vertexCount; ++vertex) {
-        vertices.push_back(shapeVerticesAddress[vertex].X);
-        vertices.push_back(shapeVerticesAddress[vertex].Y);
-        vertices.push_back(0.0f);
-        vertices.push_back(shapeVerticesColor[vertex].R);
-        vertices.push_back(shapeVerticesColor[vertex].G);
-        vertices.push_back(shapeVerticesColor[vertex].B);
-        vertices.push_back(shapeVerticesColor[vertex].A);
+        vertices.push_back(VTC[vertex * 3]);
+        vertices.push_back(VTC[vertex * 3 + 1]);
+        vertices.push_back(VTC[vertex * 3 + 2]);
+
+        vertices.push_back(vertexColor[vertex % vertexColor.size()].R);
+        vertices.push_back(vertexColor[vertex % vertexColor.size()].G);
+        vertices.push_back(vertexColor[vertex % vertexColor.size()].B);
+        vertices.push_back(vertexColor[vertex % vertexColor.size()].A);
     }
     howToReadShapeData.push_back({
         .drawType = shape->IsHaveThickness() ? LUCID_DRIFT_SHAPE_RENDER_AS_OUTLINE : LUCID_DRIFT_SHAPE_RENDER_AS_FILLED,
@@ -85,15 +89,56 @@ void LDDrift::Renderer::AddShapeToRender(const LDDrift::Actors::Shape* shape) {
     indexOfFirstVertexInVertexArray += vertexCount;
 }
 
-void LDDrift::Renderer::render() {
+void LDDrift::Renderer::SendDataToGPU() const {
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), reinterpret_cast<void*>(0));
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+}
+
+void LDDrift::Renderer::UpdateShapeData() {
+    vertices.clear();
+    howToReadShapeData.clear();
+    indexOfFirstVertexInVertexArray = 0;
+    for (const auto& shape : shapePTRs) {
+        const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
+        std::vector<float> VTC = {};
+        const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
+        VTC = triangulation.CreateTriangles();
+        const std::size_t vertexCount = VTC.size() / 3;
+        for (std::size_t vertex = 0; vertex < vertexCount; ++vertex) {
+            vertices.push_back(VTC[vertex * 3]);
+            vertices.push_back(VTC[vertex * 3 + 1]);
+            vertices.push_back(VTC[vertex * 3 + 2]);
+
+            vertices.push_back(vertexColor[vertex % vertexColor.size()].R);
+            vertices.push_back(vertexColor[vertex % vertexColor.size()].G);
+            vertices.push_back(vertexColor[vertex % vertexColor.size()].B);
+            vertices.push_back(vertexColor[vertex % vertexColor.size()].A);
+        }
+        howToReadShapeData.push_back({
+            .drawType = shape->IsHaveThickness()
+                            ? LUCID_DRIFT_SHAPE_RENDER_AS_OUTLINE
+                            : LUCID_DRIFT_SHAPE_RENDER_AS_FILLED,
+            .startIndex = indexOfFirstVertexInVertexArray, .count = vertexCount
+        });
+        indexOfFirstVertexInVertexArray += vertexCount;
+    }
+}
+
+void LDDrift::Renderer::render() const {
+    glViewport(0, 0, WidthScreen, HeightScreen);
     const std::size_t howToReadShapeData_SIZE = howToReadShapeData.size();
     GLB_assert(howToReadShapeData_SIZE != 0)
     for (std::size_t shape = 0; shape < howToReadShapeData_SIZE; ++shape) {
         glUseProgram(program);
         glBindVertexArray(VAO);
-        glDrawArrays(howToReadShapeData[shape].drawType == LUCID_DRIFT_SHAPE_RENDER_AS_FILLED
-                         ? GL_TRIANGLE_FAN
-                         : GL_TRIANGLES,
+        glDrawArrays(GL_TRIANGLES,
                      static_cast<int>(howToReadShapeData[shape].startIndex),
                      static_cast<int>(howToReadShapeData[shape].count));
     }
