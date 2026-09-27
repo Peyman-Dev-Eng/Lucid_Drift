@@ -16,4 +16,8 @@ LDDrift::VecCol LDDrift::Actors::Polygon::CalculateAverageVertexColor() const {
 
 void LDDrift::Actors::Polygon::Rebuild() {}
 
+void LDDrift::Actors::Polygon::Rebuild(int width, int height) {
+    this->SetScreenSize({static_cast<float>(width), static_cast<float>(height)});
+}
+
 LDDrift::Actors::Polygon::~Polygon() = default;

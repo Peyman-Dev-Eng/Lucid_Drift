@@ -40,6 +40,7 @@ namespace LDDrift
 
     public:
         explicit Renderer(const int& widthScreen = 500 /* Width screen */, const int& heightScreen = 500 /* height screen */);
+        void RebuildShapes();
         void SetWidthScreen(int WS );
         void SetHeightScreen(int HS );
         [[nodiscard]] GLuint GetProgram() const;

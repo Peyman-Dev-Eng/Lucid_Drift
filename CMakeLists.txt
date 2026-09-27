@@ -107,3 +107,9 @@ target_include_directories(Lucid_Drift PRIVATE
 target_link_libraries(Lucid_Drift PRIVATE
         Engine
 )
+
+target_include_directories(Engine PUBLIC
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends
+        Engine
+)

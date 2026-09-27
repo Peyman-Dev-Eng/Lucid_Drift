@@ -35,6 +35,17 @@ add_library(Engine STATIC
         # Point Hit Testing
         Engine/SubSystems/PointHitTesting/PointHitTesting.cpp
         Engine/SubSystems/PointHitTesting/PointHitTesting.h
+
+        # Dear ImGui
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui.cpp
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_draw.cpp
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_tables.cpp
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_widgets.cpp
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_demo.cpp
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
+        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_opengl3.cpp
+        Engine/System/GUI/GUI.cpp
+        Engine/System/GUI/GUI.h
 )
 
 target_include_directories(Engine PUBLIC

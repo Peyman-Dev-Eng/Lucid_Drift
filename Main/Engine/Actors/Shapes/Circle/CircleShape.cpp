@@ -22,7 +22,6 @@ void LDDrift::Actors::Circle::SetOriginalPositionToCenter() {
 void LDDrift::Actors::Circle::SetRadius(const float& R) {
     radius = R;
     const LDDrift::VecPos2D& ScreenSize = this->GetScreenSize();
-    std::cout << ScreenSize.X << " " << ScreenSize.Y << std::endl;
     CTM_assert(ScreenSize.X != 0 && ScreenSize.Y != 0, "Screen size is null");
     radiusNDC_X = radius / this->GetScreenSize().X;
     radiusNDC_Y = radius / this->GetScreenSize().Y;
@@ -54,6 +53,39 @@ void LDDrift::Actors::Circle::Rebuild() {
         this->SetPoint(PointIndex, LDDrift::VecPos2D{
                            CenterPos.X + radiusNDC_X * std::cos(radians), CenterPos.Y + radiusNDC_Y * std::sin(radians)
                        });
+    }
+}
+
+void LDDrift::Actors::Circle::Rebuild(const int width, const int height) {
+    this->SetScreenSize({static_cast<float>(width), static_cast<float>(height)});
+    this->SetRadius(this->radius);
+    const uint VectexAngle = 360 / this->GetPointCount();
+    uint PointIndex = 0;
+    for (uint angle = 0; angle < 360; angle += VectexAngle, ++PointIndex) {
+        const auto radians = static_cast<float>(angle * std::numbers::pi_v<double> / 180.0f);
+        this->SetPoint(PointIndex, LDDrift::VecPos2D{
+                           CenterPos.X + radiusNDC_X * std::cos(radians), CenterPos.Y + radiusNDC_Y * std::sin(radians)
+                       });
+    }
+}
+
+void LDDrift::Actors::Circle::Move(Dir direction) {
+    if (direction == Dir::UP) {
+        this->MoveUp();
+        CenterPos.Y += this->GetSpeedNDC_Y();
+        return;
+    } else if (direction == Dir::DOWN) {
+        this->MoveDown();
+        CenterPos.Y -= this->GetSpeedNDC_Y();
+        return;
+    } else if (direction == Dir::LEFT) {
+        this->MoveLeft();
+        CenterPos.X -= this->GetSpeedNDC_X();
+        return;
+    } else if (direction == Dir::RIGHT) {
+        this->MoveRight();
+        CenterPos.X += this->GetSpeedNDC_X();
+        return;
     }
 }
 

@@ -31,6 +31,7 @@ void LDDrift::Window::CreateWindow() {
     settings.IsOpen = true;
     glfwMakeContextCurrent(screen);
     GLB_assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+    glfwSetWindowUserPointer(screen, this);
 }
 
 void LDDrift::Window::SetTitle(const char* title) {
@@ -42,10 +43,15 @@ void LDDrift::Window::SetSize(const int width, const int height) {
     glfwSetWindowSize(screen, width, height);
     settings.width = width;
     settings.height = height;
+    glViewport(0,0, width, height);
 }
 
 void LDDrift::Window::SetFillScreenColor(const LDDrift::VecCol& color) {
     settings.FillColorScreen = color;
+}
+
+void LDDrift::Window::SetRendererPTR(LDDrift::Renderer* rendererPTR) {
+    renderer = rendererPTR;
 }
 
 void LDDrift::Window::ClearBuffer() const {
@@ -79,6 +85,16 @@ void LDDrift::Window::Update() {
     }
 }
 
+void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int width, const int height) {
+    auto* currentWindow = static_cast<LDDrift::Window*>(glfwGetWindowUserPointer(window));
+    currentWindow->settings.width = width;
+    currentWindow->settings.height = height;
+    currentWindow->renderer->SetWidthScreen(width);
+    currentWindow->renderer->SetHeightScreen(height);
+    currentWindow->renderer->RebuildShapes();
+    glViewport(0,0, width, height);
+}
+
 LDDrift::VecCol LDDrift::Window::GetFillScreenColor() const {
     return settings.FillColorScreen;
 }
@@ -105,6 +121,10 @@ int LDDrift::Window::GetWidth() const {
 
 int LDDrift::Window::GetHeight() const {
     return settings.height;
+}
+
+GLFWwindow* LDDrift::Window::GetWindow() const {
+    return screen;
 }
 
 LDDrift::Window::~Window() {

@@ -1,29 +1,29 @@
 #include "Shape.h"
 
-LDDrift::Actors::Shape::Shape() : screenSize(0, 0), OriginalPosition(0, 0), PointCount(0), Speed(0.01), FillShape(true),
-                                  Thickness(0), HaveThickness(false) {}
+LDDrift::Actors::Shape::Shape() : screenSize(0, 0), OriginalPosition(0, 0), PointCount(0), Speed(0.01), SpeedNDC_X(0),
+                                  SpeedNDC_Y(0), FillShape(true), Thickness(0), HaveThickness(false) {}
 
 void LDDrift::Actors::Shape::MoveUp() {
     for (VecPos2D& point : Points) {
-        point.Y += Speed;
+        point.Y += SpeedNDC_Y;
     }
 }
 
 void LDDrift::Actors::Shape::MoveDown() {
     for (VecPos2D& point : Points) {
-        point.Y -= Speed;
+        point.Y -= SpeedNDC_Y;
     }
 }
 
 void LDDrift::Actors::Shape::MoveLeft() {
     for (VecPos2D& point : Points) {
-        point.X -= Speed;
+        point.X -= SpeedNDC_X;
     }
 }
 
 void LDDrift::Actors::Shape::MoveRight() {
     for (VecPos2D& point : Points) {
-        point.X += Speed;
+        point.X += SpeedNDC_X;
     }
 }
 
@@ -57,6 +57,8 @@ std::size_t LDDrift::Actors::Shape::GetPointCount() const {
 
 void LDDrift::Actors::Shape::SetSpeed(const float spd) {
     Speed = spd;
+    SpeedNDC_X = Speed / screenSize.X;
+    SpeedNDC_Y = Speed / screenSize.Y;
 }
 
 void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
@@ -86,6 +88,18 @@ const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetOriginalPosition() const {
 const LDDrift::VecCol& LDDrift::Actors::Shape::GetPointColor(const std::size_t point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
     return ColorOfPoints[point_index];
+}
+
+float LDDrift::Actors::Shape::GetSpeed() const {
+    return Speed;
+}
+
+float LDDrift::Actors::Shape::GetSpeedNDC_X() const {
+    return SpeedNDC_X;
+}
+
+float LDDrift::Actors::Shape::GetSpeedNDC_Y() const {
+    return SpeedNDC_Y;
 }
 
 void LDDrift::Actors::Shape::Move(const Dir direction) {
@@ -166,8 +180,6 @@ std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::TransformPoints() const {
 }
 
 void LDDrift::Actors::Shape::SetScreenSize(const LDDrift::VecPos2D& size) {
-    std::cout << "Hello\n";
-    std::cout << size.X << ", " << size.Y << std::endl;
     screenSize = size;
 }
 

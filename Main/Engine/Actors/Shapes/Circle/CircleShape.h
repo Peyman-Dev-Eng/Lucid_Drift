@@ -36,7 +36,9 @@ namespace LDDrift::Actors
         void SetOriginalPositionToCenter();
         [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
         void Rebuild() override;
+        void Rebuild(int width, int height) override;
         void Rotate(const Angle& angle) override;
+        void Move(Dir direction) override;
         ~Circle() override;
     };
 }

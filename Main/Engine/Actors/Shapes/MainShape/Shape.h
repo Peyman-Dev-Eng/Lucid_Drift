@@ -53,11 +53,13 @@ namespace LDDrift::Actors
         std::vector<LDDrift::VecCol> ColorOfPoints;
         uint PointCount;
         float Speed;
+        float SpeedNDC_X;
+        float SpeedNDC_Y;
         bool FillShape;
         float Thickness;
         bool HaveThickness;
 
-    private: // private functions
+    protected: // private functions
         void MoveUp();
         void MoveDown();
         void MoveLeft();
@@ -70,7 +72,10 @@ namespace LDDrift::Actors
         [[nodiscard]] std::size_t GetPointCount() const;
         void SetPoint(std::size_t point_index, const LDDrift::VecPos2D& pos);
         [[nodiscard]] const LDDrift::VecPos2D& GetPoint(std::size_t point_index) const;
-        void Move(Dir direction);
+        [[nodiscard]] float GetSpeed() const;
+        [[nodiscard]] float GetSpeedNDC_X() const;
+        [[nodiscard]] float GetSpeedNDC_Y() const;
+        virtual void Move(Dir direction);
         virtual void Rotate(const Angle& angle);
         void SetSpeed(float spd);
         void SetOriginalPosition(const LDDrift::VecPos2D& pos);
@@ -93,6 +98,7 @@ namespace LDDrift::Actors
         [[nodiscard]] std::vector<LDDrift::VecPos2D> TransformPoints() const;
         [[nodiscard]] virtual LDDrift::VecCol CalculateAverageVertexColor() const = 0;
         virtual void Rebuild() = 0;
+        virtual void Rebuild(int width, int height) = 0;
         virtual ~Shape();
         [[nodiscard]] isConvexData ShapeIsConvex() const;
 

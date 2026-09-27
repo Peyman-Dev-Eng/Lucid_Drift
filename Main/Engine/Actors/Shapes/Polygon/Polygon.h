@@ -10,6 +10,7 @@ namespace LDDrift::Actors
         Polygon();
         [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
         void Rebuild() override;
+        void Rebuild(int, int) override;
         ~Polygon() override;
     };
 }

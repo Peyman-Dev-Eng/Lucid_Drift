@@ -132,7 +132,6 @@ void LDDrift::Renderer::UpdateShapeData() {
 }
 
 void LDDrift::Renderer::render() const {
-    glViewport(0, 0, WidthScreen, HeightScreen);
     const std::size_t howToReadShapeData_SIZE = howToReadShapeData.size();
     GLB_assert(howToReadShapeData_SIZE != 0)
     for (std::size_t shape = 0; shape < howToReadShapeData_SIZE; ++shape) {
@@ -142,4 +141,12 @@ void LDDrift::Renderer::render() const {
                      static_cast<int>(howToReadShapeData[shape].startIndex),
                      static_cast<int>(howToReadShapeData[shape].count));
     }
+}
+
+void LDDrift::Renderer::RebuildShapes() {
+    for (LDDrift::Actors::Shape* shape : shapePTRs) {
+        shape->Rebuild(WidthScreen, HeightScreen);
+    }
+    this->UpdateShapeData();
+    this->SendDataToGPU();
 }

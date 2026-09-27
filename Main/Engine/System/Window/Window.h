@@ -6,6 +6,7 @@
 #include <VecCol.h>
 #include <VecPos.h>
 #include <string>
+#include <Renderer/Renderer.h>
 
 namespace LDDrift
 {
@@ -42,6 +43,7 @@ namespace LDDrift
         };
 
     private:
+        LDDrift::Renderer* renderer;
         GLFWwindow* screen{nullptr};
         Settings settings;
 
@@ -49,6 +51,7 @@ namespace LDDrift
 
     public:
         Window();
+        void SetRendererPTR(LDDrift::Renderer*);
         void CreateWindow();
         void DestroyWindow() const;
         void SetFillScreenColor(const LDDrift::VecCol& color);
@@ -63,6 +66,8 @@ namespace LDDrift
         [[nodiscard]] LDDrift::VecPos2D GetCenterPosition() const;
         [[nodiscard]] int GetWidth() const;
         [[nodiscard]] int GetHeight() const;
+        [[nodiscard]] GLFWwindow* GetWindow() const;
+        static void FrameBufferSizeCallback(GLFWwindow* window, int width, int height);
         void Update();
         [[nodiscard]] bool ScreenIsOpen() const;
         ~Window();
