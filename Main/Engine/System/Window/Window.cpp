@@ -1,6 +1,6 @@
 #include "Window.h"
 
-LDDrift::Window::Window() {
+LDDrift::Window::Window() : renderer(nullptr) {
     GLB_assert(glfwInit())
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
@@ -10,12 +10,32 @@ LDDrift::Window::Window() {
     settings.height = 500;
     settings.CanResize = false;
     settings.FillColorScreen = {0.0f, 0.0f, 0.0f, 1.0f};
+    this->monitor = glfwGetPrimaryMonitor();
+    mode = glfwGetVideoMode(monitor);
 }
 
 void LDDrift::Window::CreateWindow() {
-    std::string FinalTile = settings.title;
-    FinalTile += " ( Lucid-Drift )";
-    screen = glfwCreateWindow(settings.width, settings.height, settings.title, nullptr, nullptr);
+    screen = glfwCreateWindow(settings.width, settings.height, settings.title.c_str(), nullptr, nullptr);
+    if (screen == nullptr) {
+        const char* description = nullptr;
+        const int code = glfwGetError(&description);
+
+        std::cerr << "GLFW window creation failed!\n";
+        std::cerr << "Error code: " << code << '\n';
+        std::cerr << "Description: "
+            << (description ? description : "Unknown")
+            << '\n';
+
+        return;
+    }
+    settings.IsOpen = true;
+    glfwMakeContextCurrent(screen);
+    GLB_assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
+    glfwSetWindowUserPointer(screen, this);
+}
+
+void LDDrift::Window::CreateFullscreenWindow() {
+    screen = glfwCreateWindow(mode->width, mode->height, settings.title.c_str(), monitor, nullptr);
     if (screen == nullptr) {
         const char* description = nullptr;
         const int code = glfwGetError(&description);
@@ -35,7 +55,9 @@ void LDDrift::Window::CreateWindow() {
 }
 
 void LDDrift::Window::SetTitle(const char* title) {
-    glfwSetWindowTitle(screen, title);
+    std::string FinalTitle = title;
+    FinalTitle += " ( Lucid-Drift ) ";
+    glfwSetWindowTitle(screen, FinalTitle.c_str());
     settings.title = title;
 }
 
@@ -108,7 +130,7 @@ LDDrift::VecPos2D LDDrift::Window::GetPosition() const {
 }
 
 const char* LDDrift::Window::GetTitle() const {
-    return settings.title;
+    return settings.title.c_str();
 }
 
 LDDrift::VecPos2D LDDrift::Window::GetCenterPosition() const {

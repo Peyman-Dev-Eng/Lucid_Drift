@@ -12,6 +12,7 @@
 #include <Renderer/Renderer.h>
 #include <System/Input/input.h>
 #include <System/GUI/GUI.h>
+#include "../FileSystemHandling/FileSystemHND.h"
 static std::string text =
 "Hello Peyman\n"
 "How Are You Today?\n"
@@ -19,10 +20,10 @@ static std::string text =
 "I am a programmer\n";
 int main() {
     LDDrift::Window window;
-    window.CreateWindow();
+    window.CreateFullscreenWindow();
     window.SetTitle("TEST");
     window.SetFillScreenColor({0, 0, 0, 1});
-    window.SetSize(1200, 900);
+    window.SetSize(1920, 1080);
     LDDrift::Actors::Circle circle;
     circle.SetScreenSize(window.GetWindowSize());
     circle.SetRadius(100);
@@ -40,12 +41,16 @@ int main() {
     LDDrift::input::Keyboard::Init();
     LDDrift::GUI gui(window.GetWindow());
     gui.CreateNewWindow("TEST", false, text, {10,50});
+    gui.CreateNewEditor("Code Editor", true);
     glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
     while (window.ScreenIsOpen()) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
         window.ClearBuffer();
         LDDrift::GUI::BeginRenderGUI();
-
+        if (LDDrift::input::Keyboard::IsKeyPressed(
+            static_cast<LD_lint>(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC))) {
+            break;
+        }
         if (LDDrift::input::Keyboard::IsKeyHeld(
             static_cast<LD_lint>(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A))) {
             circle.Move(LDDrift::Actors::Dir::LEFT);
