@@ -44,8 +44,14 @@ add_library(Engine STATIC
         ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_demo.cpp
         ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
         ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_opengl3.cpp
+
+        # GUI System
         Engine/System/GUI/GUI.cpp
         Engine/System/GUI/GUI.h
+
+        # File System Handling For Engine
+        FileSystemHandling/FileSystemHND.cpp
+        FileSystemHandling/FileSystemHND.h
 )
 
 target_include_directories(Engine PUBLIC

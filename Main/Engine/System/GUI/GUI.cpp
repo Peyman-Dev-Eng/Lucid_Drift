@@ -33,10 +33,10 @@ void LDDrift::GUI::CreateNewWindow(const std::string& name,
                                    const bool canMoveWindow,
                                    const std::string& textPrintInWindow,
                                    const VecPos2D& position) {
-    windows.push_back({
+    defaultWindows.push_back({
         .name = name, .canMoveWindow = canMoveWindow,
         .textPrintInWindow = LDDrift::GUI::Extract::ExtractTextFromString(textPrintInWindow),
-        .position = position
+        .position = position, .Show = true
     });
 }
 
@@ -46,17 +46,36 @@ void LDDrift::GUI::BeginRenderGUI() {
     ImGui::NewFrame();
 }
 
-void LDDrift::GUI::EndRenderGUI() const {
-    for (const WindowsData& window : windows) {
-        ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
+void LDDrift::GUI::EndRenderGUI() {
+    for (const DefaultWindowsData& window : defaultWindows) {
         ImGui::Begin(window.name.c_str(), nullptr, window.canMoveWindow ? 0 : ImGuiWindowFlags_NoMove);
         for (const std::string& text : window.textPrintInWindow) {
             ImGui::TextUnformatted(text.c_str());
         }
         ImGui::End();
     }
+    ImGui::Begin(editorWindow.name.c_str());
+
+    ImGui::InputTextMultiline(
+        "##Code",
+        editorWindow.codeBuffer,
+        sizeof(editorWindow.codeBuffer),
+        ImVec2(-1, -1)
+    );
+
+    ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+const char* LDDrift::GUI::GetCodeBuffer() const {
+    return editorWindow.codeBuffer;
+}
+
+void LDDrift::GUI::CreateNewEditor(const std::string& name, const bool canMoveWindow) {
+    editorWindow.name = name;
+    editorWindow.canMoveWindow = canMoveWindow;
+    editorWindow.Show = true;
 }
 
 LDDrift::GUI::~GUI() = default;

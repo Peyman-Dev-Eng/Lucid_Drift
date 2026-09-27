@@ -19,22 +19,33 @@ namespace LDDrift
             static std::vector<std::string> ExtractTextFromString(const std::string& text);
         };
     private:
-        struct WindowsData
+        struct DefaultWindowsData
         {
             std::string name;
             bool canMoveWindow;
             std::vector<std::string> textPrintInWindow;
             VecPos2D position;
+            bool Show;
+        };
+        struct EditorWindowsData
+        {
+            std::string name;
+            bool canMoveWindow;
+            char codeBuffer[131072];
+            bool Show;
         };
 
     private:
-        std::vector<WindowsData> windows;
+        EditorWindowsData editorWindow;
+        std::vector<DefaultWindowsData> defaultWindows;
 
     public:
         explicit GUI(GLFWwindow* glfwWindow = nullptr);
         void CreateNewWindow(const std::string& name, bool canMoveWindow, const std::string& textPrintInWindow, const VecPos2D& position);
+        void CreateNewEditor(const std::string& name, bool canMoveWindow);
+        [[nodiscard]] const char* GetCodeBuffer() const;
         static void BeginRenderGUI();
-        void EndRenderGUI() const;
+        void EndRenderGUI();
         ~GUI();
     };
 }

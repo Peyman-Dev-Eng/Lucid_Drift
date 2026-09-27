@@ -36,7 +36,7 @@ namespace LDDrift
             int pos_x, pos_y;
             int width, height;
             bool CanResize;
-            const char* title;
+            std::string title;
             int FramerateLimit;
             LDDrift::VecCol FillColorScreen;
             bool IsOpen;
@@ -45,6 +45,8 @@ namespace LDDrift
     private:
         LDDrift::Renderer* renderer;
         GLFWwindow* screen{nullptr};
+        GLFWmonitor* monitor{nullptr};
+        const GLFWvidmode* mode{nullptr};
         Settings settings;
 
     private: // functions
@@ -53,9 +55,11 @@ namespace LDDrift
         Window();
         void SetRendererPTR(LDDrift::Renderer*);
         void CreateWindow();
+        void CreateFullscreenWindow();
         void DestroyWindow() const;
         void SetFillScreenColor(const LDDrift::VecCol& color);
         [[nodiscard]] LDDrift::VecCol GetFillScreenColor() const;
+        void LockWindow();
         void ClearBuffer() const;
         void SetTitle(const char* title);
         [[nodiscard]] const char* GetTitle() const;
