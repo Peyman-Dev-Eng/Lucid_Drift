@@ -52,6 +52,8 @@ add_library(Engine STATIC
         # File System Handling For Engine
         FileSystemHandling/FileSystemHND.cpp
         FileSystemHandling/FileSystemHND.h
+        Engine/SubSystems/ProjectExplorer/ProjectExplorer.cpp
+        Engine/SubSystems/ProjectExplorer/ProjectExplorer.h
 )
 
 target_include_directories(Engine PUBLIC
