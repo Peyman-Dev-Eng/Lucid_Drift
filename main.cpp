@@ -20,6 +20,7 @@ static std::string text =
     "I am a programmer\n";
 
 int main() {
+    std::cout << "hello world" << std::endl;
     LDDrift::Window window;
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
