@@ -44,6 +44,7 @@ namespace LDDrift
         void CreateNewWindow(const std::string& name, bool canMoveWindow, const std::string& textPrintInWindow, const VecPos2D& position);
         void CreateNewEditor(const std::string& name, bool canMoveWindow);
         [[nodiscard]] const char* GetCodeBuffer() const;
+        void SetTextForWindow(const std::string& windowName, const std::string& text, bool deletePreviousMessages = false);
         static void BeginRenderGUI();
         void EndRenderGUI();
         ~GUI();

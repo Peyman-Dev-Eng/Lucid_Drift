@@ -78,4 +78,19 @@ void LDDrift::GUI::CreateNewEditor(const std::string& name, const bool canMoveWi
     editorWindow.Show = true;
 }
 
+void LDDrift::GUI::SetTextForWindow(const std::string& windowName, const std::string& text,
+                                    const bool deletePreviousMessages) {
+    for (DefaultWindowsData& window : defaultWindows) {
+        if (window.name == windowName) {
+            if (deletePreviousMessages) {
+                window.textPrintInWindow.clear();
+            }
+            for (const std::string& line : LDDrift::GUI::Extract::ExtractTextFromString(text)) {
+                window.textPrintInWindow.push_back(line);
+            }
+            break;
+        }
+    }
+}
+
 LDDrift::GUI::~GUI() = default;

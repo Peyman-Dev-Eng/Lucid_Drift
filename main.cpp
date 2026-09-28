@@ -14,10 +14,11 @@
 #include <System/GUI/GUI.h>
 #include "../FileSystemHandling/FileSystemHND.h"
 static std::string text =
-"Hello Peyman\n"
-"How Are You Today?\n"
-"Can You Help Me?\n"
-"I am a programmer\n";
+    "Hello Peyman\n"
+    "How Are You Today?\n"
+    "Can You Help Me?\n"
+    "I am a programmer\n";
+
 int main() {
     LDDrift::Window window;
     window.CreateFullscreenWindow();
@@ -40,43 +41,14 @@ int main() {
     window.SetRendererPTR(&renderer);
     LDDrift::input::Keyboard::Init();
     LDDrift::GUI gui(window.GetWindow());
-    gui.CreateNewWindow("TEST", false, text, {10,50});
+    gui.CreateNewWindow("TEST", false, text, {10, 50});
     gui.CreateNewEditor("Code Editor", true);
     glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
     while (window.ScreenIsOpen()) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
         window.ClearBuffer();
         LDDrift::GUI::BeginRenderGUI();
-        if (LDDrift::input::Keyboard::IsKeyPressed(
-            static_cast<LD_lint>(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC))) {
-            break;
-        }
-        if (LDDrift::input::Keyboard::IsKeyHeld(
-            static_cast<LD_lint>(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A))) {
-            circle.Move(LDDrift::Actors::Dir::LEFT);
-            renderer.UpdateShapeData();
-            renderer.SendDataToGPU();
-        }
-        if (LDDrift::input::Keyboard::IsKeyHeld(
-            static_cast<LD_lint>(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_W))) {
-            circle.Move(LDDrift::Actors::Dir::UP);
-            renderer.UpdateShapeData();
-            renderer.SendDataToGPU();
-        }
-        if (LDDrift::input::Keyboard::IsKeyHeld(
-            static_cast<LD_lint>(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D))) {
-            circle.Move(LDDrift::Actors::Dir::RIGHT);
-            renderer.UpdateShapeData();
-            renderer.SendDataToGPU();
-        }
-        if (LDDrift::input::Keyboard::IsKeyHeld(
-            static_cast<LD_lint>(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S))) {
-            circle.Move(LDDrift::Actors::Dir::DOWN);
-            renderer.UpdateShapeData();
-            renderer.SendDataToGPU();
-        }
         gui.EndRenderGUI();
-
         renderer.render();
         window.Update();
         LDDrift::input::Keyboard::Update();

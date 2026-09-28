@@ -1,7 +1,5 @@
 #include "input.h"
 
-#include <math.h>
-
 void LDDrift::OpenFileKeyboardInputEvent() {
 #ifdef __linux__
     LDDrift::FileKeyboardInputEvent = open("/dev/input/by-id/usb-SEMICO_USB_Keyboard-event-kbd", O_RDONLY | O_NONBLOCK);
@@ -17,7 +15,8 @@ void LDDrift::CloseFileKeyboardInputEvent() {
 
 void LDDrift::OpenFileMouseInputEvent() {
 #ifdef __linux__
-    LDDrift::FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse", O_RDONLY | O_NONBLOCK);
+    LDDrift::FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse",
+                                        O_RDONLY | O_NONBLOCK);
     COF_assert(LDDrift::FileMouseInputEvent != -1)
 #endif
 }
@@ -42,7 +41,7 @@ void LDDrift::input::Keyboard::Init() {
 #endif
 }
 
-void LDDrift::input::Keyboard::SetKeyTarget(std::vector<LD_uint>&& keys) {
+void LDDrift::input::Keyboard::SetKeyTarget(std::vector<Event::Keyboard::LinuxKeyboardKeyCode>&& keys) {
     TargetKeys = std::move(keys);
 }
 
@@ -63,9 +62,17 @@ void LDDrift::input::Keyboard::GetKeyInputEvent() {
         ToUpdateValues.push_back(key);
     }
 #elifdef __linux__
+    if (TargetKeys.empty()) {
+        return;
+    }
     input_event event{};
     while (true) {
         if (read(FileKeyboardInputEvent, &event, sizeof(input_event)) != NO_EVENT_IS_AVAILABLE_TO_READ) {
+            if (std::ranges::find(
+                TargetKeys, static_cast<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode>(event.code)
+            ) == TargetKeys.end()) {
+                continue;
+            }
             if (event.type == EV_KEY) {
                 if (event.value == 0) {
                     LinuxKeyboard[event.code].Current = false;
@@ -83,41 +90,46 @@ void LDDrift::input::Keyboard::GetKeyInputEvent() {
 #endif
 }
 
-bool LDDrift::input::Keyboard::IsKeyPressed(const LD_lint key) {
+bool LDDrift::input::Keyboard::IsKeyPressed(const Event::Keyboard::LinuxKeyboardKeyCode key) {
 #ifdef __linux__
-    GLB_assert(key >= 0 && key <= 125)
-    return ((LinuxKeyboard[key].Current == true) && (LinuxKeyboard[key].Before == false));
+    GLB_assert(static_cast<LD_uint>(key) >= 0 && static_cast<LD_uint>(key) <= 125)
+    return ((LinuxKeyboard[static_cast<LD_uint>(key)].Current == true) && (LinuxKeyboard[static_cast<LD_uint>(key)].
+        Before == false));
 #elifdef _WIN32
-    GLB_assert(key >= 0 && key < 256)
-    return WindowsKeyCodes[key].Before == false && WindowsKeyCodes[key].Current == true;
+    GLB_assert(static_cast<LD_uint>(key) >= 0 && static_cast<LD_uint>(key) < 256)
+    return WindowsKeyCodes[static_cast<LD_uint>(key)].Before == false && WindowsKeyCodes[static_cast<LD_uint>(key)].
+        Current == true;
 #endif
 }
 
-bool LDDrift::input::Keyboard::IsKeyHeld(const LD_lint key) {
+bool LDDrift::input::Keyboard::IsKeyHeld(const Event::Keyboard::LinuxKeyboardKeyCode key) {
 #ifdef __linux__
-    GLB_assert(key >= 0 && key <= 125);
-    return ((LinuxKeyboard[key].Current == true) && (LinuxKeyboard[key].Before == true));
+    GLB_assert(static_cast<LD_uint>(key) >= 0 && static_cast<LD_uint>(key) <= 125);
+    return ((LinuxKeyboard[static_cast<LD_uint>(key)].Current == true) && (LinuxKeyboard[static_cast<LD_uint>(key)].
+        Before == true));
 #elifdef _WIN32
-    GLB_assert(key >= 0 && key < 256)
+    GLB_assert(static_cast<LD_uint>(key) >= 0 && static_cast<LD_uint>(key) < 256)
     return WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == true;
 #endif
 }
 
-bool LDDrift::input::Keyboard::IsKeyReleased(const LD_lint key) {
+bool LDDrift::input::Keyboard::IsKeyReleased(const Event::Keyboard::LinuxKeyboardKeyCode key) {
 #ifdef __linux__
-    GLB_assert(key >= 0 && key <= 125);
-    return ((LinuxKeyboard[key].Current == false) && (LinuxKeyboard[key].Before == true));
+    GLB_assert(static_cast<LD_uint>(key) >= 0 && static_cast<LD_uint>(key) <= 125);
+    return ((LinuxKeyboard[static_cast<LD_uint>(key)].Current == false) && (LinuxKeyboard[static_cast<LD_uint>(key)].
+        Before == true));
 #elifdef _WIN32
     GLB_assert(key >= 0 && key < 256)
     return WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == false;
 #endif
 }
 
-std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyPressed() {
+std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyPressed() {
 #ifdef __linux__
-    std::vector<LD_lint> LKeyCodes; // linux key codes
-    for (const LD_uint& key : TargetKeys) {
-        if (LinuxKeyboard[key].Current == true && LinuxKeyboard[key].Before == false) {
+    std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
+    for (const auto& key : TargetKeys) {
+        if (LinuxKeyboard[static_cast<LD_uint>(key)].Current == true && LinuxKeyboard[static_cast<LD_uint>(key)].Before
+            == false) {
             LKeyCodes.push_back(key);
         }
     }
@@ -133,11 +145,12 @@ std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyPressed() {
 #endif
 }
 
-std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyHeld() {
+std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyHeld() {
 #ifdef __linux__
-    std::vector<LD_lint> LKeyCodes; // linux key codes
-    for (const LD_uint& key : TargetKeys) {
-        if (LinuxKeyboard[key].Current == true && LinuxKeyboard[key].Before == true) {
+    std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
+    for (const auto& key : TargetKeys) {
+        if (LinuxKeyboard[static_cast<LD_uint>(key)].Current == true && LinuxKeyboard[static_cast<LD_uint>(key)].Before
+            == true) {
             LKeyCodes.push_back(key);
         }
     }
@@ -153,11 +166,12 @@ std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyHeld() {
 #endif
 }
 
-std::vector<LD_lint> LDDrift::input::Keyboard::GetKeyReleased() {
+std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyReleased() {
 #ifdef __linux__
-    std::vector<LD_lint> LKeyCodes; // linux key codes
-    for (const LD_uint& key : TargetKeys) {
-        if (LinuxKeyboard[key].Current == false && LinuxKeyboard[key].Before == true) {
+    std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
+    for (const auto& key : TargetKeys) {
+        if (LinuxKeyboard[static_cast<LD_uint>(key)].Current == false && LinuxKeyboard[static_cast<LD_uint>(key)].Before
+            == true) {
             LKeyCodes.push_back(key);
         }
     }
@@ -209,7 +223,7 @@ void LDDrift::input::Mouse::Init() {
 #endif
 }
 
-void LDDrift::input::Mouse::SetKeyTarget(std::vector<LD_uint>&& keys) {
+void LDDrift::input::Mouse::SetKeyTarget(std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode>&& keys) {
     TargetKeys = std::move(keys);
 }
 
