@@ -3,13 +3,25 @@
 #include "imgui.h"
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
+#include "imgui_stdlib.h"
 #include <Assertions.h>
+#include <FileSystemHND.h>
 #include <string>
 #include <vector>
 #include <VecPos.h>
 
 namespace LDDrift
 {
+    /**
+     * @class GUI
+     * @brief A class for creating and managing graphical user interfaces using ImGui.
+     *
+     * This class provides methods to create windows and an editor, set text in windows,
+     * and manage the rendering of the GUI.
+     *
+     * @note This class uses ImGui for rendering the GUI. Ensure that ImGui is properly
+     * initialized before creating an instance of this class.
+     */
     class GUI
     {
     private:
@@ -47,6 +59,7 @@ namespace LDDrift
         void SetTextForWindow(const std::string& windowName, const std::string& text, bool deletePreviousMessages = false);
         static void BeginRenderGUI();
         void EndRenderGUI();
+        static int CodeEditorCallback(ImGuiInputTextCallbackData* data);
         ~GUI();
     };
 }

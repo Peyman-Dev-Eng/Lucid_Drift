@@ -19,7 +19,11 @@ static std::string text =
     "Can You Help Me?\n"
     "I am a programmer\n";
 
+
 int main() {
+    const char code[] = "#include <iostream>\nint main() {\n\tstd::cout << \"Hello Peyman!\";\n\treturn 0;\n}";
+    LDDrift::Explorer::ProjectWatchTower projectWatchTower;
+    projectWatchTower.CreateNewProject("TEST-New Project");
     LDDrift::Window window;
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
@@ -40,21 +44,32 @@ int main() {
     renderer.SendDataToGPU();
     window.SetRendererPTR(&renderer);
     LDDrift::input::Keyboard::Init();
+    LDDrift::input::Mouse::Init();
+    LDDrift::input::Keyboard::SetKeyTarget({
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC
+    });
     LDDrift::GUI gui(window.GetWindow());
     gui.CreateNewWindow("TEST", false, text, {10, 50});
+    gui.CreateNewWindow("Project Watch Tower", true, "", {10, 600});
     gui.CreateNewEditor("Code Editor", true);
     glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
     while (window.ScreenIsOpen()) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
+        LDDrift::input::Mouse::GetMouseInputEvent();
         window.ClearBuffer();
         LDDrift::GUI::BeginRenderGUI();
+        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC)) {
+            break;
+        }
         gui.EndRenderGUI();
         renderer.render();
         window.Update();
         LDDrift::input::Keyboard::Update();
+        LDDrift::input::Mouse::Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
     LDDrift::input::Keyboard::Destroy();
+    LDDrift::input::Mouse::Destroy();
     window.DestroyWindow();
     return 0;
 }

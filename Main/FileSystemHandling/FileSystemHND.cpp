@@ -1,12 +1,16 @@
 #include "FileSystemHND.h"
 
+std::filesystem::path LDDrift::FileSystemHND::home;
+std::filesystem::path LDDrift::FileSystemHND::folderPath;
 
-LDDrift::FileSystemHND::FileSystemHND() {
-#ifdef __linux__
-    home = std::filesystem::path(std::getenv("HOME"));
-#elifdef _WIN32
-    home = std::filesystem::path(std::getenv("USERPROFILE"));
-#endif
+void LDDrift::FileSystemHND::SetFolderPath(const std::filesystem::path& path, const bool reset) {
+    if (reset || folderPath.empty()) {
+        home = LDDrift::GetHostName();
+        folderPath = home / path;
+    } else {
+        home = LDDrift::GetHostName();
+        folderPath = folderPath / path;
+    }
 }
 
 bool LDDrift::FileSystemHND::FileNameIsNotValid(const std::filesystem::path& path,
@@ -22,27 +26,22 @@ bool LDDrift::FileSystemHND::FileNameIsNotValid(const std::filesystem::path& pat
 }
 
 void LDDrift::FileSystemHND::CreateDirectory(const std::string& directoryName) {
-#ifdef __linux__
-    const std::filesystem::path path = home / directoryName;
-    std::filesystem::create_directories(path);
-    folderPath = path;
-#elifdef _WIN32
-    std::filesystem::path path = home / "Desktop" / directoryName;
-    std::filesystem::create_directories(path);
-    folderPath = path;
-#endif
+    const std::filesystem::path path = home / folderPath / directoryName;
+    create_directories(path);
 }
 
-void LDDrift::FileSystemHND::CreateFile(const std::string& fileName) const {
+void LDDrift::FileSystemHND::CreateDirectoryWithInputPath(const std::filesystem::path& path) {
+    create_directories(path);
+}
+
+void LDDrift::FileSystemHND::CreateFile(const std::string& fileName) {
     const std::filesystem::path path = folderPath / fileName;
     GLB_assert(!LDDrift::FileSystemHND::FileNameIsNotValid(folderPath, fileName))
     std::ofstream file(path);
 }
 
-void LDDrift::FileSystemHND::WriteToFile(const std::string& fileName, const char* data) const {
+void LDDrift::FileSystemHND::WriteToFile(const std::string& fileName, const char* data) {
     std::ofstream file((folderPath / fileName));
     COF_assert(file.is_open());
     file.write(data, static_cast<std::streamsize>(std::strlen(data)));
 }
-
-LDDrift::FileSystemHND::~FileSystemHND() = default;

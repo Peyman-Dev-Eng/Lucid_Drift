@@ -45,15 +45,17 @@ add_library(Engine STATIC
         ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
         ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_opengl3.cpp
 
-        # GUI System
+        # Graphical User Interface System
         Engine/System/GUI/GUI.cpp
         Engine/System/GUI/GUI.h
 
         # File System Handling For Engine
         FileSystemHandling/FileSystemHND.cpp
         FileSystemHandling/FileSystemHND.h
-        Engine/SubSystems/ProjectExplorer/ProjectExplorer.cpp
-        Engine/SubSystems/ProjectExplorer/ProjectExplorer.h
+
+        # Project Watch Tower System
+        Engine/SubSystems/ProjectExplorer/ProjectWatchTower.cpp
+        Engine/SubSystems/ProjectExplorer/ProjectWatchTower.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -68,4 +70,6 @@ target_link_libraries(Engine PUBLIC
         VecColor
         glfw
         SHAPE_DATA
+        FHS
+        PWT
 )

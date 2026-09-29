@@ -323,7 +323,6 @@ namespace LDDrift
         {
         public:
             static void Init();
-            static void SetKeyTarget(std::vector<Event::Keyboard::LinuxKeyboardKeyCode>&& keys);
             static void GetMouseInputEvent();
             static VecPos2D GetCursorPos(GLFWwindow* window);
             static bool IsLeftMouseButtonPressed();
