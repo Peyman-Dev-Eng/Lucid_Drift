@@ -78,22 +78,6 @@ target_link_libraries(SHAPE_DATA PUBLIC
 )
 
 # ============================================================================
-# File System Hanling
-# ============================================================================
-
-add_library(FHS STATIC
-        Main/FileSystemHandling/FileSystemHND.cpp
-)
-
-target_include_directories(FHS PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Main/FileSystemHandling
-)
-
-target_link_libraries(FHS PUBLIC
-        ASSERT PWT
-)
-
-# ============================================================================
 # Project Watch Tower
 # ===========================================================================
 
@@ -106,7 +90,7 @@ target_include_directories(PWT PUBLIC
 )
 
 target_link_libraries(PWT PUBLIC
-        ASSERT FHS
+        ASSERT
 )
 
 # ============================================================================

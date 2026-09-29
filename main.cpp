@@ -10,9 +10,9 @@
 #include <System/Triangulation/Triangulation.h>
 #include <System/Window/Window.h>
 #include <Renderer/Renderer.h>
+#include <ProjectWatchTower.h>
 #include <System/Input/input.h>
 #include <System/GUI/GUI.h>
-#include "../FileSystemHandling/FileSystemHND.h"
 static std::string text =
     "Hello Peyman\n"
     "How Are You Today?\n"
@@ -21,9 +21,9 @@ static std::string text =
 
 
 int main() {
-    const char code[] = "#include <iostream>\nint main() {\n\tstd::cout << \"Hello Peyman!\";\n\treturn 0;\n}";
-    LDDrift::Explorer::ProjectWatchTower projectWatchTower;
-    projectWatchTower.CreateNewProject("TEST-New Project");
+    constexpr char code[] = "#include <iostream>\nint main() {\n\tstd::cout << \"Hello Peyman!\";\n\treturn 0;\n}";
+    LDDrift::ProjectWatchTower projectWatchTower;
+    projectWatchTower.CreateNewProject("TestProject");
     LDDrift::Window window;
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
@@ -51,8 +51,9 @@ int main() {
     LDDrift::GUI gui(window.GetWindow());
     gui.CreateNewWindow("TEST", false, text, {10, 50});
     gui.CreateNewWindow("Project Watch Tower", true, "", {10, 600});
-    gui.CreateNewEditor("Code Editor", true);
+    gui.CreateNewEditor("MAIN.cpp", true);
     glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
+    gui.SetProjectWatchTower_PTR(&projectWatchTower);
     while (window.ScreenIsOpen()) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
         LDDrift::input::Mouse::GetMouseInputEvent();

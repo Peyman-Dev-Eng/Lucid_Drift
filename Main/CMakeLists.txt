@@ -49,10 +49,6 @@ add_library(Engine STATIC
         Engine/System/GUI/GUI.cpp
         Engine/System/GUI/GUI.h
 
-        # File System Handling For Engine
-        FileSystemHandling/FileSystemHND.cpp
-        FileSystemHandling/FileSystemHND.h
-
         # Project Watch Tower System
         Engine/SubSystems/ProjectExplorer/ProjectWatchTower.cpp
         Engine/SubSystems/ProjectExplorer/ProjectWatchTower.h
@@ -70,6 +66,5 @@ target_link_libraries(Engine PUBLIC
         VecColor
         glfw
         SHAPE_DATA
-        FHS
         PWT
 )
