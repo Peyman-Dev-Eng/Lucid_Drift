@@ -2,6 +2,7 @@
 #define LUCID_DRIFT_PROJECTEXPLORER_H
 #include <filesystem>
 #include <fstream>
+#include <functions.h>
 #include <iostream>
 #include <string>
 #include <unordered_map>
@@ -15,17 +16,6 @@
 
 namespace LDDrift
 {
-    constexpr std::string GetHostName() {
-        std::string homeSystemName;
-#ifdef _WIN32
-        homeSystemName = std::getenv("COMPUTERNAME");
-#elifdef __linux__
-        homeSystemName = std::getenv("HOME");
-#else
-        homeSystemName = "";
-#endif
-        return homeSystemName;
-    }
 
     // This struct is for storing the folders and files of the game project you are building using this engine.
     class ProjectWatchTower
@@ -50,6 +40,7 @@ namespace LDDrift
         ProjectWatchTower();
         void SetPaths();
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
+        void CreateCmakeListTXT_File();
         void CreateNewProject(const std::string& _projectName);
         void SetProjectPath(const std::filesystem::path& ProjectPath);
         void WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const;

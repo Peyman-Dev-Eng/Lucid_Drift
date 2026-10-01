@@ -90,7 +90,23 @@ target_include_directories(PWT PUBLIC
 )
 
 target_link_libraries(PWT PUBLIC
-        ASSERT
+        ASSERT FUNCTIONS
+)
+
+# ============================================================================
+# functions
+# ============================================================================
+
+add_library(FUNCTIONS STATIC
+        Main/Engine/Functions/functions.cpp
+)
+
+target_include_directories(FUNCTIONS PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Main/Engine/Functions
+)
+
+target_link_libraries(FUNCTIONS PUBLIC
+        ASSERT PWT
 )
 
 # ============================================================================

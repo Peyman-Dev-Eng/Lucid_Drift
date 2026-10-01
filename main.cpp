@@ -21,8 +21,9 @@ static std::string text =
 
 
 int main() {
-    std::cout << "Hello World!" << std::endl;
-    constexpr char code[] = "#include <iostream>\nint main() {\n\tstd::cout << \"Hello Peyman!\";\n\treturn 0;\n}";
+    std::filesystem::path exe = std::filesystem::read_symlink("/proc/self/exe");
+    std::filesystem::path exePath = exe.parent_path();
+    std::cout << exe.string() << std::endl;
     LDDrift::ProjectWatchTower projectWatchTower;
     projectWatchTower.CreateNewProject("TestProject");
     LDDrift::Window window;
@@ -52,7 +53,7 @@ int main() {
     LDDrift::GUI gui(window.GetWindow());
     gui.CreateNewWindow("TEST", false, text, {10, 50});
     gui.CreateNewWindow("Project Watch Tower", true, "", {10, 600});
-    gui.CreateNewEditor("MAIN.cpp", true);
+    gui.CreateNewEditor("test1/MAIN.cpp", true);
     glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
     gui.SetProjectWatchTower_PTR(&projectWatchTower);
     while (window.ScreenIsOpen()) {

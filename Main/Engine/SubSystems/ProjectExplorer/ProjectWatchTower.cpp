@@ -1,16 +1,16 @@
 #include "ProjectWatchTower.h"
 
 LDDrift::ProjectWatchTower::ProjectWatchTower() {
-    projectPath = LDDrift::GetHostName();
+    projectPath = LDDrift::func::GetHostName();
 }
 
 void LDDrift::ProjectWatchTower::SetProjectPath(const std::filesystem::path& ProjectPath) {
-    projectPath = LDDrift::GetHostName() / ProjectPath;
+    projectPath = LDDrift::func::GetHostName() / ProjectPath;
 }
 
 void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectName) {
     projectName = _projectName;
-    projectPath = std::filesystem::path(LDDrift::GetHostName()) / _projectName;
+    projectPath = std::filesystem::path(LDDrift::func::GetHostName()) / _projectName;
     create_directories(projectPath);
 }
 
@@ -28,6 +28,10 @@ std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::stri
         return NULL_VALUE;
     }
     return result;
+}
+
+void LDDrift::ProjectWatchTower::CreateCmakeListTXT_File() {
+    std::ofstream cmakeTxtFile(projectPath / "CMakeLists.txt");
 }
 
 bool LDDrift::ProjectWatchTower::isFilePath(const std::filesystem::path& path) {

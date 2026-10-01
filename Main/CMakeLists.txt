@@ -48,10 +48,6 @@ add_library(Engine STATIC
         # Graphical User Interface System
         Engine/System/GUI/GUI.cpp
         Engine/System/GUI/GUI.h
-
-        # Project Watch Tower System
-        Engine/SubSystems/ProjectExplorer/ProjectWatchTower.cpp
-        Engine/SubSystems/ProjectExplorer/ProjectWatchTower.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -67,4 +63,5 @@ target_link_libraries(Engine PUBLIC
         glfw
         SHAPE_DATA
         PWT
+        FUNCTIONS
 )
