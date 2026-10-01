@@ -163,6 +163,8 @@ add_library(Engine STATIC
         # Graphical User Interface System
         Engine/System/GUI/GUI.cpp
         Engine/System/GUI/GUI.h
+        Engine/System/Core/Core.cpp
+        Engine/System/Core/Core.h
 )
 
 target_include_directories(Engine PUBLIC
