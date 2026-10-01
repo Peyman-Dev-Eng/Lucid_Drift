@@ -21,6 +21,7 @@ static std::string text =
 
 
 int main() {
+    std::cout << "Hello World!" << std::endl;
     constexpr char code[] = "#include <iostream>\nint main() {\n\tstd::cout << \"Hello Peyman!\";\n\treturn 0;\n}";
     LDDrift::ProjectWatchTower projectWatchTower;
     projectWatchTower.CreateNewProject("TestProject");
