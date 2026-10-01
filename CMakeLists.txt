@@ -78,6 +78,22 @@ target_link_libraries(SHAPE_DATA PUBLIC
 )
 
 # ============================================================================
+# Project Watch Tower
+# ===========================================================================
+
+add_library(PWT STATIC
+        Main/Engine/SubSystems/ProjectExplorer/ProjectWatchTower.cpp
+)
+
+target_include_directories(PWT PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Main/Engine/SubSystems/ProjectExplorer
+)
+
+target_link_libraries(PWT PUBLIC
+        ASSERT
+)
+
+# ============================================================================
 # Dependencies
 # ============================================================================
 

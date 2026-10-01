@@ -223,10 +223,6 @@ void LDDrift::input::Mouse::Init() {
 #endif
 }
 
-void LDDrift::input::Mouse::SetKeyTarget(std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode>&& keys) {
-    TargetKeys = std::move(keys);
-}
-
 void LDDrift::input::Mouse::GetMouseInputEvent() {
 #ifdef __linux__
     input_event event{};
@@ -236,7 +232,6 @@ void LDDrift::input::Mouse::GetMouseInputEvent() {
                 if (event.value == 1) {
                     const LD_uint MouseCode = event.code - 272;
                     LinuxMouse[MouseCode].Current = true;
-                    ToUpdateValues.push_back(MouseCode);
                 } else if (event.value == 0) {
                     LinuxMouse[event.code - 272].Current = false;
                 }
@@ -395,16 +390,10 @@ bool LDDrift::input::Mouse::IsXButton2Released() {
 }
 
 void LDDrift::input::Mouse::Update() {
-    if (ToUpdateValues.empty()) {
-        return;
-    }
 #ifdef __linux__
-    for (const LD_uint& value : ToUpdateValues) {
-        LinuxMouse[value].Before = LinuxMouse[value].Current;
-        LinuxMouse[value].Current = LinuxMouse[value].Before ? true : false;
-        if (LinuxMouse[value].Current == false) {
-            ToUpdateValues.erase(std::ranges::find(ToUpdateValues, value));
-        }
+    for (auto& mouseKey : LinuxMouse) {
+        mouseKey.Before = mouseKey.Current;
+        mouseKey.Current = mouseKey.Before;
     }
 #elifdef _WIN32
     for (const LD_uint& value : ToUpdateValues) {

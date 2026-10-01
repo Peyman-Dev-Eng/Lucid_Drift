@@ -2,7 +2,8 @@
 
 
 LDDrift::GUI::GUI(GLFWwindow* glfwWindow) {
-    //GLB_assert(glfwWindow != nullptr)
+    GLB_assert(glfwWindow != nullptr)
+    ProjectWatchTower_PTR = nullptr;
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
@@ -11,7 +12,7 @@ LDDrift::GUI::GUI(GLFWwindow* glfwWindow) {
     ImGui_ImplOpenGL3_Init();
 }
 
-std::vector<std::string> LDDrift::GUI::Extract::ExtractTextFromString(const std::string& text) {
+std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
     std::vector<std::string> result;
     const std::size_t textSize = text.size();
     std::size_t startTextLine = 0;
@@ -35,7 +36,7 @@ void LDDrift::GUI::CreateNewWindow(const std::string& name,
                                    const VecPos2D& position) {
     defaultWindows.push_back({
         .name = name, .canMoveWindow = canMoveWindow,
-        .textPrintInWindow = LDDrift::GUI::Extract::ExtractTextFromString(textPrintInWindow),
+        .textPrintInWindow = LDDrift::GUI::ExtractTextFromString(textPrintInWindow),
         .position = position, .Show = true
     });
 }
@@ -56,11 +57,20 @@ void LDDrift::GUI::EndRenderGUI() {
     }
     ImGui::Begin(editorWindow.name.c_str());
 
+    if (ImGui::Button("Save")) {
+        NPV_assert(ProjectWatchTower_PTR != nullptr)
+        ProjectWatchTower_PTR->WriteCodeToFile(editorWindow.name, editorWindow.codeBuffer);
+    }
+
+    ImGui::Separator();
+
     ImGui::InputTextMultiline(
         "##Code",
         editorWindow.codeBuffer,
         sizeof(editorWindow.codeBuffer),
-        ImVec2(-1, -1)
+        ImVec2(-1, -1),
+        ImGuiInputTextFlags_CallbackCompletion,
+        CodeEditorCallback
     );
 
     ImGui::End();
@@ -70,6 +80,10 @@ void LDDrift::GUI::EndRenderGUI() {
 
 const char* LDDrift::GUI::GetCodeBuffer() const {
     return editorWindow.codeBuffer;
+}
+
+void LDDrift::GUI::SetProjectWatchTower_PTR(LDDrift::ProjectWatchTower* projectWatchTower) {
+    ProjectWatchTower_PTR = projectWatchTower;
 }
 
 void LDDrift::GUI::CreateNewEditor(const std::string& name, const bool canMoveWindow) {
@@ -85,12 +99,40 @@ void LDDrift::GUI::SetTextForWindow(const std::string& windowName, const std::st
             if (deletePreviousMessages) {
                 window.textPrintInWindow.clear();
             }
-            for (const std::string& line : LDDrift::GUI::Extract::ExtractTextFromString(text)) {
+            for (const std::string& line : LDDrift::GUI::ExtractTextFromString(text)) {
                 window.textPrintInWindow.push_back(line);
             }
             break;
         }
     }
+}
+
+void LDDrift::GUI::RenameEditorWindow(const std::string& newWindowName) {
+    editorWindow.name = newWindowName;
+}
+
+void LDDrift::GUI::SetShowEditorWindow(const bool show) {
+    editorWindow.Show = show;
+}
+
+int LDDrift::GUI::CodeEditorCallback(ImGuiInputTextCallbackData* data) {
+    if (data->EventFlag == ImGuiInputTextFlags_CallbackCompletion &&
+        data->EventKey == ImGuiKey_Tab) {
+        constexpr const char* Indentation = "    ";
+
+        if (data->HasSelection()) {
+            const int SelectionStart = data->SelectionStart;
+            const int SelectionSize =
+                data->SelectionEnd - data->SelectionStart;
+
+            data->DeleteChars(SelectionStart, SelectionSize);
+            data->InsertChars(SelectionStart, Indentation);
+        } else {
+            data->InsertChars(data->CursorPos, Indentation);
+        }
+    }
+
+    return 0;
 }
 
 LDDrift::GUI::~GUI() = default;

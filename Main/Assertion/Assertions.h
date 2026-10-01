@@ -23,12 +23,15 @@ namespace LDDrift::Assertions
 // not available os assert
 #define NAO_assert(cond) \
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "our engine does not support your operating system.");
+
 // out of range assert
 #define OOR_assert(cond) \
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "value is out of range");
+
 // custom message assert
 #define CTM_assert(cond, msg) \
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, msg);
+
 // null pointer value assert
 #define NPV_assert(cond) \
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "pointer is null" );
