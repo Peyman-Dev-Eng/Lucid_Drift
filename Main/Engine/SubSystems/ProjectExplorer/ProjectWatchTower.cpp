@@ -31,6 +31,7 @@ std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::stri
 }
 
 void LDDrift::ProjectWatchTower::CreateCmakeListTXT_File() {
+    std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
     std::ofstream cmakeTxtFile(projectPath / "CMakeLists.txt");
 }
 

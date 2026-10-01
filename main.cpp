@@ -21,9 +21,6 @@ static std::string text =
 
 
 int main() {
-    std::filesystem::path exe = std::filesystem::read_symlink("/proc/self/exe");
-    std::filesystem::path exePath = exe.parent_path();
-    std::cout << exe.string() << std::endl;
     LDDrift::ProjectWatchTower projectWatchTower;
     projectWatchTower.CreateNewProject("TestProject");
     LDDrift::Window window;
