@@ -14,31 +14,12 @@
 #include <System/Input/input.h>
 #include <System/GUI/GUI.h>
 #include <System/Core/Core.h>
-static std::string text =
-    "Hello Peyman\n"
-    "How Are You Today?\n"
-    "Can You Help Me?\n"
-    "I am a programmer\n";
 
 
 int main() {
     LDDrift::Core core;
     core.Begin();
-    while (core.window.ScreenIsOpen()) {
-        LDDrift::input::Keyboard::GetKeyInputEvent();
-        LDDrift::input::Mouse::GetMouseInputEvent();
-        core.window.ClearBuffer();
-        LDDrift::GUI::BeginRenderGUI();
-        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC)) {
-            break;
-        }
-        core.gui.EndRenderGUI();
-        core.render.render();
-        core.window.Update();
-        LDDrift::input::Keyboard::Update();
-        LDDrift::input::Mouse::Update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-    }
+    core.EngineHandler();
     LDDrift::input::Keyboard::Destroy();
     LDDrift::input::Mouse::Destroy();
     core.window.DestroyWindow();

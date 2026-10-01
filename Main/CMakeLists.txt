@@ -106,6 +106,45 @@ target_include_directories(FUNCTIONS PUBLIC
 
 target_link_libraries(FUNCTIONS PUBLIC)
 
+# ============================================================================
+# GUI LOGIC
+# ============================================================================
+
+add_library(GL STATIC
+        Engine/SubSystems/GUI_lOGIC/GuiLogic.cpp
+)
+
+target_include_directories(GL PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/GUI_lOGIC
+)
+
+target_link_libraries(GL PUBLIC
+        GUI
+)
+# ============================================================================
+# GUI SYSTEM
+# ============================================================================
+
+add_library(GUI STATIC
+        Engine/System/GUI/GUI.cpp
+)
+
+target_include_directories(GUI PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/GUI
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
+        ${LUCID_DRIFT_ROOT}/glad/include
+)
+
+target_link_libraries(GUI PUBLIC
+        GL ASSERT PWT VECPOS2D
+)
+
+# ============================================================================
+# END
+# ============================================================================
+
+
 find_package(glfw3 REQUIRED)
 
 find_package(fmt REQUIRED)
@@ -163,6 +202,8 @@ add_library(Engine STATIC
         # Graphical User Interface System
         Engine/System/GUI/GUI.cpp
         Engine/System/GUI/GUI.h
+
+        # Engine Core - System
         Engine/System/Core/Core.cpp
         Engine/System/Core/Core.h
 )
@@ -183,4 +224,5 @@ target_link_libraries(Engine PUBLIC
         SHAPE_DATA
         PWT
         FUNCTIONS
+        GL
 )

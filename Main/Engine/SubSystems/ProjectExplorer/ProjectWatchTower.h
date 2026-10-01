@@ -13,7 +13,7 @@
 #include <Assertions.h>
 #include <cstdlib>
 #include <vector>
-#define NULL_VALUE "NULL_VALUE"
+#define NULL_STR_VALUE "NULL_VALUE"
 #define LOWER_BOUND_WHILE_LOOP (-1)
 #define UPPER_BOUND_WHILE_LOOP 100
 
@@ -28,7 +28,7 @@ namespace LDDrift
         std::string projectName;
         std::vector<std::filesystem::path> paths;
 
-    private:
+    public:
         class Extract
         {
         public:
@@ -42,6 +42,7 @@ namespace LDDrift
     public:
         ProjectWatchTower();
         void SetPaths();
+        [[nodiscard]] const std::vector<std::filesystem::path>& GetPaths();
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
         void CreateCmakeListTXT_File() const;
         void CreateNewProject(const std::string& _projectName);

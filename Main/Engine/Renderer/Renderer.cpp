@@ -34,7 +34,21 @@ GLuint LDDrift::Renderer::Compile(const GLenum type, const char* source) {
 }
 
 LDDrift::Renderer::Renderer(const int& widthScreen, const int& heightScreen) :
-    WidthScreen(widthScreen), HeightScreen(heightScreen), indexOfFirstVertexInVertexArray(0) {
+    WidthScreen(widthScreen), HeightScreen(heightScreen), indexOfFirstVertexInVertexArray(0) {}
+
+GLuint LDDrift::Renderer::GetProgram() const {
+    return program;
+}
+
+void LDDrift::Renderer::SetWidthScreen(const int WS) {
+    WidthScreen = WS;
+}
+
+void LDDrift::Renderer::SetHeightScreen(const int HS) {
+    HeightScreen = HS;
+}
+
+void LDDrift::Renderer::Initialize() {
     this->SetVertexShaderSource();
     this->SetFragmentShaderSource();
     VertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
@@ -51,18 +65,6 @@ LDDrift::Renderer::Renderer(const int& widthScreen, const int& heightScreen) :
     // create vertex array
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
-}
-
-GLuint LDDrift::Renderer::GetProgram() const {
-    return program;
-}
-
-void LDDrift::Renderer::SetWidthScreen(const int WS) {
-    WidthScreen = WS;
-}
-
-void LDDrift::Renderer::SetHeightScreen(const int HS) {
-    HeightScreen = HS;
 }
 
 void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
@@ -133,7 +135,9 @@ void LDDrift::Renderer::UpdateShapeData() {
 
 void LDDrift::Renderer::render() const {
     const std::size_t howToReadShapeData_SIZE = howToReadShapeData.size();
-    GLB_assert(howToReadShapeData_SIZE != 0)
+    if (howToReadShapeData_SIZE == 0) {
+        return;
+    }
     for (std::size_t shape = 0; shape < howToReadShapeData_SIZE; ++shape) {
         glUseProgram(program);
         glBindVertexArray(VAO);

@@ -4,6 +4,8 @@
 // standard C++ library include
 #include <vector>
 #include <string>
+#include <thread>
+#include <chrono>
 
 // engine files include
 #include <Actors/Shapes/Circle/CircleShape.h>

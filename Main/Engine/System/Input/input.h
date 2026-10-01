@@ -294,7 +294,7 @@ namespace LDDrift
 
         public:
             static void Init();
-            static void SetKeyTarget(std::vector<Event::Keyboard::LinuxKeyboardKeyCode>&& keys);
+            static void SetKeyTarget(const std::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys);
             static void GetKeyInputEvent();
             static bool IsKeyPressed(Event::Keyboard::LinuxKeyboardKeyCode key);
             static bool IsKeyHeld(Event::Keyboard::LinuxKeyboardKeyCode key);

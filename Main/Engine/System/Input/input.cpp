@@ -41,8 +41,10 @@ void LDDrift::input::Keyboard::Init() {
 #endif
 }
 
-void LDDrift::input::Keyboard::SetKeyTarget(std::vector<Event::Keyboard::LinuxKeyboardKeyCode>&& keys) {
-    TargetKeys = std::move(keys);
+void LDDrift::input::Keyboard::SetKeyTarget(const std::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys) {
+    for (const auto& key : keys) {
+        TargetKeys.push_back(key);
+    }
 }
 
 bool LDDrift::input::Keyboard::InputIsChar(const LD_lint& target) {

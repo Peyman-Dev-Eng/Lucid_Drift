@@ -16,18 +16,19 @@ void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectNam
 }
 
 std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::string& _path) {
-    const std::size_t _pathLength = _path.size();
+    const int _pathLength = static_cast<int>(_path.size());
     std::string result;
-    std::size_t counter = 0;
-    while (counter < UPPER_BOUND_WHILE_LOOP && _path[_pathLength - 1 - counter] != '/') {
+    int counter = _pathLength - 1;
+    while (counter >= LOWER_BOUND_WHILE_LOOP && _path[counter] != '/') {
         result += _path[counter];
-        ++counter;
+        --counter;
     }
-    if (counter >= UPPER_BOUND_WHILE_LOOP) {
+    if (counter < LOWER_BOUND_WHILE_LOOP) {
         std::cerr << RED << "Error: Failed to extract the last file name because the maximum search limit was exceeded."
             << RESET << std::endl;
-        return NULL_VALUE;
+        return NULL_STR_VALUE;
     }
+    std::ranges::reverse(result);
     return result;
 }
 
@@ -50,14 +51,13 @@ target_link_libraries({} PUBLIC Engine)
         cmakeTemplate.replace(pos, 2, projectName);
         pos += projectName.length();
     }
-    std::cout << cmakeTemplate << std::endl;
 
     if (std::ofstream outFile(this->projectPath / "CMakeLists.txt"); outFile.is_open()) {
         outFile << cmakeTemplate;
         outFile.close();
-        std::cout << "File CMakeLists.txt generated successfully!" << std::endl;
     } else {
-        std::cerr << RED << "Error: Unable to create CMakeLists.txt" << RESET << std::endl;
+        std::cerr << RED << "Error: Failed to create the CMakeLists.txt file." << RESET << std::endl;
+        return;
     }
 }
 
@@ -70,6 +70,11 @@ bool LDDrift::ProjectWatchTower::isFilePath(const std::filesystem::path& path) {
         }
     }
     return isFile;
+}
+
+const std::vector<std::filesystem::path>& LDDrift::ProjectWatchTower::GetPaths() {
+    this->SetPaths();
+    return paths;
 }
 
 void LDDrift::ProjectWatchTower::SetPaths() {
@@ -85,7 +90,7 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
     const std::string& fileName, std::vector<std::filesystem::path>& _paths) {
     for (std::filesystem::path& path : _paths) {
         if (std::string lastFileName = LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string());
-            lastFileName == NULL_VALUE || lastFileName != fileName) {
+            lastFileName == NULL_STR_VALUE || lastFileName != fileName) {
             continue;
         }
         std::size_t counter = path.string().size() - 1;
@@ -95,15 +100,15 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
         OOR_assert(counter > 0)
         return path.string().substr(0, counter);
     }
-    return NULL_VALUE;
+    return NULL_STR_VALUE;
 }
 
 std::string LDDrift::ProjectWatchTower::IsAvailableFileInProject(const std::string& fileName) const {
-    std::string _is = NULL_VALUE;
+    std::string _is = NULL_STR_VALUE;
     for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(projectPath)) {
         std::string lastFileName =
             LDDrift::ProjectWatchTower::Extract::GetLastFileName(entry.path().string());
-        if (lastFileName == NULL_VALUE) {
+        if (lastFileName == NULL_STR_VALUE) {
             continue;
         }
         if (fileName == lastFileName) {

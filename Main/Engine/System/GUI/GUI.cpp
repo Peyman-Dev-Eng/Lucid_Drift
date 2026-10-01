@@ -1,7 +1,11 @@
 #include "GUI.h"
 
+#include "GuiLogic.h"
 
-LDDrift::GUI::GUI(GLFWwindow* glfwWindow) {
+
+LDDrift::GUI::GUI() = default;
+
+void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
     GLB_assert(glfwWindow != nullptr)
     ProjectWatchTower_PTR = nullptr;
     IMGUI_CHECKVERSION();
@@ -32,12 +36,14 @@ std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& 
 
 void LDDrift::GUI::CreateNewWindow(const std::string& name,
                                    const bool canMoveWindow,
+                                   const bool canResizeWindow,
                                    const std::string& textPrintInWindow,
-                                   const VecPos2D& position) {
+                                   const VecPos2D& position,
+                                   const VecPos2D& size) {
     defaultWindows.push_back({
-        .name = name, .canMoveWindow = canMoveWindow,
+        .name = name, .canMoveWindow = canMoveWindow, .canResizeWindow = canResizeWindow,
         .textPrintInWindow = LDDrift::GUI::ExtractTextFromString(textPrintInWindow),
-        .position = position, .Show = true
+        .position = position, .size = size, .Show = true,
     });
 }
 
@@ -47,35 +53,86 @@ void LDDrift::GUI::BeginRenderGUI() {
     ImGui::NewFrame();
 }
 
+LDDrift::GUI::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& nameWindow) const {
+    for (const auto& window : defaultWindows) {
+        if (window.name == nameWindow) {
+            return window;
+        }
+    }
+    return {
+        .name = NULL_STR_VALUE, .canMoveWindow = false, .canResizeWindow = false, .textPrintInWindow = {},
+        .position = {0, 0}, .size = {0, 0}
+    };
+}
+
 void LDDrift::GUI::EndRenderGUI() {
-    for (const DefaultWindowsData& window : defaultWindows) {
-        ImGui::Begin(window.name.c_str(), nullptr, window.canMoveWindow ? 0 : ImGuiWindowFlags_NoMove);
+    for (DefaultWindowsData& window : defaultWindows) {
+        ImGuiWindowFlags flags = 0;
+        flags |= ImGuiWindowFlags_NoCollapse;
+        if (!window.canResizeWindow) {
+            flags |= ImGuiWindowFlags_NoResize;
+        }
+        if (!window.canMoveWindow) {
+            flags |= ImGuiWindowFlags_NoMove;
+        }
+        ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
+        ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
+        ImGui::Begin(window.name.c_str(), nullptr, flags);
+        if (DefaultWindowsData result = LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(this);
+            result.name != NULL_STR_VALUE) {
+            for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
+                if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) == std::string(result.searchBuffer)) {
+                    editorWindow.Show = true;
+                    editorWindow.name = std::string(result.searchBuffer);
+                    std::ifstream ifile(path.string(), std::ios::binary | std::ios::ate);
+                    std::streamsize size = ifile.tellg();
+                    ifile.seekg(0, std::ios::beg);
+                    ifile.read(editorWindow.codeBuffer, size);
+                    break;
+                }
+            }
+        }
         for (const std::string& text : window.textPrintInWindow) {
             ImGui::TextUnformatted(text.c_str());
         }
         ImGui::End();
     }
-    ImGui::Begin(editorWindow.name.c_str());
+    if (editorWindow.Show) {
+        ImGui::Begin(editorWindow.name.c_str());
 
-    if (ImGui::Button("Save")) {
-        NPV_assert(ProjectWatchTower_PTR != nullptr)
-        ProjectWatchTower_PTR->WriteCodeToFile(editorWindow.name, editorWindow.codeBuffer);
+        if (ImGui::Button("Save")) {
+            NPV_assert(ProjectWatchTower_PTR != nullptr)
+            ProjectWatchTower_PTR->WriteCodeToFile(editorWindow.name, editorWindow.codeBuffer);
+        }
+
+        if (ImGui::Button("Exit")) {
+            editorWindow.Show = false;
+        }
+
+        ImGui::Separator();
+
+        ImGui::InputTextMultiline(
+            "##Code",
+            editorWindow.codeBuffer,
+            sizeof(editorWindow.codeBuffer),
+            ImVec2(-1, -1),
+            ImGuiInputTextFlags_CallbackCompletion,
+            CodeEditorCallback
+        );
+
+        ImGui::End();
     }
-
-    ImGui::Separator();
-
-    ImGui::InputTextMultiline(
-        "##Code",
-        editorWindow.codeBuffer,
-        sizeof(editorWindow.codeBuffer),
-        ImVec2(-1, -1),
-        ImGuiInputTextFlags_CallbackCompletion,
-        CodeEditorCallback
-    );
-
-    ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+}
+
+void LDDrift::GUI::UpdateWindow(const std::string& windowName) {
+    for (auto& window : defaultWindows) {
+        if (window.name == windowName) {
+            window.textPrintInWindow.clear();
+            break;
+        }
+    }
 }
 
 const char* LDDrift::GUI::GetCodeBuffer() const {
@@ -86,10 +143,10 @@ void LDDrift::GUI::SetProjectWatchTower_PTR(LDDrift::ProjectWatchTower* projectW
     ProjectWatchTower_PTR = projectWatchTower;
 }
 
-void LDDrift::GUI::CreateNewEditor(const std::string& name, const bool canMoveWindow) {
+void LDDrift::GUI::CreateNewEditor(const std::string& name, const bool canShowWindow) {
     editorWindow.name = name;
-    editorWindow.canMoveWindow = canMoveWindow;
-    editorWindow.Show = true;
+    editorWindow.canMoveWindow = true;
+    editorWindow.Show = canShowWindow;
 }
 
 void LDDrift::GUI::SetTextForWindow(const std::string& windowName, const std::string& text,
