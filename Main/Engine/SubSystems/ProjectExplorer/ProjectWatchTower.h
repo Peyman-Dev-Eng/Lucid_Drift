@@ -4,6 +4,9 @@
 #include <fstream>
 #include <functions.h>
 #include <iostream>
+#define FMT_USE_CONSTEVAL 0
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>
 #include <string>
 #include <unordered_map>
 #include <cstring>
@@ -40,7 +43,7 @@ namespace LDDrift
         ProjectWatchTower();
         void SetPaths();
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
-        void CreateCmakeListTXT_File();
+        void CreateCmakeListTXT_File() const;
         void CreateNewProject(const std::string& _projectName);
         void SetProjectPath(const std::filesystem::path& ProjectPath);
         void WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const;

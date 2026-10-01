@@ -7,13 +7,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 # ============================================================================
-# Dependencies
-# ============================================================================
-
-find_package(glfw3 REQUIRED)
-
-
-# ============================================================================
 # Engine
 # ============================================================================
 
@@ -26,11 +19,6 @@ add_subdirectory(Main)
 
 add_executable(Lucid_Drift
         main.cpp
-        glad.c
-)
-
-target_include_directories(Lucid_Drift PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}/glad/include
 )
 
 target_link_libraries(Lucid_Drift PRIVATE

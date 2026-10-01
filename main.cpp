@@ -48,9 +48,7 @@ int main() {
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC
     });
     LDDrift::GUI gui(window.GetWindow());
-    gui.CreateNewWindow("TEST", false, text, {10, 50});
-    gui.CreateNewWindow("Project Watch Tower", true, "", {10, 600});
-    gui.CreateNewEditor("test1/MAIN.cpp", true);
+    gui.CreateNewEditor("MAIN.cpp", true);
     glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
     gui.SetProjectWatchTower_PTR(&projectWatchTower);
     while (window.ScreenIsOpen()) {

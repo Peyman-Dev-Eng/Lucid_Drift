@@ -104,13 +104,16 @@ target_include_directories(FUNCTIONS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Functions
 )
 
-target_link_libraries(FUNCTIONS PUBLIC
-        ASSERT PWT
-)
+target_link_libraries(FUNCTIONS PUBLIC)
 
+find_package(glfw3 REQUIRED)
 
+find_package(fmt REQUIRED)
 
 add_library(Engine STATIC
+
+        # glad - OpenGL
+        ${LUCID_DRIFT_ROOT}/glad.c
 
         # System - input
         Engine/System/Input/input.cpp
