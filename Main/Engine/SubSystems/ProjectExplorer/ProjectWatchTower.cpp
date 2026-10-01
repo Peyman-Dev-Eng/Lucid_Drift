@@ -1,17 +1,18 @@
 #include "ProjectWatchTower.h"
 
 LDDrift::ProjectWatchTower::ProjectWatchTower() {
-    projectPath = LDDrift::GetHostName();
+    projectPath = LDDrift::func::GetHostName();
 }
 
 void LDDrift::ProjectWatchTower::SetProjectPath(const std::filesystem::path& ProjectPath) {
-    projectPath = LDDrift::GetHostName() / ProjectPath;
+    projectPath = LDDrift::func::GetHostName() / ProjectPath;
 }
 
 void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectName) {
     projectName = _projectName;
-    projectPath = std::filesystem::path(LDDrift::GetHostName()) / _projectName;
+    projectPath = std::filesystem::path(LDDrift::func::GetHostName()) / _projectName;
     create_directories(projectPath);
+    this->CreateCmakeListTXT_File();
 }
 
 std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::string& _path) {
@@ -28,6 +29,36 @@ std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::stri
         return NULL_VALUE;
     }
     return result;
+}
+
+void LDDrift::ProjectWatchTower::CreateCmakeListTXT_File() const {
+    std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
+    std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 3.20)
+project({} CXX C)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
+
+add_executable({})
+
+target_link_libraries({} PUBLIC Engine)
+)";
+    size_t pos = 0;
+    while ((pos = cmakeTemplate.find("{}", pos)) != std::string::npos) {
+        cmakeTemplate.replace(pos, 2, projectName);
+        pos += projectName.length();
+    }
+    std::cout << cmakeTemplate << std::endl;
+
+    if (std::ofstream outFile(this->projectPath / "CMakeLists.txt"); outFile.is_open()) {
+        outFile << cmakeTemplate;
+        outFile.close();
+        std::cout << "File CMakeLists.txt generated successfully!" << std::endl;
+    } else {
+        std::cerr << RED << "Error: Unable to create CMakeLists.txt" << RESET << std::endl;
+    }
 }
 
 bool LDDrift::ProjectWatchTower::isFilePath(const std::filesystem::path& path) {

@@ -1,4 +1,119 @@
+
+set(LUCID_DRIFT_ROOT
+        ${CMAKE_CURRENT_LIST_DIR}/..
+)
+
+
+# ============================================================================
+# Assertion
+# ============================================================================
+
+add_library(ASSERT STATIC
+        Assertion/Assertions.cpp
+)
+
+target_include_directories(ASSERT PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Assertion
+)
+
+
+# ============================================================================
+# Vector Position 2D
+# ============================================================================
+
+add_library(VECPOS2D STATIC
+        EngineLibraries/VecPosition/VecPos.cpp
+)
+
+target_include_directories(VECPOS2D PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition
+)
+
+target_link_libraries(VECPOS2D PUBLIC
+        ASSERT
+)
+
+
+# ============================================================================
+# Angle
+# ============================================================================
+
+add_library(ANGLE STATIC
+        EngineLibraries/Angle/Angle.cpp
+)
+
+target_include_directories(ANGLE PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/Angle
+)
+
+
+# ============================================================================
+# Vector Color
+# ============================================================================
+
+add_library(VecColor STATIC
+        EngineLibraries/VecColor/VecCol.cpp
+)
+
+target_include_directories(VecColor PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecColor
+)
+
+
+# ============================================================================
+# Shape Data
+# ============================================================================
+
+add_library(SHAPE_DATA STATIC
+        EngineLibraries/ShapeData/ShapeData.cpp
+)
+
+target_include_directories(SHAPE_DATA PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/ShapeData
+)
+
+target_link_libraries(SHAPE_DATA PUBLIC
+        VecColor VECPOS2D
+)
+
+# ============================================================================
+# Project Watch Tower
+# ===========================================================================
+
+add_library(PWT STATIC
+        Engine/SubSystems/ProjectExplorer/ProjectWatchTower.cpp
+)
+
+target_include_directories(PWT PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/ProjectExplorer
+)
+
+target_link_libraries(PWT PUBLIC
+        ASSERT FUNCTIONS
+)
+
+# ============================================================================
+# functions
+# ============================================================================
+
+add_library(FUNCTIONS STATIC
+        Engine/Functions/functions.cpp
+)
+
+target_include_directories(FUNCTIONS PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Functions
+)
+
+target_link_libraries(FUNCTIONS PUBLIC)
+
+find_package(glfw3 REQUIRED)
+
+find_package(fmt REQUIRED)
+
 add_library(Engine STATIC
+
+        # glad - OpenGL
+        ${LUCID_DRIFT_ROOT}/glad.c
 
         # System - input
         Engine/System/Input/input.cpp
@@ -37,26 +152,26 @@ add_library(Engine STATIC
         Engine/SubSystems/PointHitTesting/PointHitTesting.h
 
         # Dear ImGui
-        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui.cpp
-        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_draw.cpp
-        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_tables.cpp
-        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_widgets.cpp
-        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/imgui_demo.cpp
-        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
-        ${CMAKE_SOURCE_DIR}/ThirdParty/imgui/backends/imgui_impl_opengl3.cpp
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/imgui.cpp
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/imgui_draw.cpp
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/imgui_tables.cpp
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/imgui_widgets.cpp
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/imgui_demo.cpp
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends/imgui_impl_glfw.cpp
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends/imgui_impl_opengl3.cpp
 
         # Graphical User Interface System
         Engine/System/GUI/GUI.cpp
         Engine/System/GUI/GUI.h
-
-        # Project Watch Tower System
-        Engine/SubSystems/ProjectExplorer/ProjectWatchTower.cpp
-        Engine/SubSystems/ProjectExplorer/ProjectWatchTower.h
+        Engine/System/Core/Core.cpp
+        Engine/System/Core/Core.h
 )
 
 target_include_directories(Engine PUBLIC
-        ${CMAKE_SOURCE_DIR}/glad/include
-        Engine
+        ${LUCID_DRIFT_ROOT}/glad/include
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
+        ${CMAKE_CURRENT_LIST_DIR}/Engine
 )
 
 target_link_libraries(Engine PUBLIC
@@ -67,4 +182,5 @@ target_link_libraries(Engine PUBLIC
         glfw
         SHAPE_DATA
         PWT
+        FUNCTIONS
 )

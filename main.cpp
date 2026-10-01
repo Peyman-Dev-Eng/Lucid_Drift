@@ -21,8 +21,6 @@ static std::string text =
 
 
 int main() {
-    std::cout << "Hello World!" << std::endl;
-    constexpr char code[] = "#include <iostream>\nint main() {\n\tstd::cout << \"Hello Peyman!\";\n\treturn 0;\n}";
     LDDrift::ProjectWatchTower projectWatchTower;
     projectWatchTower.CreateNewProject("TestProject");
     LDDrift::Window window;
@@ -50,8 +48,6 @@ int main() {
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC
     });
     LDDrift::GUI gui(window.GetWindow());
-    gui.CreateNewWindow("TEST", false, text, {10, 50});
-    gui.CreateNewWindow("Project Watch Tower", true, "", {10, 600});
     gui.CreateNewEditor("MAIN.cpp", true);
     glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
     gui.SetProjectWatchTower_PTR(&projectWatchTower);
