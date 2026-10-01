@@ -13,6 +13,7 @@
 #include <ProjectWatchTower.h>
 #include <System/Input/input.h>
 #include <System/GUI/GUI.h>
+#include <System/Core/Core.h>
 static std::string text =
     "Hello Peyman\n"
     "How Are You Today?\n"
@@ -21,53 +22,25 @@ static std::string text =
 
 
 int main() {
-    LDDrift::ProjectWatchTower projectWatchTower;
-    projectWatchTower.CreateNewProject("TestProject");
-    LDDrift::Window window;
-    window.CreateFullscreenWindow();
-    window.SetTitle("TEST");
-    window.SetFillScreenColor({0, 0, 0, 1});
-    window.SetSize(1920, 1080);
-    LDDrift::Actors::Circle circle;
-    circle.SetScreenSize(window.GetWindowSize());
-    circle.SetRadius(100);
-    circle.SetPointCount(45);
-    circle.SetSpeed(10);
-    circle.SetPosition({600, 450});
-    circle.Rebuild();
-    circle.SetFillColor(true);
-    circle.SetAllPointsColor({1, 0, 0, 1});
-    circle.SetOriginalPositionToCenter();
-    LDDrift::Renderer renderer(window.GetWidth(), window.GetHeight());
-    renderer.AddShapeToRender(&circle);
-    renderer.SendDataToGPU();
-    window.SetRendererPTR(&renderer);
-    LDDrift::input::Keyboard::Init();
-    LDDrift::input::Mouse::Init();
-    LDDrift::input::Keyboard::SetKeyTarget({
-        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC
-    });
-    LDDrift::GUI gui(window.GetWindow());
-    gui.CreateNewEditor("MAIN.cpp", true);
-    glfwSetFramebufferSizeCallback(window.GetWindow(), LDDrift::Window::FrameBufferSizeCallback);
-    gui.SetProjectWatchTower_PTR(&projectWatchTower);
-    while (window.ScreenIsOpen()) {
+    LDDrift::Core core;
+    core.Begin();
+    while (core.window.ScreenIsOpen()) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
         LDDrift::input::Mouse::GetMouseInputEvent();
-        window.ClearBuffer();
+        core.window.ClearBuffer();
         LDDrift::GUI::BeginRenderGUI();
         if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC)) {
             break;
         }
-        gui.EndRenderGUI();
-        renderer.render();
-        window.Update();
+        core.gui.EndRenderGUI();
+        core.render.render();
+        core.window.Update();
         LDDrift::input::Keyboard::Update();
         LDDrift::input::Mouse::Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
     LDDrift::input::Keyboard::Destroy();
     LDDrift::input::Mouse::Destroy();
-    window.DestroyWindow();
+    core.window.DestroyWindow();
     return 0;
 }
