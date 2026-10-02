@@ -43,5 +43,6 @@ void LDDrift::GuiLogic::ProjectManagerHandling(LDDrift::GUI::DefaultWindowsData*
     }
     if (ImGui::Button("Create New File")) {
         Anonymous::projectWatchTowerPTR->WriteCodeToFile(std::filesystem::path(window->searchBuffer), "");
+        Anonymous::projectWatchTowerPTR->SetPaths();
     }
 }

@@ -73,7 +73,6 @@ bool LDDrift::ProjectWatchTower::isFilePath(const std::filesystem::path& path) {
 }
 
 const std::vector<std::filesystem::path>& LDDrift::ProjectWatchTower::GetPaths() {
-    this->SetPaths();
     return paths;
 }
 
