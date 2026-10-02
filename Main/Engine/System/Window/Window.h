@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <VecCol.h>
 #include <VecPos.h>
+#include <GUI.h>
 #include <string>
 #include <Renderer/Renderer.h>
 

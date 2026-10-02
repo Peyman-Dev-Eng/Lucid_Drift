@@ -9,6 +9,21 @@
 #include <vector>
 #include <ProjectWatchTower.h>
 #include <VecPos.h>
+#define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
+#define PROJECT_WATCH_TOWER_X_SIZE 350
+#define PROJECT_WATCH_TOWER_Y_SIZE 540
+#define PROJECT_MANAGER_WINDOW_NAME "Project Manager"
+#define PROJECT_MANAGER_X_SIZE 350
+#define PROJECT_MANAGER_Y_SIZE 540
+#define CONSOLE_WINDOW_NAME "Console"
+#define CONSOLE_X_SIZE 1570
+#define CONSOLE_Y_SIZE 180
+
+namespace LDDrift
+{
+    class Core;
+    class GuiLogic;
+}
 
 namespace LDDrift
 {
@@ -24,6 +39,9 @@ namespace LDDrift
      */
     class GUI
     {
+    private:
+        LDDrift::Core* core = nullptr;
+
     public:
         static std::vector<std::string> ExtractTextFromString(const std::string& text);
 
@@ -58,19 +76,24 @@ namespace LDDrift
         void UpdateWindow(const std::string& windowName);
         void Initialize(GLFWwindow* glfwWindow);
         void SetProjectWatchTower_PTR(LDDrift::ProjectWatchTower* projectWatchTower);
-        void CreateNewWindow(const std::string& name, bool canMoveWindow, bool canResizeWindow, const std::string& textPrintInWindow,
+        void CreateNewWindow(const std::string& name, bool canMoveWindow, bool canResizeWindow,
+                             const std::string& textPrintInWindow,
                              const VecPos2D& position, const VecPos2D& size);
         void CreateNewEditor(const std::string& name, bool canShowWindow);
         [[nodiscard]] const char* GetCodeBuffer() const;
         void SetTextForWindow(const std::string& windowName, const std::string& text,
                               bool deletePreviousMessages = false);
         void RenameEditorWindow(const std::string& newWindowName);
+        void SetCorePTR(LDDrift::Core* corePTR);
         void SetShowEditorWindow(bool show);
         [[nodiscard]] DefaultWindowsData GetWindow(const std::string& nameWindow) const;
         static void BeginRenderGUI();
         void EndRenderGUI();
         static int CodeEditorCallback(ImGuiInputTextCallbackData* data);
         ~GUI();
+
+    private:
+        void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
     };
 }
 #endif

@@ -130,14 +130,21 @@ add_library(GUI STATIC
 )
 
 target_include_directories(GUI PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/GUI
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/GUI_lOGIC
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
         ${LUCID_DRIFT_ROOT}/glad/include
 )
 
 target_link_libraries(GUI PUBLIC
-        GL ASSERT PWT VECPOS2D
+        ASSERT
+        PWT
+        VECPOS2D
+        VecColor
+        ANGLE
+        SHAPE_DATA
 )
 
 # ============================================================================
@@ -225,4 +232,5 @@ target_link_libraries(Engine PUBLIC
         PWT
         FUNCTIONS
         GL
+        GUI
 )

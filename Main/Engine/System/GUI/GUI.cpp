@@ -1,6 +1,6 @@
 #include "GUI.h"
-
-#include "GuiLogic.h"
+#include <GuiLogic.h>
+#include "System/Core/Core.h"
 
 
 LDDrift::GUI::GUI() = default;
@@ -65,7 +65,34 @@ LDDrift::GUI::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& name
     };
 }
 
+void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
+    if (window->name != PROJECT_WATCH_TOWER_WINDOW_NAME) {
+        return;
+    }
+    if (DefaultWindowsData result = LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(window);
+        result.name != NULL_STR_VALUE) {
+        for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
+            if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) ==
+                std::string(result.searchBuffer)) {
+                editorWindow.Show = true;
+                editorWindow.name = std::string(result.searchBuffer);
+                std::ifstream ifile(path.string(), std::ios::binary | std::ios::ate);
+                std::streamsize size = ifile.tellg();
+                ifile.seekg(0, std::ios::beg);
+                ifile.read(editorWindow.codeBuffer, size);
+                break;
+            }
+        }
+    }
+}
+
+void LDDrift::GUI::SetCorePTR(LDDrift::Core* corePTR) {
+    NPV_assert(corePTR != nullptr)
+    core = corePTR;
+}
+
 void LDDrift::GUI::EndRenderGUI() {
+    GLB_assert(ProjectWatchTower_PTR != nullptr)
     for (DefaultWindowsData& window : defaultWindows) {
         ImGuiWindowFlags flags = 0;
         flags |= ImGuiWindowFlags_NoCollapse;
@@ -78,20 +105,14 @@ void LDDrift::GUI::EndRenderGUI() {
         ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
         ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         ImGui::Begin(window.name.c_str(), nullptr, flags);
-        if (DefaultWindowsData result = LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(this);
-            result.name != NULL_STR_VALUE) {
-            for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
-                if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) == std::string(result.searchBuffer)) {
-                    editorWindow.Show = true;
-                    editorWindow.name = std::string(result.searchBuffer);
-                    std::ifstream ifile(path.string(), std::ios::binary | std::ios::ate);
-                    std::streamsize size = ifile.tellg();
-                    ifile.seekg(0, std::ios::beg);
-                    ifile.read(editorWindow.codeBuffer, size);
-                    break;
-                }
+        this->ProjectWatchTowerWidowHandler(&window);
+        if (window.name == CONSOLE_WINDOW_NAME) {
+            if (ImGui::Button("Clear")) {
+                core->consoleBuffer.str("");
+                core->consoleBuffer.clear();
             }
         }
+        LDDrift::GuiLogic::ProjectManagerHandling(&window);
         for (const std::string& text : window.textPrintInWindow) {
             ImGui::TextUnformatted(text.c_str());
         }
@@ -104,6 +125,8 @@ void LDDrift::GUI::EndRenderGUI() {
             NPV_assert(ProjectWatchTower_PTR != nullptr)
             ProjectWatchTower_PTR->WriteCodeToFile(editorWindow.name, editorWindow.codeBuffer);
         }
+
+        ImGui::SameLine();
 
         if (ImGui::Button("Exit")) {
             editorWindow.Show = false;

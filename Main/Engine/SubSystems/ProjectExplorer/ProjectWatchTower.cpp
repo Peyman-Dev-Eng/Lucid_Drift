@@ -81,7 +81,7 @@ void LDDrift::ProjectWatchTower::SetPaths() {
     if (!paths.empty()) {
         paths.clear();
     }
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(projectPath)) {
+    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(projectPath)) {
         paths.push_back(entry.path());
     }
 }
@@ -137,13 +137,24 @@ void LDDrift::ProjectWatchTower::WriteCodeToFile(const std::filesystem::path& fi
     if (isFilePath(fileName)) {
         std::ofstream out(projectPath / fileName.string());
         out.write(text, static_cast<std::streamsize>(strlen(text)));
+        std::cout << "Successfully written project: " << projectPath / fileName.string() << std::endl;
         return;
     } else {
         create_directories(projectPath / LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(fileName));
         std::ofstream out(projectPath / fileName.string());
         out.write(text, static_cast<std::streamsize>(strlen(text)));
+        std::cout << "Successfully written project: " << projectPath / fileName.string() << std::endl;
         return;
     }
+}
+
+bool LDDrift::ProjectWatchTower::FindFile(const std::filesystem::path& path) const {
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(projectPath)) {
+        if (entry.path().string() == path.string()) {
+            return true;
+        }
+    }
+    return false;
 }
 
 std::vector<std::string> LDDrift::ProjectWatchTower::GetProjectDetails() const {

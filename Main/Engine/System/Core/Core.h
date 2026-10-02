@@ -13,16 +13,22 @@
 #include <Actors/Line/Line.h>
 #include <System/Input/input.h>
 #include <System/Window/Window.h>
-#include <System/GUI/GUI.h>
+#include <GUI.h>
 #include <System/Triangulation/Triangulation.h>
 #include <Renderer/Renderer.h>
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 #include <SubSystems/ProjectExplorer/ProjectWatchTower.h>
+#include <sstream>
+#include <streambuf>
 
 namespace LDDrift
 {
     class Core
     {
+    public:
+        std::stringstream consoleBuffer;
+        std::streambuf* oldCoutBuf = nullptr;
+
     public:
         // data
         LDDrift::Window window;

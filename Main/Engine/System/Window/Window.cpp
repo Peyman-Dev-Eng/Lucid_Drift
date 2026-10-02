@@ -65,7 +65,7 @@ void LDDrift::Window::SetSize(const int width, const int height) {
     glfwSetWindowSize(screen, width, height);
     settings.width = width;
     settings.height = height;
-    glViewport(350,0, width, height);
+    glViewport(350,0, width, height - CONSOLE_Y_SIZE);
 }
 
 void LDDrift::Window::SetFillScreenColor(const LDDrift::VecCol& color) {
