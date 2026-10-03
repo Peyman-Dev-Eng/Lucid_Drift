@@ -1,5 +1,7 @@
 #include "ProjectWatchTower.h"
 
+#include <chrono>
+
 LDDrift::ProjectWatchTower::ProjectWatchTower() {
     projectPath = LDDrift::func::GetHostName();
 }
@@ -13,6 +15,22 @@ void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectNam
     projectPath = std::filesystem::path(LDDrift::func::GetHostName()) / _projectName;
     create_directories(projectPath);
     this->CreateCmakeListTXT_File();
+}
+
+std::vector<std::string> LDDrift::ProjectWatchTower::Extract::ExtractPaths(const std::filesystem::path& path) {
+    std::vector<std::string> result;
+    const std::string pathString = path.string();
+    std::size_t lastPos = path.string().size() - 1;
+    std::size_t currentPos = lastPos - 1;
+    while (currentPos > 0) {
+        while (pathString[currentPos] != '/') {
+            --currentPos;
+        }
+        result.push_back(pathString.substr(currentPos + 1, lastPos - currentPos));
+        lastPos = currentPos - 1;
+        currentPos = lastPos - 1;
+    }
+    return result;
 }
 
 std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::string& _path) {
@@ -34,7 +52,7 @@ std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::stri
 
 void LDDrift::ProjectWatchTower::CreateCmakeListTXT_File() const {
     std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
-    std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 3.20)
+    std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
 project({} CXX C)
 
 set(CMAKE_CXX_STANDARD 20)
@@ -56,7 +74,7 @@ target_link_libraries({} PUBLIC Engine)
         outFile << cmakeTemplate;
         outFile.close();
     } else {
-        std::cerr << RED << "Error: Failed to create the CMakeLists.txt file." << RESET << std::endl;
+        std::cerr << "Error: Failed to create the CMakeLists.txt file." << std::endl;
         return;
     }
 }
@@ -80,7 +98,14 @@ void LDDrift::ProjectWatchTower::SetPaths() {
     if (!paths.empty()) {
         paths.clear();
     }
-    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(projectPath)) {
+    std::filesystem::recursive_directory_iterator iterator(projectPath);
+    for (const std::filesystem::directory_entry& entry : iterator) {
+        if (entry.path().filename() == "cmake-build-debug" || entry.path().filename() == ".idea") {
+            if (entry.is_directory()) {
+                iterator.disable_recursion_pending();
+            }
+            continue;
+        }
         paths.push_back(entry.path());
     }
 }
@@ -100,6 +125,20 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
         return path.string().substr(0, counter);
     }
     return NULL_STR_VALUE;
+}
+
+bool LDDrift::ProjectWatchTower::PathIsFile(const std::filesystem::path& path) {
+    const std::size_t _pathLength = path.string().size() - 1;
+    if (const std::string pathString = path.string();
+        pathString[_pathLength] == 'h' && pathString[_pathLength - 1] == '.') {
+        return true;
+    } else if (pathString[_pathLength] == 'p' &&
+        pathString[_pathLength - 1] == 'p' &&
+        pathString[_pathLength - 2] == 'c' &&
+        pathString[_pathLength - 3] == '.') {
+        return true;
+    }
+    return false;
 }
 
 std::string LDDrift::ProjectWatchTower::IsAvailableFileInProject(const std::string& fileName) const {
@@ -149,7 +188,7 @@ void LDDrift::ProjectWatchTower::WriteCodeToFile(const std::filesystem::path& fi
 
 bool LDDrift::ProjectWatchTower::FindFile(const std::filesystem::path& path) const {
     for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(projectPath)) {
-        if (entry.path().string() == path.string()) {
+        if (Extract::GetLastFileName(entry.path().string()) == path.string()) {
             return true;
         }
     }

@@ -23,8 +23,8 @@ void LDDrift::Actors::Circle::SetRadius(const float& R) {
     radius = R;
     const LDDrift::VecPos2D& ScreenSize = this->GetScreenSize();
     CTM_assert(ScreenSize.X != 0 && ScreenSize.Y != 0, "Screen size is null");
-    radiusNDC_X = radius / this->GetScreenSize().X;
-    radiusNDC_Y = radius / this->GetScreenSize().Y;
+    radiusNDC_X = radius / ScreenSize.X;
+    radiusNDC_Y = radius / ScreenSize.Y;
 }
 
 float LDDrift::Actors::Circle::GetRadius() const {
@@ -48,6 +48,11 @@ LDDrift::VecCol LDDrift::Actors::Circle::CalculateAverageVertexColor() const {
 void LDDrift::Actors::Circle::Rebuild() {
     const uint VectexAngle = 360 / this->GetPointCount();
     uint PointIndex = 0;
+    const LDDrift::VecPos2D& screenSize = this->GetScreenSize();
+    radiusNDC_X = radius / screenSize.X;
+    std::cout << radiusNDC_X << std::endl;
+    radiusNDC_Y = radius / screenSize.Y;
+    std::cout << radiusNDC_Y << std::endl;
     for (uint angle = 0; angle < 360; angle += VectexAngle, ++PointIndex) {
         const auto radians = static_cast<float>(angle * std::numbers::pi_v<double> / 180.0f);
         this->SetPoint(PointIndex, LDDrift::VecPos2D{
@@ -69,7 +74,7 @@ void LDDrift::Actors::Circle::Rebuild(const int width, const int height) {
     }
 }
 
-void LDDrift::Actors::Circle::Move(Dir direction) {
+void LDDrift::Actors::Circle::Move(const Dir direction) {
     if (direction == Dir::UP) {
         this->MoveUp();
         CenterPos.Y += this->GetSpeedNDC_Y();

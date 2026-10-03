@@ -71,6 +71,9 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
     }
     if (DefaultWindowsData result = LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(window);
         result.name != NULL_STR_VALUE) {
+        if (!ProjectWatchTower_PTR->FindFile(std::filesystem::path(result.searchBuffer))) {
+            return;
+        }
         for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
             if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) ==
                 std::string(result.searchBuffer)) {

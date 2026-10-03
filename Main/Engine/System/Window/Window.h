@@ -1,5 +1,5 @@
-#ifndef LUCID_DRIFT_WINDOW_H
-#define LUCID_DRIFT_WINDOW_H
+#ifndef LUCID_DRIFT_WINDOW_SYSTEM_H
+#define LUCID_DRIFT_WINDOW_SYSTEM_H
 #include <Assertions.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -8,6 +8,8 @@
 #include <GUI.h>
 #include <string>
 #include <Renderer/Renderer.h>
+#define FULLSCREEN_WIDTH 1920
+#define FULLSCREEN_HEIGHT 1080
 
 namespace LDDrift
 {

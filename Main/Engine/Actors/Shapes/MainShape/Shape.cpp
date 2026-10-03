@@ -139,13 +139,6 @@ void LDDrift::Actors::Shape::ResetOriginalPosition() {
     OriginalPosition.Y = Points[0].Y;
 }
 
-
-void LDDrift::Actors::Shape::SetPosition(const LDDrift::VecPos2D& pos) {
-    for (LDDrift::VecPos2D& point : Points) {
-        point += pos;
-    }
-}
-
 void LDDrift::Actors::Shape::SetFillColor(const bool IsFillShape) {
     FillShape = IsFillShape;
 }
@@ -224,7 +217,8 @@ LDDrift::Actors::Shape::isConvexData LDDrift::Actors::Shape::ShapeIsConvex() con
 void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColor) {
     ColorOfPoints.clear();
     ColorOfPoints.reserve(Points.size());
-    for (std::size_t point = 0; point < Points.size(); ++point) {
+    const std::size_t pointCountShape = Points.size();
+    for (std::size_t point = 0; point < pointCountShape; ++point) {
         ColorOfPoints.push_back(targetColor);
     }
 }

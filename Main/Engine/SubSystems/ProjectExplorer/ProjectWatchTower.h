@@ -36,12 +36,14 @@ namespace LDDrift
             static std::string GetBodyWithoutLastFileName(const std::string& fileName,
                                                           std::vector<std::filesystem::path>& _paths);
             static std::string GetBodyWithoutLastFileName(const std::filesystem::path& filePath);
+            static std::vector<std::string> ExtractPaths(const std::filesystem::path& path);
         };
         static bool isFilePath(const std::filesystem::path& path);
 
     public:
         ProjectWatchTower();
         void SetPaths();
+        static bool PathIsFile(const std::filesystem::path& path) ;
         [[nodiscard]] const std::vector<std::filesystem::path>& GetPaths();
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
         void CreateCmakeListTXT_File() const;

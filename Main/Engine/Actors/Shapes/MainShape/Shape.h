@@ -90,7 +90,6 @@ namespace LDDrift::Actors
         void SetFillColor(bool IsFillShape);
         void SetThickness(float thickness);
         void SetScreenSize(const LDDrift::VecPos2D& size);
-        void SetPosition(const LDDrift::VecPos2D& pos);
         void SetAllPointsColor(const LDDrift::VecCol& targetColor);
         [[nodiscard]] bool IsFillShape() const;
         [[nodiscard]] bool IsHaveThickness() const;

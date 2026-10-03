@@ -17,12 +17,8 @@
 
 
 int main() {
-
     LDDrift::Core core;
     core.Begin();
     core.EngineHandler();
-    LDDrift::input::Keyboard::Destroy();
-    LDDrift::input::Mouse::Destroy();
-    core.window.DestroyWindow();
     return 0;
 }

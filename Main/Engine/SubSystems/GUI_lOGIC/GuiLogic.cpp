@@ -37,11 +37,11 @@ void LDDrift::GuiLogic::ProjectManagerHandling(LDDrift::GUI::DefaultWindowsData*
     if (ImGui::InputTextWithHint("##Project Manager", "Enter dir with file (test1/test2/test3.cpp):",
                                  window->searchBuffer, sizeof(window->searchBuffer),
                                  ImGuiInputTextFlags_EnterReturnsTrue)) {}
-    if (Anonymous::projectWatchTowerPTR->FindFile(std::filesystem::path(window->searchBuffer))) {
-        std::cout << "Cannot create the file because a file with the same name already exists in the project.";
-        return;
-    }
     if (ImGui::Button("Create New File")) {
+        if (Anonymous::projectWatchTowerPTR->FindFile(std::filesystem::path(window->searchBuffer))) {
+            std::cout << "Cannot create the file because a file with the same name already exists in the project." << std::endl;
+            return;
+        }
         Anonymous::projectWatchTowerPTR->WriteCodeToFile(std::filesystem::path(window->searchBuffer), "");
         Anonymous::projectWatchTowerPTR->SetPaths();
     }

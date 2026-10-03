@@ -27,7 +27,8 @@ namespace LDDrift
     {
     public:
         std::stringstream consoleBuffer;
-        std::streambuf* oldCoutBuf = nullptr;
+        std::streambuf* oldC_outBuf = nullptr;
+        LDDrift::Actors::Circle* circle = nullptr;
 
     public:
         // data
