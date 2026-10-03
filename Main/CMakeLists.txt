@@ -40,6 +40,8 @@ target_link_libraries(VECPOS2D PUBLIC
 
 add_library(ANGLE STATIC
         EngineLibraries/Angle/Angle.cpp
+        Engine/System/Scene/Scene.cpp
+        Engine/System/Scene/Scene.h
 )
 
 target_include_directories(ANGLE PUBLIC
@@ -156,7 +158,7 @@ find_package(glfw3 REQUIRED)
 
 find_package(fmt REQUIRED)
 
-add_library(Engine STATIC
+add_library(Engine SHARED
 
         # glad - OpenGL
         ${LUCID_DRIFT_ROOT}/glad.c
@@ -213,6 +215,10 @@ add_library(Engine STATIC
         # Engine Core - System
         Engine/System/Core/Core.cpp
         Engine/System/Core/Core.h
+
+        # Scene - System
+        Engine/System/Scene/Scene.cpp
+        Engine/System/Scene/Scene.h
 )
 
 target_include_directories(Engine PUBLIC

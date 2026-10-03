@@ -55,7 +55,7 @@ void LDDrift::ProjectWatchTower::CreateCmakeListTXT_File() const {
     std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
 project({} CXX C)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 26)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
