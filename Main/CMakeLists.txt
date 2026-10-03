@@ -40,8 +40,6 @@ target_link_libraries(VECPOS2D PUBLIC
 
 add_library(ANGLE STATIC
         EngineLibraries/Angle/Angle.cpp
-        Engine/System/Scene/Scene.cpp
-        Engine/System/Scene/Scene.h
 )
 
 target_include_directories(ANGLE PUBLIC
@@ -219,6 +217,10 @@ add_library(Engine SHARED
         # Scene - System
         Engine/System/Scene/Scene.cpp
         Engine/System/Scene/Scene.h
+
+        # Compilation - System
+        Engine/System/Compilation/Compile.cpp
+        Engine/System/Compilation/Compile.h
 )
 
 target_include_directories(Engine PUBLIC
