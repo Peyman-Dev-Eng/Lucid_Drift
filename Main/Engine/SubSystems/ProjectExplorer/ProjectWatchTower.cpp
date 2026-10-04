@@ -186,9 +186,22 @@ void LDDrift::ProjectWatchTower::WriteCodeToFile(const std::filesystem::path& fi
     }
 }
 
-bool LDDrift::ProjectWatchTower::FindFile(const std::filesystem::path& path) const {
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(projectPath)) {
-        if (Extract::GetLastFileName(entry.path().string()) == path.string()) {
+void LDDrift::ProjectWatchTower::CreateNewFile(const std::filesystem::path& fileName) const {
+    if (isFilePath(fileName)) {
+        std::ofstream out(projectPath / fileName.string());
+        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() << std::endl;
+        return;
+    } else {
+        create_directories(projectPath / LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(fileName));
+        std::ofstream out(projectPath / fileName.string());
+        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() << std::endl;
+        return;
+    }
+}
+
+bool LDDrift::ProjectWatchTower::FindFile(const std::string& fileName) const {
+    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(projectPath)) {
+        if (Extract::GetLastFileName(entry.path().string()) == fileName) {
             return true;
         }
     }

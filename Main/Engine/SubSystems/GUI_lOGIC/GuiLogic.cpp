@@ -42,7 +42,7 @@ void LDDrift::GuiLogic::ProjectManagerHandling(LDDrift::GUI::DefaultWindowsData*
             std::cout << "Cannot create the file because a file with the same name already exists in the project." << std::endl;
             return;
         }
-        Anonymous::projectWatchTowerPTR->WriteCodeToFile(std::filesystem::path(window->searchBuffer), "");
+        Anonymous::projectWatchTowerPTR->CreateNewFile(std::filesystem::path(window->searchBuffer));
         Anonymous::projectWatchTowerPTR->SetPaths();
     }
 }

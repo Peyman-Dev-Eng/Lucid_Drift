@@ -72,15 +72,24 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
     if (DefaultWindowsData result = LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(window);
         result.name != NULL_STR_VALUE) {
         if (!ProjectWatchTower_PTR->FindFile(std::filesystem::path(result.searchBuffer))) {
+            std::cout << "Not Found File! File: " << result.searchBuffer << std::endl;
             return;
         }
-        for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
+        for (const std::vector<std::filesystem::path>& paths = ProjectWatchTower_PTR->GetPaths();
+             const auto& path : paths) {
             if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) ==
                 std::string(result.searchBuffer)) {
+                if (std::filesystem::is_directory(path)) {
+                    std::cout <<
+                        "Invalid input. The specified path is a folder. Please provide a file path where the code can be written."
+                        << std::endl;
+                    return;
+                }
                 editorWindow.Show = true;
-                editorWindow.name = std::string(result.searchBuffer);
-                std::ifstream ifile(path.string(), std::ios::binary | std::ios::ate);
+                editorWindow.name = path.string();
+                std::ifstream ifile(path.string(), std::ios::binary | std::ios::ate | std::ios::in);
                 std::streamsize size = ifile.tellg();
+                std::memset(editorWindow.codeBuffer, '\0', sizeof(editorWindow.codeBuffer));
                 ifile.seekg(0, std::ios::beg);
                 ifile.read(editorWindow.codeBuffer, size);
                 break;
@@ -108,19 +117,23 @@ void LDDrift::GUI::EndRenderGUI() {
         ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
         ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         ImGui::Begin(window.name.c_str(), nullptr, flags);
+        // مدیریت صفحه برج دیده بانی پروژه موتور بازی
         this->ProjectWatchTowerWidowHandler(&window);
+        // مدیریت صفحه console موتور بازی
         if (window.name == CONSOLE_WINDOW_NAME) {
             if (ImGui::Button("Clear")) {
                 core->consoleBuffer.str("");
                 core->consoleBuffer.clear();
             }
         }
+        // مدیریت صفحه مدیریت پروژه موتور بازی
         LDDrift::GuiLogic::ProjectManagerHandling(&window);
         for (const std::string& text : window.textPrintInWindow) {
             ImGui::TextUnformatted(text.c_str());
         }
         ImGui::End();
     }
+    // میدیریت ادیتور موتور بازی
     if (editorWindow.Show) {
         ImGui::Begin(editorWindow.name.c_str());
 
