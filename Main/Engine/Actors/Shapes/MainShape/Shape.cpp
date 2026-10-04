@@ -64,13 +64,22 @@ void LDDrift::Actors::Shape::SetSpeed(const float spd) {
     SpeedNDC_Y = Speed / screenSize.Y;
 }
 
+const std::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetNDC_Points() const {
+    return Points;
+}
+
 void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
     Points[point_index] = LDDrift::Transform::TransformToNDC_Position(pos);
 }
 
-LDDrift::VecPos2D LDDrift::Actors::Shape::GetPoint(const std::size_t point_index) const {
+LDDrift::VecPos2D LDDrift::Actors::Shape::GetGlobalPoint(const std::size_t point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
     return LDDrift::Transform::TransformToGlobalPosition(Points[point_index]);
+}
+
+const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetNDC_Point(const std::size_t point_index) const {
+    OOR_assert(point_index >= 0 && point_index < Points.size());
+    return Points[point_index];
 }
 
 void LDDrift::Actors::Shape::SetPointColor(const uint point_index, const LDDrift::VecCol& color) {
@@ -121,7 +130,7 @@ void LDDrift::Actors::Shape::Move(const Dir direction) {
     }
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetPoints() const {
+std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetGlobalPoints() const {
     return this->TransformPoints();
 }
 

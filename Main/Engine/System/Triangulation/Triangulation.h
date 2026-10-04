@@ -24,9 +24,9 @@ namespace LDDrift
             std::size_t counter = 0;
             while (targetNumberOfPoints.size() != 3 && counter != UPPER_BOUND) {
                 constexpr std::size_t pointNumber = 0;
-                const LDDrift::VecPos2D& pointA = shape->GetPoint(targetNumberOfPoints[pointNumber]);
-                const LDDrift::VecPos2D& pointB = shape->GetPoint(targetNumberOfPoints[pointNumber + 1]);
-                const LDDrift::VecPos2D& pointC = shape->GetPoint(targetNumberOfPoints[pointNumber + 2]);
+                const LDDrift::VecPos2D& pointA = shape->GetNDC_Point(targetNumberOfPoints[pointNumber]);
+                const LDDrift::VecPos2D& pointB = shape->GetNDC_Point(targetNumberOfPoints[pointNumber + 1]);
+                const LDDrift::VecPos2D& pointC = shape->GetNDC_Point(targetNumberOfPoints[pointNumber + 2]);
                 const float cross =
                     (pointB.X - pointA.X) * (pointC.Y - pointB.Y)
                     - (pointB.Y - pointA.Y) * (pointC.X - pointA.X);
@@ -39,7 +39,7 @@ namespace LDDrift
                         point == (pointNumber + 2) % shapePointNumber) { // رد کردن نقطه هایی که با انها مثلث ساختیم
                         continue;
                     }
-                    if (LDDrift::PointHitTesting::pointHitTesting(shape->GetPoint(point),
+                    if (LDDrift::PointHitTesting::pointHitTesting(shape->GetNDC_Point(point),
                                                                   std::vector<LDDrift::VecPos2D>{
                                                                       pointA, pointB, pointC
                                                                   })) {
@@ -61,14 +61,14 @@ namespace LDDrift
                 }
                 ++counter;
             }
-            vertices.push_back(shape->GetPoint(targetNumberOfPoints[0]).X);
-            vertices.push_back(shape->GetPoint(targetNumberOfPoints[0]).Y);
+            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[0]).X);
+            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[0]).Y);
             vertices.push_back(0.0f);
-            vertices.push_back(shape->GetPoint(targetNumberOfPoints[1]).X);
-            vertices.push_back(shape->GetPoint(targetNumberOfPoints[1]).Y);
+            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[1]).X);
+            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[1]).Y);
             vertices.push_back(0.0f);
-            vertices.push_back(shape->GetPoint(targetNumberOfPoints[2]).X);
-            vertices.push_back(shape->GetPoint(targetNumberOfPoints[2]).Y);
+            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[2]).X);
+            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[2]).Y);
             vertices.push_back(0.0f);
         }
 
@@ -77,7 +77,7 @@ namespace LDDrift
             LDDrift::VecPos2D CenterPos{0, 0};
             const std::size_t shapePointNumber = shape->GetPointCount();
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
-                CenterPos += shape->GetPoint(pointNumber);
+                CenterPos += shape->GetGlobalPoint(pointNumber);
             }
             CenterPos /= shapePointNumber;
             /////////////////////////////////////////////
@@ -88,11 +88,11 @@ namespace LDDrift
                 vertices.push_back(CenterPos.X);
                 vertices.push_back(CenterPos.Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetPoint(currentPoint).X);
-                vertices.push_back(shape->GetPoint(currentPoint).Y);
+                vertices.push_back(shape->GetGlobalPoint(currentPoint).X);
+                vertices.push_back(shape->GetGlobalPoint(currentPoint).Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetPoint(nextPoint).X);
-                vertices.push_back(shape->GetPoint(nextPoint).Y);
+                vertices.push_back(shape->GetGlobalPoint(nextPoint).X);
+                vertices.push_back(shape->GetGlobalPoint(nextPoint).Y);
                 vertices.push_back(0.0f);
             }
         }

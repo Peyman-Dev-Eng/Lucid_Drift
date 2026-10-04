@@ -41,12 +41,12 @@ void LDDrift::Core::Begin() {
                         "", {0, 0}, {350, 600});
     polygon = new LDDrift::Actors::Polygon;
     polygon->SetFillColor(true);
-    polygon->SetPointCount(5);
+    polygon->SetPointCount(4);
     polygon->SetScreenSize(window.GetWindowSize());
-    polygon->SetPoint(0, {-0.05, 0.05});
-    polygon->SetPoint(1, {-0.05, -0.05});
-    polygon->SetPoint(2, {0.05, -0.05});
-    polygon->SetPoint(3, {0.05, 0.05});
+    polygon->SetPoint(0, {10, 40});
+    polygon->SetPoint(1, {60, 40});
+    polygon->SetPoint(2, {60, 60});
+    polygon->SetPoint(3, {10, 60});
     polygon->SetSpeed(5);
     polygon->SetAllPointsColor({1, 0, 0, 1});
     render.AddShapeToRender(polygon);
