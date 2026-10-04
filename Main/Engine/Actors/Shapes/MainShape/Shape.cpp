@@ -7,29 +7,32 @@ void LDDrift::Actors::Shape::MoveUp() {
     for (VecPos2D& point : Points) {
         point.Y += SpeedNDC_Y;
     }
+    OriginalPosition.Y += SpeedNDC_Y;
 }
 
 void LDDrift::Actors::Shape::MoveDown() {
     for (VecPos2D& point : Points) {
         point.Y -= SpeedNDC_Y;
     }
+    OriginalPosition.Y -= SpeedNDC_Y;
 }
 
 void LDDrift::Actors::Shape::MoveLeft() {
     for (VecPos2D& point : Points) {
         point.X -= SpeedNDC_X;
     }
+    OriginalPosition.X -= SpeedNDC_X;
 }
 
 void LDDrift::Actors::Shape::MoveRight() {
     for (VecPos2D& point : Points) {
         point.X += SpeedNDC_X;
     }
+    OriginalPosition.X += SpeedNDC_X;
 }
 
 void LDDrift::Actors::Shape::SetOriginalPosition(const LDDrift::VecPos2D& pos) {
-    OriginalPosition.X = pos.X;
-    OriginalPosition.Y = pos.Y;
+    OriginalPosition = LDDrift::Transform::TransformToNDC_Position(pos);
 }
 
 void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
@@ -62,12 +65,12 @@ void LDDrift::Actors::Shape::SetSpeed(const float spd) {
 }
 
 void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
-    Points[point_index] = pos;
+    Points[point_index] = LDDrift::Transform::TransformToNDC_Position(pos);
 }
 
-const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetPoint(const std::size_t point_index) const {
+LDDrift::VecPos2D LDDrift::Actors::Shape::GetPoint(const std::size_t point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
-    return Points[point_index];
+    return LDDrift::Transform::TransformToGlobalPosition(Points[point_index]);
 }
 
 void LDDrift::Actors::Shape::SetPointColor(const uint point_index, const LDDrift::VecCol& color) {
@@ -118,8 +121,8 @@ void LDDrift::Actors::Shape::Move(const Dir direction) {
     }
 }
 
-const std::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetPoints() const {
-    return Points;
+std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetPoints() const {
+    return this->TransformPoints();
 }
 
 void LDDrift::Actors::Shape::ResetPointCount() {

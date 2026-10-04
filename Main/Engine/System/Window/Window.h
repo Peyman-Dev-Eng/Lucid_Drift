@@ -7,9 +7,14 @@
 #include <VecPos.h>
 #include <GUI.h>
 #include <string>
-#include <Renderer/Renderer.h>
-#define FULLSCREEN_WIDTH 1920
-#define FULLSCREEN_HEIGHT 1080
+#define FULLSCREEN_WINDOW_WIDTH 1920
+#define FULLSCREEN_WINDOW_HEIGHT 1080
+#define HALF_FULLSCREEN_WINDOW_WIDTH (FULLSCREEN_WINDOW_WIDTH / 2)
+#define HALF_FULLSCREEN_WINDOW_HEIGHT (FULLSCREEN_WINDOW_HEIGHT / 2)
+#define VIEWPORT_WINDOW_WIDTH 1570
+#define VIEWPORT_WINDOW_HEIGHT 900
+#define HALF_VIEWPORT_WINDOW_WIDTH (VIEWPORT_WINDOW_WIDTH / 2)
+#define HALF_VIEWPORT_WINDOW_HEIGHT (VIEWPORT_WINDOW_HEIGHT / 2)
 
 namespace LDDrift
 {
@@ -31,6 +36,8 @@ namespace LDDrift
      *
      * @see LDDrift::VecCol
      */
+    class Renderer;
+
     class Window
     {
     private:

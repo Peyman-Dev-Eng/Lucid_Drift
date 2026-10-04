@@ -4,13 +4,17 @@
 #include <vector>
 #include <ShapeData.h>
 #include <Actors/Line/Line.h>
-#include "Actors/Shapes/MainShape/Shape.h"
 #include <System/Triangulation/Triangulation.h>
 #define LUCID_DRIFT_SHAPE_RENDER_AS_FILLED 1
 #define LUCID_DRIFT_SHAPE_RENDER_AS_OUTLINE 2
 
 namespace LDDrift
 {
+    namespace Actors
+    {
+        class Shape;
+    }
+
     class Renderer final
     {
     private:
@@ -20,6 +24,7 @@ namespace LDDrift
             std::size_t startIndex;
             std::size_t count;
         };
+
     private: // opengl data
         std::vector<LDDrift::Actors::Line*> linePTRs;
         std::vector<LDDrift::Actors::Shape*> shapePTRs;
@@ -41,11 +46,12 @@ namespace LDDrift
         static GLuint Compile(GLenum type, const char* source);
 
     public:
-        explicit Renderer(const int& widthScreen = 500 /* Width screen */, const int& heightScreen = 500 /* height screen */);
+        explicit Renderer(const int& widthScreen = 500 /* Width screen */,
+                          const int& heightScreen = 500 /* height screen */);
         void Initialize();
         void RebuildShapes();
-        void SetWidthScreen(int WS );
-        void SetHeightScreen(int HS );
+        void SetWidthScreen(int WS);
+        void SetHeightScreen(int HS);
         [[nodiscard]] GLuint GetProgram() const;
         void SendDataToGPU() const;
         void AddShapeToRender(LDDrift::Actors::Shape*);

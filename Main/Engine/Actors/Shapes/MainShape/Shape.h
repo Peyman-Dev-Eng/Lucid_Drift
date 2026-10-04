@@ -6,6 +6,7 @@
 #include <Angle.h>
 #include <codecvt>
 #include <ShapeData.h>
+#include <SubSystems/Transform/Transform.h>
 
 namespace LDDrift::ActorType
 {
@@ -67,11 +68,11 @@ namespace LDDrift::Actors
 
     public:
         Shape();
-        [[nodiscard]] const std::vector<VecPos2D>& GetPoints() const;
+        [[nodiscard]] std::vector<VecPos2D> GetPoints() const;
         void SetPointCount(std::size_t point_count);
         [[nodiscard]] std::size_t GetPointCount() const;
         void SetPoint(std::size_t point_index, const LDDrift::VecPos2D& pos);
-        [[nodiscard]] const LDDrift::VecPos2D& GetPoint(std::size_t point_index) const;
+        [[nodiscard]] LDDrift::VecPos2D GetPoint(std::size_t point_index) const;
         [[nodiscard]] float GetSpeed() const;
         [[nodiscard]] float GetSpeedNDC_X() const;
         [[nodiscard]] float GetSpeedNDC_Y() const;

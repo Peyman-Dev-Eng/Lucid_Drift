@@ -1,4 +1,5 @@
 #include "Window.h"
+#include <Renderer/Renderer.h>
 
 LDDrift::Window::Window() : renderer(nullptr) {
     GLB_assert(glfwInit())

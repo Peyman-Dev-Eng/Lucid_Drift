@@ -147,6 +147,28 @@ target_link_libraries(GUI PUBLIC
         ANGLE
         SHAPE_DATA
 )
+# ============================================================================
+# Transform System
+# ============================================================================
+
+add_library(TRM STATIC
+        Engine/SubSystems/Transform/Transform.cpp
+)
+
+target_include_directories(TRM PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/Transform
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine
+        ${PROJECT_SOURCE_DIR}/glad/include
+)
+
+target_link_libraries(TRM PUBLIC
+        VECPOS2D
+        VecColor
+        SHAPE_DATA
+        ASSERT
+        FUNCTIONS
+        GUI
+)
 
 # ============================================================================
 # END
@@ -222,8 +244,6 @@ add_library(Engine SHARED
         # Compilation - System
         Engine/System/Compilation/Compile.cpp
         Engine/System/Compilation/Compile.h
-        Engine/SubSystems/Transfom/Transform.cpp
-        Engine/SubSystems/Transfom/Transform.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -244,4 +264,5 @@ target_link_libraries(Engine PUBLIC
         FUNCTIONS
         GL
         GUI
+        TRM
 )

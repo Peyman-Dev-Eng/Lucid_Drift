@@ -14,6 +14,7 @@
 #include <System/Input/input.h>
 #include <System/GUI/GUI.h>
 #include <System/Core/Core.h>
+#include <SubSystems/Transform/Transform.h>
 
 
 int main() {

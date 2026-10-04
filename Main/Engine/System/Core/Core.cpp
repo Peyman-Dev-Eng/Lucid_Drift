@@ -22,7 +22,8 @@ void LDDrift::Core::InitCore() {
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A,
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S,
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_W,
-        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_SPACE
     });
     gui.SetCorePTR(this);
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
@@ -40,12 +41,12 @@ void LDDrift::Core::Begin() {
                         "", {0, 0}, {350, 600});
     polygon = new LDDrift::Actors::Polygon;
     polygon->SetFillColor(true);
-    polygon->SetPointCount(4);
+    polygon->SetPointCount(5);
     polygon->SetScreenSize(window.GetWindowSize());
-    polygon->SetPoint(0, {0.5, 0.5});
-    polygon->SetPoint(1, {-0.5, 0.5});
-    polygon->SetPoint(2, {0.5, -0.5});
-    polygon->SetPoint(3, {-0.5, -0.5});
+    polygon->SetPoint(0, {-0.05, 0.05});
+    polygon->SetPoint(1, {-0.05, -0.05});
+    polygon->SetPoint(2, {0.05, -0.05});
+    polygon->SetPoint(3, {0.05, 0.05});
     polygon->SetSpeed(5);
     polygon->SetAllPointsColor({1, 0, 0, 1});
     render.AddShapeToRender(polygon);
@@ -55,6 +56,7 @@ void LDDrift::Core::Begin() {
 void LDDrift::Core::EngineHandler() {
     projectWatchTower.SetPaths();
     LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
+    std::cout << polygon->GetPointCount();
     while (window.ScreenIsOpen()) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
         LDDrift::input::Mouse::GetMouseInputEvent();
@@ -80,6 +82,11 @@ void LDDrift::Core::EngineHandler() {
         }
         if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S)) {
             polygon->Move(LDDrift::Actors::Dir::DOWN);
+            render.UpdateShapeData();
+            render.SendDataToGPU();
+        }
+        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_SPACE)) {
+            polygon->Rotate(1);
             render.UpdateShapeData();
             render.SendDataToGPU();
         }

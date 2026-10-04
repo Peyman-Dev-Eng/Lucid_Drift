@@ -83,16 +83,16 @@ namespace LDDrift
             /////////////////////////////////////////////
             // create triangles
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
-                const std::size_t previousPointNumber = pointNumber == 0 ? shapePointNumber - 1 : pointNumber - 1;
-                const std::size_t currentPointNumber = pointNumber == (shapePointNumber - 1) ? 0 : pointNumber;
+                const std::size_t currentPoint = pointNumber;
+                const std::size_t nextPoint = pointNumber == shapePointNumber - 1 ? 0 : pointNumber + 1;
                 vertices.push_back(CenterPos.X);
                 vertices.push_back(CenterPos.Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetPoint(previousPointNumber).X);
-                vertices.push_back(shape->GetPoint(previousPointNumber).Y);
+                vertices.push_back(shape->GetPoint(currentPoint).X);
+                vertices.push_back(shape->GetPoint(currentPoint).Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetPoint(currentPointNumber).X);
-                vertices.push_back(shape->GetPoint(currentPointNumber).Y);
+                vertices.push_back(shape->GetPoint(nextPoint).X);
+                vertices.push_back(shape->GetPoint(nextPoint).Y);
                 vertices.push_back(0.0f);
             }
         }
@@ -113,10 +113,10 @@ namespace LDDrift
 
         [[nodiscard]] std::vector<float> CreateTriangles() const {
             if (const std::size_t pointNumber = shape->GetPointCount(); pointNumber <= 3) {
-                std::cerr << RED <<
+                std::cerr <<
                     R"( The shape you are attempting to convert into a triangle is either already a triangle,
                         or its number of vertices is invalid.
-                        Therefore, be mindful of the valid data you extract from this function.)" << RESET << std::endl;
+                        Therefore, be mindful of the valid data you extract from this function.)" << std::endl;
                 return std::vector<float>{0.0f};
             }
             if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::convex>) {

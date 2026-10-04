@@ -71,8 +71,13 @@ void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
     shapePTRs.push_back(shape);
     const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
     std::vector<float> VTC = {};
-    const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
-    VTC = triangulation.CreateTriangles();
+    if (shape->ShapeIsConvex().isConvex) {
+        const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
+        VTC = triangulation.CreateTriangles();
+    } else {
+        const LDDrift::Triangulation<LDDrift::ActorType::concave> triangulation(shape);
+        VTC = triangulation.CreateTriangles();
+    }
     const std::size_t vertexCount = VTC.size() / 3;
     for (std::size_t vertex = 0; vertex < vertexCount; ++vertex) {
         vertices.push_back(VTC[vertex * 3]);
@@ -95,7 +100,8 @@ void LDDrift::Renderer::SendDataToGPU() const {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glBufferData(GL_ARRAY_BUFFER, (vertices.size()) * sizeof(float), vertices.data(), GL_DYNAMIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(vertices.size() * sizeof(float)), vertices.data(),
+                 GL_DYNAMIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), reinterpret_cast<void*>(0));
     glEnableVertexAttribArray(0);
@@ -110,8 +116,13 @@ void LDDrift::Renderer::UpdateShapeData() {
     for (const auto& shape : shapePTRs) {
         const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
         std::vector<float> VTC = {};
-        const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
-        VTC = triangulation.CreateTriangles();
+        if (shape->ShapeIsConvex().isConvex) {
+            const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
+            VTC = triangulation.CreateTriangles();
+        } else {
+            const LDDrift::Triangulation<LDDrift::ActorType::concave> triangulation(shape);
+            VTC = triangulation.CreateTriangles();
+        }
         const std::size_t vertexCount = VTC.size() / 3;
         for (std::size_t vertex = 0; vertex < vertexCount; ++vertex) {
             vertices.push_back(VTC[vertex * 3]);
