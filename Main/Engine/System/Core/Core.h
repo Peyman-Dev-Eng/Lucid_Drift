@@ -25,10 +25,12 @@ namespace LDDrift
 {
     class Core
     {
+    private:
+        void InitCore();
     public:
         std::stringstream consoleBuffer;
         std::streambuf* oldC_outBuf = nullptr;
-        LDDrift::Actors::Circle* circle = nullptr;
+        LDDrift::Actors::Polygon* polygon = nullptr;
 
     public:
         // data

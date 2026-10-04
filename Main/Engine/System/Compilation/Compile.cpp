@@ -1,7 +1,9 @@
-//
-// Created by Develepment on 10/3/26.
-//
-
 #include "Compile.h"
 
-namespace LDDrift {} // LDDrift
+#include "functions.h"
+
+LDDrift::Compile::Compile() = default;
+
+LDDrift::Compile::~Compile() = default;
+
+

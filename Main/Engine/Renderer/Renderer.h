@@ -3,6 +3,7 @@
 #include "glad/glad.h"
 #include <vector>
 #include <ShapeData.h>
+#include <Actors/Line/Line.h>
 #include "Actors/Shapes/MainShape/Shape.h"
 #include <System/Triangulation/Triangulation.h>
 #define LUCID_DRIFT_SHAPE_RENDER_AS_FILLED 1
@@ -20,6 +21,7 @@ namespace LDDrift
             std::size_t count;
         };
     private: // opengl data
+        std::vector<LDDrift::Actors::Line*> linePTRs;
         std::vector<LDDrift::Actors::Shape*> shapePTRs;
         std::vector<ReadShapeVertices> howToReadShapeData;
         std::vector<float> vertices;
@@ -47,6 +49,7 @@ namespace LDDrift
         [[nodiscard]] GLuint GetProgram() const;
         void SendDataToGPU() const;
         void AddShapeToRender(LDDrift::Actors::Shape*);
+        void AddLineToRender(LDDrift::Actors::Line*);
         void UpdateShapeData();
         void render() const;
     };

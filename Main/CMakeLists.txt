@@ -2,6 +2,7 @@
 set(LUCID_DRIFT_ROOT
         ${CMAKE_CURRENT_LIST_DIR}/..
 )
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 
 # ============================================================================
@@ -221,6 +222,8 @@ add_library(Engine SHARED
         # Compilation - System
         Engine/System/Compilation/Compile.cpp
         Engine/System/Compilation/Compile.h
+        Engine/SubSystems/Transfom/Transform.cpp
+        Engine/SubSystems/Transfom/Transform.h
 )
 
 target_include_directories(Engine PUBLIC

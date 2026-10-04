@@ -3,6 +3,7 @@
 #include <VecPos.h>
 #include <array>
 #include <vector>
+#include <VecCol.h>
 
 namespace LDDrift::Actors
 {
@@ -41,11 +42,13 @@ namespace LDDrift::Actors
         [[nodiscard]] LDDrift::VecPos2D GetFirstPoint() const;
         [[nodiscard]] LDDrift::VecPos2D GetSecondPoint() const;
         [[nodiscard]] std::vector<PNT> GetPoints() const;
+        void SetLineColor(const LDDrift::VecCol& color);
         Line& SetThickness(float);
         Line& SetScreenSize(const LDDrift::VecPos2D&);
         ~Line();
 
     private:
+        LDDrift::VecCol lineColor;
         std::vector<PNT> Points;
         LDDrift::VecPos2D FirstPoint;
         LDDrift::VecPos2D SecondPoint;

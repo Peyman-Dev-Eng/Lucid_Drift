@@ -26,6 +26,10 @@ void LDDrift::Actors::Line::SetSecondPoint(const LDDrift::VecPos2D& SPoint) {
     SecondPoint = SPoint;
 }
 
+void LDDrift::Actors::Line::SetLineColor(const LDDrift::VecCol& color) {
+    lineColor = color;
+}
+
 LDDrift::VecPos2D LDDrift::Actors::Line::GetFirstPoint() const {
     return FirstPoint;
 }

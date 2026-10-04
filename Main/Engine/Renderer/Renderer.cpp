@@ -147,6 +147,10 @@ void LDDrift::Renderer::render() const {
     }
 }
 
+void LDDrift::Renderer::AddLineToRender(LDDrift::Actors::Line* line) {
+    linePTRs.push_back(line);
+}
+
 void LDDrift::Renderer::RebuildShapes() {
     for (LDDrift::Actors::Shape* shape : shapePTRs) {
         shape->Rebuild(WidthScreen, HeightScreen);

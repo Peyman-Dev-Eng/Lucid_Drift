@@ -6,6 +6,10 @@ LDDrift::Scene::Scene() = default;
 
 LDDrift::Scene::~Scene() = default;
 
+void LDDrift::Scene::SetRenderer(LDDrift::Renderer* rendererPTR) {
+    renderer = rendererPTR;
+}
+
 template <typename ShapeTypeClass>
 void LDDrift::Scene::Create(const ShapeTypeClass* shape) {
     if (typeid(*shape) == typeid(LDDrift::Actors::Line)) {

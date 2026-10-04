@@ -4,7 +4,7 @@
 
 LDDrift::Core::Core() = default;
 
-void LDDrift::Core::Begin() {
+void LDDrift::Core::InitCore() {
     projectWatchTower.CreateNewProject("TestProject");
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
@@ -26,6 +26,10 @@ void LDDrift::Core::Begin() {
     });
     gui.SetCorePTR(this);
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
+}
+
+void LDDrift::Core::Begin() {
+    this->InitCore();
     gui.CreateNewWindow("Project Watch Tower", false, true,
                         "", {0, 720}, {350, 360});
     gui.CreateNewWindow("Project Manager", false, true,
@@ -34,12 +38,17 @@ void LDDrift::Core::Begin() {
                         "", {350, 900}, {1570, 180});
     gui.CreateNewWindow("Main Window", false, true,
                         "", {0, 0}, {350, 600});
-    circle = new LDDrift::Actors::Circle(100.0f);
-    circle->Rebuild(window.GetWidth(), window.GetHeight());
-    circle->SetAllPointsColor({1, 0, 1, 1});
-    circle->SetSpeed(5);
-    circle->SetFillColor(true);
-    render.AddShapeToRender(circle);
+    polygon = new LDDrift::Actors::Polygon;
+    polygon->SetFillColor(true);
+    polygon->SetPointCount(4);
+    polygon->SetScreenSize(window.GetWindowSize());
+    polygon->SetPoint(0, {0.5, 0.5});
+    polygon->SetPoint(1, {-0.5, 0.5});
+    polygon->SetPoint(2, {0.5, -0.5});
+    polygon->SetPoint(3, {-0.5, -0.5});
+    polygon->SetSpeed(5);
+    polygon->SetAllPointsColor({1, 0, 0, 1});
+    render.AddShapeToRender(polygon);
     render.SendDataToGPU();
 }
 
@@ -55,22 +64,22 @@ void LDDrift::Core::EngineHandler() {
             return;
         }
         if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A)) {
-            circle->Move(LDDrift::Actors::Dir::LEFT);
+            polygon->Move(LDDrift::Actors::Dir::LEFT);
             render.UpdateShapeData();
             render.SendDataToGPU();
         }
         if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D)) {
-            circle->Move(LDDrift::Actors::Dir::RIGHT);
+            polygon->Move(LDDrift::Actors::Dir::RIGHT);
             render.UpdateShapeData();
             render.SendDataToGPU();
         }
         if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_W)) {
-            circle->Move(LDDrift::Actors::Dir::UP);
+            polygon->Move(LDDrift::Actors::Dir::UP);
             render.UpdateShapeData();
             render.SendDataToGPU();
         }
         if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S)) {
-            circle->Move(LDDrift::Actors::Dir::DOWN);
+            polygon->Move(LDDrift::Actors::Dir::DOWN);
             render.UpdateShapeData();
             render.SendDataToGPU();
         }
@@ -94,5 +103,5 @@ LDDrift::Core::~Core() {
     LDDrift::input::Keyboard::Destroy();
     LDDrift::input::Mouse::Destroy();
     window.DestroyWindow();
-    delete circle;
+    delete polygon;
 }
