@@ -99,6 +99,7 @@ namespace LDDrift::Actors
         [[nodiscard]] float GetThickness() const;
         [[nodiscard]] std::vector<LDDrift::VecPos2D> TransformPoints() const;
         [[nodiscard]] virtual LDDrift::VecCol CalculateAverageVertexColor() const = 0;
+        [[nodiscard]] LDDrift::VecPos2D CalculateAveragePointPosition() const;
         virtual void Rebuild() = 0;
         virtual void Rebuild(int width, int height) = 0;
         virtual ~Shape();

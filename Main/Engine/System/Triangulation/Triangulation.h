@@ -77,7 +77,7 @@ namespace LDDrift
             LDDrift::VecPos2D CenterPos{0, 0};
             const std::size_t shapePointNumber = shape->GetPointCount();
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
-                CenterPos += shape->GetGlobalPoint(pointNumber);
+                CenterPos += shape->GetNDC_Point(pointNumber);
             }
             CenterPos /= shapePointNumber;
             /////////////////////////////////////////////
@@ -88,11 +88,11 @@ namespace LDDrift
                 vertices.push_back(CenterPos.X);
                 vertices.push_back(CenterPos.Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetGlobalPoint(currentPoint).X);
-                vertices.push_back(shape->GetGlobalPoint(currentPoint).Y);
+                vertices.push_back(shape->GetNDC_Point(currentPoint).X);
+                vertices.push_back(shape->GetNDC_Point(currentPoint).Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetGlobalPoint(nextPoint).X);
-                vertices.push_back(shape->GetGlobalPoint(nextPoint).Y);
+                vertices.push_back(shape->GetNDC_Point(nextPoint).X);
+                vertices.push_back(shape->GetNDC_Point(nextPoint).Y);
                 vertices.push_back(0.0f);
             }
         }

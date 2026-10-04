@@ -169,6 +169,15 @@ float LDDrift::Actors::Shape::GetThickness() const {
     return Thickness;
 }
 
+LDDrift::VecPos2D LDDrift::Actors::Shape::CalculateAveragePointPosition() const {
+    LDDrift::VecPos2D averagePoint;
+    for (const auto& point : Points) {
+        averagePoint += point;
+    }
+    averagePoint /= static_cast<float>(this->GetPointCount());
+    return LDDrift::Transform::TransformToGlobalPosition(averagePoint);
+}
+
 std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::TransformPoints() const {
     const float halfWidthScreen = screenSize.X / 2;
     const float halfHeightScreen = screenSize.Y / 2;

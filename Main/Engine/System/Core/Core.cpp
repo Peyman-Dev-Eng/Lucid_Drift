@@ -49,6 +49,7 @@ void LDDrift::Core::Begin() {
     polygon->SetPoint(3, {10, 60});
     polygon->SetSpeed(5);
     polygon->SetAllPointsColor({1, 0, 0, 1});
+    polygon->Rebuild();
     render.AddShapeToRender(polygon);
     render.SendDataToGPU();
 }
@@ -56,7 +57,6 @@ void LDDrift::Core::Begin() {
 void LDDrift::Core::EngineHandler() {
     projectWatchTower.SetPaths();
     LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
-    std::cout << polygon->GetPointCount();
     while (window.ScreenIsOpen()) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
         LDDrift::input::Mouse::GetMouseInputEvent();
