@@ -37,13 +37,55 @@ void LDDrift::Actors::Shape::SetOriginalPosition(const LDDrift::VecPos2D& pos) {
 
 void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
     const float radians = angle.GetAngleRadians();
-    for (VecPos2D& point : Points) {
-        const float dx = point.X - OriginalPosition.X;
-        const float dy = point.Y - OriginalPosition.Y;
-        point.X = dx * std::cos(radians) - dy * std::sin(radians);
-        point.Y = dx * std::sin(radians) + dy * std::cos(radians);
-        point += OriginalPosition;
+
+    const float cinRadians = std::cos(radians);
+    const float sinRadians = std::sin(radians);
+
+    std::vector<LDDrift::VecPos2D> globalPoints = this->GetGlobalPoints();
+    for (LDDrift::VecPos2D& point : globalPoints) {
+        const float x = point.X - OriginalPosition.X;
+        const float y = point.Y - OriginalPosition.Y;
+
+        const float rotatedX = x * cinRadians - y * sinRadians;
+        const float rotatedY = x * sinRadians + y * cinRadians;
+
+        point.X = rotatedX + OriginalPosition.X;
+        point.Y = rotatedY + OriginalPosition.Y;
     }
+    Points = LDDrift::Transform::TransformToNDC_Position(globalPoints);
+}
+
+void LDDrift::Actors::Shape::SetOriginalPositionToCenter() {
+    float area = 0.0f;
+    float cx = 0.0f;
+    float cy = 0.0f;
+
+    for (std::size_t i = 0; i < PointCount; ++i)
+    {
+        const VecPos2D& p0 = Points[i];
+        const VecPos2D& p1 = Points[(i + 1) % PointCount];
+
+        const float cross =
+            p0.X * p1.Y -
+            p1.X * p0.Y;
+
+        area += cross;
+        cx += (p0.X + p1.X) * cross;
+        cy += (p0.Y + p1.Y) * cross;
+    }
+
+    area *= 0.5f;
+
+    if (std::abs(area) < std::numeric_limits<float>::epsilon())
+    {
+        OriginalPosition = {0.0f, 0.0f};
+        return;
+    }
+
+    cx /= 6.0f * area;
+    cy /= 6.0f * area;
+
+    OriginalPosition = {cx, cy};
 }
 
 void LDDrift::Actors::Shape::SetPointCount(const std::size_t point_count) {
@@ -69,6 +111,7 @@ const std::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetNDC_Points() co
 }
 
 void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
+    GLB_assert(point_index >= 0 && point_index < PointCount)
     Points[point_index] = LDDrift::Transform::TransformToNDC_Position(pos);
 }
 
@@ -115,6 +158,7 @@ float LDDrift::Actors::Shape::GetSpeedNDC_Y() const {
 }
 
 void LDDrift::Actors::Shape::Move(const Dir direction) {
+    std::cout << OriginalPosition << std::endl;
     if (direction == Dir::UP) {
         this->MoveUp();
         return;
@@ -131,7 +175,7 @@ void LDDrift::Actors::Shape::Move(const Dir direction) {
 }
 
 std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetGlobalPoints() const {
-    return this->TransformPoints();
+    return LDDrift::Transform::TransformToGlobalPosition(Points);
 }
 
 void LDDrift::Actors::Shape::ResetPointCount() {

@@ -57,5 +57,11 @@ namespace LDDrift
     };
 }
 
-
+inline std::ostream& operator<<(std::ostream& stream, const LDDrift::VecPos2D& vec) {
+    stream << "X: ";
+    stream << vec.X;
+    stream << " - Y: ";
+    stream << vec.Y;
+    return stream;
+}
 #endif //LUCID_DRIFT_VECPOS_H

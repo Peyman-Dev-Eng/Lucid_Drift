@@ -7,6 +7,7 @@
 #include <codecvt>
 #include <ShapeData.h>
 #include <SubSystems/Transform/Transform.h>
+#include <numeric>
 
 namespace LDDrift::ActorType
 {
@@ -82,6 +83,7 @@ namespace LDDrift::Actors
         virtual void Rotate(const Angle& angle);
         void SetSpeed(float spd);
         void SetOriginalPosition(const LDDrift::VecPos2D& pos);
+        void SetOriginalPositionToCenter();
         [[nodiscard]] const LDDrift::VecPos2D& GetOriginalPosition() const;
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
         [[nodiscard]] const LDDrift::VecCol& GetPointColor(std::size_t point_index) const;

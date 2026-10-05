@@ -15,10 +15,6 @@ LDDrift::Actors::Circle::Circle(const float& R) : radiusNDC_X(0), radiusNDC_Y(0)
     }
 }
 
-void LDDrift::Actors::Circle::SetOriginalPositionToCenter() {
-    this->SetOriginalPosition(CenterPos);
-}
-
 void LDDrift::Actors::Circle::SetRadius(const float& R) {
     radius = R;
     const LDDrift::VecPos2D& ScreenSize = this->GetScreenSize();

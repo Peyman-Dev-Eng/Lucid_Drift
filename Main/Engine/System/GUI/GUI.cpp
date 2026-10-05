@@ -79,7 +79,7 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
              const auto& path : paths) {
             if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) ==
                 std::string(result.searchBuffer)) {
-                if (std::filesystem::is_directory(path)) {
+                if (is_directory(path)) {
                     std::cout <<
                         "Invalid input. The specified path is a folder. Please provide a file path where the code can be written."
                         << std::endl;

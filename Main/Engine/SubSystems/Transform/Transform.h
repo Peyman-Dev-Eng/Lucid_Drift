@@ -22,6 +22,8 @@ namespace LDDrift
         static std::vector<LDDrift::VecPos2D> TransformToGlobalPosition(const LDDrift::Actors::Shape*);
         static LDDrift::VecPos2D TransformToNDC_Position(const LDDrift::VecPos2D&);
         static LDDrift::VecPos2D TransformToGlobalPosition(const LDDrift::VecPos2D&);
+        static std::vector<LDDrift::VecPos2D> TransformToNDC_Position(const std::vector<LDDrift::VecPos2D>&);
+        static std::vector<LDDrift::VecPos2D> TransformToGlobalPosition(const std::vector<LDDrift::VecPos2D>&);
     };
 }
 

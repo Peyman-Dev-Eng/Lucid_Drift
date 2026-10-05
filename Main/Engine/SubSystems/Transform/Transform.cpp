@@ -43,3 +43,21 @@ LDDrift::VecPos2D LDDrift::Transform::TransformToGlobalPosition(const LDDrift::V
         (point.Y + 1.0f) * static_cast<float>(halfHeightScreen)
     };
 }
+
+std::vector<LDDrift::VecPos2D>
+LDDrift::Transform::TransformToNDC_Position(const std::vector<LDDrift::VecPos2D>& points) {
+    std::vector<LDDrift::VecPos2D> NDC_pointPositon;
+    for (const LDDrift::VecPos2D& point : points) {
+        NDC_pointPositon.push_back(LDDrift::Transform::TransformToNDC_Position(point));
+    }
+    return NDC_pointPositon;
+}
+
+std::vector<LDDrift::VecPos2D> LDDrift::Transform::TransformToGlobalPosition(
+    const std::vector<LDDrift::VecPos2D>& points) {
+    std::vector<LDDrift::VecPos2D> globalPointPosition;
+    for (const LDDrift::VecPos2D& point : points) {
+        globalPointPosition.push_back(LDDrift::Transform::TransformToGlobalPosition(point));
+    }
+    return globalPointPosition;
+}

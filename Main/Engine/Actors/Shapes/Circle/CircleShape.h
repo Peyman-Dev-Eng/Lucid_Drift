@@ -33,7 +33,6 @@ namespace LDDrift::Actors
         explicit Circle(const float& R);
         void SetRadius(const float& R);
         [[nodiscard]] float GetRadius() const;
-        void SetOriginalPositionToCenter();
         [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
         void Rebuild() override;
         void Rebuild(int width, int height) override;

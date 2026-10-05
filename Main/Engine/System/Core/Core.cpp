@@ -41,17 +41,20 @@ void LDDrift::Core::Begin() {
                         "", {0, 0}, {350, 600});
     polygon = new LDDrift::Actors::Polygon;
     polygon->SetFillColor(true);
-    polygon->SetPointCount(4);
+    polygon->SetPointCount(3);
     polygon->SetScreenSize(window.GetWindowSize());
     polygon->SetPoint(0, {10, 40});
     polygon->SetPoint(1, {60, 40});
     polygon->SetPoint(2, {60, 60});
-    polygon->SetPoint(3, {10, 60});
+    polygon->SetOriginalPositionToCenter();
     polygon->SetSpeed(5);
     polygon->SetAllPointsColor({1, 0, 0, 1});
     polygon->Rebuild();
     render.AddShapeToRender(polygon);
     render.SendDataToGPU();
+    std::cout << polygon->GetGlobalPoint(0) << std::endl;
+    std::cout << polygon->GetGlobalPoint(1) << std::endl;
+    std::cout << polygon->GetGlobalPoint(2) << std::endl;
 }
 
 void LDDrift::Core::EngineHandler() {

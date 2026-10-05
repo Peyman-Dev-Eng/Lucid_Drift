@@ -112,12 +112,23 @@ namespace LDDrift
         }
 
         [[nodiscard]] std::vector<float> CreateTriangles() const {
-            if (const std::size_t pointNumber = shape->GetPointCount(); pointNumber <= 3) {
+            const std::size_t pointNumber = shape->GetPointCount();
+            if (pointNumber < 3) {
                 std::cerr <<
                     R"( The shape you are attempting to convert into a triangle is either already a triangle,
                         or its number of vertices is invalid.
                         Therefore, be mindful of the valid data you extract from this function.)" << std::endl;
                 return std::vector<float>{0.0f};
+            }
+            if (pointNumber == 3) {
+                std::vector<float> vertices;
+                for (std::size_t pointIndex = 0; pointIndex < 3; ++pointIndex) {
+                    const LDDrift::VecPos2D& point = shape->GetNDC_Point(pointIndex);
+                    vertices.push_back(point.X);
+                    vertices.push_back(point.Y);
+                    vertices.push_back(0.0f);
+                }
+                return vertices;
             }
             if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::convex>) {
                 std::vector<float> vertices;
