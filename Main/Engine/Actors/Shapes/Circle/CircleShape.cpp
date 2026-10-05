@@ -46,9 +46,7 @@ void LDDrift::Actors::Circle::Rebuild() {
     uint PointIndex = 0;
     const LDDrift::VecPos2D& screenSize = this->GetScreenSize();
     radiusNDC_X = radius / screenSize.X;
-    std::cout << radiusNDC_X << std::endl;
     radiusNDC_Y = radius / screenSize.Y;
-    std::cout << radiusNDC_Y << std::endl;
     for (uint angle = 0; angle < 360; angle += VectexAngle, ++PointIndex) {
         const auto radians = static_cast<float>(angle * std::numbers::pi_v<double> / 180.0f);
         this->SetPoint(PointIndex, LDDrift::VecPos2D{

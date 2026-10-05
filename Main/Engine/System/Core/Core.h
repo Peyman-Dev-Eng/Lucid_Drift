@@ -30,7 +30,7 @@ namespace LDDrift
     public:
         std::stringstream consoleBuffer;
         std::streambuf* oldC_outBuf = nullptr;
-        LDDrift::Actors::Polygon* polygon = nullptr;
+        LDDrift::Actors::Circle* circle = nullptr;
 
     public:
         // data

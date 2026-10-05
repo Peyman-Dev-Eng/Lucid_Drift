@@ -42,15 +42,16 @@ void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
     const float sinRadians = std::sin(radians);
 
     std::vector<LDDrift::VecPos2D> globalPoints = this->GetGlobalPoints();
+    const LDDrift::VecPos2D globalOriginalPosition = LDDrift::Transform::TransformToGlobalPosition(OriginalPosition);
     for (LDDrift::VecPos2D& point : globalPoints) {
-        const float x = point.X - OriginalPosition.X;
-        const float y = point.Y - OriginalPosition.Y;
+        const float x = point.X - globalOriginalPosition.X;
+        const float y = point.Y - globalOriginalPosition.Y;
 
         const float rotatedX = x * cinRadians - y * sinRadians;
         const float rotatedY = x * sinRadians + y * cinRadians;
 
-        point.X = rotatedX + OriginalPosition.X;
-        point.Y = rotatedY + OriginalPosition.Y;
+        point.X = rotatedX + globalOriginalPosition.X;
+        point.Y = rotatedY + globalOriginalPosition.Y;
     }
     Points = LDDrift::Transform::TransformToNDC_Position(globalPoints);
 }
@@ -158,7 +159,6 @@ float LDDrift::Actors::Shape::GetSpeedNDC_Y() const {
 }
 
 void LDDrift::Actors::Shape::Move(const Dir direction) {
-    std::cout << OriginalPosition << std::endl;
     if (direction == Dir::UP) {
         this->MoveUp();
         return;

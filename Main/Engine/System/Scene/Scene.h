@@ -15,14 +15,16 @@ namespace LDDrift
     {
     private:
         LDDrift::Renderer* renderer = nullptr;
-        std::vector<LDDrift::Actors::Shape*> shapes;
+        std::vector<LDDrift::Actors::Circle*> circleShapes;
+        std::vector<LDDrift::Actors::Polygon*> polygonShapes;
         std::vector<LDDrift::Actors::Line> lines;
     public:
         Scene();
         void SetRenderer(LDDrift::Renderer* rendererPTR);
-        template <typename ShapeTypeClass>
-        void Create(const ShapeTypeClass* shape);
         void SendShapesToRender();
+        void CreateCircleShape();
+        void CreatePolygonShape();
+        void CreateLineActor();
         ~Scene();
     };
 }

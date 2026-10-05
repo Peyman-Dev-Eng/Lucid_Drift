@@ -14,6 +14,20 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     ImGui_ImplGlfw_InitForOpenGL(glfwWindow, true);
     ImGui_ImplOpenGL3_Init();
+    this->CreateNewWindow(PROJECT_WATCH_TOWER_WINDOW_NAME, false, true,
+                          "", {0, 720}, {350, 360}, true);
+    this->CreateNewWindow(PROJECT_MANAGER_WINDOW_NAME, false, true,
+                          "", {0, 600}, {350, 120}, true);
+    this->CreateNewWindow(CONSOLE_WINDOW_NAME, false, true,
+                          "", {350, 900}, {1570, 180}, true);
+    this->CreateNewWindow(MAIN_WINDOW_NAME, false, true,
+                          "", {0, 0}, {350, 600}, true);
+    this->CreateNewWindow(CIRCLE_CONFIGURE_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(POLYGON_CONFIGURE_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(LINE_CONFIGURE_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
 }
 
 std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
@@ -39,11 +53,12 @@ void LDDrift::GUI::CreateNewWindow(const std::string& name,
                                    const bool canResizeWindow,
                                    const std::string& textPrintInWindow,
                                    const VecPos2D& position,
-                                   const VecPos2D& size) {
+                                   const VecPos2D& size,
+                                   const bool SHOW) {
     defaultWindows.push_back({
         .name = name, .canMoveWindow = canMoveWindow, .canResizeWindow = canResizeWindow,
         .textPrintInWindow = LDDrift::GUI::ExtractTextFromString(textPrintInWindow),
-        .position = position, .size = size, .Show = true,
+        .position = position, .size = size, .Show = SHOW,
     });
 }
 
@@ -96,6 +111,20 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
             }
         }
     }
+    ImGui::Text("Project Information");
+
+    ImGui::Separator();
+
+    ImGui::Text((static_cast<std::string>("Project name: ") + ProjectWatchTower_PTR->GetProjectName()).c_str());
+
+    ImGui::Text(
+        (static_cast<std::string>("Project path: ") + ProjectWatchTower_PTR->GetProjectPath().string()).c_str());
+
+    ImGui::Separator();
+
+    for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
+        ImGui::TextUnformatted(path.string().c_str());
+    }
 }
 
 void LDDrift::GUI::SetCorePTR(LDDrift::Core* corePTR) {
@@ -103,9 +132,48 @@ void LDDrift::GUI::SetCorePTR(LDDrift::Core* corePTR) {
     core = corePTR;
 }
 
+LDDrift::GUI::DefaultWindowsData* LDDrift::GUI::GetWindowPTR(const std::string& nameWindow) {
+    const std::size_t windowNumber = defaultWindows.size();
+    for (std::size_t windowIndex = 0; windowIndex < windowNumber; ++windowIndex) {
+        if (defaultWindows[windowIndex].name == nameWindow) {
+            return &defaultWindows[windowIndex];
+        }
+    }
+    return nullptr;
+}
+
+void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
+    if (window->name != MAIN_WINDOW_NAME) {
+        return;
+    }
+    ImGui::Text("Create New");
+    ImGui::Separator();
+    if (ImGui::Button("Circle")) {
+        DefaultWindowsData* circleConfigureWindow = GetWindowPTR(CIRCLE_CONFIGURE_WINDOW_NAME);
+        NPV_assert(circleConfigureWindow != nullptr);
+        circleConfigureWindow->Show = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Polygon")) {
+        DefaultWindowsData* polygonConfigureWindow = GetWindowPTR(POLYGON_CONFIGURE_WINDOW_NAME);
+        NPV_assert(polygonConfigureWindow != nullptr);
+        polygonConfigureWindow->Show = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Line")) {
+        DefaultWindowsData* lineConfigureWindow = GetWindowPTR(LINE_CONFIGURE_WINDOW_NAME);
+        NPV_assert(lineConfigureWindow != nullptr);
+        lineConfigureWindow->Show = true;
+    }
+    ImGui::Separator();
+}
+
 void LDDrift::GUI::EndRenderGUI() {
     GLB_assert(ProjectWatchTower_PTR != nullptr)
     for (DefaultWindowsData& window : defaultWindows) {
+        if (!window.Show) {
+            continue;
+        }
         ImGuiWindowFlags flags = 0;
         flags |= ImGuiWindowFlags_NoCollapse;
         if (!window.canResizeWindow) {
@@ -114,11 +182,19 @@ void LDDrift::GUI::EndRenderGUI() {
         if (!window.canMoveWindow) {
             flags |= ImGuiWindowFlags_NoMove;
         }
-        ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
-        ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
+        if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) && (window.
+            name != LINE_CONFIGURE_WINDOW_NAME)) {
+            ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
+            ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
+        }
         ImGui::Begin(window.name.c_str(), nullptr, flags);
+        MainWindowHandler(&window);
         // مدیریت صفحه برج دیده بانی پروژه موتور بازی
         this->ProjectWatchTowerWidowHandler(&window);
+        if (window.name == PROJECT_WATCH_TOWER_WINDOW_NAME) {
+            ImGui::End();
+            continue;
+        }
         // مدیریت صفحه console موتور بازی
         if (window.name == CONSOLE_WINDOW_NAME) {
             if (ImGui::Button("Clear")) {
@@ -128,9 +204,10 @@ void LDDrift::GUI::EndRenderGUI() {
         }
         // مدیریت صفحه مدیریت پروژه موتور بازی
         LDDrift::GuiLogic::ProjectManagerHandling(&window);
-        for (const std::string& text : window.textPrintInWindow) {
-            ImGui::TextUnformatted(text.c_str());
-        }
+        if (!window.textPrintInWindow.empty())
+            for (const std::string& text : window.textPrintInWindow) {
+                ImGui::TextUnformatted(text.c_str());
+            }
         ImGui::End();
     }
     // میدیریت ادیتور موتور بازی
