@@ -117,7 +117,7 @@ void LDDrift::ProjectWatchTower::SetPaths() {
     }
     std::filesystem::recursive_directory_iterator iterator(projectPath);
     for (const std::filesystem::directory_entry& entry : iterator) {
-        if (entry.path().filename() == "cmake-build-debug" || entry.path().filename() == ".idea") {
+        if (entry.path().filename() == "cmake-build-debug" || entry.path().filename() == ".idea" || entry.path().filename() == "BUILD") {
             if (entry.is_directory()) {
                 iterator.disable_recursion_pending();
             }
