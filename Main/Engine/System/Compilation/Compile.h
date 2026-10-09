@@ -1,23 +1,23 @@
 #ifndef LUCID_DRIFT_COMPILE_H
 #define LUCID_DRIFT_COMPILE_H
 #include <filesystem>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <ProjectWatchTower.h>
+#include <iostream>
 
 namespace LDDrift
 {
     class Compile
     {
     private:
-        LDDrift::ProjectWatchTower* ProjectWatchTowerPTR = nullptr;
-        void SetCompilePath(std::string& compileMess) const;
+        std::filesystem::path _projectPath;
+        std::filesystem::path _engineRoot;
+        std::filesystem::path compilationDirectory;
+        std::filesystem::path outputDirectory;
     public:
         Compile();
-        void SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* projectWatchTower_Pointer);
-        void initialize();
-        void compile();
+        Compile(std::filesystem::path&& projectPath, std::filesystem::path&& engineRoot);
+        void init(std::filesystem::path&& projectPath, std::filesystem::path&& engineRoot);
+        [[nodiscard]] bool BuildProject() const;
+        [[nodiscard]] std::filesystem::path GetOutputLibraryFile() const;
         ~Compile();
     };
 }

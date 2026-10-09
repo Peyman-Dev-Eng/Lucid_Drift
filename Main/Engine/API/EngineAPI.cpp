@@ -2,7 +2,9 @@
 
 void LDDrift::EngineAPI::AfterCompileProject() {
 #ifdef __linux__
-    handle = dlopen(project_watch_tower->GetBuildFolderPath().c_str(), RTLD_NOW);
+    handle = dlopen(
+        static_cast<std::string>(project_watch_tower->GetBuildFolderPath().string() + '/' +
+            project_watch_tower->GetProjectName() + ".so").c_str(), RTLD_NOW);
     CTM_assert(handle != nullptr, dlerror())
 
 #elifdef _WIN32
@@ -16,7 +18,8 @@ void LDDrift::EngineAPI::SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* PWT
 
 void LDDrift::EngineAPI::DestroyEngineAPI() {
 #ifdef __linux__
-    dlclose(handle);
+    if (handle != nullptr)
+        dlclose(handle);
 #elifdef _WIN32
     FreeLibrary(hModule);
 #endif
