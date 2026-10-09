@@ -15,6 +15,48 @@ void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectNam
     projectPath = std::filesystem::path(LDDrift::func::GetHostName()) / _projectName;
     create_directories(projectPath);
     this->CreateBuildFolder();
+    this->CreateCmakeListsTxtFile();
+}
+
+bool LDDrift::ProjectWatchTower::isCmakeFile(const std::filesystem::path& path) {
+    const std::string stringPath = path.string();
+    if (const std::size_t pathLen = stringPath.size();
+        stringPath[pathLen - 1] == 't' &&
+        stringPath[pathLen - 2] == 'x' &&
+        stringPath[pathLen - 3] == 't' &&
+        stringPath[pathLen - 4] == '.') {
+        return true;
+    }
+    return false;
+}
+
+void LDDrift::ProjectWatchTower::CreateCmakeListsTxtFile() const {
+    std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
+    std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
+project({} CXX C)
+
+set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
+
+add_executable({})
+
+target_link_libraries({} PUBLIC Engine)
+)";
+    size_t pos = 0;
+    while ((pos = cmakeTemplate.find("{}", pos)) != std::string::npos) {
+        cmakeTemplate.replace(pos, 2, projectName);
+        pos += projectName.length();
+    }
+
+    if (std::ofstream outFile(this->projectPath / "CMakeLists.txt"); outFile.is_open()) {
+        outFile << cmakeTemplate;
+        outFile.close();
+    } else {
+        std::cerr << "Error: Failed to create the CMakeLists.txt file." << std::endl;
+        return;
+    }
 }
 
 const std::filesystem::path& LDDrift::ProjectWatchTower::GetBuildFolderPath() const {
@@ -118,7 +160,7 @@ bool LDDrift::ProjectWatchTower::PathIsFile(const std::filesystem::path& path) {
 
 std::string LDDrift::ProjectWatchTower::IsAvailableFileInProject(const std::string& fileName) const {
     std::string _is = NULL_STR_VALUE;
-    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(projectPath)) {
+    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(projectPath)) {
         std::string lastFileName =
             LDDrift::ProjectWatchTower::Extract::GetLastFileName(entry.path().string());
         if (lastFileName == NULL_STR_VALUE) {

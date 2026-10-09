@@ -146,6 +146,7 @@ target_link_libraries(GUI PUBLIC
         VecColor
         ANGLE
         SHAPE_DATA
+        COMP
 )
 # ============================================================================
 # Transform System
@@ -169,6 +170,7 @@ target_link_libraries(TRM PUBLIC
         FUNCTIONS
         GUI
 )
+
 # ============================================================================
 # Egnine API
 # ============================================================================
@@ -183,6 +185,22 @@ target_include_directories(ENG_API PUBLIC
 
 target_link_libraries(ENG_API PUBLIC
         PWT FUNCTIONS
+)
+
+# ============================================================================
+# Compile System
+# ============================================================================
+
+add_library(COMP STATIC
+        Engine/System/Compilation/Compile.cpp
+)
+
+target_include_directories(COMP PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/Compilation
+)
+
+target_link_libraries(COMP PUBLIC
+        PWT GUI
 )
 
 # ============================================================================
@@ -256,9 +274,7 @@ add_library(Engine SHARED
         Engine/System/Scene/Scene.cpp
         Engine/System/Scene/Scene.h
 
-        # Compilation - System
-        Engine/System/Compilation/Compile.cpp
-        Engine/System/Compilation/Compile.h
+        # Engine API
         Engine/API/EngineAPI.h
         Engine/API/EngineAPI.cpp
 )
@@ -282,4 +298,5 @@ target_link_libraries(Engine PUBLIC
         GL
         GUI
         TRM
+        COMP
 )

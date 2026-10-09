@@ -166,11 +166,16 @@ void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
         lineConfigureWindow->Show = true;
     }
     ImGui::Separator();
+    if (ImGui::Button("Compile")) {
+        CompilePTR->compile();
+    }
 }
 
-void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
-
+void LDDrift::GUI::SetCompilePTR(LDDrift::Compile* compilePTR) {
+    CompilePTR = compilePTR;
 }
+
+void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {}
 
 void LDDrift::GUI::EndRenderGUI() {
     GLB_assert(ProjectWatchTower_PTR != nullptr)

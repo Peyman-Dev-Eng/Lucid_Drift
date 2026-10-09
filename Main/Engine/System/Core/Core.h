@@ -21,6 +21,7 @@
 #include <sstream>
 #include <streambuf>
 #include <GuiLogic.h>
+#include "API/EngineAPI.h"
 
 namespace LDDrift
 {
@@ -45,6 +46,7 @@ namespace LDDrift
         LDDrift::ProjectWatchTower projectWatchTower;
         LDDrift::PointHitTesting pointHitTesting;
         LDDrift::GUI gui;
+        LDDrift::Compile compile;
 
         // functions
         explicit Core();

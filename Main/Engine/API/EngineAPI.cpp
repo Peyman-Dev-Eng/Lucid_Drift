@@ -18,5 +18,6 @@ void LDDrift::EngineAPI::DestroyEngineAPI() {
 #ifdef __linux__
     dlclose(handle);
 #elifdef _WIN32
+    FreeLibrary(hModule);
 #endif
 }

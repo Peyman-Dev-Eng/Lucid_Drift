@@ -12,7 +12,7 @@ namespace LDDrift
     {
     private:
         LDDrift::ProjectWatchTower* ProjectWatchTowerPTR = nullptr;
-        void SetCompilePath(std::string& compileMess);
+        void SetCompilePath(std::string& compileMess) const;
     public:
         Compile();
         void SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* projectWatchTower_Pointer);

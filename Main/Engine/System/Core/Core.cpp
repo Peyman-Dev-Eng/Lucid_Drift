@@ -1,10 +1,9 @@
 #include "Core.h"
 
-#include "API/EngineAPI.h"
-
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
+    compile.initialize();
     projectWatchTower.CreateNewProject("TestProject");
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
@@ -29,6 +28,8 @@ void LDDrift::Core::InitCore() {
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     LDDrift::func::InitDeltaTime();
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
+    compile.SetProjectWatchTowerPTR(&projectWatchTower);
+    gui.SetCompilePTR(&compile);
 }
 
 void LDDrift::Core::Begin() {

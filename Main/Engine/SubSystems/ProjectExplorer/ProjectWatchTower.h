@@ -48,7 +48,9 @@ namespace LDDrift
         [[nodiscard]] const std::vector<std::filesystem::path>& GetPaths();
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
         void CreateBuildFolder();
+        void CreateCmakeListsTxtFile() const;
         [[nodiscard]] bool FindFile(const std::string& fileName) const;
+        static bool isCmakeFile(const std::filesystem::path& path) ;
         void CreateNewProject(const std::string& _projectName);
         void SetProjectPath(const std::filesystem::path& ProjectPath);
         void WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const;

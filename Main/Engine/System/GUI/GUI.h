@@ -9,6 +9,7 @@
 #include <vector>
 #include <ProjectWatchTower.h>
 #include <VecPos.h>
+#include <Compile.h>
 #define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
 #define PROJECT_WATCH_TOWER_X_SIZE 350
 #define PROJECT_WATCH_TOWER_Y_SIZE 540
@@ -75,13 +76,15 @@ namespace LDDrift
     public:
         EditorWindowsData editorWindow;
         std::vector<DefaultWindowsData> defaultWindows;
-        LDDrift::ProjectWatchTower* ProjectWatchTower_PTR{};
+        LDDrift::ProjectWatchTower* ProjectWatchTower_PTR = nullptr;
+        LDDrift::Compile* CompilePTR = nullptr;
 
     public:
         explicit GUI();
         void UpdateWindow(const std::string& windowName);
         void Initialize(GLFWwindow* glfwWindow);
         void SetProjectWatchTower_PTR(LDDrift::ProjectWatchTower* projectWatchTower);
+        void SetCompilePTR(LDDrift::Compile* compilePTR);
         void CreateNewWindow(const std::string& name, bool canMoveWindow, bool canResizeWindow,
                              const std::string& textPrintInWindow,
                              const VecPos2D& position, const VecPos2D& size,
