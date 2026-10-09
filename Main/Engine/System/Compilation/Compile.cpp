@@ -1,41 +1,122 @@
 #include "Compile.h"
 
+
+namespace
+{
+    std::string QuotePath(const std::filesystem::path& path) {
+        const std::string PATH = path.string();
+
+#ifdef _WIN32
+        return "\"" + PATH + "\"";
+#elifdef __linux__
+        std::string result = "'";
+
+        for (const char ch : PATH) {
+            if (ch == '\'')
+                result += "'\\''";
+            else
+                result += ch;
+        }
+
+        result += '\'';
+        return result;
+#endif
+    }
+}
+
 LDDrift::Compile::Compile() = default;
 
-void LDDrift::Compile::initialize() {}
-
-void LDDrift::Compile::SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* projectWatchTower_Pointer) {
-    ProjectWatchTowerPTR = projectWatchTower_Pointer;
+LDDrift::Compile::Compile(std::filesystem::path&& projectPath, std::filesystem::path&& engineRoot) {
+    _projectPath = std::move(projectPath);
+    _engineRoot = std::move(engineRoot);
+    compilationDirectory = projectPath / "BUILD" / "cmake";
+    outputDirectory = projectPath / "BUILD";
 }
 
-void LDDrift::Compile::SetCompilePath(std::string& compileMess) const {
-    const std::vector<std::filesystem::path>& filePaths = ProjectWatchTowerPTR->GetPaths();
-    compileMess = "g++ -shared -fPIC ";
-    for (const std::filesystem::path& filePath : filePaths) {
-        if (std::filesystem::is_directory(filePath) ||
-            LDDrift::ProjectWatchTower::isCmakeFile(filePath) ||
-            !(LDDrift::ProjectWatchTower::PathIsFile(filePath))) {
-            continue;
-        } else {
-            std::cout << filePath.string() << std::endl;
-            compileMess += filePath.string();
-        }
+void LDDrift::Compile::init(std::filesystem::path&& projectPath, std::filesystem::path&& engineRoot) {
+    _projectPath = std::move(projectPath);
+    _engineRoot = std::move(engineRoot);
+    compilationDirectory = projectPath / "BUILD" / "cmake";
+    outputDirectory = projectPath / "BUILD";
+}
+
+bool LDDrift::Compile::BuildProject() const {
+    const auto cmakeFile = _projectPath / "CMakeLists.txt";
+    const auto engineCmakeFile = _engineRoot / "Main" / "CMakeLists.txt";
+
+    if (!std::filesystem::is_regular_file(cmakeFile)) {
+        std::cerr << "Error: User CMakeLists.txt was not found: "
+            << cmakeFile << '\n';
+        return false;
     }
-    compileMess += " ";
-#ifdef __linux__
-    compileMess += "-o " + (ProjectWatchTowerPTR->GetProjectPath() / "BUILD").string() + "/" +
-        ProjectWatchTowerPTR->GetProjectName() + ".so";
-#elifdef _WIN32
-    compileMess += "-o " + (ProjectWatchTowerPTR->GetProjectPath() / "BUILD").string() + "/" +
-        ProjectWatchTowerPTR->GetProjectName() + ".dll";
-#endif
-    std::cout << compileMess << std::endl;
+
+    if (!std::filesystem::is_regular_file(engineCmakeFile)) {
+        std::cerr << "Error: Lucid_Drift engine CMakeLists.txt was not found: "
+            << engineCmakeFile << '\n';
+        return false;
+    }
+
+    try {
+        std::filesystem::create_directories(compilationDirectory);
+        std::filesystem::create_directories(outputDirectory);
+    } catch (const std::filesystem::filesystem_error& error) {
+        std::cerr << "Error creating build directories: "
+            << error.what() << '\n';
+        return false;
+    }
+
+    // Step 1: Configure the user's CMake project.
+    const std::string configureCommand =
+        "cmake -S " + QuotePath(_projectPath) +
+        " -B " + QuotePath(compilationDirectory) +
+        " -DLUCID_DRIFT_ROOT=" + QuotePath(_engineRoot) +
+        " -DCMAKE_BUILD_TYPE=Release";
+
+    std::cout << "Configuring user project with CMake...\n";
+
+    if (std::system(configureCommand.c_str()) != 0) {
+        std::cerr << "Error: CMake configuration failed.\n";
+        return false;
+    }
+
+    // Step 2: Build the shared library target.
+    const std::string buildCommand =
+        "cmake --build " + QuotePath(compilationDirectory) +
+        " --config Release"
+        " --target LucidDriftUserScript"
+        " --parallel";
+
+    std::cout << "Building user shared library...\n";
+
+    if (std::system(buildCommand.c_str()) != 0) {
+        std::cerr << "Error: User project compilation failed.\n";
+        return false;
+    }
+
+    const auto outputFile = GetOutputLibraryFile();
+
+    if (!std::filesystem::is_regular_file(outputFile)) {
+        std::cerr << "Error: Build succeeded but the output library "
+            "was not found: "
+            << outputFile << '\n';
+        return false;
+    }
+
+    std::cout << "User shared library created: "
+        << outputFile << '\n';
+
+    return true;
 }
 
-void LDDrift::Compile::compile() {
-    std::string compileMess;
-    this->SetCompilePath(compileMess);
-    std::system(compileMess.c_str());
+std::filesystem::path LDDrift::Compile::GetOutputLibraryFile() const {
+#ifdef _WIN32
+    constexpr const char* extension = ".dll";
+#else
+    constexpr const char* extension = ".so";
+#endif
+
+    return outputDirectory
+        / (_projectPath.filename().string() + extension);
 }
 
 LDDrift::Compile::~Compile() = default;

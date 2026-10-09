@@ -30,32 +30,112 @@ bool LDDrift::ProjectWatchTower::isCmakeFile(const std::filesystem::path& path) 
     return false;
 }
 
+
 void LDDrift::ProjectWatchTower::CreateCmakeListsTxtFile() const {
-    std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
-    std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
-project({} CXX C)
-
-set(CMAKE_CXX_STANDARD 26)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
-
-add_executable({})
-
-target_link_libraries({} PUBLIC Engine)
-)";
-    size_t pos = 0;
-    while ((pos = cmakeTemplate.find("{}", pos)) != std::string::npos) {
-        cmakeTemplate.replace(pos, 2, projectName);
-        pos += projectName.length();
+    std::filesystem::path engineRoot =
+        LDDrift::func::GetExecutablePath();
+    engineRoot = engineRoot.parent_path().parent_path();
+    // Verify that engineRoot points to the engine source directory.
+    if (!std::filesystem::exists(engineRoot / "CMakeLists.txt")) {
+        std::cerr
+            << "Error: Lucid_Drift CMakeLists.txt was not found at: "
+            << engineRoot << '\n';
+        return;
     }
 
-    if (std::ofstream outFile(this->projectPath / "CMakeLists.txt"); outFile.is_open()) {
-        outFile << cmakeTemplate;
-        outFile.close();
-    } else {
-        std::cerr << "Error: Failed to create the CMakeLists.txt file." << std::endl;
+    const auto apiInclude =
+        engineRoot / "Main" / "Engine" / "API";
+
+    const auto projectExplorerInclude =
+        engineRoot / "Main" / "SubSystems" / "ProjectExplorer";
+
+    const auto functionsInclude =
+        engineRoot / "Main" / "Engine" / "Functions";
+
+    const auto outputDirectory = this->projectPath / "BUILD";
+
+    std::filesystem::create_directories(outputDirectory);
+
+    // generic_string() produces forward slashes on Windows and Linux.
+    std::ostringstream cmakeTemplate;
+
+    cmakeTemplate
+        << "cmake_minimum_required(VERSION 4.3)\n\n"
+
+        << "project(\"" << projectName
+        << "\" LANGUAGES CXX C)\n\n"
+
+        << "set(CMAKE_CXX_STANDARD 26)\n"
+        << "set(CMAKE_CXX_STANDARD_REQUIRED ON)\n"
+        << "set(CMAKE_CXX_EXTENSIONS OFF)\n\n"
+
+        << "set(LUCID_DRIFT_ROOT \""
+        << engineRoot.generic_string() << "\")\n\n"
+
+        << "set(USER_SCRIPT_OUTPUT_DIR "
+        << "\"${CMAKE_CURRENT_SOURCE_DIR}/BUILD\")\n\n"
+
+        // Make the Engine target available to the user project.
+        << "add_subdirectory("
+        << "\"${LUCID_DRIFT_ROOT}\" "
+        << "\"${CMAKE_BINARY_DIR}/LucidDriftEngine\")\n\n"
+
+        // Build a shared library instead of an executable.
+        << "add_library(LucidDriftUserScript SHARED\n"
+        << "    main.cpp\n"
+        << ")\n\n"
+
+        << "target_link_libraries(LucidDriftUserScript PRIVATE Engine)\n\n"
+
+        << "target_include_directories(LucidDriftUserScript PRIVATE\n"
+        << "    \"" << apiInclude.generic_string() << "\"\n"
+        << "    \"" << projectExplorerInclude.generic_string() << "\"\n"
+        << "    \"" << functionsInclude.generic_string() << "\"\n"
+        << ")\n\n"
+
+        << "set_target_properties(LucidDriftUserScript PROPERTIES\n"
+        << "    PREFIX \"\"\n"
+        << "    OUTPUT_NAME \"${PROJECT_NAME}\"\n"
+        << "    LIBRARY_OUTPUT_DIRECTORY "
+        << "\"${USER_SCRIPT_OUTPUT_DIR}\"\n"
+        << "    RUNTIME_OUTPUT_DIRECTORY "
+        << "\"${USER_SCRIPT_OUTPUT_DIR}\"\n"
+        << "    BUILD_RPATH \"$ORIGIN\"\n"
+        << ")\n\n"
+
+        // Keep Debug and Release outputs in BUILD, including
+        // when using a multi-configuration generator.
+        << "foreach(CONFIG IN ITEMS "
+        << "DEBUG RELEASE RELWITHDEBINFO MINSIZEREL)\n"
+        << "    set_target_properties(LucidDriftUserScript PROPERTIES\n"
+        << "        \"LIBRARY_OUTPUT_DIRECTORY_${CONFIG}\" "
+        << "\"${USER_SCRIPT_OUTPUT_DIR}\"\n"
+        << "        \"RUNTIME_OUTPUT_DIRECTORY_${CONFIG}\" "
+        << "\"${USER_SCRIPT_OUTPUT_DIR}\"\n"
+        << "    )\n"
+        << "endforeach()\n\n"
+
+        // Copy the shared engine library beside the user library.
+        << "add_custom_command(TARGET LucidDriftUserScript POST_BUILD\n"
+        << "    COMMAND ${CMAKE_COMMAND} -E copy_if_different\n"
+        << "        \"$<TARGET_FILE:Engine>\"\n"
+        << "        \"$<TARGET_FILE_DIR:LucidDriftUserScript>\"\n"
+        << "    VERBATIM\n"
+        << ")\n";
+
+    std::ofstream outFile(this->projectPath / "CMakeLists.txt");
+
+    if (!outFile.is_open()) {
+        std::cerr
+            << "Error: Failed to create the CMakeLists.txt file.\n";
         return;
+    }
+
+    outFile << cmakeTemplate.str();
+
+    if (!outFile) {
+        std::cerr
+            << "Error: Failed to write the CMakeLists.txt file.\n";
     }
 }
 
