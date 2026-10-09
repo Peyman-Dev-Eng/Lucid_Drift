@@ -14,7 +14,11 @@ void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectNam
     projectName = _projectName;
     projectPath = std::filesystem::path(LDDrift::func::GetHostName()) / _projectName;
     create_directories(projectPath);
-    this->CreateCmakeListTXT_File();
+    this->CreateBuildFolder();
+}
+
+const std::filesystem::path& LDDrift::ProjectWatchTower::GetBuildFolderPath() const {
+    return buildFolderPath;
 }
 
 std::vector<std::string> LDDrift::ProjectWatchTower::Extract::ExtractPaths(const std::filesystem::path& path) {
@@ -48,35 +52,6 @@ std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::stri
     }
     std::ranges::reverse(result);
     return result;
-}
-
-void LDDrift::ProjectWatchTower::CreateCmakeListTXT_File() const {
-    std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
-    std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
-project({} CXX C)
-
-set(CMAKE_CXX_STANDARD 26)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
-add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
-
-add_executable({})
-
-target_link_libraries({} PUBLIC Engine)
-)";
-    size_t pos = 0;
-    while ((pos = cmakeTemplate.find("{}", pos)) != std::string::npos) {
-        cmakeTemplate.replace(pos, 2, projectName);
-        pos += projectName.length();
-    }
-
-    if (std::ofstream outFile(this->projectPath / "CMakeLists.txt"); outFile.is_open()) {
-        outFile << cmakeTemplate;
-        outFile.close();
-    } else {
-        std::cerr << "Error: Failed to create the CMakeLists.txt file." << std::endl;
-        return;
-    }
 }
 
 bool LDDrift::ProjectWatchTower::isFilePath(const std::filesystem::path& path) {
@@ -189,12 +164,14 @@ void LDDrift::ProjectWatchTower::WriteCodeToFile(const std::filesystem::path& fi
 void LDDrift::ProjectWatchTower::CreateNewFile(const std::filesystem::path& fileName) const {
     if (isFilePath(fileName)) {
         std::ofstream out(projectPath / fileName.string());
-        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() << std::endl;
+        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() <<
+            std::endl;
         return;
     } else {
         create_directories(projectPath / LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(fileName));
         std::ofstream out(projectPath / fileName.string());
-        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() << std::endl;
+        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() <<
+            std::endl;
         return;
     }
 }
@@ -218,6 +195,11 @@ std::vector<std::string> LDDrift::ProjectWatchTower::GetProjectDetails() const {
 
 const std::string& LDDrift::ProjectWatchTower::GetProjectName() const {
     return projectName;
+}
+
+void LDDrift::ProjectWatchTower::CreateBuildFolder() {
+    buildFolderPath = projectPath / "BUILD";
+    create_directories(buildFolderPath);
 }
 
 LDDrift::ProjectWatchTower::~ProjectWatchTower() = default;

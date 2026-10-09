@@ -103,6 +103,9 @@ namespace LDDrift
     private:
         void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
         void MainWindowHandler(DefaultWindowsData* window);
+        void CircleConfigureWindowHandler(DefaultWindowsData* window);
+        void PolygonConfigureWindowHandler(DefaultWindowsData* window);
+        void LineConfigureWindowHandler(DefaultWindowsData* window);
     };
 }
 #endif

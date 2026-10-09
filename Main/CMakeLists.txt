@@ -169,6 +169,21 @@ target_link_libraries(TRM PUBLIC
         FUNCTIONS
         GUI
 )
+# ============================================================================
+# Egnine API
+# ============================================================================
+
+add_library(ENG_API STATIC
+        Engine/API/EngineAPI.cpp
+)
+
+target_include_directories(ENG_API PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/API
+)
+
+target_link_libraries(ENG_API PUBLIC
+        PWT FUNCTIONS
+)
 
 # ============================================================================
 # END
@@ -244,6 +259,8 @@ add_library(Engine SHARED
         # Compilation - System
         Engine/System/Compilation/Compile.cpp
         Engine/System/Compilation/Compile.h
+        Engine/API/EngineAPI.h
+        Engine/API/EngineAPI.cpp
 )
 
 target_include_directories(Engine PUBLIC

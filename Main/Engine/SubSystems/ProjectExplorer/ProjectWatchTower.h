@@ -1,5 +1,5 @@
-#ifndef LUCID_DRIFT_PROJECTEXPLORER_H
-#define LUCID_DRIFT_PROJECTEXPLORER_H
+#ifndef LUCID_DRIFT_PROJECT_EXPLORER_H
+#define LUCID_DRIFT_PROJECT_EXPLORER_H
 #include <filesystem>
 #include <fstream>
 #include <functions.h>
@@ -21,12 +21,13 @@ namespace LDDrift
 {
 
     // This struct is for storing the folders and files of the game project you are building using this engine.
-    class ProjectWatchTower
+    class ProjectWatchTower final
     {
     private:
         std::filesystem::path projectPath;
         std::string projectName;
         std::vector<std::filesystem::path> paths;
+        std::filesystem::path buildFolderPath;
 
     public:
         class Extract
@@ -46,12 +47,13 @@ namespace LDDrift
         static bool PathIsFile(const std::filesystem::path& path) ;
         [[nodiscard]] const std::vector<std::filesystem::path>& GetPaths();
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
-        void CreateCmakeListTXT_File() const;
+        void CreateBuildFolder();
         [[nodiscard]] bool FindFile(const std::string& fileName) const;
         void CreateNewProject(const std::string& _projectName);
         void SetProjectPath(const std::filesystem::path& ProjectPath);
         void WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const;
         void CreateNewFile(const std::filesystem::path& fileName) const;
+        [[nodiscard]] const std::filesystem::path& GetBuildFolderPath() const;
         [[nodiscard]] const std::filesystem::path& GetProjectPath() const;
         [[nodiscard]] std::vector<std::string> GetProjectDetails() const;
         [[nodiscard]] const std::string& GetProjectName() const;

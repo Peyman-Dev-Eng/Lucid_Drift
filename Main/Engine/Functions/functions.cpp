@@ -45,3 +45,14 @@ std::filesystem::path LDDrift::func::GetDefaultDiskPath() {
 #endif
     return defaultPath;
 }
+
+void LDDrift::func::InitDeltaTime() {
+    lastTime = glfwGetTime();
+}
+
+float LDDrift::func::GetDeltaTime() {
+    currentTime = glfwGetTime();
+    deltaTime = static_cast<float>(currentTime - lastTime);
+    lastTime = currentTime;
+    return deltaTime;
+}

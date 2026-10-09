@@ -168,6 +168,10 @@ void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
     ImGui::Separator();
 }
 
+void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
+
+}
+
 void LDDrift::GUI::EndRenderGUI() {
     GLB_assert(ProjectWatchTower_PTR != nullptr)
     for (DefaultWindowsData& window : defaultWindows) {

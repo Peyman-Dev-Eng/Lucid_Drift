@@ -20,17 +20,23 @@
 #include <SubSystems/ProjectExplorer/ProjectWatchTower.h>
 #include <sstream>
 #include <streambuf>
+#include <GuiLogic.h>
 
 namespace LDDrift
 {
-    class Core
+    class Core final
     {
     private:
+        double lastTime;
+        double currentTime;
+        float deltaTime;
+
+    private:
         void InitCore();
+
     public:
         std::stringstream consoleBuffer;
         std::streambuf* oldC_outBuf = nullptr;
-        LDDrift::Actors::Circle* circle = nullptr;
 
     public:
         // data

@@ -4,19 +4,20 @@
 #include <fstream>
 #include <vector>
 #include <string>
+#include <ProjectWatchTower.h>
 
 namespace LDDrift
 {
-    class Compile final
+    class Compile
     {
     private:
-        std::vector<std::filesystem::path> pathFilesToCompile;
-        std::string objectFileName;
-        std::filesystem::path objectFilePath;
-        std::filesystem::path compilationDirectory;
+        LDDrift::ProjectWatchTower* ProjectWatchTowerPTR = nullptr;
+        void SetCompilePath(std::string& compileMess);
     public:
         Compile();
-        void CreateCompilationDirectory();
+        void SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* projectWatchTower_Pointer);
+        void initialize();
+        void compile();
         ~Compile();
     };
 }
