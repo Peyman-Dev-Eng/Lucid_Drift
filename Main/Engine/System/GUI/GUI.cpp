@@ -169,7 +169,12 @@ void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
     ImGui::Separator();
     if (ImGui::Button("Compile")) {
         CompilePTR->BuildProject();
-        LDDrift::EngineAPI::AfterCompileProject();
+    }
+    if (LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
+        build == LDDrift::CompileBuildStatus::Building) {
+        ImGui::TextUnformatted("Compiling...");
+    } else if (build == LDDrift::CompileBuildStatus::Succeeded) {
+        ImGui::TextUnformatted("compiled");
     }
 }
 

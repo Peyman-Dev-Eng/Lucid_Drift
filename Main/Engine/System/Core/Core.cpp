@@ -28,8 +28,7 @@ void LDDrift::Core::InitCore() {
     LDDrift::func::InitDeltaTime();
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
     gui.SetCompilePTR(&compile);
-    std::filesystem::path copy = projectWatchTower.GetProjectPath();
-    compile.init(std::move(copy), LDDrift::func::GetExecutablePath().parent_path().parent_path());
+    compile.init(&projectWatchTower);
 }
 
 void LDDrift::Core::Begin() {
