@@ -1,7 +1,5 @@
 #include "ProjectWatchTower.h"
 
-#include <chrono>
-
 LDDrift::ProjectWatchTower::ProjectWatchTower() {
     projectPath = LDDrift::func::GetHostName();
 }
@@ -32,6 +30,10 @@ bool LDDrift::ProjectWatchTower::isCmakeFile(const std::filesystem::path& path) 
 
 void LDDrift::ProjectWatchTower::CreateCmakeListsTxtFile() const {
     std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
+    executablePath = (executablePath.parent_path().parent_path()) / "Main";
+    std::string initMainFile = "int main() {\n\treturn 0;\n}";
+    std::ofstream mainFile((projectPath / "main.cpp").string());
+    mainFile << initMainFile;
     std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
 project({} CXX C)
 
@@ -40,7 +42,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
 
-add_executable({})
+add_executable({} main.cpp)
 
 target_link_libraries({} PUBLIC Engine)
 )";
@@ -242,6 +244,18 @@ const std::string& LDDrift::ProjectWatchTower::GetProjectName() const {
 void LDDrift::ProjectWatchTower::CreateBuildFolder() {
     buildFolderPath = projectPath / "BUILD";
     create_directories(buildFolderPath);
+    std::string runCommand = "cmake -S ";
+    runCommand += projectPath.string();
+    runCommand += " -B ";
+    runCommand += buildFolderPath.string();
+    runCommand += " -G Ninja";
+    std::thread createBuildFolderThread([runCommand]()
+    {
+        std::system(runCommand.c_str());
+    });
+    if (createBuildFolderThread.joinable()) {
+        createBuildFolderThread.join();
+    }
 }
 
 LDDrift::ProjectWatchTower::~ProjectWatchTower() = default;
