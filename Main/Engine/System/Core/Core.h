@@ -27,10 +27,6 @@ namespace LDDrift
 {
     class Core final
     {
-    private:
-        double lastTime;
-        double currentTime;
-        float deltaTime;
 
     private:
         void InitCore();

@@ -25,6 +25,7 @@
 #define CIRCLE_CONFIGURE_WINDOW_NAME "Circle Configure Window"
 #define POLYGON_CONFIGURE_WINDOW_NAME "Polygon Configure Window"
 #define LINE_CONFIGURE_WINDOW_NAME "Line Configure Window"
+#define SET_KEY_TARGET_WINDOW_NAME "Set Key Target"
 
 namespace LDDrift
 {
@@ -78,6 +79,7 @@ namespace LDDrift
         std::vector<DefaultWindowsData> defaultWindows;
         LDDrift::ProjectWatchTower* ProjectWatchTower_PTR = nullptr;
         LDDrift::Compile* CompilePTR = nullptr;
+        bool runGame = false;
 
     public:
         explicit GUI();
@@ -109,6 +111,8 @@ namespace LDDrift
         void CircleConfigureWindowHandler(DefaultWindowsData* window);
         void PolygonConfigureWindowHandler(DefaultWindowsData* window);
         void LineConfigureWindowHandler(DefaultWindowsData* window);
+        void SetKeyTargetWindowHandler(DefaultWindowsData* window);
+        bool SearchableCombo( const char* label, char* buffer, size_t bufferSize, const std::vector<std::string>& options);
     };
 }
 #endif

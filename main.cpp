@@ -16,7 +16,6 @@
 #include <System/Core/Core.h>
 #include <SubSystems/Transform/Transform.h>
 
-
 int main() {
     LDDrift::Core core;
     core.Begin();

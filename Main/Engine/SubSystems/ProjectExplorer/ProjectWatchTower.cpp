@@ -29,9 +29,16 @@ bool LDDrift::ProjectWatchTower::isCmakeFile(const std::filesystem::path& path) 
 }
 
 void LDDrift::ProjectWatchTower::CreateCmakeListsTxtFile() const {
+    if (FindFile("CMakeLists.txt")) {
+        if (std::filesystem::path filePath = projectPath / "CMakeLists.txt";
+            std::filesystem::is_regular_file(filePath) && std::filesystem::file_size(filePath) != 0) {
+            return;
+        }
+    }
     std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
     executablePath = (executablePath.parent_path().parent_path()) / "Main";
-    std::string initMainFile = "int main() {\n\treturn 0;\n}";
+    std::string initMainFile =
+        "#include <iostream>\n\nint main() {\n    std::cout << \"Hello World\" << std::endl;\n    return 0;\n}";
     std::ofstream mainFile((projectPath / "main.cpp").string());
     mainFile << initMainFile;
     std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
@@ -42,7 +49,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
 
-add_executable({} main.cpp)
+add_library({} SHARED main.cpp)
+
+target_compile_definitions(TestProject PRIVATE LD_PLUGIN_BUILD)
 
 target_link_libraries({} PUBLIC Engine)
 )";
@@ -119,7 +128,8 @@ void LDDrift::ProjectWatchTower::SetPaths() {
     }
     std::filesystem::recursive_directory_iterator iterator(projectPath);
     for (const std::filesystem::directory_entry& entry : iterator) {
-        if (entry.path().filename() == "cmake-build-debug" || entry.path().filename() == ".idea" || entry.path().filename() == "BUILD") {
+        if (entry.path().filename() == "cmake-build-debug" || entry.path().filename() == ".idea" || entry.path().
+            filename() == "BUILD") {
             if (entry.is_directory()) {
                 iterator.disable_recursion_pending();
             }

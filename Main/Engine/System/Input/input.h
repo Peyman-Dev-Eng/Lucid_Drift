@@ -266,6 +266,8 @@ namespace LDDrift
     // Mouse
     inline std::vector<IsKeyPressedInFrame> LinuxMouse;
 
+    inline std::vector<std::string> KeyBoardKeyName;
+
 
 #endif
 

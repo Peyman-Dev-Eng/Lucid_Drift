@@ -284,6 +284,7 @@ target_include_directories(Engine PUBLIC
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
         ${CMAKE_CURRENT_LIST_DIR}/Engine
+        ${CMAKE_CURRENT_LIST_DIR}/Engine/API
 )
 
 target_link_libraries(Engine PUBLIC
@@ -299,4 +300,5 @@ target_link_libraries(Engine PUBLIC
         GUI
         TRM
         COMP
+        ENG_API
 )

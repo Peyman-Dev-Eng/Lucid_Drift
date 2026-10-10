@@ -28,6 +28,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(LINE_CONFIGURE_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(SET_KEY_TARGET_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
 }
 
 std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
@@ -170,16 +172,100 @@ void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
     if (ImGui::Button("Compile")) {
         CompilePTR->BuildProject();
     }
-    if (LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
-        build == LDDrift::CompileBuildStatus::Building) {
+    ImGui::SameLine();
+    LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
+    if (ImGui::Button("Run")) {
+        if (build == LDDrift::CompileBuildStatus::Succeeded) {
+            runGame = true;
+            LDDrift::EngineAPI::AfterCompileProject();
+        }
+    }
+    ImGui::TextUnformatted("Build Status: ");
+    ImGui::SameLine();
+    if (build == LDDrift::CompileBuildStatus::Building) {
         ImGui::TextUnformatted("Compiling...");
     } else if (build == LDDrift::CompileBuildStatus::Succeeded) {
         ImGui::TextUnformatted("compiled");
+    } else if (build == LDDrift::CompileBuildStatus::Failed) {
+        ImGui::TextUnformatted("failed");
+    } else if (build == LDDrift::CompileBuildStatus::Idle) {
+        ImGui::TextUnformatted("idle");
     }
+#ifdef __linux__
+    ImGui::Separator();
+    if (ImGui::Button("Add Key Target")) {
+        GetWindowPTR(SET_KEY_TARGET_WINDOW_NAME)->Show = true;
+    }
+#endif
 }
 
 void LDDrift::GUI::SetCompilePTR(LDDrift::Compile* compilePTR) {
     CompilePTR = compilePTR;
+}
+
+void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
+    if (window->name != CIRCLE_CONFIGURE_WINDOW_NAME) {
+        return;
+    }
+    if (ImGui::Button("Close")) {
+        window->Show = false;
+    }
+}
+
+void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) {
+    if (window->name != LINE_CONFIGURE_WINDOW_NAME) {
+        return;
+    }
+    if (ImGui::Button("Close")) {
+        window->Show = false;
+    }
+}
+
+void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) {
+    if (window->name != POLYGON_CONFIGURE_WINDOW_NAME) {
+        return;
+    }
+    if (ImGui::Button("Close")) {
+        window->Show = false;
+    }
+}
+
+bool LDDrift::GUI::SearchableCombo(const char* label, char* buffer, size_t bufferSize,
+                                   const std::vector<std::string>& options) {
+    bool selected = false;
+    ImGui::SetNextItemWidth(250.0f);
+    ImGui::InputTextWithHint(label, "Search...", buffer, bufferSize);
+    const std::string searchText = buffer;
+    if (ImGui::IsItemActivated() || ImGui::IsItemActive()) { ImGui::OpenPopup(label); }
+    if (ImGui::BeginPopup(label)) {
+        for (const std::string& option : options) {
+            if (!searchText.empty()) { if (option.find(searchText) == std::string::npos) continue; }
+            if (ImGui::Selectable(option.c_str())) {
+                const size_t length = std::min(option.size(), bufferSize - 1);
+                std::copy_n(option.data(), length, buffer);
+                buffer[length] = '\0';
+                selected = true;
+                ImGui::CloseCurrentPopup();
+            }
+        }
+        ImGui::EndPopup();
+    }
+    return selected;
+}
+
+void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) {
+    if (window->name != SET_KEY_TARGET_WINDOW_NAME) {
+        return;
+    }
+    char search[256];
+    if (this->SearchableCombo(" ", window->searchBuffer, sizeof(window->searchBuffer), LDDrift::KeyBoardKeyName))
+        for (int i = 0; i < 256; ++i) {
+             search[i] = window->searchBuffer[i];
+        }
+    ImGui::Separator();
+    if (ImGui::Button("Set")) {
+        window->Show = false;
+    }
 }
 
 void LDDrift::GUI::EndRenderGUI() {
@@ -197,14 +283,23 @@ void LDDrift::GUI::EndRenderGUI() {
             flags |= ImGuiWindowFlags_NoMove;
         }
         if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) && (window.
-            name != LINE_CONFIGURE_WINDOW_NAME)) {
+            name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME)) {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }
         ImGui::Begin(window.name.c_str(), nullptr, flags);
+        // مدیریت صفحه اصلی بازی
         MainWindowHandler(&window);
+        // مدیریت صفحه ساخت دایره
+        CircleConfigureWindowHandler(&window);
+        // مدیریت صفحه ساخت خط
+        LineConfigureWindowHandler(&window);
+        // مدیریت صفحه ساخت چند ضلعی
+        PolygonConfigureWindowHandler(&window);
         // مدیریت صفحه برج دیده بانی پروژه موتور بازی
         this->ProjectWatchTowerWidowHandler(&window);
+
+        this->SetKeyTargetWindowHandler(&window);
         if (window.name == PROJECT_WATCH_TOWER_WINDOW_NAME) {
             ImGui::End();
             continue;
@@ -221,7 +316,6 @@ void LDDrift::GUI::EndRenderGUI() {
         if (!window.textPrintInWindow.empty())
             for (const std::string& text : window.textPrintInWindow) {
                 ImGui::TextUnformatted(text.c_str());
-                std::cout << text << std::endl;
             }
         ImGui::End();
     }
