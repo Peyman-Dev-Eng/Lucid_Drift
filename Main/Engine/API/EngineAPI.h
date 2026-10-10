@@ -5,7 +5,7 @@
 #elifdef _WIN32
 #include <windows.h>
 #endif
-#include <ProjectWatchTower.h>
+#include "ProjectWatchTower.h"
 #include <functions.h>
 
 namespace LDDrift::EngineAPI

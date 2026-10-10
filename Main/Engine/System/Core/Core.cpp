@@ -3,7 +3,6 @@
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
-    compile.initialize();
     projectWatchTower.CreateNewProject("TestProject");
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
@@ -28,8 +27,9 @@ void LDDrift::Core::InitCore() {
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     LDDrift::func::InitDeltaTime();
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
-    compile.SetProjectWatchTowerPTR(&projectWatchTower);
     gui.SetCompilePTR(&compile);
+    std::filesystem::path copy = projectWatchTower.GetProjectPath();
+    compile.init(std::move(copy), LDDrift::func::GetExecutablePath().parent_path().parent_path());
 }
 
 void LDDrift::Core::Begin() {
@@ -68,5 +68,6 @@ LDDrift::Core::~Core() {
     std::cout.rdbuf(oldC_outBuf);
     LDDrift::input::Keyboard::Destroy();
     LDDrift::input::Mouse::Destroy();
+    LDDrift::EngineAPI::DestroyEngineAPI();
     window.DestroyWindow();
 }

@@ -92,6 +92,7 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
         }
         for (const std::vector<std::filesystem::path>& paths = ProjectWatchTower_PTR->GetPaths();
              const auto& path : paths) {
+            std::cout << path.string() << std::endl;
             if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) ==
                 std::string(result.searchBuffer)) {
                 if (is_directory(path)) {
@@ -167,15 +168,14 @@ void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
     }
     ImGui::Separator();
     if (ImGui::Button("Compile")) {
-        CompilePTR->compile();
+        CompilePTR->BuildProject();
+        LDDrift::EngineAPI::AfterCompileProject();
     }
 }
 
 void LDDrift::GUI::SetCompilePTR(LDDrift::Compile* compilePTR) {
     CompilePTR = compilePTR;
 }
-
-void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {}
 
 void LDDrift::GUI::EndRenderGUI() {
     GLB_assert(ProjectWatchTower_PTR != nullptr)
@@ -216,6 +216,7 @@ void LDDrift::GUI::EndRenderGUI() {
         if (!window.textPrintInWindow.empty())
             for (const std::string& text : window.textPrintInWindow) {
                 ImGui::TextUnformatted(text.c_str());
+                std::cout << text << std::endl;
             }
         ImGui::End();
     }
