@@ -29,6 +29,7 @@ namespace LDDrift
         std::string projectName;
         std::vector<std::filesystem::path> paths;
         std::filesystem::path buildFolderPath;
+        std::string objectFileName;
 
     public:
         class Extract
@@ -56,6 +57,8 @@ namespace LDDrift
         void SetProjectPath(const std::filesystem::path& ProjectPath);
         void WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const;
         void CreateNewFile(const std::filesystem::path& fileName) const;
+        void RemoveBuildFile() const;
+        void RemoveFile(const std::string& fileName);
         [[nodiscard]] const std::filesystem::path& GetBuildFolderPath() const;
         [[nodiscard]] const std::filesystem::path& GetProjectPath() const;
         [[nodiscard]] std::vector<std::string> GetProjectDetails() const;

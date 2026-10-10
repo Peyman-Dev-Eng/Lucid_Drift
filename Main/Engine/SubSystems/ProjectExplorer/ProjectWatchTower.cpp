@@ -31,14 +31,16 @@ bool LDDrift::ProjectWatchTower::isCmakeFile(const std::filesystem::path& path) 
 void LDDrift::ProjectWatchTower::CreateCmakeListsTxtFile() const {
     if (FindFile("CMakeLists.txt")) {
         if (std::filesystem::path filePath = projectPath / "CMakeLists.txt";
-            std::filesystem::is_regular_file(filePath) && std::filesystem::file_size(filePath) != 0) {
+            is_regular_file(filePath) && file_size(filePath) != 0) {
             return;
         }
     }
     std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
     executablePath = (executablePath.parent_path().parent_path()) / "Main";
     std::string initMainFile =
-        "#include <iostream>\n\nint main() {\n    std::cout << \"Hello World\" << std::endl;\n    return 0;\n}";
+        "#include <iostream>\n#include <EngineAPI.h>\n\nextern \"C\" void BeginPlay() {}\n\n"
+        "extern \"C\" void Tick(float deltaTime) {}\n\n"
+        "extern \"C\" void EndPlay() {}";
     std::ofstream mainFile((projectPath / "main.cpp").string());
     mainFile << initMainFile;
     std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
@@ -126,10 +128,10 @@ void LDDrift::ProjectWatchTower::SetPaths() {
     if (!paths.empty()) {
         paths.clear();
     }
-    std::filesystem::recursive_directory_iterator iterator(projectPath);
-    for (const std::filesystem::directory_entry& entry : iterator) {
-        if (entry.path().filename() == "cmake-build-debug" || entry.path().filename() == ".idea" || entry.path().
-            filename() == "BUILD") {
+    for (std::filesystem::recursive_directory_iterator iterator(projectPath);
+         const std::filesystem::directory_entry& entry : iterator) {
+        if (entry.path().filename() == "cmake-build-debug" || entry.path().filename() == ".idea" ||
+            entry.path().filename() == "BUILD") {
             if (entry.is_directory()) {
                 iterator.disable_recursion_pending();
             }
@@ -159,12 +161,11 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
 bool LDDrift::ProjectWatchTower::PathIsFile(const std::filesystem::path& path) {
     const std::size_t _pathLength = path.string().size() - 1;
     if (const std::string pathString = path.string();
-        pathString[_pathLength] == 'h' && pathString[_pathLength - 1] == '.') {
-        return true;
-    } else if (pathString[_pathLength] == 'p' &&
-        pathString[_pathLength - 1] == 'p' &&
-        pathString[_pathLength - 2] == 'c' &&
-        pathString[_pathLength - 3] == '.') {
+        (pathString[_pathLength] == 'h' && pathString[_pathLength - 1] == '.') ||
+        (pathString[_pathLength] == 'p' &&
+            pathString[_pathLength - 1] == 'p' &&
+            pathString[_pathLength - 2] == 'c' &&
+            pathString[_pathLength - 3] == '.')) {
         return true;
     }
     return false;
@@ -201,18 +202,11 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
 
 void LDDrift::ProjectWatchTower::WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const {
     NPV_assert(text != nullptr);
-    if (isFilePath(fileName)) {
-        std::ofstream out(projectPath / fileName.string());
-        out.write(text, static_cast<std::streamsize>(strlen(text)));
-        std::cout << "Successfully written project: " << projectPath / fileName.string() << std::endl;
-        return;
-    } else {
-        create_directories(projectPath / LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(fileName));
-        std::ofstream out(projectPath / fileName.string());
-        out.write(text, static_cast<std::streamsize>(strlen(text)));
-        std::cout << "Successfully written project: " << projectPath / fileName.string() << std::endl;
-        return;
-    }
+    std::ofstream out(fileName.string());
+    out.seekp(std::ios::beg);
+    out.write(text, static_cast<std::streamsize>(strlen(text)));
+    std::cout << "Successfully written project: " << projectPath / fileName.string() << std::endl;
+    out.close();
 }
 
 void LDDrift::ProjectWatchTower::CreateNewFile(const std::filesystem::path& fileName) const {
@@ -252,6 +246,12 @@ const std::string& LDDrift::ProjectWatchTower::GetProjectName() const {
 }
 
 void LDDrift::ProjectWatchTower::CreateBuildFolder() {
+#ifdef __linux__
+    const constexpr char* ext = ".so";
+#elifdef _WIN32
+    const constexpr char* ext = ".dll";
+#endif
+    objectFileName = "lib" + projectName + ext;
     buildFolderPath = projectPath / "BUILD";
     create_directories(buildFolderPath);
     std::string runCommand = "cmake -S ";
@@ -266,6 +266,20 @@ void LDDrift::ProjectWatchTower::CreateBuildFolder() {
     if (createBuildFolderThread.joinable()) {
         createBuildFolderThread.join();
     }
+}
+
+void LDDrift::ProjectWatchTower::RemoveBuildFile() const {
+    bool foundObjectFile = false;
+    for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(buildFolderPath)) {
+        if (entry.path().filename() == objectFileName) {
+            foundObjectFile = true;
+            break;
+        }
+    }
+    if (!foundObjectFile) {
+        return;
+    }
+    std::filesystem::remove(buildFolderPath / objectFileName);
 }
 
 LDDrift::ProjectWatchTower::~ProjectWatchTower() = default;

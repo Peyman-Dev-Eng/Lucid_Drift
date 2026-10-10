@@ -107,10 +107,10 @@ namespace LDDrift
 
     private:
         void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
-        void MainWindowHandler(DefaultWindowsData* window);
-        void CircleConfigureWindowHandler(DefaultWindowsData* window);
-        void PolygonConfigureWindowHandler(DefaultWindowsData* window);
-        void LineConfigureWindowHandler(DefaultWindowsData* window);
+        void MainWindowHandler(const DefaultWindowsData* window);
+        static void CircleConfigureWindowHandler(DefaultWindowsData* window);
+        static void PolygonConfigureWindowHandler(DefaultWindowsData* window);
+        static void LineConfigureWindowHandler(DefaultWindowsData* window);
         void SetKeyTargetWindowHandler(DefaultWindowsData* window);
         bool SearchableCombo( const char* label, char* buffer, size_t bufferSize, const std::vector<std::string>& options);
     };

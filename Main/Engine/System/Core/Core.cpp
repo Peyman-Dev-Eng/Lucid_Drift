@@ -69,6 +69,8 @@ void LDDrift::Core::EngineHandler() {
                 gui.EndRenderGUI();
                 if (LDDrift::input::Keyboard::IsKeyPressed(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC)) {
                     gui.runGame = false;
+                    LDDrift::input::Keyboard::Update();
+                    LDDrift::input::Mouse::Update();
                     break;
                 }
                 window.Update();

@@ -145,7 +145,7 @@ LDDrift::GUI::DefaultWindowsData* LDDrift::GUI::GetWindowPTR(const std::string& 
     return nullptr;
 }
 
-void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
     if (window->name != MAIN_WINDOW_NAME) {
         return;
     }
@@ -170,14 +170,17 @@ void LDDrift::GUI::MainWindowHandler(DefaultWindowsData* window) {
     }
     ImGui::Separator();
     if (ImGui::Button("Compile")) {
+        ProjectWatchTower_PTR->RemoveBuildFile();
         CompilePTR->BuildProject();
     }
     ImGui::SameLine();
-    LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
+    const LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
     if (ImGui::Button("Run")) {
         if (build == LDDrift::CompileBuildStatus::Succeeded) {
             runGame = true;
             LDDrift::EngineAPI::AfterCompileProject();
+        } else {
+            std::cout << CompilePTR->GetErrorLog() << std::endl;
         }
     }
     ImGui::TextUnformatted("Build Status: ");
@@ -245,7 +248,6 @@ bool LDDrift::GUI::SearchableCombo(const char* label, char* buffer, size_t buffe
                 std::copy_n(option.data(), length, buffer);
                 buffer[length] = '\0';
                 selected = true;
-                ImGui::CloseCurrentPopup();
             }
         }
         ImGui::EndPopup();
