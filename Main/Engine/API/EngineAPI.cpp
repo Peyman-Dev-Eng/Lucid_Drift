@@ -9,6 +9,9 @@ void LDDrift::EngineAPI::AfterCompileProject() {
 #endif
 
 #ifdef __linux__
+    if (handle != nullptr) {
+        dlclose(handle);
+    }
     handle = dlopen((project_watch_tower->GetBuildFolderPath() / std::filesystem::path(
                         std::string("lib") + project_watch_tower->GetProjectName() + extension)).c_str(), RTLD_NOW);
     CTM_assert(handle != nullptr, dlerror())

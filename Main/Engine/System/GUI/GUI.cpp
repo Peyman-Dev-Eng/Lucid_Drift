@@ -200,6 +200,19 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
         GetWindowPTR(SET_KEY_TARGET_WINDOW_NAME)->Show = true;
     }
 #endif
+    ImGui::Separator();
+    std::thread reloadCmakeFileThread;
+    if (ImGui::Button("Reload Cmake File")) {
+        std::string command = "cmake -S " + ProjectWatchTower_PTR->GetProjectPath().string() + " -B " +
+            ProjectWatchTower_PTR->GetBuildFolderPath().string();
+        reloadCmakeFileThread = std::thread([command]()
+        {
+            std::system(command.c_str());
+        });
+    }
+    if (reloadCmakeFileThread.joinable()) {
+        reloadCmakeFileThread.join();
+    }
 }
 
 void LDDrift::GUI::SetCompilePTR(LDDrift::Compile* compilePTR) {
@@ -262,7 +275,7 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) {
     char search[256];
     if (this->SearchableCombo(" ", window->searchBuffer, sizeof(window->searchBuffer), LDDrift::KeyBoardKeyName))
         for (int i = 0; i < 256; ++i) {
-             search[i] = window->searchBuffer[i];
+            search[i] = window->searchBuffer[i];
         }
     ImGui::Separator();
     if (ImGui::Button("Set")) {
