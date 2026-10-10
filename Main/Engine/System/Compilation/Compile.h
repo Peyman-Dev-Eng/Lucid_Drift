@@ -15,9 +15,7 @@ namespace LDDrift
         void SetCompilePath(std::string& compileMess) const;
     public:
         Compile();
-        void SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* projectWatchTower_Pointer);
-        void initialize();
-        void compile();
+        void BuildProject();
         ~Compile();
     };
 }

@@ -12,6 +12,7 @@
 #include <cstring>
 #include <Assertions.h>
 #include <cstdlib>
+#include <thread>
 #include <vector>
 #define NULL_STR_VALUE "NULL_VALUE"
 #define LOWER_BOUND_WHILE_LOOP (-1)
