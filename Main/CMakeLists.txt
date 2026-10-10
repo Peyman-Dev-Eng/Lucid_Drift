@@ -184,7 +184,7 @@ target_include_directories(ENG_API PUBLIC
 )
 
 target_link_libraries(ENG_API PUBLIC
-        PWT FUNCTIONS
+        PWT FUNCTIONS GUI
 )
 
 # ============================================================================

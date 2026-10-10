@@ -16,6 +16,12 @@ void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectNam
     this->CreateCmakeListsTxtFile();
 }
 
+void LDDrift::ProjectWatchTower::CreateCompileLogFile() {
+    compileLogFilePath = buildFolderPath / "compile.log";
+    std::ofstream outFile(compileLogFilePath.string());
+    outFile.close();
+}
+
 bool LDDrift::ProjectWatchTower::isCmakeFile(const std::filesystem::path& path) {
     const std::string stringPath = path.string();
     if (const std::size_t pathLen = stringPath.size();
@@ -139,6 +145,10 @@ void LDDrift::ProjectWatchTower::SetPaths() {
         }
         paths.push_back(entry.path());
     }
+}
+
+const std::filesystem::path& LDDrift::ProjectWatchTower::GetCompileLogPath() const {
+    return compileLogFilePath;
 }
 
 std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(

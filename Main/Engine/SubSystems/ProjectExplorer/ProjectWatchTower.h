@@ -30,6 +30,7 @@ namespace LDDrift
         std::vector<std::filesystem::path> paths;
         std::filesystem::path buildFolderPath;
         std::string objectFileName;
+        std::filesystem::path compileLogFilePath;
 
     public:
         class Extract
@@ -51,6 +52,7 @@ namespace LDDrift
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
         void CreateBuildFolder();
         void CreateCmakeListsTxtFile() const;
+        void CreateCompileLogFile();
         [[nodiscard]] bool FindFile(const std::string& fileName) const;
         static bool isCmakeFile(const std::filesystem::path& path) ;
         void CreateNewProject(const std::string& _projectName);
@@ -62,6 +64,7 @@ namespace LDDrift
         [[nodiscard]] const std::filesystem::path& GetBuildFolderPath() const;
         [[nodiscard]] const std::filesystem::path& GetProjectPath() const;
         [[nodiscard]] std::vector<std::string> GetProjectDetails() const;
+        [[nodiscard]] const std::filesystem::path& GetCompileLogPath() const;
         [[nodiscard]] const std::string& GetProjectName() const;
         ~ProjectWatchTower();
     };

@@ -6,10 +6,8 @@ void LDDrift::Compile::init(LDDrift::ProjectWatchTower* projectWatchTowerPTR) {
     projectWatchTower = projectWatchTowerPTR;
 }
 
-bool LDDrift::Compile::BuildProject()
-{
-    if (buildStatus.load() == CompileBuildStatus::Building)
-    {
+bool LDDrift::Compile::BuildProject() {
+    if (buildStatus.load() == CompileBuildStatus::Building) {
         errorLog =
             "Your project is already being built. "
             "Starting another build now would only duplicate work.";
@@ -18,31 +16,38 @@ bool LDDrift::Compile::BuildProject()
     }
 
     // Join the previous build thread if it has finished.
-    if (compileProjectThread.joinable())
-    {
+    if (compileProjectThread.joinable()) {
         compileProjectThread.join();
     }
 
     const std::filesystem::path buildPath =
-        std::filesystem::absolute(projectWatchTower->GetProjectPath() / "BUILD");
+        absolute(projectWatchTower->GetProjectPath() / "BUILD");
 
     const std::string command =
         "cmake --build \"" + buildPath.string() +
-        "\" --parallel 14";
+        "\" --parallel 14 < \"" + projectWatchTower->GetCompileLogPath().string() + "\" 2>&1";
 
     buildStatus.store(CompileBuildStatus::Building);
 
     compileProjectThread = std::thread([this, command]()
     {
-        if (const int result = std::system(command.c_str()); result == 0)
-        {
+        if (const int result = std::system(command.c_str()); result == 0) {
             buildStatus.store(
                 CompileBuildStatus::Succeeded,
                 std::memory_order_release
             );
-        }
-        else
-        {
+        } else {
+            if (FILE* pipe = popen((command + " 2>&1").c_str(), "r");
+                pipe != nullptr) {
+                char buffer[4096];
+                std::string output;
+
+                while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
+                    output += buffer;
+
+                if (const int _result = pclose(pipe); _result != 0)
+                    errorLog = output;
+            }
             buildStatus.store(
                 CompileBuildStatus::Failed,
                 std::memory_order_release

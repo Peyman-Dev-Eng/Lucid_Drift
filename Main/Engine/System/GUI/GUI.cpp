@@ -180,8 +180,6 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
             if (build == LDDrift::CompileBuildStatus::Succeeded) {
                 runGame = true;
                 LDDrift::EngineAPI::AfterCompileProject();
-            } else {
-                std::cout << CompilePTR->GetErrorLog() << std::endl;
             }
         }
     } else {

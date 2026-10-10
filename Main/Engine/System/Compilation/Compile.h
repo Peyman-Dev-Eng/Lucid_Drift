@@ -5,6 +5,8 @@
 #include <atomic>
 #include <thread>
 #include <ProjectWatchTower.h>
+#include <cstdio>
+#include <sys/wait.h>
 
 namespace LDDrift
 {

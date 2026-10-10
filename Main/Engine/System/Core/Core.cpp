@@ -36,9 +36,6 @@ void LDDrift::Core::EngineHandler() {
         LDDrift::input::Mouse::GetMouseInputEvent();
         LDDrift::GUI::BeginRenderGUI();
         window.ClearBuffer();
-        if (LDDrift::input::Keyboard::IsKeyPressed(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC)) {
-            return;
-        }
         render.render();
         gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
         gui.UpdateWindow("Project Watch Tower");
@@ -65,7 +62,6 @@ void LDDrift::Core::EngineHandler() {
                 for (const auto& path : projectWatchTower.GetPaths()) {
                     gui.SetTextForWindow("Project Watch Tower", path.string(), false);
                 }
-
                 gui.EndRenderGUI();
                 window.Update();
                 LDDrift::input::Keyboard::Update();
