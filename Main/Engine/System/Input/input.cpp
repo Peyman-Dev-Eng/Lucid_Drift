@@ -221,6 +221,9 @@ void LDDrift::input::Keyboard::Init() {
         "Key_KPLEFTPAREN",
         "Key_KPRIGHTPAREN"
     };
+    for (int i = 0; i < 181; ++i) {
+        KeyStringName[KeyBoardKeyName[i]] = static_cast<Event::Keyboard::LinuxKeyboardKeyCode>(i);
+    }
 #endif
 }
 
@@ -328,6 +331,10 @@ std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyb
     }
     return WKeyCodes;
 #endif
+}
+
+void LDDrift::input::Keyboard::SetKeyTarget(const std::string& key) {
+    TargetKeys.push_back(KeyStringName[key]);
 }
 
 std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyHeld() {

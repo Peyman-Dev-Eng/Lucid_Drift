@@ -268,6 +268,7 @@ namespace LDDrift
 
     inline std::vector<std::string> KeyBoardKeyName;
 
+    inline std::unordered_map<std::string, Event::Keyboard::LinuxKeyboardKeyCode> KeyStringName;
 
 #endif
 
@@ -296,6 +297,7 @@ namespace LDDrift
 
         public:
             static void Init();
+            static void SetKeyTarget(const std::string&);
             static void SetKeyTarget(const std::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys);
             static void GetKeyInputEvent();
             static bool IsKeyPressed(Event::Keyboard::LinuxKeyboardKeyCode key);

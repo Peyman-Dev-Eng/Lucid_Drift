@@ -175,12 +175,18 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
     }
     ImGui::SameLine();
     const LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
-    if (ImGui::Button("Run")) {
-        if (build == LDDrift::CompileBuildStatus::Succeeded) {
-            runGame = true;
-            LDDrift::EngineAPI::AfterCompileProject();
-        } else {
-            std::cout << CompilePTR->GetErrorLog() << std::endl;
+    if (runGame == false) {
+        if (ImGui::Button("Run")) {
+            if (build == LDDrift::CompileBuildStatus::Succeeded) {
+                runGame = true;
+                LDDrift::EngineAPI::AfterCompileProject();
+            } else {
+                std::cout << CompilePTR->GetErrorLog() << std::endl;
+            }
+        }
+    } else {
+        if (ImGui::Button("Pause")) {
+            runGame = false;
         }
     }
     ImGui::TextUnformatted("Build Status: ");
@@ -212,6 +218,10 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
     }
     if (reloadCmakeFileThread.joinable()) {
         reloadCmakeFileThread.join();
+    }
+    ImGui::Separator();
+    if (ImGui::Button("Exit")) {
+        core->engineRun = false;
     }
 }
 
@@ -272,14 +282,12 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) {
     if (window->name != SET_KEY_TARGET_WINDOW_NAME) {
         return;
     }
-    char search[256];
-    if (this->SearchableCombo(" ", window->searchBuffer, sizeof(window->searchBuffer), LDDrift::KeyBoardKeyName))
-        for (int i = 0; i < 256; ++i) {
-            search[i] = window->searchBuffer[i];
-        }
+    this->SearchableCombo(" ", window->searchBuffer, sizeof(window->searchBuffer), LDDrift::KeyBoardKeyName);
     ImGui::Separator();
     if (ImGui::Button("Set")) {
+        LDDrift::input::Keyboard::SetKeyTarget(std::string(window->searchBuffer));
         window->Show = false;
+        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
     }
 }
 

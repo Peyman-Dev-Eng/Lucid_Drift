@@ -34,6 +34,7 @@ namespace LDDrift
     public:
         std::stringstream consoleBuffer;
         std::streambuf* oldC_outBuf = nullptr;
+        bool engineRun = true;
 
     public:
         // data

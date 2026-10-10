@@ -31,7 +31,7 @@ void LDDrift::Core::Begin() {
 void LDDrift::Core::EngineHandler() {
     projectWatchTower.SetPaths();
     LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
-    while (window.ScreenIsOpen()) {
+    while (window.ScreenIsOpen() && engineRun) {
         LDDrift::input::Keyboard::GetKeyInputEvent();
         LDDrift::input::Mouse::GetMouseInputEvent();
         LDDrift::GUI::BeginRenderGUI();
@@ -53,7 +53,7 @@ void LDDrift::Core::EngineHandler() {
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         if (gui.runGame) {
             LDDrift::EngineAPI::beginPlay();
-            while (true) {
+            while (gui.runGame) {
                 LDDrift::input::Keyboard::GetKeyInputEvent();
                 LDDrift::input::Mouse::GetMouseInputEvent();
                 LDDrift::GUI::BeginRenderGUI();
@@ -67,12 +67,6 @@ void LDDrift::Core::EngineHandler() {
                 }
 
                 gui.EndRenderGUI();
-                if (LDDrift::input::Keyboard::IsKeyPressed(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC)) {
-                    gui.runGame = false;
-                    LDDrift::input::Keyboard::Update();
-                    LDDrift::input::Mouse::Update();
-                    break;
-                }
                 window.Update();
                 LDDrift::input::Keyboard::Update();
                 LDDrift::input::Mouse::Update();
