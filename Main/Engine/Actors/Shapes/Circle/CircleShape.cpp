@@ -1,8 +1,6 @@
 #include "CircleShape.h"
 
-LDDrift::Actors::Circle::Circle() : radiusNDC_X(0), radiusNDC_Y(0), radius(0), CenterPos(0, 0), Position(0, 0) {
-    this->SetPointCount(45);
-}
+LDDrift::Actors::Circle::Circle() : radiusNDC_X(0), radiusNDC_Y(0), radius(0), CenterPos(0, 0), Position(0, 0) {}
 
 LDDrift::Actors::Circle::Circle(const float& R) : radiusNDC_X(0), radiusNDC_Y(0), radius(R),
                                                   CenterPos(0, 0), Position(0, 0) {

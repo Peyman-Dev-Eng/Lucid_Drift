@@ -35,18 +35,18 @@ void LDDrift::Scene::SendShapesToRender() {
     if (sendDataToRenderThread.joinable()) {
         sendDataToRenderThread.join();
     }
-    sendDataToRenderThread = std::thread([this]()
-    {
-        for (auto& [circleName, circle] : circleShapes) {
-            renderer->AddShapeToRender(circle);
-        }
-        for (auto& [polygonName, polygon] : polygonShapes) {
-            renderer->AddShapeToRender(polygon);
-        }
-        for (auto& [lineName, line] : lines) {
-            renderer->AddLineToRender(line);
-        }
-    });
+
+    for (auto& [circleName, circle] : circleShapes) {
+        renderer->AddShapeToRender(circle);
+    }
+    for (auto& [polygonName, polygon] : polygonShapes) {
+        renderer->AddShapeToRender(polygon);
+    }
+    for (auto& [lineName, line] : lines) {
+        renderer->AddLineToRender(line);
+    }
+    renderer->UpdateShapeData();
+    renderer->SendDataToGPU();
 }
 
 void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _pointCount, const int _radius,

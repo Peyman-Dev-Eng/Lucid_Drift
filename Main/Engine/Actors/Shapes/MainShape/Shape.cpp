@@ -62,8 +62,7 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPositionToCenter() const {
     float cx = 0.0f;
     float cy = 0.0f;
 
-    for (std::size_t i = 0; i < PointCount; ++i)
-    {
+    for (std::size_t i = 0; i < PointCount; ++i) {
         const VecPos2D& p0 = Points[i];
         const VecPos2D& p1 = Points[(i + 1) % PointCount];
 
@@ -78,8 +77,7 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPositionToCenter() const {
 
     area *= 0.5f;
 
-    if (std::abs(area) < std::numeric_limits<float>::epsilon())
-    {
+    if (std::abs(area) < std::numeric_limits<float>::epsilon()) {
         CenterPos = {0.0f, 0.0f};
         return CenterPos;
     }
@@ -96,8 +94,7 @@ void LDDrift::Actors::Shape::SetOriginalPositionToCenter() {
     float cx = 0.0f;
     float cy = 0.0f;
 
-    for (std::size_t i = 0; i < PointCount; ++i)
-    {
+    for (std::size_t i = 0; i < PointCount; ++i) {
         const VecPos2D& p0 = Points[i];
         const VecPos2D& p1 = Points[(i + 1) % PointCount];
 
@@ -112,8 +109,7 @@ void LDDrift::Actors::Shape::SetOriginalPositionToCenter() {
 
     area *= 0.5f;
 
-    if (std::abs(area) < std::numeric_limits<float>::epsilon())
-    {
+    if (std::abs(area) < std::numeric_limits<float>::epsilon()) {
         OriginalPosition = {0.0f, 0.0f};
         return;
     }
@@ -125,11 +121,12 @@ void LDDrift::Actors::Shape::SetOriginalPositionToCenter() {
 }
 
 void LDDrift::Actors::Shape::SetPointCount(const std::size_t point_count) {
-    GLB_assert(point_count > PointCount && point_count >= 3)
-    for (uint PointIndex = Points.empty() ? 0 : PointCount; PointIndex < point_count; ++PointIndex) {
+    GLB_assert(point_count >= 3)
+    PointCount = point_count;
+    Points.clear();
+    for (std::size_t point = 0; point < point_count; ++point) {
         Points.emplace_back();
     }
-    PointCount = point_count;
 }
 
 std::size_t LDDrift::Actors::Shape::GetPointCount() const {
@@ -147,9 +144,8 @@ const std::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetNDC_Points() co
 }
 
 void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
-    std::cout << point_index << std::endl;
     GLB_assert(point_index >= 0 && point_index < PointCount)
-    Points[point_index] = LDDrift::Transform::TransformToNDC_Position(pos);
+    Points[point_index] = pos;
 }
 
 LDDrift::VecPos2D LDDrift::Actors::Shape::GetGlobalPoint(const std::size_t point_index) const {
