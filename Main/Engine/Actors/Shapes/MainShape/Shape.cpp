@@ -56,6 +56,41 @@ void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
     Points = LDDrift::Transform::TransformToNDC_Position(globalPoints);
 }
 
+LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPositionToCenter() const {
+    LDDrift::VecPos2D CenterPos;
+    float area = 0.0f;
+    float cx = 0.0f;
+    float cy = 0.0f;
+
+    for (std::size_t i = 0; i < PointCount; ++i)
+    {
+        const VecPos2D& p0 = Points[i];
+        const VecPos2D& p1 = Points[(i + 1) % PointCount];
+
+        const float cross =
+            p0.X * p1.Y -
+            p1.X * p0.Y;
+
+        area += cross;
+        cx += (p0.X + p1.X) * cross;
+        cy += (p0.Y + p1.Y) * cross;
+    }
+
+    area *= 0.5f;
+
+    if (std::abs(area) < std::numeric_limits<float>::epsilon())
+    {
+        CenterPos = {0.0f, 0.0f};
+        return CenterPos;
+    }
+
+    cx /= 6.0f * area;
+    cy /= 6.0f * area;
+
+    CenterPos = {cx, cy};
+    return CenterPos;
+}
+
 void LDDrift::Actors::Shape::SetOriginalPositionToCenter() {
     float area = 0.0f;
     float cx = 0.0f;
@@ -112,6 +147,7 @@ const std::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetNDC_Points() co
 }
 
 void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
+    std::cout << point_index << std::endl;
     GLB_assert(point_index >= 0 && point_index < PointCount)
     Points[point_index] = LDDrift::Transform::TransformToNDC_Position(pos);
 }

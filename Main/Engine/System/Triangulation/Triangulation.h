@@ -74,7 +74,7 @@ namespace LDDrift
 
         void TrianglesForConvexShape(std::vector<float>& vertices) const {
             // get center point position of shape
-            LDDrift::VecPos2D CenterPos{0, 0};
+            LDDrift::VecPos2D CenterPos = shape->GetOriginalPositionToCenter();
             const std::size_t shapePointNumber = shape->GetPointCount();
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
                 CenterPos += shape->GetNDC_Point(pointNumber);

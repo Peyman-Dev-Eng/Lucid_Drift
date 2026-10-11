@@ -68,7 +68,7 @@ void LDDrift::Renderer::Initialize() {
 }
 
 void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
-    shapePTRs.push_back(shape);
+    shapePTRs.insert(shape);
     const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
     std::vector<float> VTC = {};
     if (shape->ShapeIsConvex().isConvex) {
@@ -159,7 +159,7 @@ void LDDrift::Renderer::render() const {
 }
 
 void LDDrift::Renderer::AddLineToRender(LDDrift::Actors::Line* line) {
-    linePTRs.push_back(line);
+    linePTRs.insert(line);
 }
 
 void LDDrift::Renderer::RebuildShapes() {

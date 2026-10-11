@@ -1,6 +1,8 @@
 #include "CircleShape.h"
 
-LDDrift::Actors::Circle::Circle() : radiusNDC_X(0), radiusNDC_Y(0), radius(0), CenterPos(0, 0), Position(0, 0) {}
+LDDrift::Actors::Circle::Circle() : radiusNDC_X(0), radiusNDC_Y(0), radius(0), CenterPos(0, 0), Position(0, 0) {
+    this->SetPointCount(45);
+}
 
 LDDrift::Actors::Circle::Circle(const float& R) : radiusNDC_X(0), radiusNDC_Y(0), radius(R),
                                                   CenterPos(0, 0), Position(0, 0) {
@@ -42,16 +44,29 @@ LDDrift::VecCol LDDrift::Actors::Circle::CalculateAverageVertexColor() const {
 }
 
 void LDDrift::Actors::Circle::Rebuild() {
-    const uint VectexAngle = 360 / this->GetPointCount();
-    uint PointIndex = 0;
+    const uint PointCount = this->GetPointCount();
+
+    if (PointCount == 0)
+        return;
+
     const LDDrift::VecPos2D& screenSize = this->GetScreenSize();
+
     radiusNDC_X = radius / screenSize.X;
     radiusNDC_Y = radius / screenSize.Y;
-    for (uint angle = 0; angle < 360; angle += VectexAngle, ++PointIndex) {
-        const auto radians = static_cast<float>(angle * std::numbers::pi_v<double> / 180.0f);
-        this->SetPoint(PointIndex, LDDrift::VecPos2D{
-                           CenterPos.X + radiusNDC_X * std::cos(radians), CenterPos.Y + radiusNDC_Y * std::sin(radians)
-                       });
+
+    for (uint PointIndex = 0; PointIndex < PointCount; ++PointIndex) {
+        const auto radians =
+            static_cast<float>(
+                PointIndex * 2.0 * std::numbers::pi_v<double> / PointCount
+            );
+
+        this->SetPoint(
+            PointIndex,
+            LDDrift::VecPos2D{
+                CenterPos.X + radiusNDC_X * std::cos(radians),
+                CenterPos.Y + radiusNDC_Y * std::sin(radians)
+            }
+        );
     }
 }
 

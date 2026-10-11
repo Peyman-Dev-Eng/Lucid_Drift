@@ -4,6 +4,7 @@
 #include <vector>
 #include <ShapeData.h>
 #include <Actors/Line/Line.h>
+#include <set>
 #include <System/Triangulation/Triangulation.h>
 #define LUCID_DRIFT_SHAPE_RENDER_AS_FILLED 1
 #define LUCID_DRIFT_SHAPE_RENDER_AS_OUTLINE 2
@@ -26,8 +27,8 @@ namespace LDDrift
         };
 
     private: // opengl data
-        std::vector<LDDrift::Actors::Line*> linePTRs;
-        std::vector<LDDrift::Actors::Shape*> shapePTRs;
+        std::set<LDDrift::Actors::Line*> linePTRs;
+        std::set<LDDrift::Actors::Shape*> shapePTRs;
         std::vector<ReadShapeVertices> howToReadShapeData;
         std::vector<float> vertices;
         const char* VertexShaderSource{nullptr};

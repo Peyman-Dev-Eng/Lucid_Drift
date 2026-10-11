@@ -109,7 +109,7 @@ namespace LDDrift
     private:
         void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
         void MainWindowHandler(const DefaultWindowsData* window);
-        static void CircleConfigureWindowHandler(DefaultWindowsData* window);
+        void CircleConfigureWindowHandler(DefaultWindowsData* window) const;
         static void PolygonConfigureWindowHandler(DefaultWindowsData* window);
         static void LineConfigureWindowHandler(DefaultWindowsData* window);
         void SetKeyTargetWindowHandler(DefaultWindowsData* window);

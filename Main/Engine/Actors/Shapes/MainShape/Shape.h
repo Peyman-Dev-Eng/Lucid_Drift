@@ -85,6 +85,7 @@ namespace LDDrift::Actors
         void SetOriginalPosition(const LDDrift::VecPos2D& pos);
         void SetOriginalPositionToCenter();
         [[nodiscard]] const LDDrift::VecPos2D& GetOriginalPosition() const;
+        [[nodiscard]] LDDrift::VecPos2D GetOriginalPositionToCenter() const;
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
         [[nodiscard]] const LDDrift::VecCol& GetPointColor(std::size_t point_index) const;
         [[nodiscard]] const std::vector<LDDrift::VecCol>& GetColorOfPoints() const;

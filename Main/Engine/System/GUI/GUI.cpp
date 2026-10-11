@@ -248,16 +248,16 @@ void LDDrift::GUI::SetCompilePTR(LDDrift::Compile* compilePTR) {
     CompilePTR = compilePTR;
 }
 
-void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) const {
     if (window->name != CIRCLE_CONFIGURE_WINDOW_NAME) {
         return;
     }
     static int circlePointCount = 45;
-    static double redValueColor = 0;
-    static double greenValueColor = 0;
-    static double blueValueColor = 0;
-    static double alphaValueColor = 1;
-    static double circleRadius = 0;
+    static float redValueColor = 0;
+    static float greenValueColor = 0;
+    static float blueValueColor = 0;
+    static float alphaValueColor = 1;
+    static int circleRadius = 0;
     static int circleSpeed = 1;
     ImGui::SetNextItemWidth(400);
     ImGui::InputTextWithHint("##Circle Shape Name", "Enter Circle Name: ", window->searchBuffer,
@@ -274,7 +274,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     ImGui::TextUnformatted("Circle Radius: ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(285);
-    ImGui::InputDouble("##Circle Radius", &circleRadius, 1, 1, "%.0f");
+    ImGui::InputInt("##Circle Radius", &circleRadius, 1, 1);
     if (circleRadius < 1) {
         circleRadius = 1;
     }
@@ -282,7 +282,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     ImGui::TextUnformatted("Red: ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(110);
-    ImGui::InputDouble("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
+    ImGui::InputFloat("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
     if (redValueColor > 1) {
         redValueColor = 1;
     }
@@ -293,7 +293,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     ImGui::TextUnformatted("Green: ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(110);
-    ImGui::InputDouble("##Green Circle Color", &greenValueColor, 0.005, 0.005, "%.3f");
+    ImGui::InputFloat("##Green Circle Color", &greenValueColor, 0.005, 0.005, "%.3f");
     if (greenValueColor > 1) {
         greenValueColor = 1;
     }
@@ -304,7 +304,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     ImGui::TextUnformatted("Blue: ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(110);
-    ImGui::InputDouble("##Blue Circle Color", &blueValueColor, 0.005, 0.005, "%.3f");
+    ImGui::InputFloat("##Blue Circle Color", &blueValueColor, 0.005, 0.005, "%.3f");
     if (blueValueColor > 1) {
         blueValueColor = 1;
     }
@@ -315,7 +315,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     ImGui::TextUnformatted("Alpha: ");
     ImGui::SameLine();
     ImGui::SetNextItemWidth(110);
-    ImGui::InputDouble("##Alpha Circle Color", &alphaValueColor, 0.005, 0.005, "%.3f");
+    ImGui::InputFloat("##Alpha Circle Color", &alphaValueColor, 0.005, 0.005, "%.3f");
     if (alphaValueColor > 1) {
         alphaValueColor = 1;
     }
@@ -332,6 +332,9 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     }
     ImGui::Separator();
     if (ImGui::Button("Close")) {
+        core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius, circleSpeed,
+                                      {redValueColor, greenValueColor, blueValueColor, alphaValueColor});
+        core->scene.SendShapesToRender();
         window->Show = false;
     }
 }

@@ -56,6 +56,7 @@ namespace LDDrift
         void CreateCircleShape(const std::string& name,
                                int _pointCount,
                                int _radius,
+                               int _speed,
                                const LDDrift::VecCol& color);
         void CreatePolygonShape();
         void CreateLineActor();

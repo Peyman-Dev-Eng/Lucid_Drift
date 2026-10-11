@@ -22,6 +22,7 @@
 #include <streambuf>
 #include <GuiLogic.h>
 #include "API/EngineAPI.h"
+#include <System/Scene/Scene.h>
 
 namespace LDDrift
 {
@@ -44,6 +45,7 @@ namespace LDDrift
         LDDrift::PointHitTesting pointHitTesting;
         LDDrift::GUI gui;
         LDDrift::Compile compile;
+        LDDrift::Scene scene;
 
         // functions
         explicit Core();

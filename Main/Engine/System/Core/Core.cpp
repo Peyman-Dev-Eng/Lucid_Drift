@@ -22,6 +22,8 @@ void LDDrift::Core::InitCore() {
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
     gui.SetCompilePTR(&compile);
     compile.init(&projectWatchTower);
+    scene.SetRendererPTR(&render);
+    scene.SetCorePTR(this);
 }
 
 void LDDrift::Core::Begin() {
