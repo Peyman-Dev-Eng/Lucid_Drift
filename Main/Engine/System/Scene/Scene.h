@@ -7,6 +7,7 @@
 #include <Actors/Line/Line.h>
 #include <Renderer/Renderer.h>
 #include <typeinfo>
+#include <thread>
 #include <linux/input-event-codes.h>
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0x000002
@@ -20,25 +21,42 @@ namespace LDDrift
         struct CIRCLE_SHAPE_INFORMATION
         {
             std::string circleName;
-            float radiusOfCircle;
-            float pointCount;
-            std::vector<LDDrift::VecCol> pointColors;
+            LDDrift::Actors::Circle* circle;
         };
 
+        struct POLYGON_SHAPE_INFORMATION
+        {
+            std::string polygonName;
+            LDDrift::Actors::Polygon* polygon;
+        };
+
+        struct LINE_SHAPE_INFORMATION
+        {
+            std::string lineName;
+            LDDrift::Actors::Line* line;
+        };
+
+        std::thread sendDataToRenderThread;
+
     private:
+        LDDrift::Core* core = nullptr;
         LDDrift::Renderer* renderer = nullptr;
-        std::vector<LDDrift::Actors::Circle*> circleShapes;
-        std::vector<LDDrift::Actors::Polygon*> polygonShapes;
-        std::vector<LDDrift::Actors::Line*> lines;
+        std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
+        std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
+        std::vector<LINE_SHAPE_INFORMATION> lines;
         int circleCount = 0;
         int polygonCount = 0;
         int lineCount = 0;
 
     public:
         Scene();
-        void SetRenderer(LDDrift::Renderer* rendererPTR);
+        void SetCorePTR(LDDrift::Core* corePtr);
+        void SetRendererPTR(LDDrift::Renderer* rendererPTR);
         void SendShapesToRender();
-        void CreateCircleShape();
+        void CreateCircleShape(const std::string& name,
+                               int _pointCount,
+                               int _radius,
+                               const LDDrift::VecCol& color);
         void CreatePolygonShape();
         void CreateLineActor();
         ~Scene();

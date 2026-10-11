@@ -252,6 +252,85 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     if (window->name != CIRCLE_CONFIGURE_WINDOW_NAME) {
         return;
     }
+    static int circlePointCount = 45;
+    static double redValueColor = 0;
+    static double greenValueColor = 0;
+    static double blueValueColor = 0;
+    static double alphaValueColor = 1;
+    static double circleRadius = 0;
+    static int circleSpeed = 1;
+    ImGui::SetNextItemWidth(400);
+    ImGui::InputTextWithHint("##Circle Shape Name", "Enter Circle Name: ", window->searchBuffer,
+                             sizeof(window->searchBuffer));
+    ImGui::Separator();
+    ImGui::TextUnformatted("Circle Point Count: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(250);
+    ImGui::InputInt("##Circle Point Count", &circlePointCount, 1, 1);
+    if (circlePointCount < 45) {
+        circlePointCount = 45;
+    }
+    ImGui::Separator();
+    ImGui::TextUnformatted("Circle Radius: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(285);
+    ImGui::InputDouble("##Circle Radius", &circleRadius, 1, 1, "%.0f");
+    if (circleRadius < 1) {
+        circleRadius = 1;
+    }
+    ImGui::Separator();
+    ImGui::TextUnformatted("Red: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(110);
+    ImGui::InputDouble("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
+    if (redValueColor > 1) {
+        redValueColor = 1;
+    }
+    if (redValueColor < 0) {
+        redValueColor = 0;
+    }
+    ImGui::SameLine();
+    ImGui::TextUnformatted("Green: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(110);
+    ImGui::InputDouble("##Green Circle Color", &greenValueColor, 0.005, 0.005, "%.3f");
+    if (greenValueColor > 1) {
+        greenValueColor = 1;
+    }
+    if (greenValueColor < 0) {
+        greenValueColor = 0;
+    }
+    ImGui::SameLine();
+    ImGui::TextUnformatted("Blue: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(110);
+    ImGui::InputDouble("##Blue Circle Color", &blueValueColor, 0.005, 0.005, "%.3f");
+    if (blueValueColor > 1) {
+        blueValueColor = 1;
+    }
+    if (blueValueColor < 0) {
+        blueValueColor = 0;
+    }
+    ImGui::SameLine();
+    ImGui::TextUnformatted("Alpha: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(110);
+    ImGui::InputDouble("##Alpha Circle Color", &alphaValueColor, 0.005, 0.005, "%.3f");
+    if (alphaValueColor > 1) {
+        alphaValueColor = 1;
+    }
+    if (alphaValueColor < 0) {
+        alphaValueColor = 0;
+    }
+    ImGui::Separator();
+    ImGui::TextUnformatted("Circle Speed: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(110);
+    ImGui::InputInt("##Circle Speed ", &circleSpeed, 1, 1);
+    if (circleSpeed < 0) {
+        circleSpeed = 0;
+    }
+    ImGui::Separator();
     if (ImGui::Button("Close")) {
         window->Show = false;
     }

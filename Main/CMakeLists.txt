@@ -204,6 +204,20 @@ target_link_libraries(COMP PUBLIC
 )
 
 # ============================================================================
+# Write and Read Engine Setting System
+# ============================================================================
+
+add_library(WRSS STATIC
+        Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.cpp
+)
+
+target_include_directories(WRSS PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/WR_SettingSystem
+)
+
+target_link_libraries(WRSS PUBLIC PWT)
+
+# ============================================================================
 # END
 # ============================================================================
 
