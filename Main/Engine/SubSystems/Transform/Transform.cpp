@@ -6,6 +6,26 @@ int LDDrift::Transform::heightScreen = VIEWPORT_WINDOW_HEIGHT;
 int LDDrift::Transform::halfWidthScreen = HALF_VIEWPORT_WINDOW_WIDTH;
 int LDDrift::Transform::halfHeightScreen = HALF_VIEWPORT_WINDOW_HEIGHT;
 
+float LDDrift::Transform::TransformToNDC_Position(const float pointPos, const char posType) {
+    if (posType == 'x' || posType == 'X') {
+        return (pointPos - static_cast<float>(halfWidthScreen)) / static_cast<float>(halfWidthScreen);
+    } else if (posType == 'y' || posType == 'Y') {
+        return (pointPos - static_cast<float>(halfHeightScreen)) / static_cast<float>(halfHeightScreen);
+    }
+    constexpr bool posTypeInputArgumentFunctionIsNotAvailable = false;
+    GLB_assert(posTypeInputArgumentFunctionIsNotAvailable);
+}
+
+float LDDrift::Transform::TransformToGlobalPosition(float pointPos, char posType) {
+    if (posType == 'x' || posType == 'X') {
+        return (pointPos + 1.0f) * static_cast<float>(halfWidthScreen);
+    } else if (posType == 'y' || posType == 'Y') {
+        return (pointPos + 1.0f) * static_cast<float>(halfHeightScreen);
+    }
+    constexpr bool posTypeInputArgumentFunctionIsNotAvailable = false;
+    GLB_assert(posTypeInputArgumentFunctionIsNotAvailable);
+}
+
 std::vector<LDDrift::VecPos2D> LDDrift::Transform::TransformToNDC_Position(const LDDrift::Actors::Shape* shape) {
     std::vector<LDDrift::VecPos2D> NDC_pointPositon;
     for (const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();

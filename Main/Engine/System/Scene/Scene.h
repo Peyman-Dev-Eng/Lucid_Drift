@@ -30,33 +30,30 @@ namespace LDDrift
             LDDrift::Actors::Polygon* polygon;
         };
 
-        struct LINE_SHAPE_INFORMATION
+        struct LINE_ACTOR_INFORMATION
         {
             std::string lineName;
             LDDrift::Actors::Line* line;
         };
-
-        std::thread sendDataToRenderThread;
 
     private:
         LDDrift::Core* core = nullptr;
         LDDrift::Renderer* renderer = nullptr;
         std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
         std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
-        std::vector<LINE_SHAPE_INFORMATION> lines;
-        int circleCount = 0;
-        int polygonCount = 0;
-        int lineCount = 0;
+        std::vector<LINE_ACTOR_INFORMATION> lines;
 
     public:
         Scene();
         void SetCorePTR(LDDrift::Core* corePtr);
         void SetRendererPTR(LDDrift::Renderer* rendererPTR);
         void SendShapesToRender();
+        [[nodiscard]] LDDrift::Actors::Circle* GetCircle(const std::string& name) const;
         void CreateCircleShape(const std::string& name,
                                int _pointCount,
                                int _radius,
                                int _speed,
+                               const LDDrift::VecPos2D& pos,
                                const LDDrift::VecCol& color);
         void CreatePolygonShape();
         void CreateLineActor();

@@ -61,11 +61,15 @@ void LDDrift::Actors::Circle::Rebuild() {
         this->SetPoint(
             PointIndex,
             LDDrift::VecPos2D{
-                CenterPos.X + radiusNDC_X * std::cos(radians),
-                CenterPos.Y + radiusNDC_Y * std::sin(radians)
+                LDDrift::Transform::TransformToNDC_Position(CenterPos.X + radius * std::cos(radians), 'x'),
+                LDDrift::Transform::TransformToNDC_Position(CenterPos.Y + radius * std::sin(radians), 'y')
             }
         );
     }
+}
+
+void LDDrift::Actors::Circle::SetCirclePosition(const LDDrift::VecPos2D& position) {
+    CenterPos = position;
 }
 
 void LDDrift::Actors::Circle::Rebuild(const int width, const int height) {
@@ -76,7 +80,7 @@ void LDDrift::Actors::Circle::Rebuild(const int width, const int height) {
     for (uint angle = 0; angle < 360; angle += VectexAngle, ++PointIndex) {
         const auto radians = static_cast<float>(angle * std::numbers::pi_v<double> / 180.0f);
         this->SetPoint(PointIndex, LDDrift::VecPos2D{
-                           CenterPos.X + radiusNDC_X * std::cos(radians), CenterPos.Y + radiusNDC_Y * std::sin(radians)
+                           CenterPos.X + radius * std::cos(radians), CenterPos.Y + radius * std::sin(radians)
                        });
     }
 }

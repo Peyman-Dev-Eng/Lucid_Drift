@@ -11,6 +11,7 @@ namespace LDDrift
     {
         class Shape;
     }
+
     class Transform
     {
     public:
@@ -18,6 +19,8 @@ namespace LDDrift
         static int heightScreen;
         static int halfWidthScreen;
         static int halfHeightScreen;
+        static float TransformToNDC_Position(float pointPos, char posType);
+        static float TransformToGlobalPosition(float pointPos, char posType);
         static std::vector<LDDrift::VecPos2D> TransformToNDC_Position(const LDDrift::Actors::Shape*);
         static std::vector<LDDrift::VecPos2D> TransformToGlobalPosition(const LDDrift::Actors::Shape*);
         static LDDrift::VecPos2D TransformToNDC_Position(const LDDrift::VecPos2D&);

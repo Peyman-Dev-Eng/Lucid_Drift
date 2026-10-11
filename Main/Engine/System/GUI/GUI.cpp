@@ -259,6 +259,8 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
     static float alphaValueColor = 1;
     static int circleRadius = 0;
     static int circleSpeed = 1;
+    static int xPos = 0;
+    static int yPos = 0;
     ImGui::SetNextItemWidth(400);
     ImGui::InputTextWithHint("##Circle Shape Name", "Enter Circle Name: ", window->searchBuffer,
                              sizeof(window->searchBuffer));
@@ -331,8 +333,20 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
         circleSpeed = 0;
     }
     ImGui::Separator();
+    ImGui::TextUnformatted("Circle Position");
+    ImGui::TextUnformatted("X position: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("##X Position", &xPos, 1, 1);
+    ImGui::SameLine();
+    ImGui::TextUnformatted("Y position: ");
+    ImGui::SameLine();
+    ImGui::SetNextItemWidth(100);
+    ImGui::InputInt("##Y position", &yPos, 1, 1);
+    ImGui::Separator();
     if (ImGui::Button("Close")) {
         core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius, circleSpeed,
+                                      {static_cast<float>(xPos), static_cast<float>(yPos)},
                                       {redValueColor, greenValueColor, blueValueColor, alphaValueColor});
         core->scene.SendShapesToRender();
         window->Show = false;
