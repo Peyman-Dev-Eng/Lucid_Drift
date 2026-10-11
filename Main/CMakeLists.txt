@@ -277,6 +277,8 @@ add_library(Engine SHARED
         # Engine API
         Engine/API/EngineAPI.h
         Engine/API/EngineAPI.cpp
+        Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.cpp
+        Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.h
 )
 
 target_include_directories(Engine PUBLIC

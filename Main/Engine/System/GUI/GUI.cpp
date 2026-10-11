@@ -30,6 +30,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(SET_KEY_TARGET_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(EXIT_WARNING_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
 }
 
 std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
@@ -218,8 +220,27 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
         reloadCmakeFileThread.join();
     }
     ImGui::Separator();
+    static bool showExitMenu = false;
     if (ImGui::Button("Exit")) {
-        core->engineRun = false;
+        if (runGame) {
+            showExitMenu = true;
+        } else {
+            core->engineRun = false;
+        }
+    }
+    if (showExitMenu) {
+        ImGui::TextUnformatted("Are you sure you want to exit the engine?");
+        ImGui::TextUnformatted("Your game is currently running.");
+        ImGui::TextUnformatted("Exiting the engine now may cause");
+        ImGui::TextUnformatted("issues with your project.");
+        if (ImGui::Button("YES")) {
+            runGame = false;
+            core->engineRun = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("NO")) {
+            showExitMenu = false;
+        }
     }
 }
 
@@ -303,8 +324,9 @@ void LDDrift::GUI::EndRenderGUI() {
         if (!window.canMoveWindow) {
             flags |= ImGuiWindowFlags_NoMove;
         }
-        if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) && (window.
-            name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME)) {
+        if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) &&
+            (window.name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME) &&
+            (window.name != EXIT_WARNING_WINDOW_NAME)) {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }

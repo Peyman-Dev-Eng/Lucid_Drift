@@ -10,7 +10,7 @@ bool LDDrift::Compile::BuildProject() {
     if (buildStatus.load() == CompileBuildStatus::Building) {
         std::cout <<
             "Your project is already being built. "
-            "Starting another build now would only duplicate work.";
+            "Starting another build now would only duplicate work." << std::endl;
 
         return false;
     }

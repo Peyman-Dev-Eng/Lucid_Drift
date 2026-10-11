@@ -26,6 +26,7 @@
 #define POLYGON_CONFIGURE_WINDOW_NAME "Polygon Configure Window"
 #define LINE_CONFIGURE_WINDOW_NAME "Line Configure Window"
 #define SET_KEY_TARGET_WINDOW_NAME "Set Key Target"
+#define EXIT_WARNING_WINDOW_NAME "Exit Warning Window"
 
 namespace LDDrift
 {

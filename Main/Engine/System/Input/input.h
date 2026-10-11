@@ -33,6 +33,7 @@ inline std::array<IsKeyPressedInFrame, 256> WindowsKeyCodes;
 #include <fcntl.h>
 #include <unistd.h>
 #include <linux/input.h>
+#include <cstring>
 #define NO_EVENT_IS_AVAILABLE_TO_READ (-1)
 
 namespace LDDrift
@@ -252,10 +253,12 @@ namespace LDDrift
     inline int FileMouseInputEvent;
 
     // keyboard
+    std::string GetFileKeyboardInputEvent();
     void OpenFileKeyboardInputEvent(); // open file input event of linux and save result this up variable
     inline void CloseFileKeyboardInputEvent(); // close file input event of linux
 
     // mouse
+    std::string GetFileMouseInputEvent();
     void OpenFileMouseInputEvent();
     inline void CloseFileMouseInputEvent();
 
