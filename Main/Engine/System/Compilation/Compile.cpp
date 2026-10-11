@@ -8,7 +8,7 @@ void LDDrift::Compile::init(LDDrift::ProjectWatchTower* projectWatchTowerPTR) {
 
 bool LDDrift::Compile::BuildProject() {
     if (buildStatus.load() == CompileBuildStatus::Building) {
-        errorLog =
+        std::cout <<
             "Your project is already being built. "
             "Starting another build now would only duplicate work.";
 
@@ -25,7 +25,7 @@ bool LDDrift::Compile::BuildProject() {
 
     const std::string command =
         "cmake --build \"" + buildPath.string() +
-        "\" --parallel 14 < \"" + projectWatchTower->GetCompileLogPath().string() + "\" 2>&1";
+        "\" --parallel 14";
 
     buildStatus.store(CompileBuildStatus::Building);
 
@@ -37,17 +37,6 @@ bool LDDrift::Compile::BuildProject() {
                 std::memory_order_release
             );
         } else {
-            if (FILE* pipe = popen((command + " 2>&1").c_str(), "r");
-                pipe != nullptr) {
-                char buffer[4096];
-                std::string output;
-
-                while (fgets(buffer, sizeof(buffer), pipe) != nullptr)
-                    output += buffer;
-
-                if (const int _result = pclose(pipe); _result != 0)
-                    errorLog = output;
-            }
             buildStatus.store(
                 CompileBuildStatus::Failed,
                 std::memory_order_release

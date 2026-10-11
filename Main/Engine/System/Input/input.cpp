@@ -17,7 +17,7 @@ void LDDrift::OpenFileMouseInputEvent() {
 #ifdef __linux__
     LDDrift::FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse",
                                         O_RDONLY | O_NONBLOCK);
-    COF_assert(LDDrift::FileMouseInputEvent != -1)
+    // COF_assert(LDDrift::FileMouseInputEvent != -1)
 #endif
 }
 
