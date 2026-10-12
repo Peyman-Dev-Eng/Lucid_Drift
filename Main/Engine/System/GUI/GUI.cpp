@@ -120,10 +120,9 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
 
     ImGui::Separator();
 
-    ImGui::Text((static_cast<std::string>("Project name: ") + ProjectWatchTower_PTR->GetProjectName()).c_str());
+    ImGui::Text("Project name: %s", ProjectWatchTower_PTR->GetProjectName().c_str());
 
-    ImGui::Text(
-        (static_cast<std::string>("Project path: ") + ProjectWatchTower_PTR->GetProjectPath().string()).c_str());
+    ImGui::Text("Project path: %s", ProjectWatchTower_PTR->GetProjectPath().c_str());
 
     ImGui::Separator();
 
@@ -488,6 +487,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
                 circle->SetAllPointsColor({redValueColor, greenValueColor, blueValueColor, alphaValueColor});
                 circle->SetOriginalPositionToCenter();
                 circle->Rebuild();
+                this->core->scene.SendShapesToRender();
                 window->Show = false;
             }
             if (ImGui::Button("Close")) {
@@ -544,11 +544,11 @@ bool LDDrift::GUI::SearchableCombo(const char* label, char* buffer, const size_t
     return selected;
 }
 
-void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
     if (window->name != SET_KEY_TARGET_WINDOW_NAME) {
         return;
     }
-    this->SearchableCombo(" ", window->searchBuffer, sizeof(window->searchBuffer), LDDrift::KeyBoardKeyName);
+    this->SearchableCombo("##Set Keys of Target", window->searchBuffer, sizeof(window->searchBuffer), LDDrift::KeyBoardKeyName);
     ImGui::Separator();
     if (ImGui::Button("Set")) {
         LDDrift::input::Keyboard::SetKeyTarget(std::string(window->searchBuffer));
