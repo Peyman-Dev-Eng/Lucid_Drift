@@ -111,7 +111,7 @@ namespace LDDrift
         void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
         void MainWindowHandler(const DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window) const;
-        void PolygonConfigureWindowHandler(DefaultWindowsData* window);
+        static void PolygonConfigureWindowHandler(DefaultWindowsData* window);
         static void LineConfigureWindowHandler(DefaultWindowsData* window);
         void SetKeyTargetWindowHandler(DefaultWindowsData* window) const;
         static bool SearchableCombo( const char* label, char* buffer, size_t bufferSize, const std::vector<std::string>& options);

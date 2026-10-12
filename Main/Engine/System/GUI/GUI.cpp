@@ -516,7 +516,6 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) {
     if (window->name != POLYGON_CONFIGURE_WINDOW_NAME) {
         return;
     }
-
     if (ImGui::Button("Close")) {
         window->Show = false;
     }
