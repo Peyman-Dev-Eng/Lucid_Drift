@@ -16,8 +16,7 @@
 #endif
 #include "ProjectWatchTower.h"
 #include <functions.h>
-#include <System/Input/input.h>
-#include <System/Scene/Scene.h>
+#include <System/Core/Core.h>
 
 namespace LDDrift::EngineAPI
 {

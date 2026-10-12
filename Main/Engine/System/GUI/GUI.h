@@ -27,6 +27,7 @@
 #define LINE_CONFIGURE_WINDOW_NAME "Line Configure Window"
 #define SET_KEY_TARGET_WINDOW_NAME "Set Key Target"
 #define EXIT_WARNING_WINDOW_NAME "Exit Warning Window"
+#define CREATE_NEW_CIRCLE_ACTOR_WINDOW_NAME "Create New Circle Actor"
 
 namespace LDDrift
 {
@@ -110,10 +111,10 @@ namespace LDDrift
         void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
         void MainWindowHandler(const DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window) const;
-        static void PolygonConfigureWindowHandler(DefaultWindowsData* window);
+        void PolygonConfigureWindowHandler(DefaultWindowsData* window);
         static void LineConfigureWindowHandler(DefaultWindowsData* window);
         void SetKeyTargetWindowHandler(DefaultWindowsData* window);
-        bool SearchableCombo( const char* label, char* buffer, size_t bufferSize, const std::vector<std::string>& options);
+        static bool SearchableCombo( const char* label, char* buffer, size_t bufferSize, const std::vector<std::string>& options);
     };
 }
 #endif

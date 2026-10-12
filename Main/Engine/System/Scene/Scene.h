@@ -6,7 +6,6 @@
 #include <Actors/Shapes/Polygon/Polygon.h>
 #include <Actors/Line/Line.h>
 #include <Renderer/Renderer.h>
-#include <typeinfo>
 #include <thread>
 #include <linux/input-event-codes.h>
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001

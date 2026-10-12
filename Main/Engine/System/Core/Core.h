@@ -28,7 +28,6 @@ namespace LDDrift
 {
     class Core final
     {
-
     private:
         void InitCore();
 
@@ -53,6 +52,11 @@ namespace LDDrift
         void EngineHandler();
         ~Core();
     };
+
+    namespace func
+    {
+        LDDrift::Scene* GetSceneObjectPointer();
+    }
 }
 
 #endif

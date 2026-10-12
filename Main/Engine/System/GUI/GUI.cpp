@@ -252,6 +252,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
     if (window->name != CIRCLE_CONFIGURE_WINDOW_NAME) {
         return;
     }
+    static int CheckBoxIsOn = 0;
     static int circlePointCount = 45;
     static float redValueColor = 0;
     static float greenValueColor = 0;
@@ -261,95 +262,244 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
     static int circleSpeed = 1;
     static int xPos = 0;
     static int yPos = 0;
-    ImGui::SetNextItemWidth(400);
-    ImGui::InputTextWithHint("##Circle Shape Name", "Enter Circle Name: ", window->searchBuffer,
-                             sizeof(window->searchBuffer));
-    ImGui::Separator();
-    ImGui::TextUnformatted("Circle Point Count: ");
+    ImGui::RadioButton("##Create New Circle", &CheckBoxIsOn, 0);
     ImGui::SameLine();
-    ImGui::SetNextItemWidth(250);
-    ImGui::InputInt("##Circle Point Count", &circlePointCount, 1, 1);
-    if (circlePointCount < 45) {
+    ImGui::RadioButton("##Configure Circle", &CheckBoxIsOn, 1);
+    if (CheckBoxIsOn == 0) {
+        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         circlePointCount = 45;
-    }
-    ImGui::Separator();
-    ImGui::TextUnformatted("Circle Radius: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(285);
-    ImGui::InputInt("##Circle Radius", &circleRadius, 1, 1);
-    if (circleRadius < 1) {
-        circleRadius = 1;
-    }
-    ImGui::Separator();
-    ImGui::TextUnformatted("Red: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(110);
-    ImGui::InputFloat("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
-    if (redValueColor > 1) {
-        redValueColor = 1;
-    }
-    if (redValueColor < 0) {
         redValueColor = 0;
-    }
-    ImGui::SameLine();
-    ImGui::TextUnformatted("Green: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(110);
-    ImGui::InputFloat("##Green Circle Color", &greenValueColor, 0.005, 0.005, "%.3f");
-    if (greenValueColor > 1) {
-        greenValueColor = 1;
-    }
-    if (greenValueColor < 0) {
         greenValueColor = 0;
-    }
-    ImGui::SameLine();
-    ImGui::TextUnformatted("Blue: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(110);
-    ImGui::InputFloat("##Blue Circle Color", &blueValueColor, 0.005, 0.005, "%.3f");
-    if (blueValueColor > 1) {
-        blueValueColor = 1;
-    }
-    if (blueValueColor < 0) {
         blueValueColor = 0;
-    }
-    ImGui::SameLine();
-    ImGui::TextUnformatted("Alpha: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(110);
-    ImGui::InputFloat("##Alpha Circle Color", &alphaValueColor, 0.005, 0.005, "%.3f");
-    if (alphaValueColor > 1) {
         alphaValueColor = 1;
-    }
-    if (alphaValueColor < 0) {
-        alphaValueColor = 0;
-    }
-    ImGui::Separator();
-    ImGui::TextUnformatted("Circle Speed: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(110);
-    ImGui::InputInt("##Circle Speed ", &circleSpeed, 1, 1);
-    if (circleSpeed < 0) {
-        circleSpeed = 0;
-    }
-    ImGui::Separator();
-    ImGui::TextUnformatted("Circle Position");
-    ImGui::TextUnformatted("X position: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(100);
-    ImGui::InputInt("##X Position", &xPos, 1, 1);
-    ImGui::SameLine();
-    ImGui::TextUnformatted("Y position: ");
-    ImGui::SameLine();
-    ImGui::SetNextItemWidth(100);
-    ImGui::InputInt("##Y position", &yPos, 1, 1);
-    ImGui::Separator();
-    if (ImGui::Button("Close")) {
-        core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius, circleSpeed,
-                                      {static_cast<float>(xPos), static_cast<float>(yPos)},
-                                      {redValueColor, greenValueColor, blueValueColor, alphaValueColor});
-        core->scene.SendShapesToRender();
-        window->Show = false;
+        circleRadius = 0;
+        circleSpeed = 1;
+        xPos = 0;
+        yPos = 0;
+        ImGui::TextUnformatted("window: Create New Circle");
+        ImGui::Separator();
+        ImGui::SetNextItemWidth(400);
+        ImGui::InputTextWithHint("##Circle Shape Name", "Enter Circle Name: ", window->searchBuffer,
+                                 sizeof(window->searchBuffer));
+        ImGui::Separator();
+        ImGui::TextUnformatted("Circle Point Count: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(250);
+        ImGui::InputInt("##Circle Point Count", &circlePointCount, 1, 1);
+        if (circlePointCount < 45) {
+            circlePointCount = 45;
+        }
+        ImGui::Separator();
+        ImGui::TextUnformatted("Circle Radius: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(285);
+        ImGui::InputInt("##Circle Radius", &circleRadius, 1, 1);
+        if (circleRadius < 1) {
+            circleRadius = 1;
+        }
+        ImGui::Separator();
+        ImGui::TextUnformatted("Red: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(110);
+        ImGui::InputFloat("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
+        if (redValueColor > 1) {
+            redValueColor = 1;
+        }
+        if (redValueColor < 0) {
+            redValueColor = 0;
+        }
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Green: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(110);
+        ImGui::InputFloat("##Green Circle Color", &greenValueColor, 0.005, 0.005, "%.3f");
+        if (greenValueColor > 1) {
+            greenValueColor = 1;
+        }
+        if (greenValueColor < 0) {
+            greenValueColor = 0;
+        }
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Blue: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(110);
+        ImGui::InputFloat("##Blue Circle Color", &blueValueColor, 0.005, 0.005, "%.3f");
+        if (blueValueColor > 1) {
+            blueValueColor = 1;
+        }
+        if (blueValueColor < 0) {
+            blueValueColor = 0;
+        }
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Alpha: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(110);
+        ImGui::InputFloat("##Alpha Circle Color", &alphaValueColor, 0.005, 0.005, "%.3f");
+        if (alphaValueColor > 1) {
+            alphaValueColor = 1;
+        }
+        if (alphaValueColor < 0) {
+            alphaValueColor = 0;
+        }
+        ImGui::Separator();
+        ImGui::TextUnformatted("Circle Speed: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(110);
+        ImGui::InputInt("##Circle Speed ", &circleSpeed, 1, 1);
+        if (circleSpeed < 0) {
+            circleSpeed = 0;
+        }
+        ImGui::Separator();
+        ImGui::TextUnformatted("Circle Position");
+        ImGui::TextUnformatted("X position: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::InputInt("##X Position", &xPos, 1, 1);
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Y position: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(100);
+        ImGui::InputInt("##Y position", &yPos, 1, 1);
+        ImGui::Separator();
+        if (ImGui::Button("Create")) {
+            core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius,
+                                          circleSpeed,
+                                          {static_cast<float>(xPos), static_cast<float>(yPos)},
+                                          {redValueColor, greenValueColor, blueValueColor, alphaValueColor});
+            core->scene.SendShapesToRender();
+            window->Show = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close")) {
+            window->Show = false;
+        }
+    } else if (CheckBoxIsOn == 1) {
+        ImGui::TextUnformatted("window: Circle Configuration");
+        static bool circlePointerIsNull = false;
+        LDDrift::Actors::Circle* circle = nullptr;
+        if (ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->searchBuffer,
+                                     sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            circle = core->scene.GetCircle(std::string(window->searchBuffer));
+            circlePointerIsNull = circle == nullptr ? true : false;
+        }
+        if (circle == nullptr && circlePointerIsNull == false) {
+            if (ImGui::Button("Close")) {
+                window->Show = false;
+            }
+            return;
+        }
+        if (!circlePointerIsNull && circle != nullptr) {
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            circlePointCount = static_cast<int>(circle->GetPointCount());
+            circleRadius = static_cast<int>(circle->GetRadius());
+            circleSpeed = static_cast<int>(circle->GetSpeed());
+            redValueColor = circle->GetPointColor(0).R;
+            greenValueColor = circle->GetPointColor(0).G;
+            blueValueColor = circle->GetPointColor(0).B;
+            alphaValueColor = circle->GetPointColor(0).A;
+            xPos = static_cast<int>(circle->GetCirclePosition().X);
+            yPos = static_cast<int>(circle->GetCirclePosition().Y);
+            ImGui::Separator();
+            ImGui::TextUnformatted("Circle Point Count: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(250);
+            ImGui::InputInt("##Circle Point Count", &circlePointCount, 1, 1);
+            if (circlePointCount < 45) {
+                circlePointCount = 45;
+            }
+            ImGui::Separator();
+            ImGui::TextUnformatted("Circle Radius: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(285);
+            ImGui::InputInt("##Circle Radius", &circleRadius, 1, 1);
+            if (circleRadius < 1) {
+                circleRadius = 1;
+            }
+            ImGui::Separator();
+            ImGui::TextUnformatted("Red: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(110);
+            ImGui::InputFloat("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
+            if (redValueColor > 1) {
+                redValueColor = 1;
+            }
+            if (redValueColor < 0) {
+                redValueColor = 0;
+            }
+            ImGui::SameLine();
+            ImGui::TextUnformatted("Green: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(110);
+            ImGui::InputFloat("##Green Circle Color", &greenValueColor, 0.005, 0.005, "%.3f");
+            if (greenValueColor > 1) {
+                greenValueColor = 1;
+            }
+            if (greenValueColor < 0) {
+                greenValueColor = 0;
+            }
+            ImGui::SameLine();
+            ImGui::TextUnformatted("Blue: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(110);
+            ImGui::InputFloat("##Blue Circle Color", &blueValueColor, 0.005, 0.005, "%.3f");
+            if (blueValueColor > 1) {
+                blueValueColor = 1;
+            }
+            if (blueValueColor < 0) {
+                blueValueColor = 0;
+            }
+            ImGui::SameLine();
+            ImGui::TextUnformatted("Alpha: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(110);
+            ImGui::InputFloat("##Alpha Circle Color", &alphaValueColor, 0.005, 0.005, "%.3f");
+            if (alphaValueColor > 1) {
+                alphaValueColor = 1;
+            }
+            if (alphaValueColor < 0) {
+                alphaValueColor = 0;
+            }
+            ImGui::Separator();
+            ImGui::TextUnformatted("Circle Speed: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(110);
+            ImGui::InputInt("##Circle Speed ", &circleSpeed, 1, 1);
+            if (circleSpeed < 0) {
+                circleSpeed = 0;
+            }
+            ImGui::Separator();
+            ImGui::TextUnformatted("Circle Position");
+            ImGui::TextUnformatted("X position: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputInt("##X Position", &xPos, 1, 1);
+            ImGui::SameLine();
+            ImGui::TextUnformatted("Y position: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputInt("##Y position", &yPos, 1, 1);
+            ImGui::Separator();
+            if (ImGui::Button("Configure")) {
+                circle->SetCirclePosition({static_cast<float>(xPos), static_cast<float>(yPos)});
+                circle->SetPointCount(circlePointCount);
+                circle->SetScreenSize(core->window.GetWindowSize());
+                circle->SetRadius(static_cast<float>(circleRadius));
+                circle->SetSpeed(static_cast<float>(circleSpeed));
+                circle->SetAllPointsColor({redValueColor, greenValueColor, blueValueColor, alphaValueColor});
+                circle->SetOriginalPositionToCenter();
+                circle->Rebuild();
+                window->Show = false;
+            }
+            if (ImGui::Button("Close")) {
+                window->Show = false;
+            }
+        } else {
+            ImGui::TextUnformatted(
+                (std::string("not available circle actor with this name -> ") + window->searchBuffer).c_str());
+            if (ImGui::Button("Close")) {
+                window->Show = false;
+            }
+        }
     }
 }
 
@@ -366,12 +516,13 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) {
     if (window->name != POLYGON_CONFIGURE_WINDOW_NAME) {
         return;
     }
+
     if (ImGui::Button("Close")) {
         window->Show = false;
     }
 }
 
-bool LDDrift::GUI::SearchableCombo(const char* label, char* buffer, size_t bufferSize,
+bool LDDrift::GUI::SearchableCombo(const char* label, char* buffer, const size_t bufferSize,
                                    const std::vector<std::string>& options) {
     bool selected = false;
     ImGui::SetNextItemWidth(250.0f);

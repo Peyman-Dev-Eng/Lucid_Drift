@@ -72,6 +72,10 @@ void LDDrift::Actors::Circle::SetCirclePosition(const LDDrift::VecPos2D& positio
     CenterPos = position;
 }
 
+const LDDrift::VecPos2D& LDDrift::Actors::Circle::GetCirclePosition() const {
+    return CenterPos;
+}
+
 void LDDrift::Actors::Circle::Rebuild(const int width, const int height) {
     this->SetScreenSize({static_cast<float>(width), static_cast<float>(height)});
     this->SetRadius(this->radius);

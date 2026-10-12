@@ -1,5 +1,10 @@
 #include "Core.h"
 
+namespace
+{
+    LDDrift::Scene* currentScene = nullptr;
+}
+
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
@@ -24,6 +29,7 @@ void LDDrift::Core::InitCore() {
     compile.init(&projectWatchTower);
     scene.SetRendererPTR(&render);
     scene.SetCorePTR(this);
+    currentScene = &scene;
 }
 
 void LDDrift::Core::Begin() {
@@ -34,8 +40,6 @@ void LDDrift::Core::EngineHandler() {
     projectWatchTower.SetPaths();
     LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
     while (window.ScreenIsOpen() && engineRun) {
-        LDDrift::input::Keyboard::GetKeyInputEvent();
-        LDDrift::input::Mouse::GetMouseInputEvent();
         LDDrift::GUI::BeginRenderGUI();
         window.ClearBuffer();
         render.render();
@@ -47,8 +51,6 @@ void LDDrift::Core::EngineHandler() {
 
         gui.EndRenderGUI();
         window.Update();
-        LDDrift::input::Keyboard::Update();
-        LDDrift::input::Mouse::Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         if (gui.runGame) {
             LDDrift::EngineAPI::beginPlay();
@@ -81,4 +83,11 @@ LDDrift::Core::~Core() {
     LDDrift::input::Mouse::Destroy();
     LDDrift::EngineAPI::DestroyEngineAPI();
     window.DestroyWindow();
+    if (currentScene == &scene) {
+        currentScene = nullptr;
+    }
+}
+
+LDDrift::Scene* LDDrift::func::GetSceneObjectPointer() {
+    return currentScene;
 }

@@ -52,6 +52,7 @@ LDDrift::Actors::Circle* LDDrift::Scene::GetCircle(const std::string& name) cons
     return nullptr;
 }
 
+
 void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _pointCount, const int _radius,
                                        const int _speed, const LDDrift::VecPos2D& pos, const LDDrift::VecCol& color) {
     const CIRCLE_SHAPE_INFORMATION newCircle{.circleName = name, .circle = new LDDrift::Actors::Circle()};
