@@ -290,7 +290,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         ImGui::TextUnformatted("Red: ");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(110);
-        ImGui::InputFloat("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
+        ImGui::InputFloat("##Red Circle Color", &redValueColor, 0.005, 0.005, "%.3f");
         if (redValueColor > 1) {
             redValueColor = 1;
         }
@@ -410,7 +410,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
             ImGui::TextUnformatted("Red: ");
             ImGui::SameLine();
             ImGui::SetNextItemWidth(110);
-            ImGui::InputFloat("##Red Cicle Color", &redValueColor, 0.005, 0.005, "%.3f");
+            ImGui::InputFloat("##Red Circle Color", &redValueColor, 0.005, 0.005, "%.3f");
             if (redValueColor > 1) {
                 redValueColor = 1;
             }
@@ -496,7 +496,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     }
 }
 
-void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const {
     if (window->name != LINE_CONFIGURE_WINDOW_NAME) {
         return;
     }
@@ -710,18 +710,17 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     } else if (radioButton == 1) {}
 }
 
-bool LDDrift::GUI::SearchableCombo(const char* label, char* buffer, const size_t bufferSize,
-                                   const std::vector<std::string>& options) {
+bool LDDrift::GUI::SearchableCombo(char* buffer, const std::vector<std::string>& options) {
     bool selected = false;
     ImGui::SetNextItemWidth(250.0f);
-    ImGui::InputTextWithHint(label, "Search...", buffer, bufferSize);
+    ImGui::InputTextWithHint("##Set Keys of Target", "Search...", buffer, 256);
     const std::string searchText = buffer;
-    if (ImGui::IsItemActivated() || ImGui::IsItemActive()) { ImGui::OpenPopup(label); }
-    if (ImGui::BeginPopup(label)) {
+    if (ImGui::IsItemActivated() || ImGui::IsItemActive()) { ImGui::OpenPopup("##Set Keys of Target"); }
+    if (ImGui::BeginPopup("##Set Keys of Target")) {
         for (const std::string& option : options) {
             if (!searchText.empty()) { if (option.find(searchText) == std::string::npos) continue; }
             if (ImGui::Selectable(option.c_str())) {
-                const size_t length = std::min(option.size(), bufferSize - 1);
+                const size_t length = std::min(option.size(), static_cast<std::size_t>(255));
                 std::copy_n(option.data(), length, buffer);
                 buffer[length] = '\0';
                 selected = true;
@@ -736,7 +735,7 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
     if (window->name != SET_KEY_TARGET_WINDOW_NAME) {
         return;
     }
-    this->SearchableCombo("##Set Keys of Target", window->searchBuffer, sizeof(window->searchBuffer),
+    this->SearchableCombo(window->searchBuffer,
                           LDDrift::KeyBoardKeyName);
     ImGui::Separator();
     if (ImGui::Button("Set")) {

@@ -113,9 +113,9 @@ namespace LDDrift
         void MainWindowHandler(const DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window);
         void PolygonConfigureWindowHandler(DefaultWindowsData* window) const;
-        void LineConfigureWindowHandler(DefaultWindowsData* window);
+        void LineConfigureWindowHandler(DefaultWindowsData* window) const;
         void SetKeyTargetWindowHandler(DefaultWindowsData* window) const;
-        static bool SearchableCombo( const char* label, char* buffer, size_t bufferSize, const std::vector<std::string>& options);
+        static bool SearchableCombo(char* buffer, const std::vector<std::string>& options);
     };
 }
 #endif
