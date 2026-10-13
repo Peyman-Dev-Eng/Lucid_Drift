@@ -16,6 +16,7 @@ namespace LDDrift
 
     private: // functions
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {
+            std::cout << "Concave Shape" << std::endl;
             const std::size_t shapePointNumber = shape->GetPointCount();
             std::vector<std::size_t> targetNumberOfPoints;
             for (std::size_t point = 0; point < shapePointNumber; ++point) {
@@ -31,6 +32,7 @@ namespace LDDrift
                     (pointB.X - pointA.X) * (pointC.Y - pointB.Y)
                     - (pointB.Y - pointA.Y) * (pointC.X - pointA.X);
                 if (const bool isConvexCorner = cross * shape->ShapeIsConvex().pointDirection > 0.0f; !isConvexCorner) {
+                    ++counter;
                     continue;
                 }
                 bool notFoundPointInTriangle = true;
@@ -74,10 +76,10 @@ namespace LDDrift
 
         void TrianglesForConvexShape(std::vector<float>& vertices) const {
             // get center point position of shape
-            LDDrift::VecPos2D CenterPos = shape->GetOriginalPositionToCenter();
+            LDDrift::VecPos2D CenterPos = {0, 0};
             const std::size_t shapePointNumber = shape->GetPointCount();
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
-                CenterPos += shape->GetNDC_Point(pointNumber);
+                CenterPos += shape->GetGlobalPoint(pointNumber);
             }
             CenterPos /= shapePointNumber;
             /////////////////////////////////////////////
@@ -85,8 +87,8 @@ namespace LDDrift
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
                 const std::size_t currentPoint = pointNumber;
                 const std::size_t nextPoint = pointNumber == shapePointNumber - 1 ? 0 : pointNumber + 1;
-                vertices.push_back(CenterPos.X);
-                vertices.push_back(CenterPos.Y);
+                vertices.push_back(LDDrift::Transform::TransformToNDC_Position(CenterPos.X, 'x'));
+                vertices.push_back(LDDrift::Transform::TransformToNDC_Position(CenterPos.Y, 'y'));
                 vertices.push_back(0.0f);
                 vertices.push_back(shape->GetNDC_Point(currentPoint).X);
                 vertices.push_back(shape->GetNDC_Point(currentPoint).Y);

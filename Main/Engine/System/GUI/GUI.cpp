@@ -624,6 +624,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         if (polygonActorPointCount < 3) {
             polygonActorPointCount = 3;
         }
+        polygonActorPointCount = std::clamp(polygonActorPointCount, 3, 100);
         ImGui::Separator(); // END --- point count of polygon
         ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
         ImGui::SameLine();
@@ -679,6 +680,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         ImGui::Separator(); // END --- speed of polygon
         ImGui::TextUnformatted("Set Point Position");
         static std::vector<int> pointPositions(polygonActorPointCount * 2);
+        pointPositions.resize(polygonActorPointCount * 2);
         for (int pointIndex = 0; pointIndex < polygonActorPointCount; ++pointIndex) {
             ImGui::TextUnformatted("X Position: ");
             ImGui::SameLine();

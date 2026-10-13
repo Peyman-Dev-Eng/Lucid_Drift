@@ -34,6 +34,7 @@ void LDDrift::GuiLogic::ProjectManagerHandling(LDDrift::GUI::DefaultWindowsData*
     if (window->name != PROJECT_MANAGER_WINDOW_NAME) {
         return;
     }
+    ImGui::SetNextItemWidth(320);
     if (ImGui::InputTextWithHint("##Project Manager", "Enter dir with file (test1/test2/test3.cpp):",
                                  window->searchBuffer, sizeof(window->searchBuffer),
                                  ImGuiInputTextFlags_EnterReturnsTrue)) {}

@@ -7,6 +7,8 @@ LDDrift::Window::Window() : renderer(nullptr) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_SAMPLES, 4);
+
     settings.title = "NONE";
     settings.width = 500;
     settings.height = 500;
@@ -22,9 +24,9 @@ void LDDrift::Window::CreateWindow() {
         const char* description = nullptr;
         const int code = glfwGetError(&description);
 
-        std::cerr << "GLFW window creation failed!\n";
-        std::cerr << "Error code: " << code << '\n';
-        std::cerr << "Description: "
+        std::cout << "GLFW window creation failed!\n";
+        std::cout << "Error code: " << code << '\n';
+        std::cout << "Description: "
             << (description ? description : "Unknown")
             << '\n';
 
@@ -32,6 +34,7 @@ void LDDrift::Window::CreateWindow() {
     }
     settings.IsOpen = true;
     glfwMakeContextCurrent(screen);
+    glEnable(GL_MULTISAMPLE);
     GLB_assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     glfwSetWindowUserPointer(screen, this);
 }
@@ -42,9 +45,9 @@ void LDDrift::Window::CreateFullscreenWindow() {
         const char* description = nullptr;
         const int code = glfwGetError(&description);
 
-        std::cerr << "GLFW window creation failed!\n";
-        std::cerr << "Error code: " << code << '\n';
-        std::cerr << "Description: "
+        std::cout << "GLFW window creation failed!\n";
+        std::cout << "Error code: " << code << '\n';
+        std::cout << "Description: "
             << (description ? description : "Unknown")
             << '\n';
 
