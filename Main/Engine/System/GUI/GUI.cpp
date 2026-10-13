@@ -363,6 +363,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
             window->Show = false;
         }
     } else if (CheckBoxIsOn == 1) {
+        static std::optional<bool> inThisBrace;
         ImGui::TextUnformatted("window: Circle Configuration");
         static std::optional<LDDrift::Actors::Circle*> circle;
         if ((ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->searchBuffer,
@@ -376,16 +377,19 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 return;
             }
         }
-        if (circle.value() != nullptr) {
-            circlePointCount = static_cast<int>(circle.value()->GetPointCount());
-            circleRadius = static_cast<int>(circle.value()->GetRadius());
-            circleSpeed = static_cast<int>(circle.value()->GetSpeed());
-            redValueColor = circle.value()->GetPointColor(0).R;
-            greenValueColor = circle.value()->GetPointColor(0).G;
-            blueValueColor = circle.value()->GetPointColor(0).B;
-            alphaValueColor = circle.value()->GetPointColor(0).A;
-            xPos = static_cast<int>(circle.value()->GetCirclePosition().X);
-            yPos = static_cast<int>(circle.value()->GetCirclePosition().Y);
+        if (circle.has_value() && circle.value() != nullptr) {
+            if (!inThisBrace.has_value()) {
+                circlePointCount = static_cast<int>(circle.value()->GetPointCount());
+                circleRadius = static_cast<int>(circle.value()->GetRadius());
+                circleSpeed = static_cast<int>(circle.value()->GetSpeed());
+                redValueColor = circle.value()->GetPointColor(0).R;
+                greenValueColor = circle.value()->GetPointColor(0).G;
+                blueValueColor = circle.value()->GetPointColor(0).B;
+                alphaValueColor = circle.value()->GetPointColor(0).A;
+                xPos = static_cast<int>(circle.value()->GetCirclePosition().X);
+                yPos = static_cast<int>(circle.value()->GetCirclePosition().Y);
+                inThisBrace = true;
+            }
             ImGui::Separator();
             ImGui::TextUnformatted("Circle Point Count: ");
             ImGui::SameLine();
@@ -477,10 +481,12 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 circle.value()->Rebuild();
                 this->core->scene.SendShapesToRender();
                 window->Show = false;
+                inThisBrace = false;
             }
             ImGui::SameLine();
             if (ImGui::Button("Close")) {
                 window->Show = false;
+                inThisBrace = false;
             }
         } else {
             if (ImGui::Button("Close")) {
