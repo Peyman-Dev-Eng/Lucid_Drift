@@ -81,3 +81,17 @@ std::vector<LDDrift::VecPos2D> LDDrift::Transform::TransformToGlobalPosition(
     }
     return globalPointPosition;
 }
+
+std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transform::TransformToNDC_Position(
+    const std::vector<LDDrift::Actors::Line::PNT>& points) {
+    std::vector<LDDrift::Actors::Line::PNT> NDC_pointPositon;
+    LDDrift::Actors::Line::PNT NDC_point;
+    for (const auto& [Point_1, Point_2, Point_3] : points) {
+        NDC_point.Point_1 = LDDrift::Transform::TransformToNDC_Position(Point_1);
+        NDC_point.Point_2 = LDDrift::Transform::TransformToNDC_Position(Point_2);
+        NDC_point.Point_3 = LDDrift::Transform::TransformToNDC_Position(Point_3);
+
+        NDC_pointPositon.push_back(NDC_point);
+    }
+    return NDC_pointPositon;
+}

@@ -142,6 +142,67 @@ void LDDrift::Renderer::UpdateShapeData() {
         });
         indexOfFirstVertexInVertexArray += vertexCount;
     }
+    for (const auto& line : linePTRs) {
+        const LDDrift::VecCol& lineColor = line->GetColor();
+        const std::vector<LDDrift::Actors::Line::PNT>& points = LDDrift::Transform::TransformToNDC_Position(
+            line->GetPoints());
+
+        constexpr int vertexCount = 6;
+
+        vertices.push_back(points[0].Point_1.X);
+        vertices.push_back(points[0].Point_1.Y);
+        vertices.push_back(0.0f);
+        vertices.push_back(lineColor.R);
+        vertices.push_back(lineColor.G);
+        vertices.push_back(lineColor.B);
+        vertices.push_back(lineColor.A);
+
+        vertices.push_back(points[0].Point_2.X);
+        vertices.push_back(points[0].Point_2.Y);
+        vertices.push_back(0.0f);
+        vertices.push_back(lineColor.R);
+        vertices.push_back(lineColor.G);
+        vertices.push_back(lineColor.B);
+        vertices.push_back(lineColor.A);
+
+        vertices.push_back(points[0].Point_3.X);
+        vertices.push_back(points[0].Point_3.Y);
+        vertices.push_back(0.0f);
+        vertices.push_back(lineColor.R);
+        vertices.push_back(lineColor.G);
+        vertices.push_back(lineColor.B);
+        vertices.push_back(lineColor.A);
+
+        vertices.push_back(points[1].Point_1.X);
+        vertices.push_back(points[1].Point_1.Y);
+        vertices.push_back(0.0f);
+        vertices.push_back(lineColor.R);
+        vertices.push_back(lineColor.G);
+        vertices.push_back(lineColor.B);
+        vertices.push_back(lineColor.A);
+
+        vertices.push_back(points[1].Point_2.X);
+        vertices.push_back(points[1].Point_2.Y);
+        vertices.push_back(0.0f);
+        vertices.push_back(lineColor.R);
+        vertices.push_back(lineColor.G);
+        vertices.push_back(lineColor.B);
+        vertices.push_back(lineColor.A);
+
+        vertices.push_back(points[1].Point_3.X);
+        vertices.push_back(points[1].Point_3.Y);
+        vertices.push_back(0.0f);
+        vertices.push_back(lineColor.R);
+        vertices.push_back(lineColor.G);
+        vertices.push_back(lineColor.B);
+        vertices.push_back(lineColor.A);
+
+        howToReadShapeData.push_back({
+            .drawType = LUCID_DRIFT_SHAPE_RENDER_AS_FILLED, .startIndex = indexOfFirstVertexInVertexArray, .count = vertexCount
+        });
+
+        indexOfFirstVertexInVertexArray += vertexCount;
+    }
 }
 
 void LDDrift::Renderer::render() const {
@@ -161,9 +222,10 @@ void LDDrift::Renderer::render() const {
 void LDDrift::Renderer::AddLineToRender(LDDrift::Actors::Line* line) {
     linePTRs.insert(line);
     const LDDrift::VecCol& lineColor = line->GetColor();
-    const std::vector<LDDrift::Actors::Line::PNT>& points = line->GetPoints();
+    const std::vector<LDDrift::Actors::Line::PNT>& points = LDDrift::Transform::TransformToNDC_Position(
+        line->GetPoints());
 
-    constexpr int vertexCount = 6 * 3;
+    constexpr int vertexCount = 6;
 
     vertices.push_back(points[0].Point_1.X);
     vertices.push_back(points[0].Point_1.Y);
@@ -214,7 +276,8 @@ void LDDrift::Renderer::AddLineToRender(LDDrift::Actors::Line* line) {
     vertices.push_back(lineColor.A);
 
     howToReadShapeData.push_back({
-        .drawType = LUCID_DRIFT_SHAPE_RENDER_AS_FILLED, .startIndex = indexOfFirstVertexInVertexArray, .count = vertexCount
+        .drawType = LUCID_DRIFT_SHAPE_RENDER_AS_FILLED, .startIndex = indexOfFirstVertexInVertexArray,
+        .count = vertexCount
     });
 
     indexOfFirstVertexInVertexArray += vertexCount;
