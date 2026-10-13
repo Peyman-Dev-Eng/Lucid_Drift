@@ -66,3 +66,20 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
     newCircle.circle->Rebuild();
     circleShapes.push_back({.circleName = newCircle.circleName, .circle = newCircle.circle});
 }
+
+void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _pointCount, const int _speed,
+                                        const int* pos,
+                                        const LDDrift::VecCol& color) {
+    const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
+    newPolygon.polygon->SetPointCount(_pointCount);
+    newPolygon.polygon->SetScreenSize(core->window.GetWindowSize());
+    newPolygon.polygon->SetSpeed(static_cast<float>(_speed));
+    newPolygon.polygon->SetAllPointsColor(color);
+    for (int pointIndex = 0; pointIndex < _pointCount; ++pointIndex) {
+        newPolygon.polygon->SetPoint(pointIndex, {
+                                         static_cast<float>(pos[pointIndex * 2]),
+                                         static_cast<float>(pos[pointIndex * 2 + 1])
+                                     });
+    }
+    polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
+}

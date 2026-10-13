@@ -367,7 +367,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         ImGui::TextUnformatted("window: Circle Configuration");
         static std::optional<LDDrift::Actors::Circle*> circle;
         if ((ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->searchBuffer,
-                                     sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) &&
+                                      sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) &&
             !(circle.has_value())) {
             circle = core->scene.GetCircle(std::string(window->searchBuffer));
             if (circle.value() == nullptr) {
@@ -509,9 +509,114 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) {
     if (window->name != POLYGON_CONFIGURE_WINDOW_NAME) {
         return;
     }
-    if (ImGui::Button("Close")) {
-        window->Show = false;
-    }
+    static int radioButton = 0;
+    static int polygonActorPointCount = 3;
+    static float polygonActorRedColor = 0;
+    static float polygonActorGreenColor = 0;
+    static float polygonActorBlueColor = 0;
+    static float polygonActorAlpha = 1;
+    static int polygonActorSpeed = 1;
+    static int polygonActor_xPos = 0;
+    static int polygonActor_yPos = 0;
+    ImGui::RadioButton("##Create New Polygon", &radioButton, 0);
+    ImGui::SameLine();
+    ImGui::RadioButton("##Configure Polygon", &radioButton, 1);
+
+    if (radioButton == 0) {
+        ImGui::SetNextItemWidth(300);
+        ImGui::InputTextWithHint("##Polygone Name", "Enter Polygon Actor Name:", window->searchBuffer,
+                                 sizeof(window->searchBuffer));
+        ImGui::TextUnformatted("Polygon Point Count: "); // START --- point count of Polygon
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(145);
+        ImGui::InputInt("##Polygon Point Count", &polygonActorPointCount, 1, 1);
+        if (polygonActorPointCount < 3) {
+            polygonActorPointCount = 3;
+        }
+        ImGui::Separator(); // END --- point count of polygon
+        ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##polygon Red Color value", &polygonActorRedColor, 0.005, 0.005, "%.3f");
+        if (polygonActorRedColor > 1) {
+            polygonActorRedColor = 1;
+        }
+        if (polygonActorRedColor < 0) {
+            polygonActorRedColor = 0;
+        }
+        ImGui::SameLine(); // END --- Red Color Of Polygon
+        ImGui::TextUnformatted("Green: "); // START --- Green Color Of Polygon
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##Polygon Green Color Value", &polygonActorGreenColor, 0.005, 0.005, "%.3f");
+        if (polygonActorGreenColor > 1) {
+            polygonActorGreenColor = 1;
+        }
+        if (polygonActorGreenColor < 0) {
+            polygonActorGreenColor = 0;
+        }
+        ImGui::SameLine(); // END --- Green Color Of Polygon
+        ImGui::TextUnformatted("Blue: "); // START --- Blue Color Of Polygon
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##Polygon Blue Color Value", &polygonActorBlueColor, 0.005, 0.005, "%.3f");
+        if (polygonActorBlueColor > 1) {
+            polygonActorBlueColor = 1;
+        }
+        if (polygonActorBlueColor < 0) {
+            polygonActorBlueColor = 0;
+        }
+        ImGui::SameLine(); // END --- Blue Color Of Polygon
+        ImGui::TextUnformatted("Alpha: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##Polygon Alpha Color Value", &polygonActorAlpha, 0.005, 0.005, "%.3f");
+        if (polygonActorAlpha > 1) {
+            polygonActorAlpha = 1;
+        }
+        if (polygonActorAlpha < 0) {
+            polygonActorAlpha = 0;
+        }
+        ImGui::Separator();
+        ImGui::TextUnformatted("Polygon Speed Value: "); // START --- speed of polygon
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(555);
+        ImGui::InputInt("##Polygon Speed Value", &polygonActorSpeed, 1, 1);
+        if (polygonActorSpeed < 0) {
+            polygonActorSpeed = 0;
+        }
+        ImGui::Separator(); // END --- speed of polygon
+        ImGui::TextUnformatted("Set Point Position");
+        static std::vector<int> pointPositions(polygonActorPointCount * 2);
+        for (int pointIndex = 0; pointIndex < polygonActorPointCount; ++pointIndex) {
+            ImGui::TextUnformatted("X Position: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputInt((std::string("##X Position Of point ") + std::to_string(pointIndex)).c_str(),
+                            &pointPositions[pointIndex * 2], 1, 1);
+            ImGui::SameLine();
+            ImGui::TextUnformatted("Y Position: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(100);
+            ImGui::InputInt((std::string("##Y Position Of point ") + std::to_string(pointIndex)).c_str(),
+                            &pointPositions[pointIndex * 2 + 1], 1, 1);
+            ImGui::Separator();
+        }
+
+        if (ImGui::Button("Create")) {
+            core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount, polygonActorSpeed,
+                                           pointPositions.data(), {
+                                               polygonActorRedColor, polygonActorGreenColor, polygonActorBlueColor,
+                                               polygonActorAlpha
+                                           });
+            core->scene.SendShapesToRender();
+            window->Show = false;
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close")) {
+            window->Show = false;
+        }
+    } else if (radioButton == 1) {}
 }
 
 bool LDDrift::GUI::SearchableCombo(const char* label, char* buffer, const size_t bufferSize,

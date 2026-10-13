@@ -69,13 +69,13 @@ namespace LDDrift::Actors
 
     public:
         Shape();
-        [[nodiscard]] std::vector<VecPos2D> GetGlobalPoints() const;
-        [[nodiscard]] const std::vector<LDDrift::VecPos2D>& GetNDC_Points() const;
+        [[nodiscard]] const std::vector<VecPos2D>& GetGlobalPoints() const;
+        [[nodiscard]] std::vector<LDDrift::VecPos2D> GetNDC_Points() const;
         void SetPointCount(std::size_t point_count);
         [[nodiscard]] std::size_t GetPointCount() const;
         void SetPoint(std::size_t point_index, const LDDrift::VecPos2D& pos);
-        [[nodiscard]] LDDrift::VecPos2D GetGlobalPoint(std::size_t point_index) const;
-        [[nodiscard]] const LDDrift::VecPos2D& GetNDC_Point(std::size_t point_index) const;
+        [[nodiscard]] const LDDrift::VecPos2D& GetGlobalPoint(std::size_t point_index) const;
+        [[nodiscard]] LDDrift::VecPos2D GetNDC_Point(std::size_t point_index) const;
         [[nodiscard]] float GetSpeed() const;
         [[nodiscard]] float GetSpeedNDC_X() const;
         [[nodiscard]] float GetSpeedNDC_Y() const;
