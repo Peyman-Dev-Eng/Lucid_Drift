@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <ProjectWatchTower.h>
+#include <optional>
 #include <VecPos.h>
 #include <Compile.h>
 #define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
@@ -110,7 +111,7 @@ namespace LDDrift
     private:
         void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
         void MainWindowHandler(const DefaultWindowsData* window);
-        void CircleConfigureWindowHandler(DefaultWindowsData* window) const;
+        void CircleConfigureWindowHandler(DefaultWindowsData* window);
         static void PolygonConfigureWindowHandler(DefaultWindowsData* window);
         static void LineConfigureWindowHandler(DefaultWindowsData* window);
         void SetKeyTargetWindowHandler(DefaultWindowsData* window) const;

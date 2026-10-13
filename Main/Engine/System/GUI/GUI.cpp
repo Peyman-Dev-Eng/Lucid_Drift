@@ -247,7 +247,7 @@ void LDDrift::GUI::SetCompilePTR(LDDrift::Compile* compilePTR) {
     CompilePTR = compilePTR;
 }
 
-void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) const {
+void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     if (window->name != CIRCLE_CONFIGURE_WINDOW_NAME) {
         return;
     }
@@ -265,16 +265,6 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
     ImGui::SameLine();
     ImGui::RadioButton("##Configure Circle", &CheckBoxIsOn, 1);
     if (CheckBoxIsOn == 0) {
-        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
-        circlePointCount = 45;
-        redValueColor = 0;
-        greenValueColor = 0;
-        blueValueColor = 0;
-        alphaValueColor = 1;
-        circleRadius = 0;
-        circleSpeed = 1;
-        xPos = 0;
-        yPos = 0;
         ImGui::TextUnformatted("window: Create New Circle");
         ImGui::Separator();
         ImGui::SetNextItemWidth(400);
@@ -374,30 +364,28 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
         }
     } else if (CheckBoxIsOn == 1) {
         ImGui::TextUnformatted("window: Circle Configuration");
-        static bool circlePointerIsNull = false;
-        LDDrift::Actors::Circle* circle = nullptr;
-        if (ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->searchBuffer,
-                                     sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+        static std::optional<LDDrift::Actors::Circle*> circle;
+        if ((ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->searchBuffer,
+                                     sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) &&
+            !(circle.has_value())) {
             circle = core->scene.GetCircle(std::string(window->searchBuffer));
-            circlePointerIsNull = circle == nullptr ? true : false;
-        }
-        if (circle == nullptr && circlePointerIsNull == false) {
-            if (ImGui::Button("Close")) {
-                window->Show = false;
+            if (circle.value() == nullptr) {
+                this->SetTextForWindow(
+                    CIRCLE_CONFIGURE_WINDOW_NAME,
+                    std::string("not available circle actor with this name -> ") + window->searchBuffer, true);
+                return;
             }
-            return;
         }
-        if (!circlePointerIsNull && circle != nullptr) {
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
-            circlePointCount = static_cast<int>(circle->GetPointCount());
-            circleRadius = static_cast<int>(circle->GetRadius());
-            circleSpeed = static_cast<int>(circle->GetSpeed());
-            redValueColor = circle->GetPointColor(0).R;
-            greenValueColor = circle->GetPointColor(0).G;
-            blueValueColor = circle->GetPointColor(0).B;
-            alphaValueColor = circle->GetPointColor(0).A;
-            xPos = static_cast<int>(circle->GetCirclePosition().X);
-            yPos = static_cast<int>(circle->GetCirclePosition().Y);
+        if (circle.value() != nullptr) {
+            circlePointCount = static_cast<int>(circle.value()->GetPointCount());
+            circleRadius = static_cast<int>(circle.value()->GetRadius());
+            circleSpeed = static_cast<int>(circle.value()->GetSpeed());
+            redValueColor = circle.value()->GetPointColor(0).R;
+            greenValueColor = circle.value()->GetPointColor(0).G;
+            blueValueColor = circle.value()->GetPointColor(0).B;
+            alphaValueColor = circle.value()->GetPointColor(0).A;
+            xPos = static_cast<int>(circle.value()->GetCirclePosition().X);
+            yPos = static_cast<int>(circle.value()->GetCirclePosition().Y);
             ImGui::Separator();
             ImGui::TextUnformatted("Circle Point Count: ");
             ImGui::SameLine();
@@ -479,23 +467,22 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) cons
             ImGui::InputInt("##Y position", &yPos, 1, 1);
             ImGui::Separator();
             if (ImGui::Button("Configure")) {
-                circle->SetCirclePosition({static_cast<float>(xPos), static_cast<float>(yPos)});
-                circle->SetPointCount(circlePointCount);
-                circle->SetScreenSize(core->window.GetWindowSize());
-                circle->SetRadius(static_cast<float>(circleRadius));
-                circle->SetSpeed(static_cast<float>(circleSpeed));
-                circle->SetAllPointsColor({redValueColor, greenValueColor, blueValueColor, alphaValueColor});
-                circle->SetOriginalPositionToCenter();
-                circle->Rebuild();
+                circle.value()->SetCirclePosition({static_cast<float>(xPos), static_cast<float>(yPos)});
+                circle.value()->SetPointCount(circlePointCount);
+                circle.value()->SetScreenSize(core->window.GetWindowSize());
+                circle.value()->SetRadius(static_cast<float>(circleRadius));
+                circle.value()->SetSpeed(static_cast<float>(circleSpeed));
+                circle.value()->SetAllPointsColor({redValueColor, greenValueColor, blueValueColor, alphaValueColor});
+                circle.value()->SetOriginalPositionToCenter();
+                circle.value()->Rebuild();
                 this->core->scene.SendShapesToRender();
                 window->Show = false;
             }
+            ImGui::SameLine();
             if (ImGui::Button("Close")) {
                 window->Show = false;
             }
         } else {
-            ImGui::TextUnformatted(
-                (std::string("not available circle actor with this name -> ") + window->searchBuffer).c_str());
             if (ImGui::Button("Close")) {
                 window->Show = false;
             }
@@ -547,7 +534,8 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
     if (window->name != SET_KEY_TARGET_WINDOW_NAME) {
         return;
     }
-    this->SearchableCombo("##Set Keys of Target", window->searchBuffer, sizeof(window->searchBuffer), LDDrift::KeyBoardKeyName);
+    this->SearchableCombo("##Set Keys of Target", window->searchBuffer, sizeof(window->searchBuffer),
+                          LDDrift::KeyBoardKeyName);
     ImGui::Separator();
     if (ImGui::Button("Set")) {
         LDDrift::input::Keyboard::SetKeyTarget(std::string(window->searchBuffer));
