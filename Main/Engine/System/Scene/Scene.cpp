@@ -67,6 +67,15 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
     circleShapes.push_back({.circleName = newCircle.circleName, .circle = newCircle.circle});
 }
 
+LDDrift::Actors::Polygon* LDDrift::Scene::GetPolygon(const std::string& name) const {
+    for (const auto& [polygonName, polygon] : polygonShapes) {
+        if (polygonName == name) {
+            return polygon;
+        }
+    }
+    return nullptr;
+}
+
 void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _pointCount, const int _speed,
                                         const int* pos,
                                         const LDDrift::VecCol& color) {
@@ -82,4 +91,18 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                      });
     }
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
+}
+
+void LDDrift::Scene::CreateLineActor(const std::string& name, int _thickness, int* startPos, int* endPos,
+                                     const LDDrift::VecCol& color) {
+    const LINE_ACTOR_INFORMATION newLine{
+        .lineName = name, .line = new LDDrift::Actors::Line(
+            {static_cast<float>(startPos[0]), static_cast<float>(startPos[1])},
+            {static_cast<float>(endPos[0]), static_cast<float>(endPos[1])})
+    };
+    newLine.line->SetScreenSize(core->window.GetWindowSize());
+    newLine.line->SetThickness(static_cast<float>(_thickness));
+    newLine.line->SetLineColor(color);
+    newLine.line->CreateTriangles();
+    lines.push_back({.lineName = newLine.lineName, .line = newLine.line});
 }

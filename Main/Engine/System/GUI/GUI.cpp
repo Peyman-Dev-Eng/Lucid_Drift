@@ -500,12 +500,103 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) {
     if (window->name != LINE_CONFIGURE_WINDOW_NAME) {
         return;
     }
-    if (ImGui::Button("Close")) {
-        window->Show = false;
-    }
+    static int radioButton = 0;
+    static int startPos[2] = {0, 0};
+    static int endPos[2] = {0, 0};
+    static float color[4] = {0, 0, 0, 1};
+    static int thickness = 1;
+    ImGui::RadioButton("##Create New Line", &radioButton, 0);
+    ImGui::SameLine();
+    ImGui::RadioButton("##Create New Polygon", &radioButton, 1);
+    if (radioButton == 0) {
+        ImGui::TextUnformatted("Window: Create New Line");
+        ImGui::Separator();
+        ImGui::SetNextItemWidth(400);
+        ImGui::InputTextWithHint("##Line Name", "Enter Line name:", window->searchBuffer, sizeof(window->searchBuffer));
+        ImGui::Separator();
+        ImGui::TextUnformatted("Start Pos");
+        ImGui::TextUnformatted("X pos: ");
+        ImGui::SameLine();
+        ImGui::InputInt("##X Start Pos", &startPos[0], 1, 1);
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Y pos: ");
+        ImGui::SameLine();
+        ImGui::InputInt("##Y Start Pos", &startPos[1], 1, 1);
+        ImGui::Separator();
+        ImGui::TextUnformatted("End Pos");
+        ImGui::TextUnformatted("X pos: ");
+        ImGui::SameLine();
+        ImGui::InputInt("##X End Pos", &endPos[0], 1, 1);
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Y pos: ");
+        ImGui::SameLine();
+        ImGui::InputInt("##Y End Pos", &endPos[1], 1, 1);
+        ImGui::Separator();
+        ImGui::TextUnformatted("Thickness: ");
+        ImGui::SameLine();
+        ImGui::InputInt("##Thickness Of Line", &thickness, 1, 1);
+        if (thickness < 1) {
+            thickness = 1;
+        }
+        ImGui::Separator();
+        ImGui::TextUnformatted("Color Of Line");
+        ImGui::TextUnformatted("Red: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##Red Line Color", &color[0], 0.005, 0.005, "%.3f");
+        if (color[0] > 1) {
+            color[0] = 1;
+        }
+        if (color[0] < 0) {
+            color[0] = 0;
+        }
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Green: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##Green Line Color", &color[1], 0.005, 0.005, "%.3f");
+        if (color[1] > 1) {
+            color[1] = 1;
+        }
+        if (color[1] < 0) {
+            color[1] = 0;
+        }
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Blue: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##Blue Line Color", &color[2], 0.005, 0.005, "%.3f");
+        if (color[2] > 1) {
+            color[2] = 1;
+        }
+        if (color[2] < 0) {
+            color[2] = 0;
+        }
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Alpha: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##Alpha Line Color", &color[3], 0.005, 0.005, "%.3f");
+        if (color[3] > 1) {
+            color[3] = 1;
+        }
+        if (color[3] < 0) {
+            color[3] = 0;
+        }
+        ImGui::Separator();
+        if (ImGui::Button("Create")) {
+            core->scene.CreateLineActor(std::string(window->searchBuffer), thickness, startPos, endPos,
+                                        {color[0], color[1], color[2], color[3]});
+            core->scene.SendShapesToRender();
+            window->Show = false;
+        }
+        if (ImGui::Button("Close")) {
+            window->Show = false;
+        }
+    } else if (radioButton == 1) {}
 }
 
-void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) const {
     if (window->name != POLYGON_CONFIGURE_WINDOW_NAME) {
         return;
     }

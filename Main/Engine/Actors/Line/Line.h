@@ -23,7 +23,7 @@ namespace LDDrift::Actors
      *
      * @see VecPos2D
      */
-    class Line
+    class Line final
     {
     public:
         struct PNT
@@ -36,15 +36,16 @@ namespace LDDrift::Actors
     public:
         Line();
         Line(const LDDrift::VecPos2D&, const LDDrift::VecPos2D&);
-        Line& CreateTriangles();
+        void CreateTriangles();
         void SetFirstPoint(const LDDrift::VecPos2D&);
         void SetSecondPoint(const LDDrift::VecPos2D&);
         [[nodiscard]] LDDrift::VecPos2D GetFirstPoint() const;
         [[nodiscard]] LDDrift::VecPos2D GetSecondPoint() const;
-        [[nodiscard]] std::vector<PNT> GetPoints() const;
+        [[nodiscard]] const std::vector<PNT>& GetPoints() const;
+        [[nodiscard]] const LDDrift::VecCol& GetColor() const;
         void SetLineColor(const LDDrift::VecCol& color);
-        Line& SetThickness(float);
-        Line& SetScreenSize(const LDDrift::VecPos2D&);
+        void SetThickness(float);
+        void SetScreenSize(const LDDrift::VecPos2D&);
         ~Line();
 
     private:

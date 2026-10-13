@@ -5,7 +5,7 @@ LDDrift::Actors::Line::Line() = default;
 LDDrift::Actors::Line::Line(const LDDrift::VecPos2D& FPoint, const LDDrift::VecPos2D& SPoint) :
     FirstPoint(FPoint), SecondPoint(SPoint), Thick(1) {}
 
-LDDrift::Actors::Line& LDDrift::Actors::Line::CreateTriangles() {
+void LDDrift::Actors::Line::CreateTriangles() {
     const float HalfThickness = Thick / 2.0f;
     LDDrift::VecPos2D normal = LDDrift::VecPos2D::NormalLine(FirstPoint, SecondPoint);
     normal *= HalfThickness;
@@ -15,7 +15,6 @@ LDDrift::Actors::Line& LDDrift::Actors::Line::CreateTriangles() {
     Points.push_back({
         .Point_1 = FirstPoint + normal, .Point_2 = SecondPoint - normal, .Point_3 = SecondPoint + normal
     });
-    return *this;
 }
 
 void LDDrift::Actors::Line::SetFirstPoint(const LDDrift::VecPos2D& FPoint) {
@@ -38,19 +37,21 @@ LDDrift::VecPos2D LDDrift::Actors::Line::GetSecondPoint() const {
     return SecondPoint;
 }
 
-std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::GetPoints() const {
-    return Translate();
+const std::vector<LDDrift::Actors::Line::PNT>& LDDrift::Actors::Line::GetPoints() const {
+    return Points;
 }
 
-LDDrift::Actors::Line& LDDrift::Actors::Line::SetThickness(const float thick) {
+void LDDrift::Actors::Line::SetThickness(const float thick) {
     Thick = thick;
-    return *this;
 }
 
-LDDrift::Actors::Line& LDDrift::Actors::Line::SetScreenSize(const LDDrift::VecPos2D& WindowSize) {
+void LDDrift::Actors::Line::SetScreenSize(const LDDrift::VecPos2D& WindowSize) {
     WidthScreen = static_cast<int>(WindowSize.X);
     HeightScreen = static_cast<int>(WindowSize.Y);
-    return *this;
+}
+
+const LDDrift::VecCol& LDDrift::Actors::Line::GetColor() const {
+    return lineColor;
 }
 
 std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::Translate() const {

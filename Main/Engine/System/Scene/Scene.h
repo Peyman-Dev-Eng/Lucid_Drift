@@ -54,12 +54,17 @@ namespace LDDrift
                                int _speed,
                                const LDDrift::VecPos2D& pos,
                                const LDDrift::VecCol& color);
+        [[nodiscard]] LDDrift::Actors::Polygon* GetPolygon(const std::string& name) const;
         void CreatePolygonShape(const std::string& name,
-            int _pointCount,
-            int _speed,
-            const int* pos,
-            const LDDrift::VecCol& color);
-        void CreateLineActor();
+                                int _pointCount,
+                                int _speed,
+                                const int* pos,
+                                const LDDrift::VecCol& color);
+        void CreateLineActor(const std::string& name,
+                             int _thickness,
+                             int* startPos,
+                             int* endPos,
+                             const LDDrift::VecCol& color);
         ~Scene();
     };
 }
