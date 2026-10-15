@@ -1,158 +1,178 @@
 # Lucid Drift
 
-**A lightweight, modern 2D graphics engine written in C++26 and OpenGL**
+**Lucid Drift** is an experimental C++ game-engine project focused on 2D rendering and an editor-driven workflow. It combines an OpenGL renderer with a Dear ImGui interface, scene and shape management, project compilation, and a small runtime API for loading game logic from a shared library.
 
-Lucid Drift is a 2D graphics engine / development tool focused on clean architecture, full control over low-level rendering, and built-in development utilities. The project is not fully complete yet, but it has reached a stable and usable state. Implementing a few remaining ideas will turn it into a complete engine.
+The project is under active development. Interfaces and build workflows may change, and not every rendering feature should be considered production-ready.
 
----
+## Contents
 
-## Current Features (Stable Core)
+- [Highlights](#highlights)
+- [Technology and requirements](#technology-and-requirements)
+- [Build the engine](#build-the-engine)
+  - [Linux](#linux)
+  - [Windows](#windows)
+- [Runtime API for game projects](#runtime-api-for-game-projects)
+- [Architecture overview](#architecture-overview)
+- [Troubleshooting](#troubleshooting)
+- [Development status](#development-status)
 
-### Shape System (Actors)
-- Base `Shape` class with full support for:
-  - Vertices, per-vertex colors, thickness, fill mode
-  - Directional movement (Up / Down / Left / Right)
-  - Rotation
-  - NDC coordinate transformation
-  - Convex / concave detection
-- Ready-to-use shapes:
-  - `Circle` (with NDC radius support and dynamic rebuild)
-  - `Polygon`
-  - `Line` (converted to triangles for thick rendering)
+## Highlights
 
-### Rendering
-- Custom OpenGL renderer (powered by GLAD)
-- Support for filled and outline rendering modes
-- Triangulation system for both convex and concave shapes
-- VBO / VAO management and simple custom shaders
+- **C++26 codebase** built with CMake.
+- **OpenGL renderer** using a GLFW-created window and GLSL shaders.
+- **2D shape workflow** for working with polygon-based geometry and circle shapes. Geometry generation and rendering behavior are still evolving.
+- **Editor interface** built with Dear ImGui for working with project and shape configuration tools.
+- **Project management** for creating and exploring game-project files.
+- **Build integration** for compiling a user project from the engine's project workflow.
+- **Runtime game API** that loads a compiled shared library and resolves the `BeginPlay`, `Tick`, and `EndPlay` entry points.
+- **Platform-specific input handling** for supported keyboard input paths on Linux and Windows.
 
-### Window & Input
-- Window management with GLFW (fullscreen and resizable support)
-- Keyboard and mouse input system
-- Approximate framerate limiting (~60 FPS)
+## Technology and requirements
 
-### Graphical User Interface
-- Full **Dear ImGui** integration
-- Built-in windows:
-  - Project Watch Tower (project explorer)
-  - Project Manager
-  - Console (with `std::cout` redirection)
-- Simple code editor support
+The exact dependency setup is defined by the repository's CMake configuration. Check `CMakeLists.txt` and any dependency directories before installing libraries separately.
 
-### Development Tools
-- **ProjectWatchTower**: Project management, folder structure creation, file writing, and automatic CMakeLists.txt generation for user projects
-- **PointHitTesting**: Point-in-polygon collision detection
-- Custom assertion system
-- Core math libraries:
-  - `VecPos2D` (positive coordinates only)
-  - `VecCol` (RGBA with arithmetic operators)
-  - `Angle`
+The project currently expects the following environment:
 
----
+- A C++ compiler with the C++26 support required by the source code.
+- **CMake 4.3 or newer**, matching the version declared by the project.
+- **OpenGL 4.6** support from the graphics driver, including GLSL 4.60 shaders.
+- **GLFW** for window and input integration.
+- **Dear ImGui** for the editor interface.
+- **GLM** and any additional libraries referenced by the project's CMake files.
+- **Ninja** is recommended for single-configuration builds, but another supported CMake generator can be used.
 
-## Project Architecture
+On Linux, make sure the OpenGL development files and a working graphics driver are installed. On Windows, use a compiler and generator combination that supports the C++ language features used by the project.
 
-```
-Lucid_Drift/
-├── Main/
-│   ├── Assertion/                 # Custom assertion system
-│   ├── Engine/
-│   │   ├── Actors/                # Shapes (Shape, Circle, Polygon, Line)
-│   │   ├── Renderer/              # OpenGL renderer
-│   │   ├── System/
-│   │   │   ├── Core/              # Engine core (main loop)
-│   │   │   ├── Window/            # GLFW window management
-│   │   │   ├── Input/             # Keyboard & mouse
-│   │   │   ├── GUI/               # ImGui system
-│   │   │   └── Triangulation/     # Convex / concave triangulation
-│   │   ├── SubSystems/
-│   │   │   ├── ProjectExplorer/   # ProjectWatchTower
-│   │   │   ├── PointHitTesting/
-│   │   │   └── GUI_lOGIC/
-│   │   └── Functions/
-│   └── EngineLibraries/           # VecPos2D, VecCol, Angle, ShapeData
-├── glad/                          # GLAD (OpenGL loader)
-├── ThirdParty/                    # imgui (must be added)
-├── CMakeLists.txt
-└── main.cpp
-```
+## Build the engine
 
----
+### Linux
 
-## Dependencies
-
-- **C++26** (or at least C++23)
-- **CMake** ≥ 4.3
-- **GLFW3**
-- **GLAD** (included in the repository)
-- **Dear ImGui** (must be placed in `ThirdParty/imgui`)
-- **fmt** (header-only)
-
----
-
-## Building the Project
+Clone the repository and configure a build directory:
 
 ```bash
-# Clone the repository
 git clone https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
 cd Lucid_Drift
-
-# Add ImGui (if not already present)
-# git submodule add https://github.com/ocornut/imgui.git ThirdParty/imgui
-# or copy it manually
-
-mkdir build && cd build
-cmake ..
-cmake --build .
-./Lucid_Drift
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
 ```
 
----
+Build the project:
 
-## Current Status
-
-The project is in **Stable Preview** state:
-
-- Core rendering, shapes, input, and GUI systems are stable
-- Project management system (ProjectWatchTower) is functional
-- Convex and concave triangulation is implemented
-- Architecture is modular and ready for extension
-
-### Remaining Ideas to Complete the Engine
-- Simple physics system (advanced collision detection)
-- Scene / Entity-Component system
-- Texture and Sprite support
-- Animation system
-- Scene save / load
-- Improved in-engine code editor
-- Better support for complex concave shapes
-- Camera and Viewport system
-- Rendering optimizations (Batching, Instancing)
-
----
-
-## Technical Notes
-
-- `VecPos2D` only accepts positive values (non-positive coordinates are clamped to zero)
-- The renderer works in NDC space and shapes are rebuilt when the window is resized
-- The main loop is managed in `Core::EngineHandler` with an approximate 16 ms sleep
-- All core libraries are built as static libraries
-
----
-
-## Author
-
-**Peyman-Dev-Eng**  
-C++ developer passionate about game engine architecture and low-level graphics.
-
----
-
-## License
-
-This project does not have an official license yet. Currently free for personal use and learning.
-
----
-
-> Built with love for modern C++ and OpenGL.  
-> Still a long way from being complete, but the foundations are solid.
+```bash
+cmake --build build --parallel
 ```
+
+If configuration fails because a dependency cannot be found, install the development package for that dependency or update the relevant CMake path according to how the dependency is provided in the repository.
+
+When the build completes, run the `Lucid_Drift` executable from the build output directory. With a single-configuration Ninja build, the expected path is commonly:
+
+```bash
+./build/Lucid_Drift
+```
+
+The exact output path can differ if the CMake configuration or generator places executables in a configuration-specific directory.
+
+### Windows
+
+Open a developer terminal for the compiler you intend to use, then run:
+
+```powershell
+git clone https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
+cd Lucid_Drift
+cmake -S . -B build
+cmake --build build --config Debug --parallel
+```
+
+Run `Lucid_Drift.exe` from the generated output directory. The path depends on the selected CMake generator and build configuration; for a multi-configuration generator, the executable is often inside `build/Debug/`.
+
+> **Note:** These are the standard CMake configure/build steps. If the current branch changes its dependencies or build targets, follow the targets and requirements in that branch's `CMakeLists.txt`.
+
+## Runtime API for game projects
+
+Lucid Drift's project workflow is designed to build game logic as a shared library and load three C-linkage entry points. A game project should provide functions with the expected names and signatures; in particular, `Tick` receives a `float` argument.
+
+A minimal example is:
+
+```cpp
+#include <EngineAPI.h>
+
+#if defined(_WIN32)
+    #define LUCID_DRIFT_GAME_EXPORT __declspec(dllexport)
+#else
+    #define LUCID_DRIFT_GAME_EXPORT __attribute__((visibility("default")))
+#endif
+
+extern "C" {
+    LUCID_DRIFT_GAME_EXPORT void BeginPlay()
+    {
+        // Called when game play begins.
+    }
+
+    LUCID_DRIFT_GAME_EXPORT void Tick(float deltaTime)
+    {
+        // Called during the game loop.
+        (void)deltaTime;
+    }
+
+    LUCID_DRIFT_GAME_EXPORT void EndPlay()
+    {
+        // Called when game play ends.
+    }
+}
+```
+
+### Entry-point requirements
+
+- Keep the names exactly as shown: `BeginPlay`, `Tick`, and `EndPlay`.
+- Use `extern "C"` so the exported names are not C++-mangled.
+- Match the expected signatures. In particular, implement `Tick(float deltaTime)`, not `Tick()`.
+- Export the functions from the generated shared library, especially when building on Windows.
+- Build the project as a shared library, not as a standalone executable, and ensure the library is written to the build location expected by the engine.
+
+The Linux loader currently expects a library named `lib<ProjectName>.so` in the configured project build location. On Windows, make sure the generated DLL filename and exported symbols match the naming and loading rules in the current branch.
+
+## Architecture overview
+
+The engine is organized around a set of cooperating subsystems:
+
+- **Core** — coordinates engine initialization and the main execution flow.
+- **Window** — creates and manages the rendering window and related window events.
+- **Renderer** — initializes OpenGL resources and submits shape geometry for rendering.
+- **Scene** — stores and manages scene-level shape information.
+- **GUI** — owns the Dear ImGui editor interface and its windows.
+- **ProjectWatchTower** — handles project and file/folder management for the editor workflow.
+- **Compile** — starts project builds and tracks their status.
+- **EngineAPI** — loads a compiled game library and calls its lifecycle entry points.
+- **Input** — provides platform-specific keyboard input handling.
+
+These components are being developed together, so exact class APIs and internal responsibilities may evolve between commits.
+
+## Troubleshooting
+
+### CMake says that the build directory is not a CMake build tree
+
+Configure the directory before building, or recreate it if it contains stale build files:
+
+```bash
+cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Debug
+cmake --build build --parallel
+```
+
+Use the same build directory consistently for configuration and compilation.
+
+### The window cannot create an OpenGL context
+
+Check that the installed graphics driver exposes an OpenGL 4.6-capable context and that the required graphics libraries are available. A successful C++ build alone does not guarantee that the runtime driver supports the requested OpenGL version.
+
+### The game library loads but the entry points are not found
+
+Verify the library path and filename, export visibility, C linkage, and exact function signatures. A `Tick()` function does not match the expected `Tick(float)` entry point.
+
+### The project does not build
+
+Read the first relevant compiler or linker error rather than only the final build summary. Confirm that the active compiler supports the language features used by the project and that the dependencies configured in CMake are available.
+
+## Development status
+
+Lucid Drift is an actively developed project, not a stable engine release. Rendering, shape geometry, editor tooling, platform support, and the game-project workflow may be incomplete or change without backward compatibility. Circle and polygon geometry should be treated as work in progress until their behavior is verified on the target branch.
+
+For useful bug reports, include the operating system, compiler and CMake versions, graphics driver/OpenGL version, the steps to reproduce the issue, and the relevant build or runtime log.
