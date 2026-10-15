@@ -71,10 +71,10 @@ namespace LDDrift
 
         struct EditorWindowsData
         {
-            std::string name;
+            std::string name = "NULL";
             bool canMoveWindow;
             char codeBuffer[131072];
-            bool Show;
+            bool Show = false;
         };
 
     public:

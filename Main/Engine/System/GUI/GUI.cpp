@@ -821,7 +821,7 @@ void LDDrift::GUI::EndRenderGUI() {
         ImGui::End();
     }
     // میدیریت ادیتور موتور بازی
-    if (editorWindow.Show) {
+    if (editorWindow.Show && !editorWindow.name.empty()) {
         ImGui::Begin(editorWindow.name.c_str());
 
         if (ImGui::Button("Save")) {
