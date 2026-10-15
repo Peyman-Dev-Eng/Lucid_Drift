@@ -71,7 +71,7 @@ namespace LDDrift
 
         struct EditorWindowsData
         {
-            std::string name = "NULL";
+            std::string name = NULL_STR_VALUE;
             bool canMoveWindow;
             char codeBuffer[131072];
             bool Show = false;
