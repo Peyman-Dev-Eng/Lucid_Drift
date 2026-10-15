@@ -6,6 +6,9 @@ LDDrift::Actors::Line::Line(const LDDrift::VecPos2D& FPoint, const LDDrift::VecP
     FirstPoint(FPoint), SecondPoint(SPoint), Thick(1) {}
 
 void LDDrift::Actors::Line::CreateTriangles() {
+    if (!Points.empty()) {
+        Points.clear();
+    }
     const float HalfThickness = Thick / 2.0f;
     LDDrift::VecPos2D normal = LDDrift::VecPos2D::NormalLine(FirstPoint, SecondPoint);
     normal *= HalfThickness;
@@ -15,6 +18,10 @@ void LDDrift::Actors::Line::CreateTriangles() {
     Points.push_back({
         .Point_1 = FirstPoint + normal, .Point_2 = SecondPoint - normal, .Point_3 = SecondPoint + normal
     });
+}
+
+float LDDrift::Actors::Line::GetThickness() const {
+    return Thick;
 }
 
 void LDDrift::Actors::Line::SetFirstPoint(const LDDrift::VecPos2D& FPoint) {

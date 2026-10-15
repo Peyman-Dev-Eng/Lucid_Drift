@@ -39,6 +39,7 @@ namespace LDDrift::Actors
         void CreateTriangles();
         void SetFirstPoint(const LDDrift::VecPos2D&);
         void SetSecondPoint(const LDDrift::VecPos2D&);
+        [[nodiscard]] float GetThickness() const;
         [[nodiscard]] LDDrift::VecPos2D GetFirstPoint() const;
         [[nodiscard]] LDDrift::VecPos2D GetSecondPoint() const;
         [[nodiscard]] const std::vector<PNT>& GetPoints() const;

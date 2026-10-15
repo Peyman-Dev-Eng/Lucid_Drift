@@ -28,8 +28,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(LINE_CONFIGURE_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
-    this->CreateNewWindow(SET_KEY_TARGET_WINDOW_NAME, true, true,
-                          "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(SET_KEY_TARGET_WINDOW_NAME, true, false,
+                          "", {10, 10}, {100, 40}, false);
     this->CreateNewWindow(EXIT_WARNING_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
 }
@@ -517,23 +517,28 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         ImGui::TextUnformatted("Start Pos");
         ImGui::TextUnformatted("X pos: ");
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
         ImGui::InputInt("##X Start Pos", &startPos[0], 1, 1);
         ImGui::SameLine();
         ImGui::TextUnformatted("Y pos: ");
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
         ImGui::InputInt("##Y Start Pos", &startPos[1], 1, 1);
         ImGui::Separator();
         ImGui::TextUnformatted("End Pos");
         ImGui::TextUnformatted("X pos: ");
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
         ImGui::InputInt("##X End Pos", &endPos[0], 1, 1);
         ImGui::SameLine();
         ImGui::TextUnformatted("Y pos: ");
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
         ImGui::InputInt("##Y End Pos", &endPos[1], 1, 1);
         ImGui::Separator();
         ImGui::TextUnformatted("Thickness: ");
         ImGui::SameLine();
+        ImGui::SetNextItemWidth(93);
         ImGui::InputInt("##Thickness Of Line", &thickness, 1, 1);
         if (thickness < 1) {
             thickness = 1;
@@ -594,7 +599,136 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         if (ImGui::Button("Close")) {
             window->Show = false;
         }
-    } else if (radioButton == 1) {}
+    } else if (radioButton == 1) {
+        static std::optional<LDDrift::Actors::Line*> line = std::nullopt;
+        static std::optional<bool> initialized = false;
+        static std::optional<bool> findLineWithName = std::nullopt;
+        ImGui::TextUnformatted("Window: configure line");
+        if ((findLineWithName.has_value() && findLineWithName.value() == true) || ImGui::InputTextWithHint(
+            "##Line Configuration", "Enter Line Name: ", window->searchBuffer,
+            sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            if ((findLineWithName.has_value() && findLineWithName.value() == true) || core->scene.FindLineWithName(
+                std::string(window->searchBuffer))) {
+                findLineWithName = true;
+                if (initialized.has_value() && initialized.value() == false) {
+                    initialized = true;
+                    line = core->scene.GetLine(std::string(window->searchBuffer));
+                    startPos[0] = static_cast<int>(line.value()->GetFirstPoint().X);
+                    startPos[1] = static_cast<int>(line.value()->GetFirstPoint().Y);
+                    endPos[0] = static_cast<int>(line.value()->GetSecondPoint().X);
+                    endPos[1] = static_cast<int>(line.value()->GetSecondPoint().Y);
+                    color[0] = line.value()->GetColor().R;
+                    color[1] = line.value()->GetColor().G;
+                    color[2] = line.value()->GetColor().B;
+                    color[3] = line.value()->GetColor().A;
+                    thickness = static_cast<int>(line.value()->GetThickness());
+                }
+                ImGui::Separator();
+                ImGui::SetNextItemWidth(400);
+                ImGui::InputTextWithHint("##Line Name", "Enter Line name:", window->searchBuffer,
+                                         sizeof(window->searchBuffer));
+                ImGui::Separator();
+                ImGui::TextUnformatted("Start Pos");
+                ImGui::TextUnformatted("X pos: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputInt("##X Start Pos", &startPos[0], 1, 1);
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Y pos: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputInt("##Y Start Pos", &startPos[1], 1, 1);
+                ImGui::Separator();
+                ImGui::TextUnformatted("End Pos");
+                ImGui::TextUnformatted("X pos: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputInt("##X End Pos", &endPos[0], 1, 1);
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Y pos: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputInt("##Y End Pos", &endPos[1], 1, 1);
+                ImGui::Separator();
+                ImGui::TextUnformatted("Thickness: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(93);
+                ImGui::InputInt("##Thickness Of Line", &thickness, 1, 1);
+                if (thickness < 1) {
+                    thickness = 1;
+                }
+                ImGui::Separator();
+                ImGui::TextUnformatted("Color Of Line");
+                ImGui::TextUnformatted("Red: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Red Line Color", &color[0], 0.005, 0.005, "%.3f");
+                if (color[0] > 1) {
+                    color[0] = 1;
+                }
+                if (color[0] < 0) {
+                    color[0] = 0;
+                }
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Green: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Green Line Color", &color[1], 0.005, 0.005, "%.3f");
+                if (color[1] > 1) {
+                    color[1] = 1;
+                }
+                if (color[1] < 0) {
+                    color[1] = 0;
+                }
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Blue: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Blue Line Color", &color[2], 0.005, 0.005, "%.3f");
+                if (color[2] > 1) {
+                    color[2] = 1;
+                }
+                if (color[2] < 0) {
+                    color[2] = 0;
+                }
+                ImGui::SameLine();
+                ImGui::TextUnformatted("Alpha: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Alpha Line Color", &color[3], 0.005, 0.005, "%.3f");
+                if (color[3] > 1) {
+                    color[3] = 1;
+                }
+                if (color[3] < 0) {
+                    color[3] = 0;
+                }
+                ImGui::Separator();
+                if (ImGui::Button("Configuration")) {
+                    line.value()->SetFirstPoint({static_cast<float>(startPos[0]), static_cast<float>(startPos[1])});
+                    line.value()->SetSecondPoint({static_cast<float>(endPos[0]), static_cast<float>(endPos[1])});
+                    line.value()->SetScreenSize(core->window.GetViewportSize());
+                    line.value()->SetThickness(static_cast<float>(thickness));
+                    line.value()->SetLineColor({color[0], color[1], color[2], color[3]});
+                    line.value()->CreateTriangles();
+                    core->scene.SendShapesToRender();
+                    window->Show = false;
+                }
+                if (ImGui::Button("Close")) {
+                    window->Show = false;
+                }
+            } else {
+                findLineWithName = false;
+            }
+        }
+        if (!findLineWithName.has_value() || findLineWithName.value() == false) {
+            if (ImGui::Button("Close")) {
+                window->Show = false;
+            }
+        }
+        if (findLineWithName.has_value() && findLineWithName.value() == false) {
+            ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->searchBuffer)).c_str());
+        }
+    }
 }
 
 void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) const {
@@ -608,13 +742,12 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     static float polygonActorBlueColor = 0;
     static float polygonActorAlpha = 1;
     static int polygonActorSpeed = 1;
-    static int polygonActor_xPos = 0;
-    static int polygonActor_yPos = 0;
     ImGui::RadioButton("##Create New Polygon", &radioButton, 0);
     ImGui::SameLine();
     ImGui::RadioButton("##Configure Polygon", &radioButton, 1);
 
     if (radioButton == 0) {
+        ImGui::TextUnformatted("window: create new polygon");
         ImGui::SetNextItemWidth(300);
         ImGui::InputTextWithHint("##Polygone Name", "Enter Polygon Actor Name:", window->searchBuffer,
                                  sizeof(window->searchBuffer));
@@ -711,22 +844,141 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
             window->Show = false;
         }
     } else if (radioButton == 1) {
+        static std::optional<LDDrift::Actors::Polygon*> polygonActor = std::nullopt;
+        static std::optional<bool> variablesInitialized = false;
         static std::optional<bool> findShapeWithName = std::nullopt;
+        static std::vector<int> pointPositions(polygonActorPointCount * 2);
+        pointPositions.resize(polygonActorPointCount * 2);
         ImGui::TextUnformatted("window: polygon configuration");
-        if (findShapeWithName.value() == true || ImGui::InputTextWithHint(
+        if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || ImGui::InputTextWithHint(
             "##Polygon Name", "Enter Polygon Name: ", window->searchBuffer,
             sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-            if (findShapeWithName.value() == true || core->scene.
-                                                           FindPolygonWithName(std::string(window->searchBuffer))) {
-                if (findShapeWithName.value() == false) {
-                    findShapeWithName = true;
+            if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || core->scene.
+                FindPolygonWithName(std::string(window->searchBuffer))) {
+                findShapeWithName.operator=(true);
+                if (variablesInitialized.has_value() && variablesInitialized.value() == false) {
+                    variablesInitialized = true;
+                    polygonActor = core->scene.GetPolygon(std::string(window->searchBuffer));
+                    polygonActorPointCount = static_cast<int>(polygonActor.value()->GetPointCount());
+                    polygonActorRedColor = polygonActor.value()->GetPointColor(0).R;
+                    polygonActorGreenColor = polygonActor.value()->GetPointColor(0).G;
+                    polygonActorBlueColor = polygonActor.value()->GetPointColor(0).B;
+                    polygonActorAlpha = polygonActor.value()->GetPointColor(0).A;
+                    polygonActorSpeed = static_cast<int>(polygonActor.value()->GetSpeed());
+                    for (std::size_t point = 0; point < polygonActorPointCount; ++point) {
+                        const LDDrift::VecPos2D& pointPos = polygonActor.value()->GetGlobalPoint(point);
+                        pointPositions[point * 2] = static_cast<int>(pointPos.X);
+                        pointPositions[point * 2 + 1] = static_cast<int>(pointPos.Y);
+                    }
                 }
+                ImGui::SetNextItemWidth(300);
+                ImGui::InputTextWithHint("##Polygone Name", "Enter Polygon Actor Name:", window->searchBuffer,
+                                         sizeof(window->searchBuffer));
+                ImGui::TextUnformatted("Polygon Point Count: "); // START --- point count of Polygon
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(145);
+                ImGui::InputInt("##Polygon Point Count", &polygonActorPointCount, 1, 1);
+                if (polygonActorPointCount < 3) {
+                    polygonActorPointCount = 3;
+                }
+                polygonActorPointCount = std::clamp(polygonActorPointCount, 3, 100);
+                ImGui::Separator(); // END --- point count of polygon
+                ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##polygon Red Color value", &polygonActorRedColor, 0.005, 0.005, "%.3f");
+                if (polygonActorRedColor > 1) {
+                    polygonActorRedColor = 1;
+                }
+                if (polygonActorRedColor < 0) {
+                    polygonActorRedColor = 0;
+                }
+                ImGui::SameLine(); // END --- Red Color Of Polygon
+                ImGui::TextUnformatted("Green: "); // START --- Green Color Of Polygon
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Polygon Green Color Value", &polygonActorGreenColor, 0.005, 0.005, "%.3f");
+                if (polygonActorGreenColor > 1) {
+                    polygonActorGreenColor = 1;
+                }
+                if (polygonActorGreenColor < 0) {
+                    polygonActorGreenColor = 0;
+                }
+                ImGui::SameLine(); // END --- Green Color Of Polygon
+                ImGui::TextUnformatted("Blue: "); // START --- Blue Color Of Polygon
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Polygon Blue Color Value", &polygonActorBlueColor, 0.005, 0.005, "%.3f");
+                if (polygonActorBlueColor > 1) {
+                    polygonActorBlueColor = 1;
+                }
+                if (polygonActorBlueColor < 0) {
+                    polygonActorBlueColor = 0;
+                }
+                ImGui::SameLine(); // END --- Blue Color Of Polygon
+                ImGui::TextUnformatted("Alpha: ");
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Polygon Alpha Color Value", &polygonActorAlpha, 0.005, 0.005, "%.3f");
+                if (polygonActorAlpha > 1) {
+                    polygonActorAlpha = 1;
+                }
+                if (polygonActorAlpha < 0) {
+                    polygonActorAlpha = 0;
+                }
+                ImGui::Separator();
+                ImGui::TextUnformatted("Polygon Speed Value: "); // START --- speed of polygon
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(555);
+                ImGui::InputInt("##Polygon Speed Value", &polygonActorSpeed, 1, 1);
+                if (polygonActorSpeed < 0) {
+                    polygonActorSpeed = 0;
+                }
+                ImGui::Separator(); // END --- speed of polygon
+                ImGui::TextUnformatted("Set Point Position");
+                for (int pointIndex = 0; pointIndex < polygonActorPointCount; ++pointIndex) {
+                    ImGui::TextUnformatted("X Position: ");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100);
+                    ImGui::InputInt((std::string("##X Position Of point ") + std::to_string(pointIndex)).c_str(),
+                                    &pointPositions[pointIndex * 2], 1, 1);
+                    ImGui::SameLine();
+                    ImGui::TextUnformatted("Y Position: ");
+                    ImGui::SameLine();
+                    ImGui::SetNextItemWidth(100);
+                    ImGui::InputInt((std::string("##Y Position Of point ") + std::to_string(pointIndex)).c_str(),
+                                    &pointPositions[pointIndex * 2 + 1], 1, 1);
+                    ImGui::Separator();
+                }
+                if (ImGui::Button("Configure")) {
+                    polygonActor.value()->SetPointCount(polygonActorPointCount);
+                    polygonActor.value()->SetScreenSize(core->window.GetViewportSize());
+                    polygonActor.value()->SetSpeed(static_cast<float>(polygonActorSpeed));
+                    polygonActor.value()->SetAllPointsColor({
+                        polygonActorRedColor, polygonActorGreenColor, polygonActorBlueColor, polygonActorAlpha
+                    });
+                    for (int pointIndex = 0; pointIndex < polygonActorPointCount; ++pointIndex) {
+                        polygonActor.value()->SetPoint(pointIndex, {
+                                                           static_cast<float>(pointPositions[pointIndex * 2]),
+                                                           static_cast<float>(pointPositions[pointIndex * 2 + 1])
+                                                       });
+                    }
+                    core->scene.SendShapesToRender();
+                    window->Show = false;
+                }
+                if (ImGui::Button("Close")) {
+                    window->Show = false;
+                }
+            } else {
+                findShapeWithName.operator=(false);
             }
         }
-        if (findShapeWithName.value() == false || !(findShapeWithName.has_value())) {
-            if (ImGui::Button("Close")) {}
+        if (!findShapeWithName.has_value() || findShapeWithName.value() == false) {
+            if (ImGui::Button("Close")) {
+                window->Show = false;
+            }
         }
-        if (findShapeWithName.value() == false) {
+        if (findShapeWithName.has_value() && findShapeWithName.value() == false) {
             ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->searchBuffer)).c_str());
         }
     }
@@ -762,6 +1014,15 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
     ImGui::Separator();
     if (ImGui::Button("Set")) {
         LDDrift::input::Keyboard::SetKeyTarget(std::string(window->searchBuffer));
+        window->Show = false;
+        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Clear")) {
+        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Close")) {
         window->Show = false;
         std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
     }
