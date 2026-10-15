@@ -252,15 +252,15 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         return;
     }
     static int CheckBoxIsOn = 0;
-    static int circlePointCount = 60;
-    static float redValueColor = 1;
+    static int circlePointCount = 45;
+    static float redValueColor = 0;
     static float greenValueColor = 0;
     static float blueValueColor = 0;
     static float alphaValueColor = 1;
-    static int circleRadius = 40;
+    static int circleRadius = 1;
     static int circleSpeed = 1;
-    static int xPos = 100;
-    static int yPos = 100;
+    static int xPos = 0;
+    static int yPos = 0;
     ImGui::RadioButton("##Create New Circle", &CheckBoxIsOn, 0);
     ImGui::SameLine();
     ImGui::RadioButton("##Configure Circle", &CheckBoxIsOn, 1);

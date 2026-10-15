@@ -1,9 +1,9 @@
 #include "CircleShape.h"
 
-LDDrift::Actors::Circle::Circle() : radiusNDC_X(0), radiusNDC_Y(0), radius(0), CenterPos(0, 0), Position(0, 0) {}
+LDDrift::Actors::Circle::Circle() : radiusNDC_X(0), radiusNDC_Y(0), radius(0), CenterPos(0, 0) {}
 
 LDDrift::Actors::Circle::Circle(const float& R) : radiusNDC_X(0), radiusNDC_Y(0), radius(R),
-                                                  CenterPos(0, 0), Position(0, 0) {
+                                                  CenterPos(0, 0) {
     this->SetPointCount(45);
     constexpr uint VectexAngle = 360.0f / 45.0f;
     uint PointIndex = 0;
@@ -61,8 +61,8 @@ void LDDrift::Actors::Circle::Rebuild() {
         this->SetPoint(
             PointIndex,
             LDDrift::VecPos2D{
-                LDDrift::Transform::TransformToNDC_Position(CenterPos.X + radius * std::cos(radians), 'x'),
-                LDDrift::Transform::TransformToNDC_Position(CenterPos.Y + radius * std::sin(radians), 'y')
+                CenterPos.X + radius * std::cos(radians),
+                CenterPos.Y + radius * std::sin(radians)
             }
         );
     }

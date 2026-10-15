@@ -26,7 +26,6 @@ namespace LDDrift::Actors
         float radiusNDC_Y;
         float radius;
         LDDrift::VecPos2D CenterPos;
-        LDDrift::VecPos2D Position;
 
     public:
         Circle();
