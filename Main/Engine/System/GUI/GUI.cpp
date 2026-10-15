@@ -252,15 +252,15 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         return;
     }
     static int CheckBoxIsOn = 0;
-    static int circlePointCount = 45;
-    static float redValueColor = 0;
+    static int circlePointCount = 60;
+    static float redValueColor = 1;
     static float greenValueColor = 0;
     static float blueValueColor = 0;
     static float alphaValueColor = 1;
-    static int circleRadius = 0;
+    static int circleRadius = 40;
     static int circleSpeed = 1;
-    static int xPos = 0;
-    static int yPos = 0;
+    static int xPos = 100;
+    static int yPos = 100;
     ImGui::RadioButton("##Create New Circle", &CheckBoxIsOn, 0);
     ImGui::SameLine();
     ImGui::RadioButton("##Configure Circle", &CheckBoxIsOn, 1);
@@ -709,7 +709,24 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         if (ImGui::Button("Close")) {
             window->Show = false;
         }
-    } else if (radioButton == 1) {}
+    } else if (radioButton == 1) {
+        static bool ifReturnButtonPressedInBeforeFrame = false;
+        static bool ifReturnButtonPressed = false;
+        ifReturnButtonPressed = ImGui::InputTextWithHint("##Polygon Shape Name", "Enter Polygon Name: ",
+                                                         window->searchBuffer,
+                                                         sizeof(window->searchBuffer),
+                                                         ImGuiInputTextFlags_EnterReturnsTrue);
+        if (ifReturnButtonPressed == false && ifReturnButtonPressedInBeforeFrame == false) {
+            return;
+        } else {
+            ifReturnButtonPressed = ifReturnButtonPressedInBeforeFrame;
+            ifReturnButtonPressedInBeforeFrame = true;
+            if (core->scene.FindPolygonWithName(std::string(window->searchBuffer))) {} else {
+                ImGui::TextUnformatted(
+                    ("Can not find polygon with name \"" + std::string(window->searchBuffer) + "\"").c_str());
+            }
+        }
+    }
 }
 
 bool LDDrift::GUI::SearchableCombo(char* buffer, const std::vector<std::string>& options) {

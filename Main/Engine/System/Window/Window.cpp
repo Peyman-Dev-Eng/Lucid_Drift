@@ -39,6 +39,10 @@ void LDDrift::Window::CreateWindow() {
     glfwSetWindowUserPointer(screen, this);
 }
 
+LDDrift::VecPos2D LDDrift::Window::GetViewportSize() {
+    return {VIEWPORT_WINDOW_WIDTH, VIEWPORT_WINDOW_HEIGHT};
+}
+
 void LDDrift::Window::CreateFullscreenWindow() {
     screen = glfwCreateWindow(mode->width, mode->height, settings.title.c_str(), monitor, nullptr);
     if (screen == nullptr) {

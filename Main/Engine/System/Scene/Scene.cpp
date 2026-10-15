@@ -58,7 +58,7 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
     const CIRCLE_SHAPE_INFORMATION newCircle{.circleName = name, .circle = new LDDrift::Actors::Circle()};
     newCircle.circle->SetCirclePosition(pos);
     newCircle.circle->SetPointCount(_pointCount);
-    newCircle.circle->SetScreenSize(core->window.GetWindowSize());
+    newCircle.circle->SetScreenSize(core->window.GetViewportSize());
     newCircle.circle->SetRadius(static_cast<float>(_radius));
     newCircle.circle->SetSpeed(static_cast<float>(_speed));
     newCircle.circle->SetAllPointsColor(color);
@@ -81,7 +81,7 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                         const LDDrift::VecCol& color) {
     const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
     newPolygon.polygon->SetPointCount(_pointCount);
-    newPolygon.polygon->SetScreenSize(core->window.GetWindowSize());
+    newPolygon.polygon->SetScreenSize(core->window.GetViewportSize());
     newPolygon.polygon->SetSpeed(static_cast<float>(_speed));
     newPolygon.polygon->SetAllPointsColor(color);
     for (int pointIndex = 0; pointIndex < _pointCount; ++pointIndex) {
@@ -93,16 +93,52 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
 }
 
-void LDDrift::Scene::CreateLineActor(const std::string& name, int _thickness, int* startPos, int* endPos,
+void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickness, const int* startPos, const int* endPos,
                                      const LDDrift::VecCol& color) {
     const LINE_ACTOR_INFORMATION newLine{
         .lineName = name, .line = new LDDrift::Actors::Line(
             {static_cast<float>(startPos[0]), static_cast<float>(startPos[1])},
             {static_cast<float>(endPos[0]), static_cast<float>(endPos[1])})
     };
-    newLine.line->SetScreenSize(core->window.GetWindowSize());
+    newLine.line->SetScreenSize(core->window.GetViewportSize());
     newLine.line->SetThickness(static_cast<float>(_thickness));
     newLine.line->SetLineColor(color);
     newLine.line->CreateTriangles();
     lines.push_back({.lineName = newLine.lineName, .line = newLine.line});
+}
+
+LDDrift::Actors::Line* LDDrift::Scene::GetLine(const std::string& name) const {
+    for (const auto& [lineName, line] : lines) {
+        if (lineName == name) {
+            return line;
+        }
+    }
+    return nullptr;
+}
+
+bool LDDrift::Scene::FindCircleWithName(const std::string& name) const {
+    for (const auto& [lineName, line] : circleShapes) {
+        if (lineName == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool LDDrift::Scene::FindPolygonWithName(const std::string& name) const {
+    for (const auto& [polygonName, polygon] : polygonShapes) {
+        if (polygonName == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool LDDrift::Scene::FindLineWithName(const std::string& name) const {
+    for (const auto& [lineName, line] : lines) {
+        if (lineName == name) {
+            return true;
+        }
+    }
+    return false;
 }

@@ -47,6 +47,7 @@ namespace LDDrift
         void SetCorePTR(LDDrift::Core* corePtr);
         void SetRendererPTR(LDDrift::Renderer* rendererPTR);
         void SendShapesToRender();
+        [[nodiscard]] bool FindCircleWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Circle* GetCircle(const std::string& name) const;
         void CreateCircleShape(const std::string& name,
                                int _pointCount,
@@ -54,16 +55,19 @@ namespace LDDrift
                                int _speed,
                                const LDDrift::VecPos2D& pos,
                                const LDDrift::VecCol& color);
+        [[nodiscard]] bool FindPolygonWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Polygon* GetPolygon(const std::string& name) const;
         void CreatePolygonShape(const std::string& name,
                                 int _pointCount,
                                 int _speed,
                                 const int* pos,
                                 const LDDrift::VecCol& color);
+        [[nodiscard]] bool FindLineWithName(const std::string& name) const;
+        [[nodiscard]] LDDrift::Actors::Line* GetLine(const std::string& name) const;
         void CreateLineActor(const std::string& name,
                              int _thickness,
-                             int* startPos,
-                             int* endPos,
+                             const int* startPos,
+                             const int* endPos,
                              const LDDrift::VecCol& color);
         ~Scene();
     };

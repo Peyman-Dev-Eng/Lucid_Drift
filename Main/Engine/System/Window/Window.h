@@ -74,7 +74,8 @@ namespace LDDrift
         void SetTitle(const char* title);
         [[nodiscard]] const char* GetTitle() const;
         void SetSize(int width, int height);
-        [[nodiscard]] VecPos2D GetWindowSize() const;
+        [[nodiscard]] LDDrift::VecPos2D GetWindowSize() const;
+        static LDDrift::VecPos2D GetViewportSize();
         void SetPosition(int x, int y);
         [[nodiscard]] VecPos2D GetPosition() const;
         [[nodiscard]] LDDrift::VecPos2D GetCenterPosition() const;
