@@ -590,6 +590,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
             core->scene.SendShapesToRender();
             window->Show = false;
         }
+        ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
         }
@@ -710,21 +711,23 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
             window->Show = false;
         }
     } else if (radioButton == 1) {
-        static bool ifReturnButtonPressedInBeforeFrame = false;
-        static bool ifReturnButtonPressed = false;
-        ifReturnButtonPressed = ImGui::InputTextWithHint("##Polygon Shape Name", "Enter Polygon Name: ",
-                                                         window->searchBuffer,
-                                                         sizeof(window->searchBuffer),
-                                                         ImGuiInputTextFlags_EnterReturnsTrue);
-        if (ifReturnButtonPressed == false && ifReturnButtonPressedInBeforeFrame == false) {
-            return;
-        } else {
-            ifReturnButtonPressed = ifReturnButtonPressedInBeforeFrame;
-            ifReturnButtonPressedInBeforeFrame = true;
-            if (core->scene.FindPolygonWithName(std::string(window->searchBuffer))) {} else {
-                ImGui::TextUnformatted(
-                    ("Can not find polygon with name \"" + std::string(window->searchBuffer) + "\"").c_str());
+        static std::optional<bool> findShapeWithName = std::nullopt;
+        ImGui::TextUnformatted("window: polygon configuration");
+        if (findShapeWithName.value() == true || ImGui::InputTextWithHint(
+            "##Polygon Name", "Enter Polygon Name: ", window->searchBuffer,
+            sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            if (findShapeWithName.value() == true || core->scene.
+                                                           FindPolygonWithName(std::string(window->searchBuffer))) {
+                if (findShapeWithName.value() == false) {
+                    findShapeWithName = true;
+                }
             }
+        }
+        if (findShapeWithName.value() == false || !(findShapeWithName.has_value())) {
+            if (ImGui::Button("Close")) {}
+        }
+        if (findShapeWithName.value() == false) {
+            ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->searchBuffer)).c_str());
         }
     }
 }
@@ -767,7 +770,7 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
 void LDDrift::GUI::EndRenderGUI() {
     GLB_assert(ProjectWatchTower_PTR != nullptr)
     for (DefaultWindowsData& window : defaultWindows) {
-        if (!window.Show) {
+        if (!window.Show || window.name.empty()) {
             continue;
         }
         ImGuiWindowFlags flags = 0;
@@ -784,6 +787,7 @@ void LDDrift::GUI::EndRenderGUI() {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }
+
         ImGui::Begin(window.name.c_str(), nullptr, flags);
         // مدیریت صفحه اصلی بازی
         MainWindowHandler(&window);
