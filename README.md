@@ -168,6 +168,7 @@ cmake --build build --parallel
 # Run
 ./build/Lucid_Drift
 ```
+---
 ###Windows
 ```bash
 git clone https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
@@ -184,6 +185,7 @@ Lucid Drift is designed so that game logic is compiled as a shared library and l
 Your game project must export three C-linkage functions:
 #include <EngineAPI.h>   // or the appropriate header
 ```
+---
 #if defined(_WIN32)
     #define LUCID_DRIFT_GAME_EXPORT __declspec(dllexport)
 #else
