@@ -61,21 +61,60 @@ It focuses on clean architecture, low-level control over rendering, an integrate
 
 ## Project Structure
 Lucid_Drift/
-├── CMakeLists.txt                 # Root CMake
-├── main.cpp                       # Entry point
-├── glad.c / glad/                 # GLAD OpenGL loader
-├── Main/
-│   ├── CMakeLists.txt             # Engine library build
-│   ├── Assertion/                 # Custom assertions
-│   ├── EngineLibraries/           # Utility libraries (VecPos, VecColor, Angle, ShapeData...)
-│   └── Engine/
-│       ├── API/                   # EngineAPI (plugin loading)
-│       ├── Actors/                # Shape, Circle, Polygon, Line
-│       ├── Functions/             # Helper functions
-│       ├── Renderer/              # OpenGL renderer
-│       ├── SubSystems/            # ProjectWatchTower, PointHitTesting, Transform, GUI_Logic, Settings...
-│       └── System/                # Core, Window, Scene, GUI, Input, Compilation, Triangulation
-└── ThirdParty/                    # Expected location for imgui (not always committed)
+│
+├── 📄 CMakeLists.txt
+├── 📄 main.cpp
+├── 📄 glad.c
+│
+├── 📁 glad/
+│   └── 📁 include/glad/
+│
+├── 📁 Main/
+│   ├── 📄 CMakeLists.txt
+│   │
+│   ├── 📁 Assertion/
+│   │   └── Assertions
+│   │
+│   ├── 📁 EngineLibraries/
+│   │   ├── 📁 Angle/
+│   │   ├── 📁 ShapeData/
+│   │   ├── 📁 VecColor/
+│   │   └── 📁 VecPosition/
+│   │
+│   └── 📁 Engine/
+│       │
+│       ├── 📁 API/
+│       │   └── EngineAPI                  # Runtime plugin system
+│       │
+│       ├── 📁 Actors/
+│       │   ├── 📁 Line/
+│       │   └── 📁 Shapes/
+│       │       ├── 📁 MainShape/          # Base Shape
+│       │       ├── 📁 Circle/
+│       │       └── 📁 Polygon/
+│       │
+│       ├── 📁 Functions/
+│       │
+│       ├── 📁 Renderer/                   # OpenGL Renderer
+│       │
+│       ├── 📁 SubSystems/
+│       │   ├── 📁 GUI_lOGIC/
+│       │   ├── 📁 PointHitTesting/
+│       │   ├── 📁 ProjectExplorer/        # ProjectWatchTower
+│       │   ├── 📁 Transform/
+│       │   └── 📁 WR_SettingSystem/
+│       │
+│       └── 📁 System/
+│           ├── 📁 Compilation/            # Compile system
+│           ├── 📁 Core/                   # Main engine coordinator
+│           ├── 📁 GUI/                    # Dear ImGui
+│           ├── 📁 Input/
+│           ├── 📁 Scene/
+│           ├── 📁 Triangulation/
+│           └── 📁 Window/
+│
+└── 📁 ThirdParty/
+└── 📁 imgui/                          # Dear ImGui (must be added)
 ---
 
 ## Architecture Overview
