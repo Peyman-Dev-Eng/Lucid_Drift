@@ -58,8 +58,9 @@ It focuses on clean architecture, low-level control over rendering, an integrate
 **Platforms currently targeted**: Linux and Windows.
 
 ---
-
 ## Project Structure
+
+```text
 Lucid_Drift/
 │
 ├── 📄 CMakeLists.txt
@@ -114,7 +115,8 @@ Lucid_Drift/
 │           └── 📁 Window/
 │
 └── 📁 ThirdParty/
-└── 📁 imgui/                          # Dear ImGui (must be added)
+    └── 📁 imgui/                          # Dear ImGui (must be added)
+```
 ---
 
 ## Architecture Overview
