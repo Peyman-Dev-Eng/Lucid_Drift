@@ -1,4 +1,4 @@
-# Lucid Drift
+# Lucid Drift.
 
 **Lucid Drift** is a modern, experimental **2D game engine and editor** written in **C++26**.  
 It focuses on clean architecture, low-level control over rendering, an integrated Dear ImGui-based editor, project management, and a simple runtime plugin system for game logic.
