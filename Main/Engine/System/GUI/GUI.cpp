@@ -32,6 +32,14 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 40}, false);
     this->CreateNewWindow(EXIT_WARNING_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    ImGui::CreateContext();
+    ImGui::StyleColorsDark();
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_ChildBg]  = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_PopupBg]  = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_MenuBarBg]= ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_Text]     = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
