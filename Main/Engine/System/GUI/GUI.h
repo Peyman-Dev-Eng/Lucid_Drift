@@ -11,6 +11,8 @@
 #include <optional>
 #include <VecPos.h>
 #include <Compile.h>
+#include <iterator>
+#include "TextEditor.h"
 #define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
 #define PROJECT_WATCH_TOWER_X_SIZE 350
 #define PROJECT_WATCH_TOWER_Y_SIZE 540
@@ -72,13 +74,12 @@ namespace LDDrift
         struct EditorWindowsData
         {
             std::string name = NULL_STR_VALUE;
-            bool canMoveWindow;
-            char codeBuffer[131072];
+            TextEditor editorWindow;
             bool Show = false;
         };
 
     public:
-        EditorWindowsData editorWindow;
+        EditorWindowsData ImGuiEditorWindow;
         std::vector<DefaultWindowsData> defaultWindows;
         LDDrift::ProjectWatchTower* ProjectWatchTower_PTR = nullptr;
         LDDrift::Compile* CompilePTR = nullptr;
@@ -95,7 +96,7 @@ namespace LDDrift
                              const VecPos2D& position, const VecPos2D& size,
                              bool SHOW);
         void CreateNewEditor(const std::string& name, bool canShowWindow);
-        [[nodiscard]] const char* GetCodeBuffer() const;
+        [[nodiscard]] std::string GetCodeBuffer() const;
         void SetTextForWindow(const std::string& windowName, const std::string& text,
                               bool deletePreviousMessages = false);
         void RenameEditorWindow(const std::string& newWindowName);

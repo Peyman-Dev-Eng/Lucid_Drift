@@ -8,6 +8,7 @@ namespace
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
+    oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     projectWatchTower.CreateNewProject("TestProject");
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
@@ -22,7 +23,6 @@ void LDDrift::Core::InitCore() {
     LDDrift::input::Mouse::Init();
     LDDrift::input::Keyboard::SetKeyTarget({LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC});
     gui.SetCorePTR(this);
-    oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     LDDrift::func::InitDeltaTime();
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
     gui.SetCompilePTR(&compile);
@@ -48,7 +48,6 @@ void LDDrift::Core::EngineHandler() {
         for (const auto& path : projectWatchTower.GetPaths()) {
             gui.SetTextForWindow("Project Watch Tower", path.string(), false);
         }
-
         gui.EndRenderGUI();
         window.Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));

@@ -6,6 +6,9 @@
 #include <thread>
 #include <ProjectWatchTower.h>
 #include <cstdio>
+#include <mutex>
+#include <sstream>
+#include <regex>
 #include <sys/wait.h>
 
 namespace LDDrift
@@ -20,6 +23,16 @@ namespace LDDrift
 
     class Compile
     {
+    public:
+        struct CompileError
+        {
+            std::string file;
+            int line = 0;
+            int column = 0;
+            std::string severity;
+            std::string message;
+        };
+
     private:
         std::atomic<CompileBuildStatus> buildStatus;
         std::atomic_bool isUserProjectCompiling{false};
@@ -27,12 +40,14 @@ namespace LDDrift
         std::string errorLog;
         LDDrift::ProjectWatchTower* projectWatchTower = nullptr;
         std::thread compileProjectThread;
+        std::vector<CompileError> compileErrors;
+        mutable std::mutex errorMutex;
 
     public:
         Compile();
         void init(LDDrift::ProjectWatchTower* projectWatchTowerPTR);
         bool BuildProject();
-        [[nodiscard]] const std::string& GetErrorLog() const;
+        [[nodiscard]] std::vector<CompileError> GetErrorLog() const;
         [[nodiscard]] CompileBuildStatus GetStatus() const;
         ~Compile();
     };

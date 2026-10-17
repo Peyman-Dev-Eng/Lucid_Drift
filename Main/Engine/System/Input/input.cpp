@@ -1,30 +1,47 @@
 #include "input.h"
 
-void LDDrift::OpenFileKeyboardInputEvent() {
+#include <filesystem>
+
+void LDDrift::OpenFileKeyboardInputEvent(const std::vector<std::string>& files) {
 #ifdef __linux__
-    LDDrift::FileKeyboardInputEvent = open("/dev/input/by-id/usb-SEMICO_USB_Keyboard-event-kbd",
-                                           O_RDONLY | O_NONBLOCK);
-    COF_assert(LDDrift::FileKeyboardInputEvent != -1)
+    for (const std::string& file : files) {
+        int resultOpenFile = open(file.c_str(), O_RDONLY | O_NONBLOCK);
+        if (resultOpenFile == -1) {
+            std::cout << "We can not open keyboard input event file. Failed to open file: " << file << std::endl;
+            continue;
+        }
+        fileKeyboardInputEvent_V.push_back(resultOpenFile);
+    }
 #endif
 }
 
 void LDDrift::CloseFileKeyboardInputEvent() {
 #ifdef __linux__
-    close(LDDrift::FileKeyboardInputEvent);
+    for (const int& file : fileKeyboardInputEvent_V) {
+        close(file);
+    }
 #endif
 }
 
-void LDDrift::OpenFileMouseInputEvent() {
+void LDDrift::OpenFileMouseInputEvent(const std::vector<std::string>& files) {
 #ifdef __linux__
-    LDDrift::FileMouseInputEvent = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse",
-                                        O_RDONLY | O_NONBLOCK);
-    COF_assert(LDDrift::FileMouseInputEvent != -1)
+    for (const std::string& file : files) {
+        int resultOpenFile = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse",
+                                  O_RDONLY | O_NONBLOCK);
+        if (resultOpenFile == -1) {
+            std::cout << "We can not open mouse input event file. Failed to open file: " << file << std::endl;
+            continue;
+        }
+        fileMouseInputEvent_V.push_back(resultOpenFile);
+    }
 #endif
 }
 
 void LDDrift::CloseFileMouseInputEvent() {
 #ifdef __linux__
-    close(LDDrift::FileMouseInputEvent);
+    for (const int& file : fileMouseInputEvent_V) {
+        close(file);
+    }
 #endif
 }
 
@@ -34,7 +51,19 @@ void LDDrift::input::Keyboard::Init() {
         WindowsKeyCodes[KeyCode] = {false, false};
     }
 #elifdef __linux__
-    LDDrift::OpenFileKeyboardInputEvent();
+    std::vector<std::string> keyboardInputFiles;
+    for (const std::filesystem::path iteratePath = "/dev/input/by-id/";
+         const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(iteratePath)) {
+        std::string stringPath = entry.path().string();
+        const bool FindSubstring = (
+            stringPath.find("usb-") != std::string::npos && stringPath.find("-event-kbd") != std::string::npos
+        );
+        if (FindSubstring == false) {
+            continue;
+        }
+        keyboardInputFiles.push_back(stringPath);
+    }
+    LDDrift::OpenFileKeyboardInputEvent(keyboardInputFiles);
     constexpr IsKeyPressedInFrame Default = {.Before = false, .Current = false};
     for (LD_uint KeyCode = 0; KeyCode <= 125; ++KeyCode) {
         LinuxKeyboard.push_back(Default);
@@ -255,24 +284,26 @@ void LDDrift::input::Keyboard::GetKeyInputEvent() {
         return;
     }
     input_event event{};
-    while (true) {
-        if (read(FileKeyboardInputEvent, &event, sizeof(input_event)) != NO_EVENT_IS_AVAILABLE_TO_READ) {
-            if (std::ranges::find(
-                TargetKeys, static_cast<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode>(event.code)
-            ) == TargetKeys.end()) {
-                continue;
-            }
-            if (event.type == EV_KEY) {
-                if (event.value == 0) {
-                    LinuxKeyboard[event.code].Current = false;
-                    ToUpdateValues.push_back(event.code);
-                } else if (event.value == 1) {
-                    LinuxKeyboard[event.code].Current = true;
-                    ToUpdateValues.push_back(event.code);
+    for (const int& file : fileKeyboardInputEvent_V) {
+        while (true) {
+            if (read(file, &event, sizeof(input_event)) != NO_EVENT_IS_AVAILABLE_TO_READ) {
+                if (std::ranges::find(
+                    TargetKeys, static_cast<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode>(event.code)
+                ) == TargetKeys.end()) {
+                    continue;
                 }
+                if (event.type == EV_KEY) {
+                    if (event.value == 0) {
+                        LinuxKeyboard[event.code].Current = false;
+                        ToUpdateValues.push_back(event.code);
+                    } else if (event.value == 1) {
+                        LinuxKeyboard[event.code].Current = true;
+                        ToUpdateValues.push_back(event.code);
+                    }
+                }
+            } else {
+                break;
             }
-        } else {
-            break;
         }
     }
 
@@ -409,7 +440,19 @@ void LDDrift::input::Keyboard::Destroy() {
 
 void LDDrift::input::Mouse::Init() {
 #ifdef __linux__
-    OpenFileMouseInputEvent();
+    std::vector<std::string> mouseFilesOfInputEvent;
+    for (const std::filesystem::path FileMouseInputEventPath = "/dev/input/by-id/";
+         const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(FileMouseInputEventPath)) {
+        const std::string stringPath = entry.path().string();
+        const bool find = (
+            stringPath.find("usb-") != std::string::npos && stringPath.find("-event-mouse") != std::string::npos
+        );
+        if (find == false) {
+            continue;
+        }
+        mouseFilesOfInputEvent.push_back(stringPath);
+    }
+    OpenFileMouseInputEvent(mouseFilesOfInputEvent);
     for (LD_uint MouseCode = 0; MouseCode < 5; ++MouseCode) {
         LinuxMouse.push_back({.Before = false, .Current = false});
     }
@@ -423,18 +466,20 @@ void LDDrift::input::Mouse::Init() {
 void LDDrift::input::Mouse::GetMouseInputEvent() {
 #ifdef __linux__
     input_event event{};
-    while (true) {
-        if (read(FileMouseInputEvent, &event, sizeof(input_event)) != NO_EVENT_IS_AVAILABLE_TO_READ) {
-            if (event.type == EV_KEY) {
-                if (event.value == 1) {
-                    const LD_uint MouseCode = event.code - 272;
-                    LinuxMouse[MouseCode].Current = true;
-                } else if (event.value == 0) {
-                    LinuxMouse[event.code - 272].Current = false;
+    for (const int& file : fileMouseInputEvent_V) {
+        while (true) {
+            if (read(file, &event, sizeof(input_event)) != NO_EVENT_IS_AVAILABLE_TO_READ) {
+                if (event.type == EV_KEY) {
+                    if (event.value == 1) {
+                        const LD_uint MouseCode = event.code - 272;
+                        LinuxMouse[MouseCode].Current = true;
+                    } else if (event.value == 0) {
+                        LinuxMouse[event.code - 272].Current = false;
+                    }
                 }
+            } else {
+                break;
             }
-        } else {
-            break;
         }
     }
 #elifdef _WIN32
@@ -588,9 +633,9 @@ bool LDDrift::input::Mouse::IsXButton2Released() {
 
 void LDDrift::input::Mouse::Update() {
 #ifdef __linux__
-    for (auto& mouseKey : LinuxMouse) {
-        mouseKey.Before = mouseKey.Current;
-        mouseKey.Current = mouseKey.Before;
+    for (auto& [Before, Current] : LinuxMouse) {
+        Before = Current;
+        Current = Before;
     }
 #elifdef _WIN32
     for (const LD_uint& value : ToUpdateValues) {

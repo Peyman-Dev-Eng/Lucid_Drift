@@ -92,19 +92,19 @@ void LDDrift::Actors::Circle::Rebuild(const int width, const int height) {
 void LDDrift::Actors::Circle::Move(const Dir direction) {
     if (direction == Dir::UP) {
         this->MoveUp();
-        CenterPos.Y += this->GetSpeedNDC_Y();
+        CenterPos.Y += this->GetSpeed();
         return;
     } else if (direction == Dir::DOWN) {
         this->MoveDown();
-        CenterPos.Y -= this->GetSpeedNDC_Y();
+        CenterPos.Y -= this->GetSpeed();
         return;
     } else if (direction == Dir::LEFT) {
         this->MoveLeft();
-        CenterPos.X -= this->GetSpeedNDC_X();
+        CenterPos.X -= this->GetSpeed();
         return;
     } else if (direction == Dir::RIGHT) {
         this->MoveRight();
-        CenterPos.X += this->GetSpeedNDC_X();
+        CenterPos.X += this->GetSpeed();
         return;
     }
 }

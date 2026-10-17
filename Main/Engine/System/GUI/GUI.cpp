@@ -36,10 +36,10 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-    style.Colors[ImGuiCol_ChildBg]  = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-    style.Colors[ImGuiCol_PopupBg]  = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-    style.Colors[ImGuiCol_MenuBarBg]= ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
-    style.Colors[ImGuiCol_Text]     = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
+    style.Colors[ImGuiCol_ChildBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_PopupBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_MenuBarBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
+    style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
 std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
@@ -92,49 +92,91 @@ LDDrift::GUI::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& name
     };
 }
 
-void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
-    if (window->name != PROJECT_WATCH_TOWER_WINDOW_NAME) {
+void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window)
+{
+    if (window->name != PROJECT_WATCH_TOWER_WINDOW_NAME)
+    {
         return;
     }
-    if (DefaultWindowsData result = LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(window);
-        result.name != NULL_STR_VALUE) {
-        if (!ProjectWatchTower_PTR->FindFile(std::filesystem::path(result.searchBuffer))) {
-            std::cout << "Not Found File! File: " << result.searchBuffer << std::endl;
-            return;
+
+    if (ProjectWatchTower_PTR == nullptr)
+    {
+        return;
+    }
+
+    if (DefaultWindowsData result =
+            LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(window);
+        result.name != NULL_STR_VALUE)
+    {
+        if (!ProjectWatchTower_PTR->FindFile(
+                std::filesystem::path(result.searchBuffer)))
+        {
+            std::cout << "Not Found File! File: "
+                      << result.searchBuffer << '\n';
         }
-        for (const std::vector<std::filesystem::path>& paths = ProjectWatchTower_PTR->GetPaths();
-             const auto& path : paths) {
-            std::cout << path.string() << std::endl;
-            if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string()) ==
-                std::string(result.searchBuffer)) {
-                if (is_directory(path)) {
-                    std::cout <<
-                        "Invalid input. The specified path is a folder. Please provide a file path where the code can be written."
-                        << std::endl;
-                    return;
+        else
+        {
+            const auto& paths = ProjectWatchTower_PTR->GetPaths();
+
+            for (const auto& path : paths)
+            {
+                if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(
+                        path.string()) != result.searchBuffer)
+                {
+                    continue;
                 }
-                editorWindow.Show = true;
-                editorWindow.name = path.string();
-                std::ifstream ifile(path.string(), std::ios::binary | std::ios::ate | std::ios::in);
-                std::streamsize size = ifile.tellg();
-                std::memset(editorWindow.codeBuffer, '\0', sizeof(editorWindow.codeBuffer));
-                ifile.seekg(0, std::ios::beg);
-                ifile.read(editorWindow.codeBuffer, size);
+
+                if (std::filesystem::is_directory(path))
+                {
+                    std::cout
+                        << "Invalid input. The specified path is a folder. "
+                        << "Please provide a file path where the code can be written.\n";
+
+                    break;
+                }
+
+                std::ifstream inputFile(path, std::ios::binary);
+
+                if (!inputFile.is_open())
+                {
+                    std::cerr << "Failed to open file: "
+                              << path.string() << '\n';
+
+                    break;
+                }
+
+                const std::string sourceCode(
+                    (std::istreambuf_iterator<char>(inputFile)),
+                    std::istreambuf_iterator<char>()
+                );
+
+                ImGuiEditorWindow.editorWindow.SetText(sourceCode);
+                ImGuiEditorWindow.name = path.string();
+                ImGuiEditorWindow.Show = true;
+
                 break;
             }
         }
     }
-    ImGui::Text("Project Information");
+
+    ImGui::TextUnformatted("Project Information");
 
     ImGui::Separator();
 
-    ImGui::Text("Project name: %s", ProjectWatchTower_PTR->GetProjectName().c_str());
+    ImGui::Text(
+        "Project name: %s",
+        ProjectWatchTower_PTR->GetProjectName().c_str()
+    );
 
-    ImGui::Text("Project path: %s", ProjectWatchTower_PTR->GetProjectPath().c_str());
+    ImGui::Text(
+        "Project path: %s",
+        ProjectWatchTower_PTR->GetProjectPath().c_str()
+    );
 
     ImGui::Separator();
 
-    for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
+    for (const auto& path : ProjectWatchTower_PTR->GetPaths())
+    {
         ImGui::TextUnformatted(path.string().c_str());
     }
 }
@@ -183,6 +225,12 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
         CompilePTR->BuildProject();
     }
     ImGui::SameLine();
+    static bool initializedShowError = false;
+    static std::optional<int> showError; // show error if value of this var equals to ( 1 or one )
+    if (initializedShowError == false && !showError.has_value()) {
+        initializedShowError = true;
+        showError = 0;
+    }
     const LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
     if (runGame == false) {
         if (ImGui::Button("Run")) {
@@ -200,12 +248,25 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
     ImGui::SameLine();
     if (build == LDDrift::CompileBuildStatus::Building) {
         ImGui::TextUnformatted("Compiling...");
+        showError = 0;
     } else if (build == LDDrift::CompileBuildStatus::Succeeded) {
-        ImGui::TextUnformatted("compiled");
+        ImGui::TextUnformatted("Compiled");
     } else if (build == LDDrift::CompileBuildStatus::Failed) {
-        ImGui::TextUnformatted("failed");
+        ImGui::TextUnformatted("Failed");
+        ++showError.value();
     } else if (build == LDDrift::CompileBuildStatus::Idle) {
-        ImGui::TextUnformatted("idle");
+        ImGui::TextUnformatted("Idle");
+    }
+    if (showError.value() == 1) {
+        for (const auto& error : CompilePTR->GetErrorLog()) {
+            std::cout << "----------------------------" << std::endl;
+            std::cout << "Error: " << error.message << std::endl;
+            std::cout << "Line: " << error.line << " | ";
+            std::cout << "Column: " << error.column << " | ";
+            std::cout << "File: " << error.file << " | ";
+            std::cout << "Severity: " << error.severity << std::endl;
+            std::cout << "----------------------------" << std::endl;
+        }
     }
 #ifdef __linux__
     ImGui::Separator();
@@ -1090,29 +1151,37 @@ void LDDrift::GUI::EndRenderGUI() {
         ImGui::End();
     }
     // میدیریت ادیتور موتور بازی
-    if (editorWindow.Show && !editorWindow.name.empty()) {
-        ImGui::Begin(editorWindow.name.c_str());
+    // Code editor
+    if (ImGuiEditorWindow.Show && !ImGuiEditorWindow.name.empty())
+    {
+        ImGui::Begin(ImGuiEditorWindow.name.c_str());
 
-        if (ImGui::Button("Save")) {
-            NPV_assert(ProjectWatchTower_PTR != nullptr)
-            ProjectWatchTower_PTR->WriteCodeToFile(editorWindow.name, editorWindow.codeBuffer);
+        if (ImGui::Button("Save"))
+        {
+            NPV_assert(ProjectWatchTower_PTR != nullptr);
+
+            const std::string sourceCode =
+                ImGuiEditorWindow.editorWindow.GetText();
+
+            ProjectWatchTower_PTR->WriteCodeToFile(
+                ImGuiEditorWindow.name,
+                sourceCode.c_str()
+            );
         }
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Exit")) {
-            editorWindow.Show = false;
+        if (ImGui::Button("Exit"))
+        {
+            ImGuiEditorWindow.Show = false;
         }
 
         ImGui::Separator();
 
-        ImGui::InputTextMultiline(
+        ImGuiEditorWindow.editorWindow.Render(
             "##Code",
-            editorWindow.codeBuffer,
-            sizeof(editorWindow.codeBuffer),
-            ImVec2(-1, -1),
-            ImGuiInputTextFlags_CallbackCompletion,
-            CodeEditorCallback
+            ImVec2(-1.0f, -1.0f),
+            true
         );
 
         ImGui::End();
@@ -1130,8 +1199,8 @@ void LDDrift::GUI::UpdateWindow(const std::string& windowName) {
     }
 }
 
-const char* LDDrift::GUI::GetCodeBuffer() const {
-    return editorWindow.codeBuffer;
+std::string LDDrift::GUI::GetCodeBuffer() const {
+    return ImGuiEditorWindow.editorWindow.GetText();
 }
 
 void LDDrift::GUI::SetProjectWatchTower_PTR(LDDrift::ProjectWatchTower* projectWatchTower) {
@@ -1139,9 +1208,8 @@ void LDDrift::GUI::SetProjectWatchTower_PTR(LDDrift::ProjectWatchTower* projectW
 }
 
 void LDDrift::GUI::CreateNewEditor(const std::string& name, const bool canShowWindow) {
-    editorWindow.name = name;
-    editorWindow.canMoveWindow = true;
-    editorWindow.Show = canShowWindow;
+    ImGuiEditorWindow.name = name;
+    ImGuiEditorWindow.Show = canShowWindow;
 }
 
 void LDDrift::GUI::SetTextForWindow(const std::string& windowName, const std::string& text,
@@ -1160,11 +1228,11 @@ void LDDrift::GUI::SetTextForWindow(const std::string& windowName, const std::st
 }
 
 void LDDrift::GUI::RenameEditorWindow(const std::string& newWindowName) {
-    editorWindow.name = newWindowName;
+    ImGuiEditorWindow.name = newWindowName;
 }
 
 void LDDrift::GUI::SetShowEditorWindow(const bool show) {
-    editorWindow.Show = show;
+    ImGuiEditorWindow.Show = show;
 }
 
 int LDDrift::GUI::CodeEditorCallback(ImGuiInputTextCallbackData* data) {

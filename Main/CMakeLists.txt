@@ -4,6 +4,9 @@ set(LUCID_DRIFT_ROOT
 )
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
+set(IMGUI_COLOR_TEXT_EDITOR_DIR
+        "${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/ImGuiColorTextEdit"
+)
 
 # ============================================================================
 # Assertion
@@ -226,6 +229,8 @@ find_package(glfw3 REQUIRED)
 
 find_package(fmt REQUIRED)
 
+find_package(nlohmann_json CONFIG REQUIRED)
+
 add_library(Engine SHARED
 
         # glad - OpenGL
@@ -291,8 +296,14 @@ add_library(Engine SHARED
         # Engine API
         Engine/API/EngineAPI.h
         Engine/API/EngineAPI.cpp
+
+        # Write and Read Setting System
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.cpp
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.h
+
+        # Code Pathfinder System
+        Engine/System/CodePathfinder/CodePathfinder.cpp
+        Engine/System/CodePathfinder/CodePathfinder.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -317,4 +328,17 @@ target_link_libraries(Engine PUBLIC
         TRM
         COMP
         ENG_API
+)
+
+
+target_include_directories(GUI PUBLIC
+        "${IMGUI_COLOR_TEXT_EDITOR_DIR}"
+)
+
+target_sources(GUI PRIVATE
+        "${IMGUI_COLOR_TEXT_EDITOR_DIR}/TextEditor.cpp"
+)
+
+target_link_libraries(GUI PRIVATE
+        nlohmann_json::nlohmann_json
 )

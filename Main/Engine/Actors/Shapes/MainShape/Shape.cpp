@@ -5,30 +5,30 @@ LDDrift::Actors::Shape::Shape() : screenSize(0, 0), OriginalPosition(0, 0), Poin
 
 void LDDrift::Actors::Shape::MoveUp() {
     for (VecPos2D& point : Points) {
-        point.Y += SpeedNDC_Y;
+        point.Y += Speed;
     }
-    OriginalPosition.Y += SpeedNDC_Y;
+    OriginalPosition.Y += Speed;
 }
 
 void LDDrift::Actors::Shape::MoveDown() {
     for (VecPos2D& point : Points) {
-        point.Y -= SpeedNDC_Y;
+        point.Y -= Speed;
     }
-    OriginalPosition.Y -= SpeedNDC_Y;
+    OriginalPosition.Y -= Speed;
 }
 
 void LDDrift::Actors::Shape::MoveLeft() {
     for (VecPos2D& point : Points) {
-        point.X -= SpeedNDC_X;
+        point.X -= Speed;
     }
-    OriginalPosition.X -= SpeedNDC_X;
+    OriginalPosition.X -= Speed;
 }
 
 void LDDrift::Actors::Shape::MoveRight() {
     for (VecPos2D& point : Points) {
-        point.X += SpeedNDC_X;
+        point.X += Speed;
     }
-    OriginalPosition.X += SpeedNDC_X;
+    OriginalPosition.X += Speed;
 }
 
 void LDDrift::Actors::Shape::SetOriginalPosition(const LDDrift::VecPos2D& pos) {

@@ -249,17 +249,17 @@ namespace LDDrift
         };
     }
 
-    inline int FileKeyboardInputEvent; // this variable just can use on linux os
-    inline int FileMouseInputEvent;
+    inline std::vector<int> fileKeyboardInputEvent_V;
+    inline std::vector<int> fileMouseInputEvent_V;
 
     // keyboard
     std::string GetFileKeyboardInputEvent();
-    void OpenFileKeyboardInputEvent(); // open file input event of linux and save result this up variable
+    void OpenFileKeyboardInputEvent(const std::vector<std::string>&); // open file input event of linux and save result this up variable
     inline void CloseFileKeyboardInputEvent(); // close file input event of linux
 
     // mouse
     std::string GetFileMouseInputEvent();
-    void OpenFileMouseInputEvent();
+    void OpenFileMouseInputEvent(const std::vector<std::string>&);
     inline void CloseFileMouseInputEvent();
 
 
@@ -272,6 +272,15 @@ namespace LDDrift
     inline std::vector<std::string> KeyBoardKeyName;
 
     inline std::unordered_map<std::string, Event::Keyboard::LinuxKeyboardKeyCode> KeyStringName;
+
+    enum class DeviceRole
+    {
+        Keyboard,
+        Mouse,
+        Unknown
+    };
+
+    DeviceRole GetDeviceRole(int fd);
 
 #endif
 
