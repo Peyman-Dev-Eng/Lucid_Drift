@@ -150,6 +150,7 @@ target_link_libraries(GUI PUBLIC
         ANGLE
         SHAPE_DATA
         COMP
+        CODE_PATHFINDER
 )
 # ============================================================================
 # Transform System
@@ -219,6 +220,18 @@ target_include_directories(WRSS PUBLIC
 )
 
 target_link_libraries(WRSS PUBLIC PWT)
+
+# ============================================================================
+# Code Pathfinder system
+# ============================================================================
+
+add_library(CODE_PATHFINDER STATIC
+        Engine/System/CodePathfinder/CodePathfinder.cpp
+)
+
+target_include_directories(CODE_PATHFINDER PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/CodePathfinder
+)
 
 # ============================================================================
 # END
@@ -300,10 +313,6 @@ add_library(Engine SHARED
         # Write and Read Setting System
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.cpp
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.h
-
-        # Code Pathfinder System
-        Engine/System/CodePathfinder/CodePathfinder.cpp
-        Engine/System/CodePathfinder/CodePathfinder.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -328,6 +337,7 @@ target_link_libraries(Engine PUBLIC
         TRM
         COMP
         ENG_API
+        CODE_PATHFINDER
 )
 
 

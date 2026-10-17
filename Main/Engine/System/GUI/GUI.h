@@ -10,6 +10,7 @@
 #include <ProjectWatchTower.h>
 #include <optional>
 #include <VecPos.h>
+#include <imgui_internal.h>
 #include <Compile.h>
 #include <iterator>
 #include "TextEditor.h"
@@ -55,6 +56,49 @@ namespace LDDrift
     private:
         LDDrift::Core* core = nullptr;
 
+
+        struct CodeCompletionState
+        {
+            std::string dismissedPrefix;
+            int dismissedLine = -1;
+            int dismissedStartColumn = -1;
+
+            bool visible = false;
+            bool dismissed = false;
+            bool refocusEditor = false;
+            bool hasPopupRect = false;
+
+            int selectedIndex = 0;
+
+            int line = -1;
+            int startColumn = 0;
+            int endColumn = 0;
+
+            std::string prefix;
+            std::string sourceText;
+            std::string dismissedText;
+            std::string editorFile;
+
+            std::vector<std::string> candidates;
+
+            ImVec2 caretScreenPosition = ImVec2(-1.0f, -1.0f);
+            ImVec2 popupMin = ImVec2(0.0f, 0.0f);
+            ImVec2 popupMax = ImVec2(0.0f, 0.0f);
+        };
+
+        CodeCompletionState codeCompletionState;
+
+        bool HandleCodeCompletionInput();
+        void UpdateCodeCompletion();
+        void RenderCodeCompletionPopup();
+
+        void AcceptCodeCompletion(
+            const std::string& suggestion,
+            bool fromMouse
+        );
+
+        void DismissCodeCompletion();
+
     public:
         static std::vector<std::string> ExtractTextFromString(const std::string& text);
 
@@ -73,6 +117,7 @@ namespace LDDrift
 
         struct EditorWindowsData
         {
+            char buffer[256];
             std::string name = NULL_STR_VALUE;
             TextEditor editorWindow;
             bool Show = false;
@@ -117,6 +162,7 @@ namespace LDDrift
         void LineConfigureWindowHandler(DefaultWindowsData* window) const;
         void SetKeyTargetWindowHandler(DefaultWindowsData* window) const;
         static bool SearchableCombo(char* buffer, const std::vector<std::string>& options);
+        void ShowCodeSuggestionsPopup(std::vector<std::string>& suggestions, const std::string& inputWord);
     };
 }
 #endif

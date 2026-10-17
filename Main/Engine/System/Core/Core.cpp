@@ -30,6 +30,7 @@ void LDDrift::Core::InitCore() {
     scene.SetRendererPTR(&render);
     scene.SetCorePTR(this);
     currentScene = &scene;
+    codePathfinder.initializeCodePathfinder();
 }
 
 void LDDrift::Core::Begin() {

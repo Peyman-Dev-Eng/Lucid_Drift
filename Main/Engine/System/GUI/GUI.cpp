@@ -32,7 +32,6 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 40}, false);
     this->CreateNewWindow(EXIT_WARNING_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
-    ImGui::CreateContext();
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -92,42 +91,32 @@ LDDrift::GUI::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& name
     };
 }
 
-void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window)
-{
-    if (window->name != PROJECT_WATCH_TOWER_WINDOW_NAME)
-    {
+void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
+    if (window->name != PROJECT_WATCH_TOWER_WINDOW_NAME) {
         return;
     }
 
-    if (ProjectWatchTower_PTR == nullptr)
-    {
+    if (ProjectWatchTower_PTR == nullptr) {
         return;
     }
 
     if (DefaultWindowsData result =
             LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(window);
-        result.name != NULL_STR_VALUE)
-    {
+        result.name != NULL_STR_VALUE) {
         if (!ProjectWatchTower_PTR->FindFile(
-                std::filesystem::path(result.searchBuffer)))
-        {
+            std::filesystem::path(result.searchBuffer))) {
             std::cout << "Not Found File! File: "
-                      << result.searchBuffer << '\n';
-        }
-        else
-        {
+                << result.searchBuffer << '\n';
+        } else {
             const auto& paths = ProjectWatchTower_PTR->GetPaths();
 
-            for (const auto& path : paths)
-            {
+            for (const auto& path : paths) {
                 if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(
-                        path.string()) != result.searchBuffer)
-                {
+                    path.string()) != result.searchBuffer) {
                     continue;
                 }
 
-                if (std::filesystem::is_directory(path))
-                {
+                if (std::filesystem::is_directory(path)) {
                     std::cout
                         << "Invalid input. The specified path is a folder. "
                         << "Please provide a file path where the code can be written.\n";
@@ -137,10 +126,9 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window)
 
                 std::ifstream inputFile(path, std::ios::binary);
 
-                if (!inputFile.is_open())
-                {
+                if (!inputFile.is_open()) {
                     std::cerr << "Failed to open file: "
-                              << path.string() << '\n';
+                        << path.string() << '\n';
 
                     break;
                 }
@@ -175,8 +163,7 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window)
 
     ImGui::Separator();
 
-    for (const auto& path : ProjectWatchTower_PTR->GetPaths())
-    {
+    for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
         ImGui::TextUnformatted(path.string().c_str());
     }
 }
@@ -258,13 +245,13 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
         ImGui::TextUnformatted("Idle");
     }
     if (showError.value() == 1) {
-        for (const auto& error : CompilePTR->GetErrorLog()) {
+        for (const auto& [file, line, column, severity, message] : CompilePTR->GetErrorLog()) {
             std::cout << "----------------------------" << std::endl;
-            std::cout << "Error: " << error.message << std::endl;
-            std::cout << "Line: " << error.line << " | ";
-            std::cout << "Column: " << error.column << " | ";
-            std::cout << "File: " << error.file << " | ";
-            std::cout << "Severity: " << error.severity << std::endl;
+            std::cout << "Error: " << message << std::endl;
+            std::cout << "Line: " << line << " | ";
+            std::cout << "Column: " << column << " | ";
+            std::cout << "File: " << file << " | ";
+            std::cout << "Severity: " << severity << std::endl;
             std::cout << "----------------------------" << std::endl;
         }
     }
@@ -1152,12 +1139,10 @@ void LDDrift::GUI::EndRenderGUI() {
     }
     // میدیریت ادیتور موتور بازی
     // Code editor
-    if (ImGuiEditorWindow.Show && !ImGuiEditorWindow.name.empty())
-    {
+    if (ImGuiEditorWindow.Show && !ImGuiEditorWindow.name.empty()) {
         ImGui::Begin(ImGuiEditorWindow.name.c_str());
 
-        if (ImGui::Button("Save"))
-        {
+        if (ImGui::Button("Save")) {
             NPV_assert(ProjectWatchTower_PTR != nullptr);
 
             const std::string sourceCode =
@@ -1171,18 +1156,46 @@ void LDDrift::GUI::EndRenderGUI() {
 
         ImGui::SameLine();
 
-        if (ImGui::Button("Exit"))
-        {
+        if (ImGui::Button("Exit")) {
             ImGuiEditorWindow.Show = false;
         }
 
         ImGui::Separator();
 
-        ImGuiEditorWindow.editorWindow.Render(
+        auto& editor = ImGuiEditorWindow.editorWindow;
+
+        // کلیدهای تکمیل کد را پیش از پردازش ورودی توسط ادیتور مدیریت کن.
+        const bool completionConsumedKey =
+            HandleCodeCompletionInput();
+
+        // پس از انتخاب پیشنهاد با ماوس، فوکوس به ادیتور برگردد.
+        if (codeCompletionState.refocusEditor) {
+            ImGui::SetNextWindowFocus();
+            codeCompletionState.refocusEditor = false;
+        }
+
+        const bool previousKeyboardInputState =
+            editor.GetHandleKeyboardInputs();
+
+        // فقط کلیدی را که سیستم تکمیل کد مصرف کرده است، از ادیتور بگیر.
+        editor.SetHandleKeyboardInputs(
+            previousKeyboardInputState && !completionConsumedKey
+        );
+
+        editor.Render(
             "##Code",
             ImVec2(-1.0f, -1.0f),
             true
         );
+
+        // حتماً وضعیت قبلی ورودی صفحه‌کلید را بازگردان.
+        editor.SetHandleKeyboardInputs(previousKeyboardInputState);
+
+        // حالا مکان‌نما، متن و پیشنهادها را بر اساس وضعیت جدید به‌روزرسانی کن.
+        UpdateCodeCompletion();
+
+        // Popup را پس از رندر ادیتور نمایش بده.
+        RenderCodeCompletionPopup();
 
         ImGui::End();
     }
@@ -1253,6 +1266,631 @@ int LDDrift::GUI::CodeEditorCallback(ImGuiInputTextCallbackData* data) {
     }
 
     return 0;
+}
+
+void LDDrift::GUI::ShowCodeSuggestionsPopup(
+    std::vector<std::string>& suggestions,
+    const std::string& inputWord) {
+    std::cout << inputWord << std::endl;
+    core->consoleBuffer.str("");
+    core->consoleBuffer.clear();
+
+    auto& editor = ImGuiEditorWindow.editorWindow;
+
+    constexpr const char* popupName = "##CodeSuggestionsPopup";
+
+    static bool popupWasOpen = false;
+    static bool selectionMade = false;
+
+    static std::string activeWord;
+    static std::string dismissedWord;
+    static std::string lastInputWord;
+
+    // Detect changes to the word under the cursor.
+    if (inputWord != lastInputWord) {
+        // Allow suggestions again when the word changes.
+        if (inputWord != dismissedWord) {
+            dismissedWord.clear();
+        }
+
+        lastInputWord = inputWord;
+    }
+
+    // Detect popup closure, including an outside click.
+    const bool popupIsOpen = ImGui::IsPopupOpen(popupName);
+
+    if (popupWasOpen && !popupIsOpen) {
+        if (!selectionMade) {
+            // Do not reopen for the same word after dismissal.
+            dismissedWord = activeWord;
+        }
+
+        popupWasOpen = false;
+        selectionMade = false;
+    }
+
+    // Open only when there are suggestions for a non-dismissed word.
+    if (!ImGui::IsPopupOpen(popupName) &&
+        !inputWord.empty() &&
+        !suggestions.empty() &&
+        inputWord != dismissedWord) {
+        ImGui::OpenPopup(popupName);
+    }
+
+    ImGui::SetNextWindowSizeConstraints(
+        ImVec2(250.0f, 0.0f),
+        ImVec2(450.0f, 300.0f)
+    );
+
+    constexpr ImGuiWindowFlags popupFlags =
+        ImGuiWindowFlags_NoFocusOnAppearing |
+        ImGuiWindowFlags_NoNavInputs |
+        ImGuiWindowFlags_NoNavFocus;
+
+    if (!ImGui::BeginPopup(popupName, popupFlags)) {
+        return;
+    }
+
+    popupWasOpen = true;
+    activeWord = inputWord;
+
+    if (inputWord.empty() || suggestions.empty()) {
+        dismissedWord = inputWord;
+        ImGui::CloseCurrentPopup();
+    } else {
+        for (const std::string& suggestion : suggestions) {
+            if (!ImGui::Selectable(suggestion.c_str())) {
+                continue;
+            }
+
+            const auto cursor = editor.GetCursorPosition();
+
+            const int startColumn =
+                cursor.mColumn -
+                static_cast<int>(inputWord.size());
+
+            if (startColumn >= 0) {
+                editor.SetSelection(
+                    TextEditor::Coordinates(
+                        cursor.mLine,
+                        startColumn
+                    ),
+                    cursor
+                );
+
+                editor.InsertText(suggestion);
+            }
+
+            // Remember the selected word so it does not reopen immediately.
+            dismissedWord = suggestion;
+            lastInputWord = suggestion;
+            selectionMade = true;
+
+            ImGui::CloseCurrentPopup();
+            break;
+        }
+    }
+
+    ImGui::EndPopup();
+}
+
+bool LDDrift::GUI::HandleCodeCompletionInput() {
+    CodeCompletionState& state = codeCompletionState;
+
+    if (state.editorFile != ImGuiEditorWindow.name) {
+        state = CodeCompletionState{};
+        state.editorFile = ImGuiEditorWindow.name;
+    }
+
+    if (!state.visible) {
+        return false;
+    }
+
+    // کلیک بیرون محدودهٔ Popup آن را می‌بندد،
+    // ولی اجازه می‌دهیم همان کلیک به ادیتور یا پنجرهٔ مقصد برسد.
+    if (state.hasPopupRect &&
+    ImGui::IsMouseClicked(0) &&
+    !ImGui::IsMouseHoveringRect(
+        state.popupMin,
+        state.popupMax,
+        false))
+    {
+        // بررسی کن کلیک بیرون Popup، داخل پنجره ادیتور بوده است یا نه.
+        const ImVec2 editorMin = ImGui::GetWindowPos();
+        const ImVec2 editorSize = ImGui::GetWindowSize();
+
+        const ImVec2 editorMax(
+            editorMin.x + editorSize.x,
+            editorMin.y + editorSize.y
+        );
+
+        const bool clickedInsideEditor =
+            ImGui::IsMouseHoveringRect(
+                editorMin,
+                editorMax,
+                false
+            );
+
+        DismissCodeCompletion();
+
+        // اگر کاربر داخل پنجره ادیتور کلیک کرده،
+        // فوکوس را به ناحیه ویرایش متن برگردان.
+        if (clickedInsideEditor)
+        {
+            state.refocusEditor = true;
+        }
+
+        return false;
+    }
+
+    if (state.candidates.empty()) {
+        DismissCodeCompletion();
+        return false;
+    }
+
+    const auto isPressed = [](const ImGuiKey key)
+    {
+        return ImGui::IsKeyPressed(key);
+    };
+
+    const int candidateCount =
+        static_cast<int>(state.candidates.size());
+
+    // بالا: پیشنهاد قبلی
+    if (isPressed(ImGuiKey_UpArrow)) {
+        state.selectedIndex =
+            (state.selectedIndex + candidateCount - 1) %
+            candidateCount;
+
+        return true;
+    }
+
+    // پایین: پیشنهاد بعدی
+    if (isPressed(ImGuiKey_DownArrow)) {
+        state.selectedIndex =
+            (state.selectedIndex + 1) %
+            candidateCount;
+
+        return true;
+    }
+
+    // Enter یا Tab: درج پیشنهاد انتخاب‌شده
+    if (isPressed(ImGuiKey_Enter) ||
+        isPressed(ImGuiKey_Tab)) {
+        const std::string selectedSuggestion =
+            state.candidates[
+                static_cast<std::size_t>(state.selectedIndex)
+            ];
+
+        AcceptCodeCompletion(selectedSuggestion, false);
+        return true;
+    }
+
+    // Escape: بستن پیشنهادها
+    if (isPressed(ImGuiKey_Escape)) {
+        DismissCodeCompletion();
+        return true;
+    }
+
+    // هیچ کلیدی مصرف نشده است؛ تایپ معمول باید ادامه پیدا کند.
+    return false;
+}
+
+void LDDrift::GUI::AcceptCodeCompletion(
+    const std::string& suggestion,
+    const bool fromMouse) {
+    CodeCompletionState& state = codeCompletionState;
+    auto& editor = ImGuiEditorWindow.editorWindow;
+
+    // اگر متن پس از محاسبهٔ پیشنهاد تغییر کرده باشد،
+    // مختصات قبلی برای درج قابل اعتماد نیستند.
+    if (editor.GetText() != state.sourceText) {
+        state.visible = false;
+        state.hasPopupRect = false;
+        return;
+    }
+
+    if (state.line < 0 ||
+        state.startColumn < 0 ||
+        state.endColumn < state.startColumn) {
+        DismissCodeCompletion();
+        return;
+    }
+
+    const TextEditor::Coordinates start(
+        state.line,
+        state.startColumn
+    );
+
+    const TextEditor::Coordinates end(
+        state.line,
+        state.endColumn
+    );
+
+    editor.SetSelection(start, end);
+    editor.InsertText(suggestion);
+
+    state.visible = false;
+    state.hasPopupRect = false;
+
+    // تا زمانی که کاربر متن را دوباره تغییر نداده،
+    // همان پیشنهاد به‌صورت خودکار باز نشود.
+    state.dismissed = true;
+    state.dismissedText = editor.GetText();
+
+    // پس از انتخاب با ماوس، فوکوس را به ادیتور برمی‌گردانیم.
+    state.refocusEditor = fromMouse;
+
+    state.dismissed = true;
+    state.dismissedText = editor.GetText();
+    state.dismissedPrefix = suggestion;
+    state.dismissedLine = state.line;
+    state.dismissedStartColumn = state.startColumn;
+}
+
+void LDDrift::GUI::DismissCodeCompletion() {
+    CodeCompletionState& state = codeCompletionState;
+
+    state.visible = false;
+    state.hasPopupRect = false;
+    state.dismissed = true;
+
+    auto& editor = ImGuiEditorWindow.editorWindow;
+
+    state.dismissedText = editor.GetText();
+    state.dismissedPrefix = state.prefix;
+    state.dismissedLine = state.line;
+    state.dismissedStartColumn = state.startColumn;
+}
+
+void LDDrift::GUI::UpdateCodeCompletion() {
+    CodeCompletionState& state = codeCompletionState;
+    auto& editor = ImGuiEditorWindow.editorWindow;
+
+    const std::string currentText = editor.GetText();
+
+    // اگر فایل عوض شده است، وضعیت فایل قبلی را استفاده نکن.
+    if (state.editorFile != ImGuiEditorWindow.name) {
+        state = CodeCompletionState{};
+        state.editorFile = ImGuiEditorWindow.name;
+    }
+
+    const auto cursor = editor.GetCursorPosition();
+    const std::string line = editor.GetCurrentLineText();
+
+    const int cursorColumn = std::clamp(
+        cursor.mColumn,
+        0,
+        static_cast<int>(line.size())
+    );
+
+    const auto isIdentifierCharacter = [](const unsigned char ch)
+    {
+        return std::isalnum(ch) || ch == '_';
+    };
+
+    // شروع شناسه‌ای که مکان‌نما داخل آن قرار دارد
+    int start = cursorColumn;
+
+    while (start > 0) {
+        const unsigned char ch =
+            static_cast<unsigned char>(
+                line[static_cast<std::size_t>(start - 1)]
+            );
+
+        if (!isIdentifierCharacter(ch)) {
+            break;
+        }
+
+        --start;
+    }
+
+    // انتهای کل شناسه؛ اگر مکان‌نما وسط کلمه باشد،
+    // درج پیشنهاد باید پسوند آن کلمه را هم جایگزین کند.
+    int end = cursorColumn;
+
+    while (end < static_cast<int>(line.size())) {
+        const unsigned char ch =
+            static_cast<unsigned char>(
+                line[static_cast<std::size_t>(end)]
+            );
+
+        if (!isIdentifierCharacter(ch)) {
+            break;
+        }
+
+        ++end;
+    }
+
+    const std::string prefix = line.substr(
+        static_cast<std::size_t>(start),
+        static_cast<std::size_t>(cursorColumn - start)
+    );
+
+    const std::string fullToken = line.substr(
+        static_cast<std::size_t>(start),
+        static_cast<std::size_t>(end - start)
+    );
+
+    // فقط با تغییر واقعی متن، اجازهٔ نمایش مجدد را بده.
+    if (state.dismissed && currentText != state.dismissedText) {
+        state.dismissed = false;
+        state.dismissedText.clear();
+        state.dismissedPrefix.clear();
+    }
+
+    // فقط با تغییر پیشوند، محاسبهٔ پیشنهادها را تکرار کن.
+    if (prefix != state.prefix) {
+        state.prefix = prefix;
+        state.selectedIndex = 0;
+        state.candidates.clear();
+
+        if (!prefix.empty() && core != nullptr) {
+            const std::vector<std::string> rawSuggestions =
+                core->codePathfinder.GetCodeSuggestions(prefix);
+
+            for (const std::string& candidate : rawSuggestions) {
+                if (candidate.empty() || candidate == fullToken) {
+                    continue;
+                }
+
+                // حذف پیشنهادهای تکراری بدون تغییر ترتیب رتبه‌بندی
+                const auto duplicate = std::find(
+                    state.candidates.begin(),
+                    state.candidates.end(),
+                    candidate
+                );
+
+                if (duplicate != state.candidates.end()) {
+                    continue;
+                }
+
+                state.candidates.push_back(candidate);
+
+                // از یک فهرست بیش از حد بزرگ جلوگیری کن.
+                if (state.candidates.size() >= 100) {
+                    break;
+                }
+            }
+        }
+    }
+
+    // اطلاعات لازم برای تکمیل در همین فریم
+    state.line = cursor.mLine;
+    state.startColumn = start;
+    state.endColumn = end;
+    state.sourceText = currentText;
+    state.caretScreenPosition =
+        editor.GetCursorScreenPosition();
+
+    if (prefix.empty() || state.candidates.empty()) {
+        state.visible = false;
+        state.hasPopupRect = false;
+        return;
+    }
+
+    state.selectedIndex = std::clamp(
+        state.selectedIndex,
+        0,
+        static_cast<int>(state.candidates.size()) - 1
+    );
+
+    if (!state.dismissed) {
+        state.visible = true;
+    }
+}
+
+void LDDrift::GUI::RenderCodeCompletionPopup() {
+    CodeCompletionState& state = codeCompletionState;
+
+    if (!state.visible || state.candidates.empty()) {
+        state.hasPopupRect = false;
+        return;
+    }
+
+    const ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+
+    float longestSuggestionWidth = 0.0f;
+
+    for (const std::string& candidate : state.candidates) {
+        longestSuggestionWidth = std::max(
+            longestSuggestionWidth,
+            ImGui::CalcTextSize(candidate.c_str()).x
+        );
+    }
+
+    const float popupWidth = std::clamp(
+        longestSuggestionWidth + 72.0f,
+        300.0f,
+        520.0f
+    );
+
+    constexpr int maxVisibleRows = 8;
+
+    const int visibleRows = std::min(
+        static_cast<int>(state.candidates.size()),
+        maxVisibleRows
+    );
+
+    const float rowHeight =
+        ImGui::GetTextLineHeightWithSpacing() + 6.0f;
+
+    const float popupHeight =
+        58.0f + rowHeight * static_cast<float>(visibleRows);
+
+    ImVec2 position = state.caretScreenPosition;
+
+    // اگر مکان‌نما فعلاً در ناحیهٔ رندرشده نیست،
+    // از موقعیتی داخل پنجرهٔ ادیتور استفاده کن.
+    if (position.x < 0.0f || position.y < 0.0f) {
+        const ImVec2 editorWindowPosition = ImGui::GetWindowPos();
+
+        position = ImVec2(
+            editorWindowPosition.x + 24.0f,
+            editorWindowPosition.y + 72.0f
+        );
+    }
+
+    position.y += ImGui::GetTextLineHeightWithSpacing() + 3.0f;
+
+    // اگر پایین صفحه فضای کافی نیست، پیشنهادها را بالای کرسر بگذار.
+    if (position.y + popupHeight > displaySize.y - 4.0f) {
+        position.y =
+            state.caretScreenPosition.y - popupHeight - 3.0f;
+    }
+
+    const float maxX = std::max(
+        4.0f,
+        displaySize.x - popupWidth - 4.0f
+    );
+
+    const float maxY = std::max(
+        4.0f,
+        displaySize.y - popupHeight - 4.0f
+    );
+
+    position.x = std::clamp(position.x, 4.0f, maxX);
+    position.y = std::clamp(position.y, 4.0f, maxY);
+
+    ImGui::SetNextWindowPos(position, ImGuiCond_Always);
+    ImGui::SetNextWindowSize(
+        ImVec2(popupWidth, popupHeight),
+        ImGuiCond_Always
+    );
+
+    ImGui::PushStyleVar(
+        ImGuiStyleVar_WindowPadding,
+        ImVec2(8.0f, 7.0f)
+    );
+
+    ImGui::PushStyleVar(
+        ImGuiStyleVar_WindowRounding,
+        5.0f
+    );
+
+    ImGui::PushStyleColor(
+        ImGuiCol_WindowBg,
+        ImVec4(0.085f, 0.095f, 0.12f, 0.98f)
+    );
+
+    ImGui::PushStyleColor(
+        ImGuiCol_Border,
+        ImVec4(0.28f, 0.32f, 0.40f, 1.0f)
+    );
+
+    constexpr ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoFocusOnAppearing |
+        ImGuiWindowFlags_NoNavInputs |
+        ImGuiWindowFlags_NoNavFocus;
+
+    ImGui::Begin(
+        "##LucidDriftCodeCompletion",
+        nullptr,
+        flags
+    );
+
+    ImGui::TextColored(
+        ImVec4(0.45f, 0.72f, 1.0f, 1.0f),
+        "CODE COMPLETION"
+    );
+
+    ImGui::SameLine();
+
+    ImGui::TextDisabled(
+        "%d items",
+        static_cast<int>(state.candidates.size())
+    );
+
+    ImGui::Separator();
+
+    ImGui::BeginChild(
+        "##CodeCompletionCandidates",
+        ImVec2(0.0f, rowHeight * visibleRows),
+        false
+    );
+
+    for (int i = 0;
+         i < static_cast<int>(state.candidates.size());
+         ++i) {
+        const bool selected = (i == state.selectedIndex);
+
+        ImGui::PushID(i);
+
+        if (selected) {
+            ImGui::PushStyleColor(
+                ImGuiCol_Header,
+                ImVec4(0.20f, 0.35f, 0.53f, 0.95f)
+            );
+
+            ImGui::PushStyleColor(
+                ImGuiCol_HeaderHovered,
+                ImVec4(0.25f, 0.41f, 0.61f, 1.0f)
+            );
+
+            ImGui::PushStyleColor(
+                ImGuiCol_HeaderActive,
+                ImVec4(0.28f, 0.46f, 0.68f, 1.0f)
+            );
+        }
+
+        const bool clicked = ImGui::Selectable(
+            state.candidates[static_cast<std::size_t>(i)].c_str(),
+            selected,
+            ImGuiSelectableFlags_SpanAvailWidth,
+            ImVec2(0.0f, rowHeight)
+        );
+
+        if (selected) {
+            // هنگام پیمایش صفحه‌کلید، مورد انتخاب‌شده در دید بماند.
+            ImGui::SetScrollHereY(0.5f);
+
+            ImGui::PopStyleColor(3);
+        }
+
+        if (clicked) {
+            const std::string suggestion =
+                state.candidates[static_cast<std::size_t>(i)];
+
+            AcceptCodeCompletion(suggestion, true);
+            ImGui::PopID();
+            break;
+        }
+
+        ImGui::PopID();
+    }
+
+    ImGui::EndChild();
+
+    ImGui::Separator();
+
+    ImGui::TextDisabled(
+        "Up/Down: Navigate   Enter/Tab: Insert   Esc: Close"
+    );
+
+    const ImVec2 actualPosition = ImGui::GetWindowPos();
+    const ImVec2 actualSize = ImGui::GetWindowSize();
+
+    ImGui::End();
+
+    ImGui::PopStyleColor(2);
+    ImGui::PopStyleVar(2);
+
+    if (state.visible) {
+        state.popupMin = actualPosition;
+
+        state.popupMax = ImVec2(
+            actualPosition.x + actualSize.x,
+            actualPosition.y + actualSize.y
+        );
+
+        state.hasPopupRect = true;
+    } else {
+        state.hasPopupRect = false;
+    }
 }
 
 LDDrift::GUI::~GUI() = default;

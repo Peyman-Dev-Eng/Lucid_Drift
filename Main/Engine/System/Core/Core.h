@@ -23,6 +23,7 @@
 #include <GuiLogic.h>
 #include "API/EngineAPI.h"
 #include <System/Scene/Scene.h>
+#include <CodePathfinder.h>
 
 namespace LDDrift
 {
@@ -45,6 +46,7 @@ namespace LDDrift
         LDDrift::GUI gui;
         LDDrift::Compile compile;
         LDDrift::Scene scene;
+        LDDrift::CodePathfinder codePathfinder;
 
         // functions
         explicit Core();
