@@ -1251,12 +1251,13 @@ void LDDrift::CodePathfinder::initializeCodePathfinder() {
 
 std::vector<std::string> LDDrift::CodePathfinder::GetCodeSuggestions(
     const std::string& CodeSuggestion) {
-    // Return cached results if the query has not changed.
-    if (CodeSuggestion == lastQuery) {
+    // Only use the cache after a query has actually been computed.
+    if (hasCachedQuery && CodeSuggestion == lastQuery) {
         return lastSuggestions;
     }
 
     lastQuery = CodeSuggestion;
+    hasCachedQuery = true;
     lastSuggestions.clear();
 
     // Do not calculate a score for an empty query.

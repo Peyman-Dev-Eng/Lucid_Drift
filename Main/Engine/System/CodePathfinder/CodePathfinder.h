@@ -15,7 +15,8 @@ namespace LDDrift
     class CodePathfinder final
     {
     private:
-        std::string lastQuery = NULL_STRING;
+        std::string lastQuery;
+        bool hasCachedQuery = false;
         std::vector<std::string> lastSuggestions;
         std::vector<std::string> KeyWords;
     public:
