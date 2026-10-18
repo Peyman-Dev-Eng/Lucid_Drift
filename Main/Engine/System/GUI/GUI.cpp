@@ -2,6 +2,305 @@
 #include <GuiLogic.h>
 #include "System/Core/Core.h"
 
+static bool RemoveTextFromCurrentLine(
+    TextEditor& editor,
+    const std::string& target) {
+    if (target.empty() || editor.IsReadOnly())
+        return false;
+
+    // Get the text of the current line.
+    const std::string line = editor.GetCurrentLineText();
+
+    // Find the first occurrence of the target.
+    const std::size_t pos = line.find(target);
+
+    if (pos == std::string::npos)
+        return false;
+
+    const auto cursor = editor.GetCursorPosition();
+
+    // Convert a UTF-8 byte offset to a TextEditor column.
+    const auto ToEditorColumn = [&](const std::size_t bytePos)
+    {
+        int column = 0;
+        const int tabSize = editor.GetTabSize();
+
+        for (std::size_t i = 0; i < bytePos;) {
+            const auto ch =
+                static_cast<unsigned char>(line[i]);
+
+            if (ch == '\t') {
+                if (tabSize > 0)
+                    column += tabSize - column % tabSize;
+                else
+                    ++column;
+
+                ++i;
+            } else if ((ch & 0xC0) == 0x80) {
+                ++i;
+            } else {
+                ++column;
+                ++i;
+            }
+        }
+
+        return column;
+    };
+
+    // Select the target text inside the editor.
+    const TextEditor::Coordinates start(
+        cursor.mLine,
+        ToEditorColumn(pos));
+
+    const TextEditor::Coordinates end(
+        cursor.mLine,
+        ToEditorColumn(pos + target.size()));
+
+    editor.SetSelection(start, end);
+
+    // Delete the selected text from the actual editor.
+    editor.Delete();
+
+    return true;
+}
+
+bool LDDrift::GUI::DrawCodeSuggestionPopup(
+    bool& shouldOpen,
+    const std::vector<std::string>& suggestions,
+    std::string& selectedSuggestion,
+    const ImVec2 position
+) {
+    auto& state = popupCompletionState;
+    auto& editor = ImGuiEditorWindow.editorWindow;
+
+    state.IsOpenInBeforeFrame = shouldOpen || state.WasOpen;
+
+    if (!shouldOpen) {
+        state.WasOpen = false;
+        editor.SetCodeSuggestionPopupOpen(false);
+        return false;
+    }
+
+    // Let TextEditor filter only the keys handled by the popup.
+    editor.SetCodeSuggestionPopupOpen(true);
+
+    if (!state.WasOpen) {
+        state.WasOpen = true;
+        state.SelectedIndex = 0;
+    }
+    if (position.x >= 0.0f && position.y >= 0.0f) {
+        state.Position = position;
+    }
+
+    const int suggestionCount =
+        static_cast<int>(suggestions.size());
+
+    if (suggestionCount == 0) {
+        state.SelectedIndex = 0;
+    } else {
+        state.SelectedIndex = std::clamp(
+            state.SelectedIndex,
+            0,
+            suggestionCount - 1
+        );
+    }
+
+    // ---------------------------------------------------------
+    // Appearance
+    // ---------------------------------------------------------
+
+    ImGui::PushStyleColor(
+        ImGuiCol_WindowBg,
+        ImVec4(0.075f, 0.085f, 0.115f, 0.98f));
+
+    ImGui::PushStyleColor(
+        ImGuiCol_Border,
+        ImVec4(0.25f, 0.30f, 0.42f, 1.0f));
+
+    ImGui::PushStyleColor(
+        ImGuiCol_Header,
+        ImVec4(0.16f, 0.25f, 0.39f, 1.0f));
+
+    ImGui::PushStyleColor(
+        ImGuiCol_HeaderHovered,
+        ImVec4(0.20f, 0.35f, 0.55f, 1.0f));
+
+    ImGui::PushStyleColor(
+        ImGuiCol_HeaderActive,
+        ImVec4(0.24f, 0.42f, 0.67f, 1.0f));
+
+    ImGui::PushStyleVar(
+        ImGuiStyleVar_WindowRounding, 10.0f);
+
+    ImGui::PushStyleVar(
+        ImGuiStyleVar_WindowBorderSize, 1.0f);
+
+    ImGui::PushStyleVar(
+        ImGuiStyleVar_WindowPadding, ImVec2(12.0f, 12.0f));
+
+    ImGui::PushStyleVar(
+        ImGuiStyleVar_FrameRounding, 5.0f);
+
+    ImGui::PushStyleVar(
+        ImGuiStyleVar_ItemSpacing, ImVec2(6.0f, 7.0f));
+
+    ImGui::SetNextWindowPos(
+        state.Position, ImGuiCond_Always);
+
+    ImGui::SetNextWindowSize(
+        ImVec2(440.0f, 300.0f), ImGuiCond_Always);
+
+    constexpr ImGuiWindowFlags flags =
+        ImGuiWindowFlags_NoTitleBar |
+        ImGuiWindowFlags_NoResize |
+        ImGuiWindowFlags_NoMove |
+        ImGuiWindowFlags_NoCollapse |
+        ImGuiWindowFlags_NoSavedSettings |
+        ImGuiWindowFlags_NoFocusOnAppearing |
+        ImGuiWindowFlags_NoNavFocus;
+
+    bool accepted = false;
+
+    if (ImGui::Begin(
+        "##LD_CodeSuggestionPopup",
+        nullptr,
+        flags)) {
+        // -----------------------------------------------------
+        // Header
+        // -----------------------------------------------------
+
+        ImGui::TextColored(
+            ImVec4(0.40f, 0.72f, 1.0f, 1.0f),
+            "Code Pathfinder");
+
+        ImGui::SameLine();
+
+        ImGui::TextDisabled(
+            "%zu suggestions",
+            suggestions.size());
+
+        ImGui::Separator();
+        ImGui::Spacing();
+
+        // -----------------------------------------------------
+        // Keyboard navigation
+        // No popup focus is required.
+        // TextEditor filters these keys while the popup is open.
+        // -----------------------------------------------------
+
+        if (suggestionCount > 0) {
+            if (ImGui::IsKeyPressed(ImGuiKey_UpArrow)) {
+                state.SelectedIndex =
+                    (state.SelectedIndex + suggestionCount - 1)
+                    % suggestionCount;
+            }
+
+            if (ImGui::IsKeyPressed(ImGuiKey_DownArrow)) {
+                state.SelectedIndex =
+                    (state.SelectedIndex + 1)
+                    % suggestionCount;
+            }
+        }
+
+        // -----------------------------------------------------
+        // Enter: accept the suggestion
+        // -----------------------------------------------------
+
+        const bool enterPressed =
+            ImGui::IsKeyPressed(ImGuiKey_Enter) ||
+            ImGui::IsKeyPressed(ImGuiKey_KeypadEnter);
+
+        if (enterPressed) {
+            if (suggestionCount > 0) {
+                selectedSuggestion =
+                    suggestions[state.SelectedIndex];
+
+                state.selectedSuggestion = selectedSuggestion;
+                accepted = true;
+            }
+
+            shouldOpen = false;
+            state.WasOpen = false;
+        }
+
+        // -----------------------------------------------------
+        // Escape: close without accepting
+        // -----------------------------------------------------
+
+        if (ImGui::IsKeyPressed(ImGuiKey_Escape)) {
+            shouldOpen = false;
+            state.WasOpen = false;
+        }
+
+        // -----------------------------------------------------
+        // Suggestion list
+        // -----------------------------------------------------
+
+        ImGui::BeginChild(
+            "##LD_CodeSuggestionList",
+            ImVec2(0.0f, 190.0f),
+            false,
+            ImGuiWindowFlags_None);
+
+        if (suggestions.empty()) {
+            ImGui::TextDisabled(
+                "No suggestions available.");
+        } else {
+            for (int i = 0; i < suggestionCount; ++i) {
+                ImGui::PushID(i);
+
+                const bool isSelected =
+                    state.SelectedIndex == i;
+
+                if (ImGui::Selectable(
+                    suggestions[i].c_str(),
+                    isSelected,
+                    ImGuiSelectableFlags_None,
+                    ImVec2(0.0f, 27.0f))) {
+                    state.SelectedIndex = i;
+
+                    selectedSuggestion = suggestions[i];
+                    state.selectedSuggestion = selectedSuggestion;
+
+                    accepted = true;
+                    shouldOpen = false;
+                    state.WasOpen = false;
+                }
+
+                if (ImGui::IsItemHovered())
+                    state.SelectedIndex = i;
+
+                if (isSelected)
+                    ImGui::SetScrollHereY(0.5f);
+
+                ImGui::PopID();
+            }
+        }
+
+        ImGui::EndChild();
+
+        // -----------------------------------------------------
+        // Footer
+        // -----------------------------------------------------
+
+        ImGui::Separator();
+
+        ImGui::TextDisabled(
+            "UP / DOWN  Navigate    ENTER  Select    ESC  Close");
+    }
+
+    ImGui::End();
+
+    // Synchronize TextEditor with the final popup state.
+    editor.SetCodeSuggestionPopupOpen(shouldOpen || state.IsOpenInBeforeFrame);
+
+    ImGui::PopStyleVar(5);
+    ImGui::PopStyleColor(5);
+
+    return accepted;
+}
+
+
 LDDrift::GUI::GUI() = default;
 
 void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
@@ -1082,8 +1381,54 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
     }
 }
 
+void LDDrift::GUI::TransformString(std::string& text) {
+    std::size_t pos = 0;
+
+    while ((pos = text.find('\t', pos)) != std::string::npos) {
+        text.replace(pos, 1, "    ");
+        pos += 4;
+    }
+}
+
+bool LDDrift::GUI::ValidChar(const char c) {
+    return (c >= 65 && c <= 90) ||
+        (c >= 97 && c <= 122) ||
+        (c >= '0' && c <= '9') ||
+        c == ':' || c == '_';
+}
+
+void LDDrift::GUI::PopupCompletionLogic() {
+    TextEditor& editor = ImGuiEditorWindow.editorWindow;
+    if (!popupCompletionState.ShowPopup) {
+        popupCompletionState.WasOpen = false;
+        editor.SetCodeSuggestionPopupOpen(false);
+        return;
+    }
+    std::string line = editor.GetCurrentLineText();
+    TransformString(line);
+    const TextEditor::Coordinates cursorPos = editor.GetCursorPosition();
+    int startPos = cursorPos.mColumn - 1;
+    while (startPos > LOWER_BOUND_WHILE_LOOP && ValidChar(line[startPos])) {
+        --startPos;
+    }
+    ++startPos;
+
+    const std::string text = line.substr(startPos, cursorPos.mColumn - startPos);
+
+
+    if (const std::vector<std::string> suggestions = core->codePathfinder.GetSuggestions(text);
+        DrawCodeSuggestionPopup(popupCompletionState.ShowPopup, suggestions,
+                                popupCompletionState.selectedSuggestion, {
+                                    editor.GetCursorScreenPosition().x + 20,
+                                    editor.GetCursorScreenPosition().y
+                                })) {
+        RemoveTextFromCurrentLine(editor, text);
+        editor.InsertText(popupCompletionState.selectedSuggestion);
+        popupCompletionState.selectedSuggestion.clear();
+    }
+}
+
 void LDDrift::GUI::EndRenderGUI() {
-    GLB_assert(ProjectWatchTower_PTR != nullptr)
     for (DefaultWindowsData& window : defaultWindows) {
         if (!window.Show || window.name.empty()) {
             continue;
@@ -1163,14 +1508,39 @@ void LDDrift::GUI::EndRenderGUI() {
         auto& editor = ImGuiEditorWindow.editorWindow;
 
 
+        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
+            LDDrift::input::Keyboard::IsKeyPressed(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_T)) {
+            popupCompletionState.ShowPopup = true;
+        }
+
+        ImGui::Text(
+            "Popup state: %s",
+            popupCompletionState.ShowPopup ? "OPEN" : "CLOSED"
+        );
+
+        PopupCompletionLogic();
+
+        editor.SetCodeSuggestionPopupOpen(popupCompletionState.IsOpenInBeforeFrame);
+
+
         editor.Render(
             "##Code",
             ImVec2(-1.0f, -1.0f),
             true
         );
 
+        popupCompletionState.IsOpenInBeforeFrame = false;
+
+        editor.SetCodeSuggestionPopupOpen(popupCompletionState.ShowPopup);
+
 
         ImGui::End();
+    }
+    if (popupCompletionState.ShowPopup) {
+        if (ImGuiWindow* popupWindow =
+            ImGui::FindWindowByName("##LD_CodeSuggestionPopup")) {
+            ImGui::BringWindowToDisplayFront(popupWindow);
+        }
     }
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

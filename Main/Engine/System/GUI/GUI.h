@@ -51,8 +51,36 @@ namespace LDDrift
      * @note This class uses ImGui for rendering the GUI. Ensure that ImGui is properly
      * initialized before creating an instance of this class.
      */
-    class GUI
+    class GUI final
     {
+    private: // editor window handing functions
+        bool DrawCodeSuggestionPopup(
+            bool& shouldOpen,
+            const std::vector<std::string>& suggestions,
+            std::string& selectedSuggestion,
+            ImVec2 position = ImVec2(-1.0f, -1.0f)
+        );
+
+        struct PopupCompletionState
+        {
+            bool ShowPopup = false;
+            bool WasOpen = false;
+
+            bool IsOpenInBeforeFrame = false;
+
+            int SelectedIndex = 0;
+
+            ImVec2 Position = ImVec2(0.0f, 0.0f);
+
+            std::string selectedSuggestion;
+        };
+
+        PopupCompletionState popupCompletionState;
+
+        static void TransformString(std::string& text);
+        static bool ValidChar(char c);
+        void PopupCompletionLogic();
+
     private:
         LDDrift::Core* core = nullptr;
 

@@ -2,7 +2,6 @@
 #define LUCID_DRIFT_CODE_PATHFINDER_H
 #include <string>
 #include <vector>
-#include <unordered_map>
 #include <unordered_set>
 #include <algorithm>
 #include <set>
@@ -12,18 +11,30 @@
 
 namespace LDDrift
 {
+    /**
+     * @class CodePathfinder
+     * @brief Provides suggestions based on the input code line.
+     *
+     * The CodePathfinder class is designed to analyze the input code line and suggest
+     * relevant keywords or snippets based on the content. It maintains a history of
+     * the last input and suggestions to optimize the suggestion process.
+     *
+     * @note This class is final and cannot be inherited.
+     */
     class CodePathfinder final
     {
     private:
-        std::string lastQuery;
-        bool hasCachedQuery = false;
+        std::string lastLineInput = NULL_STRING;
         std::vector<std::string> lastSuggestions;
-        std::vector<std::string> KeyWords;
+
+        std::vector<std::string> LDDrift_keyWords;
+        std::vector<std::string> std_keyWords;
+
     public:
         CodePathfinder();
         ~CodePathfinder();
         void initializeCodePathfinder();
-        std::vector<std::string> GetCodeSuggestions(const std::string& CodeSuggestion);
+        std::vector<std::string> GetSuggestions(const std::string& inputLineText);
     };
 } // LDDrift
 

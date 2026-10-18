@@ -44,11 +44,11 @@ void LDDrift::ProjectWatchTower::CreateCmakeListsTxtFile() const {
     std::filesystem::path executablePath = LDDrift::func::GetExecutablePath();
     executablePath = (executablePath.parent_path().parent_path()) / "Main";
     std::string initMainFile =
-        "#include <iostream>\n#include <EngineAPI.h>\n\n#if defined (_WIN32)\n    #define LUCID_DRIFT_GAME_EXPORT __declspec(dllexport)\n"
-        "#else\n    #define LUCID_DRIFT_GAME_EXPORT __attribute__((visibility(\"default\")))\n#endif\n\n"
-        "extern \"C\" {\n    LUCID_DRIFT_GAME_EXPORT void BeginPlay() {}\n\n"
-        "    LUCID_DRIFT_GAME_EXPORT void Tick(float deltaTime) {}\n\n"
-        "    LUCID_DRIFT_GAME_EXPORT void EndPlay() {}\n}";
+        "#include <iostream>\n#include <EngineAPI.h>\n\n#if defined (_WIN32)\n\t#define LUCID_DRIFT_GAME_EXPORT __declspec(dllexport)\n"
+        "#else\n\t#define LUCID_DRIFT_GAME_EXPORT __attribute__((visibility(\"default\")))\n#endif\n\n"
+        "extern \"C\" {\n\tLUCID_DRIFT_GAME_EXPORT void BeginPlay() {}\n\n"
+        "\tLUCID_DRIFT_GAME_EXPORT void Tick(float deltaTime) {}\n\n"
+        "\tLUCID_DRIFT_GAME_EXPORT void EndPlay() {}\n}";
     std::ofstream mainFile((projectPath / "main.cpp").string());
     mainFile << initMainFile;
     std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)

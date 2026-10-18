@@ -21,7 +21,11 @@ void LDDrift::Core::InitCore() {
     gui.SetProjectWatchTower_PTR(&projectWatchTower);
     LDDrift::input::Keyboard::Init();
     LDDrift::input::Mouse::Init();
-    LDDrift::input::Keyboard::SetKeyTarget({LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC});
+    LDDrift::input::Keyboard::SetKeyTarget({
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_T
+    });
     gui.SetCorePTR(this);
     LDDrift::func::InitDeltaTime();
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
@@ -41,6 +45,8 @@ void LDDrift::Core::EngineHandler() {
     projectWatchTower.SetPaths();
     LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
     while (window.ScreenIsOpen() && engineRun) {
+        LDDrift::input::Keyboard::GetKeyInputEvent();
+        LDDrift::input::Mouse::GetMouseInputEvent();
         LDDrift::GUI::BeginRenderGUI();
         window.ClearBuffer();
         render.render();
@@ -51,21 +57,21 @@ void LDDrift::Core::EngineHandler() {
         }
         gui.EndRenderGUI();
         window.Update();
+        LDDrift::input::Keyboard::Update();
+        LDDrift::input::Mouse::Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
         if (gui.runGame) {
             LDDrift::EngineAPI::beginPlay();
             while (gui.runGame) {
-                LDDrift::input::Keyboard::GetKeyInputEvent();
-                LDDrift::input::Mouse::GetMouseInputEvent();
                 LDDrift::GUI::BeginRenderGUI();
                 window.ClearBuffer();
                 render.render();
+                if (LDDrift::input::Keyboard::IsKeyPressed(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_T)) {
+                    std::cout << "t is pressed" << std::endl;
+                }
                 LDDrift::EngineAPI::tick(LDDrift::func::GetDeltaTime());
                 gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
                 gui.UpdateWindow("Project Watch Tower");
-                for (const auto& path : projectWatchTower.GetPaths()) {
-                    gui.SetTextForWindow("Project Watch Tower", path.string(), false);
-                }
                 gui.EndRenderGUI();
                 window.Update();
                 LDDrift::input::Keyboard::Update();
