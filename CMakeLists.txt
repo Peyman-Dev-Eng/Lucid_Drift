@@ -1,7 +1,7 @@
 if(WIN32)
-cmake_minimum_required(VERSION 3.24)
+    cmake_minimum_required(VERSION 3.24)
 else()
-cmake_minimum_required(VERSION 4.3)
+    cmake_minimum_required(VERSION 4.3)
 endif()
 
 project(Lucid_Drift CXX C)
