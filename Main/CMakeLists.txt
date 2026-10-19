@@ -1,4 +1,4 @@
-if(linux)
+
 set(LUCID_DRIFT_ROOT
         ${CMAKE_CURRENT_LIST_DIR}/..
 )
@@ -390,4 +390,3 @@ target_sources(GUI PRIVATE
 target_link_libraries(GUI PRIVATE
         nlohmann_json::nlohmann_json
 )
-endif()
