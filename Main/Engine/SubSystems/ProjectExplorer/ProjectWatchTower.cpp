@@ -213,7 +213,7 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
 }
 
 void LDDrift::ProjectWatchTower::WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const {
-    NPV_assert(text != nullptr);
+    NPV_assert(text);
     std::ofstream out(fileName.string());
     out.seekp(std::ios::beg);
     out.write(text, static_cast<std::streamsize>(strlen(text)));

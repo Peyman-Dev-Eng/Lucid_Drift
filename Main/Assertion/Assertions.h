@@ -33,7 +33,7 @@ namespace LDDrift::Assertions
     cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, msg);
 
 // null pointer value assert
-#define NPV_assert(cond) \
-    cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "pointer is null" );
+#define NPV_assert(pointer) \
+    pointer != nullptr ? (void)0 : LDDrift::Assertions::PrintLog(#pointer, __FILE__, __LINE__, __func__, "pointer is null" );
 
 #endif

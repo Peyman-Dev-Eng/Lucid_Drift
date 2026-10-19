@@ -16,62 +16,13 @@ namespace LDDrift
 
     private: // functions
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {
-            std::cout << "Concave Shape" << std::endl;
-            const std::size_t shapePointNumber = shape->GetPointCount();
-            std::vector<std::size_t> targetNumberOfPoints;
-            for (std::size_t point = 0; point < shapePointNumber; ++point) {
-                targetNumberOfPoints.push_back(point);
+            std::size_t pointCountOfShape = shape->GetPointCount();
+            if (pointCountOfShape < 3) {
+                throw std::runtime_error("this shape is not available");
             }
-            std::size_t counter = 0;
-            while (targetNumberOfPoints.size() != 3 && counter != UPPER_BOUND) {
-                constexpr std::size_t pointNumber = 0;
-                const LDDrift::VecPos2D& pointA = shape->GetNDC_Point(targetNumberOfPoints[pointNumber]);
-                const LDDrift::VecPos2D& pointB = shape->GetNDC_Point(targetNumberOfPoints[pointNumber + 1]);
-                const LDDrift::VecPos2D& pointC = shape->GetNDC_Point(targetNumberOfPoints[pointNumber + 2]);
-                const float cross =
-                    (pointB.X - pointA.X) * (pointC.Y - pointB.Y)
-                    - (pointB.Y - pointA.Y) * (pointC.X - pointA.X);
-                if (const bool isConvexCorner = cross * shape->ShapeIsConvex().pointDirection > 0.0f; !isConvexCorner) {
-                    ++counter;
-                    continue;
-                }
-                bool notFoundPointInTriangle = true;
-                for (std::size_t point = 0; point < shapePointNumber; ++point) {
-                    if (point == pointNumber || point == (pointNumber + 1) % shapePointNumber ||
-                        point == (pointNumber + 2) % shapePointNumber) { // رد کردن نقطه هایی که با انها مثلث ساختیم
-                        continue;
-                    }
-                    if (LDDrift::PointHitTesting::pointHitTesting(shape->GetNDC_Point(point),
-                                                                  std::vector<LDDrift::VecPos2D>{
-                                                                      pointA, pointB, pointC
-                                                                  })) {
-                        notFoundPointInTriangle = false;
-                        break;
-                    }
-                }
-                if (notFoundPointInTriangle) {
-                    vertices.push_back(pointA.X);
-                    vertices.push_back(pointA.Y);
-                    vertices.push_back(0.0f);
-                    vertices.push_back(pointB.X);
-                    vertices.push_back(pointB.Y);
-                    vertices.push_back(0.0f);
-                    vertices.push_back(pointC.X);
-                    vertices.push_back(pointC.Y);
-                    vertices.push_back(0.0f);
-                    targetNumberOfPoints.erase(targetNumberOfPoints.begin() + 1);
-                }
-                ++counter;
+            for (std::size_t pointIndex = 0; pointIndex < pointCountOfShape; ++pointIndex) {
+
             }
-            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[0]).X);
-            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[0]).Y);
-            vertices.push_back(0.0f);
-            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[1]).X);
-            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[1]).Y);
-            vertices.push_back(0.0f);
-            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[2]).X);
-            vertices.push_back(shape->GetNDC_Point(targetNumberOfPoints[2]).Y);
-            vertices.push_back(0.0f);
         }
 
         void TrianglesForConvexShape(std::vector<float>& vertices) const {
@@ -109,7 +60,7 @@ namespace LDDrift
         }
 
         void SetShapeTarget(LDDrift::Actors::Shape* shapePTR) {
-            NPV_assert(shapePTR != nullptr);
+            NPV_assert(shapePTR);
             shape = shapePTR;
         }
 
@@ -138,7 +89,11 @@ namespace LDDrift
                 return vertices;
             } else if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::concave>) {
                 std::vector<float> vertices;
-                this->TrianglesForConcaveShape(vertices);
+                try {
+                    this->TrianglesForConcaveShape(vertices);
+                } catch (const std::runtime_error& e) {
+                    std::cout << "Error: " << e.what() << std::endl;
+                }
                 return vertices;
             } else {
                 std::cerr << RED <<

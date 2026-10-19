@@ -468,7 +468,7 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
 }
 
 void LDDrift::GUI::SetCorePTR(LDDrift::Core* corePTR) {
-    NPV_assert(corePTR != nullptr)
+    NPV_assert(corePTR)
     core = corePTR;
 }
 
@@ -490,19 +490,19 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
     ImGui::Separator();
     if (ImGui::Button("Circle")) {
         DefaultWindowsData* circleConfigureWindow = GetWindowPTR(CIRCLE_CONFIGURE_WINDOW_NAME);
-        NPV_assert(circleConfigureWindow != nullptr);
+        NPV_assert(circleConfigureWindow);
         circleConfigureWindow->Show = true;
     }
     ImGui::SameLine();
     if (ImGui::Button("Polygon")) {
         DefaultWindowsData* polygonConfigureWindow = GetWindowPTR(POLYGON_CONFIGURE_WINDOW_NAME);
-        NPV_assert(polygonConfigureWindow != nullptr);
+        NPV_assert(polygonConfigureWindow);
         polygonConfigureWindow->Show = true;
     }
     ImGui::SameLine();
     if (ImGui::Button("Line")) {
         DefaultWindowsData* lineConfigureWindow = GetWindowPTR(LINE_CONFIGURE_WINDOW_NAME);
-        NPV_assert(lineConfigureWindow != nullptr);
+        NPV_assert(lineConfigureWindow);
         lineConfigureWindow->Show = true;
     }
     ImGui::Separator();
@@ -1118,9 +1118,9 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
             }
         }
     };
-    ImGui::RadioButton("##Create New Polygon", &radioButton, 0);
+    ImGui::RadioButton("Create##Create New Polygon", &radioButton, 0);
     ImGui::SameLine();
-    ImGui::RadioButton("##Configure Polygon", &radioButton, 1);
+    ImGui::RadioButton("Configure##Configure Polygon", &radioButton, 1);
 
     if (radioButton == 0) {
         ImGui::TextUnformatted("window: create new polygon");
@@ -1136,9 +1136,9 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         }
         polygonActorPointCount = std::clamp(polygonActorPointCount, 3, 100);
         ImGui::Separator(); // END --- point count of polygon
-        ImGui::RadioButton("##fill shape (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 0);
+        ImGui::RadioButton("fill shape with##fill shape (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 0);
         ImGui::SameLine();
-        ImGui::RadioButton("##each vertex have a color (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 1);
+        ImGui::RadioButton("set color for any vertexes##each vertex have a color (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 1);
         if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
             ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
             ImGui::SameLine();
@@ -1192,7 +1192,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                 ImGui::Text("point %s ( RED ): ", std::to_string(pointIndex).c_str());
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(120);
-                ImGui::InputFloat("##Polygon red Color Value %s (001)", &pointColors[pointIndex].R, 0.005, 0.005, "%.3f");
+                ImGui::InputFloat("##Polygon red Color Value %s (001)", &pointColors[pointIndex].R, 0.005, 0.005,
+                                  "%.3f");
                 if (pointColors[pointIndex].R > 1) {
                     pointColors[pointIndex].R = 1;
                 }
@@ -1214,7 +1215,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                 ImGui::Text("point %s ( GREEN ): ", std::to_string(pointIndex).c_str());
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(120);
-                ImGui::InputFloat("##Polygon green Color Value (001)", &pointColors[pointIndex].G, 0.005, 0.005, "%.3f");
+                ImGui::InputFloat("##Polygon green Color Value (001)", &pointColors[pointIndex].G, 0.005, 0.005,
+                                  "%.3f");
                 if (pointColors[pointIndex].G > 1) {
                     pointColors[pointIndex].G = 1;
                 }
@@ -1225,7 +1227,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                 ImGui::Text("point %s ( ALPHA ): ", std::to_string(pointIndex).c_str());
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(120);
-                ImGui::InputFloat("##Polygon alpha Color Value (001)", &pointColors[pointIndex].A, 0.005, 0.005, "%.3f");
+                ImGui::InputFloat("##Polygon alpha Color Value (001)", &pointColors[pointIndex].A, 0.005, 0.005,
+                                  "%.3f");
                 if (pointColors[pointIndex].A > 1) {
                     pointColors[pointIndex].A = 1;
                 }
@@ -1574,7 +1577,7 @@ void LDDrift::GUI::EndRenderGUI() {
         ImGui::Begin(ImGuiEditorWindow.name.c_str());
 
         if (ImGui::Button("Save")) {
-            NPV_assert(ProjectWatchTower_PTR != nullptr);
+            NPV_assert(ProjectWatchTower_PTR);
 
             const std::string sourceCode =
                 ImGuiEditorWindow.editorWindow.GetText();

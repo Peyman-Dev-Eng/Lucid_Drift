@@ -18,17 +18,17 @@ LDDrift::Scene::~Scene() {
 }
 
 void LDDrift::Scene::SetCorePTR(LDDrift::Core* corePtr) {
-    NPV_assert(corePtr != nullptr);
+    NPV_assert(corePtr);
     core = corePtr;
 }
 
 void LDDrift::Scene::SetRendererPTR(LDDrift::Renderer* rendererPTR) {
-    NPV_assert(rendererPTR != nullptr);
+    NPV_assert(rendererPTR);
     renderer = rendererPTR;
 }
 
 void LDDrift::Scene::SendShapesToRender() {
-    NPV_assert(renderer != nullptr)
+    NPV_assert(renderer)
 
     for (auto& [circleName, circle] : circleShapes) {
         renderer->AddShapeToRender(circle);
