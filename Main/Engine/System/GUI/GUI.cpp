@@ -1,5 +1,7 @@
 #include "GUI.h"
 #include <GuiLogic.h>
+#include <oneapi/tbb/parallel_reduce.h>
+
 #include "System/Core/Core.h"
 
 static bool RemoveTextFromCurrentLine(
@@ -1088,6 +1090,16 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     if (window->name != POLYGON_CONFIGURE_WINDOW_NAME) {
         return;
     }
+    // 0 = fill color with one color value
+    // for example: filled shape with ( red color ) or ( blue color ) or ...
+    // 1 = Each vertex has its own color value.
+    /*
+     *  for example:
+     *      point shape of number 0 -> is red
+     *      point shape of number 1 -> is blue
+     *      and ...
+     */
+    static int fillColorWithOneColorOrEachVertexHaveAColor = 0;
     static int radioButton = 0;
     static int polygonActorPointCount = 3;
     static float polygonActorRedColor = 0;
@@ -1095,6 +1107,17 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     static float polygonActorBlueColor = 0;
     static float polygonActorAlpha = 1;
     static int polygonActorSpeed = 1;
+    static std::vector<LDDrift::VecCol> pointColors;
+    const auto initPointColor = []()
+    {
+        if (pointColors.empty() || pointColors.size() != polygonActorPointCount) {
+            pointColors.clear();
+            pointColors.resize(polygonActorPointCount);
+            for (std::size_t i = 0; i < polygonActorPointCount; ++i) {
+                pointColors[i] = {0.0f, 0.0f, 0.0f, 1.0f};
+            }
+        }
+    };
     ImGui::RadioButton("##Create New Polygon", &radioButton, 0);
     ImGui::SameLine();
     ImGui::RadioButton("##Configure Polygon", &radioButton, 1);
@@ -1102,61 +1125,117 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     if (radioButton == 0) {
         ImGui::TextUnformatted("window: create new polygon");
         ImGui::SetNextItemWidth(300);
-        ImGui::InputTextWithHint("##Polygone Name", "Enter Polygon Actor Name:", window->searchBuffer,
+        ImGui::InputTextWithHint("##Polygone Name (00)", "Enter Polygon Actor Name:", window->searchBuffer,
                                  sizeof(window->searchBuffer));
         ImGui::TextUnformatted("Polygon Point Count: "); // START --- point count of Polygon
         ImGui::SameLine();
         ImGui::SetNextItemWidth(145);
-        ImGui::InputInt("##Polygon Point Count", &polygonActorPointCount, 1, 1);
+        ImGui::InputInt("##Polygon Point Count (00)", &polygonActorPointCount, 1, 1);
         if (polygonActorPointCount < 3) {
             polygonActorPointCount = 3;
         }
         polygonActorPointCount = std::clamp(polygonActorPointCount, 3, 100);
         ImGui::Separator(); // END --- point count of polygon
-        ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
+        ImGui::RadioButton("##fill shape (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 0);
         ImGui::SameLine();
-        ImGui::SetNextItemWidth(120);
-        ImGui::InputFloat("##polygon Red Color value", &polygonActorRedColor, 0.005, 0.005, "%.3f");
-        if (polygonActorRedColor > 1) {
-            polygonActorRedColor = 1;
+        ImGui::RadioButton("##each vertex have a color (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 1);
+        if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
+            ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(120);
+            ImGui::InputFloat("##polygon Red Color value (00)", &polygonActorRedColor, 0.005, 0.005, "%.3f");
+            if (polygonActorRedColor > 1) {
+                polygonActorRedColor = 1;
+            }
+            if (polygonActorRedColor < 0) {
+                polygonActorRedColor = 0;
+            }
+            ImGui::SameLine(); // END --- Red Color Of Polygon
+            ImGui::TextUnformatted("Green: "); // START --- Green Color Of Polygon
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(120);
+            ImGui::InputFloat("##Polygon Green Color Value", &polygonActorGreenColor, 0.005, 0.005, "%.3f");
+            if (polygonActorGreenColor > 1) {
+                polygonActorGreenColor = 1;
+            }
+            if (polygonActorGreenColor < 0) {
+                polygonActorGreenColor = 0;
+            }
+            ImGui::SameLine(); // END --- Green Color Of Polygon
+            ImGui::TextUnformatted("Blue: "); // START --- Blue Color Of Polygon
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(120);
+            ImGui::InputFloat("##Polygon Blue Color Value (00)", &polygonActorBlueColor, 0.005, 0.005, "%.3f");
+            if (polygonActorBlueColor > 1) {
+                polygonActorBlueColor = 1;
+            }
+            if (polygonActorBlueColor < 0) {
+                polygonActorBlueColor = 0;
+            }
+            ImGui::SameLine(); // END --- Blue Color Of Polygon
+            ImGui::TextUnformatted("Alpha: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(120);
+            ImGui::InputFloat("##Polygon Alpha Color Value (00)", &polygonActorAlpha, 0.005, 0.005, "%.3f");
+            if (polygonActorAlpha > 1) {
+                polygonActorAlpha = 1;
+            }
+            if (polygonActorAlpha < 0) {
+                polygonActorAlpha = 0;
+            }
+            ImGui::Separator();
         }
-        if (polygonActorRedColor < 0) {
-            polygonActorRedColor = 0;
+        if (fillColorWithOneColorOrEachVertexHaveAColor == 1) {
+            initPointColor();
+            for (std::size_t pointIndex = 0; pointIndex < polygonActorPointCount; ++pointIndex) {
+                ImGui::PushID(static_cast<int>(pointIndex));
+                ImGui::Text("point %s ( RED ): ", std::to_string(pointIndex).c_str());
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Polygon red Color Value %s (001)", &pointColors[pointIndex].R, 0.005, 0.005, "%.3f");
+                if (pointColors[pointIndex].R > 1) {
+                    pointColors[pointIndex].R = 1;
+                }
+                if (pointColors[pointIndex].R < 0) {
+                    pointColors[pointIndex].R = 0;
+                }
+                ImGui::SameLine();
+                ImGui::Text("point %s ( BLUE ): ", std::to_string(pointIndex).c_str());
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Polygon blue Color Value (001)", &pointColors[pointIndex].B, 0.005, 0.005, "%.3f");
+                if (pointColors[pointIndex].B > 1) {
+                    pointColors[pointIndex].B = 1;
+                }
+                if (pointColors[pointIndex].B < 0) {
+                    pointColors[pointIndex].B = 0;
+                }
+                ImGui::SameLine();
+                ImGui::Text("point %s ( GREEN ): ", std::to_string(pointIndex).c_str());
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Polygon green Color Value (001)", &pointColors[pointIndex].G, 0.005, 0.005, "%.3f");
+                if (pointColors[pointIndex].G > 1) {
+                    pointColors[pointIndex].G = 1;
+                }
+                if (pointColors[pointIndex].G < 0) {
+                    pointColors[pointIndex].G = 0;
+                }
+                ImGui::SameLine();
+                ImGui::Text("point %s ( ALPHA ): ", std::to_string(pointIndex).c_str());
+                ImGui::SameLine();
+                ImGui::SetNextItemWidth(120);
+                ImGui::InputFloat("##Polygon alpha Color Value (001)", &pointColors[pointIndex].A, 0.005, 0.005, "%.3f");
+                if (pointColors[pointIndex].A > 1) {
+                    pointColors[pointIndex].A = 1;
+                }
+                if (pointColors[pointIndex].A < 0) {
+                    pointColors[pointIndex].A = 0;
+                }
+                ImGui::Separator();
+                ImGui::PopID();
+            }
         }
-        ImGui::SameLine(); // END --- Red Color Of Polygon
-        ImGui::TextUnformatted("Green: "); // START --- Green Color Of Polygon
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(120);
-        ImGui::InputFloat("##Polygon Green Color Value", &polygonActorGreenColor, 0.005, 0.005, "%.3f");
-        if (polygonActorGreenColor > 1) {
-            polygonActorGreenColor = 1;
-        }
-        if (polygonActorGreenColor < 0) {
-            polygonActorGreenColor = 0;
-        }
-        ImGui::SameLine(); // END --- Green Color Of Polygon
-        ImGui::TextUnformatted("Blue: "); // START --- Blue Color Of Polygon
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(120);
-        ImGui::InputFloat("##Polygon Blue Color Value", &polygonActorBlueColor, 0.005, 0.005, "%.3f");
-        if (polygonActorBlueColor > 1) {
-            polygonActorBlueColor = 1;
-        }
-        if (polygonActorBlueColor < 0) {
-            polygonActorBlueColor = 0;
-        }
-        ImGui::SameLine(); // END --- Blue Color Of Polygon
-        ImGui::TextUnformatted("Alpha: ");
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(120);
-        ImGui::InputFloat("##Polygon Alpha Color Value", &polygonActorAlpha, 0.005, 0.005, "%.3f");
-        if (polygonActorAlpha > 1) {
-            polygonActorAlpha = 1;
-        }
-        if (polygonActorAlpha < 0) {
-            polygonActorAlpha = 0;
-        }
-        ImGui::Separator();
         ImGui::TextUnformatted("Polygon Speed Value: "); // START --- speed of polygon
         ImGui::SameLine();
         ImGui::SetNextItemWidth(555);
@@ -1184,13 +1263,22 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         }
 
         if (ImGui::Button("Create")) {
-            core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount, polygonActorSpeed,
-                                           pointPositions.data(), {
-                                               polygonActorRedColor, polygonActorGreenColor, polygonActorBlueColor,
-                                               polygonActorAlpha
-                                           });
-            core->scene.SendShapesToRender();
-            window->Show = false;
+            if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
+                core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                                               polygonActorSpeed,
+                                               pointPositions.data(), {
+                                                   polygonActorRedColor, polygonActorGreenColor, polygonActorBlueColor,
+                                                   polygonActorAlpha
+                                               });
+                core->scene.SendShapesToRender();
+                window->Show = false;
+            } else if (fillColorWithOneColorOrEachVertexHaveAColor == 1) {
+                core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                                               polygonActorSpeed,
+                                               pointPositions.data(), pointColors);
+                core->scene.SendShapesToRender();
+                window->Show = false;
+            }
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {

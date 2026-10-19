@@ -54,11 +54,8 @@ namespace LDDrift
     class GUI final
     {
     private: // editor window handing functions
-        bool DrawCodeSuggestionPopup(
-            bool& shouldOpen,
-            const std::vector<std::string>& suggestions,
-            std::string& selectedSuggestion,
-            ImVec2 position = ImVec2(-1.0f, -1.0f)
+        bool DrawCodeSuggestionPopup(bool& shouldOpen, const std::vector<std::string>& suggestions,
+                                     std::string& selectedSuggestion, ImVec2 position = ImVec2(-1.0f, -1.0f)
         );
 
         struct PopupCompletionState

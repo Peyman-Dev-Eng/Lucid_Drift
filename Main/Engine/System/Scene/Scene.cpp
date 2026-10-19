@@ -93,7 +93,8 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
 }
 
-void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickness, const int* startPos, const int* endPos,
+void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickness, const int* startPos,
+                                     const int* endPos,
                                      const LDDrift::VecCol& color) {
     const LINE_ACTOR_INFORMATION newLine{
         .lineName = name, .line = new LDDrift::Actors::Line(
@@ -141,4 +142,23 @@ bool LDDrift::Scene::FindLineWithName(const std::string& name) const {
         }
     }
     return false;
+}
+
+void LDDrift::Scene::CreatePolygonShape(const std::string& name, int _pointCount, int _speed, const int* pos,
+                                        const std::vector<LDDrift::VecCol>& colors) {
+    const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
+    newPolygon.polygon->SetPointCount(_pointCount);
+    newPolygon.polygon->SetScreenSize(core->window.GetViewportSize());
+    newPolygon.polygon->SetSpeed(static_cast<float>(_speed));
+    int counter = 0;
+    for (const LDDrift::VecCol& color : colors) {
+        newPolygon.polygon->SetPointColor(counter++, color);
+    }
+    for (int pointIndex = 0; pointIndex < _pointCount; ++pointIndex) {
+        newPolygon.polygon->SetPoint(pointIndex, {
+                                         static_cast<float>(pos[pointIndex * 2]),
+                                         static_cast<float>(pos[pointIndex * 2 + 1])
+                                     });
+    }
+    polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
 }

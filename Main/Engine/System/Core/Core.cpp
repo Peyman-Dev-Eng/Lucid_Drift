@@ -42,6 +42,7 @@ void LDDrift::Core::Begin() {
 }
 
 void LDDrift::Core::EngineHandler() {
+    using namespace std::chrono_literals;
     projectWatchTower.SetPaths();
     LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
     while (window.ScreenIsOpen() && engineRun) {
