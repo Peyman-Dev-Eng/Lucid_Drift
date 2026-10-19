@@ -108,8 +108,6 @@ target_include_directories(FUNCTIONS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Functions
 )
 
-target_link_libraries(FUNCTIONS PUBLIC)
-
 # ============================================================================
 # GUI LOGIC
 # ============================================================================
@@ -163,7 +161,7 @@ add_library(TRM STATIC
 target_include_directories(TRM PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/Transform
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine
-        ${PROJECT_SOURCE_DIR}/glad/include
+        ${LUCID_DRIFT_ROOT}/glad/include
 )
 
 target_link_libraries(TRM PUBLIC
