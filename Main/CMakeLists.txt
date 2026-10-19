@@ -108,8 +108,6 @@ target_include_directories(FUNCTIONS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/Functions
 )
 
-target_link_libraries(FUNCTIONS PUBLIC)
-
 # ============================================================================
 # GUI LOGIC
 # ============================================================================
@@ -163,7 +161,7 @@ add_library(TRM STATIC
 target_include_directories(TRM PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/Transform
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine
-        ${PROJECT_SOURCE_DIR}/glad/include
+        ${LUCID_DRIFT_ROOT}/glad/include
 )
 
 target_link_libraries(TRM PUBLIC
@@ -238,11 +236,46 @@ target_include_directories(CODE_PATHFINDER PUBLIC
 # ============================================================================
 
 
-find_package(glfw3 REQUIRED)
+if(WIN32)
+    include(FetchContent)
 
-find_package(fmt REQUIRED)
+    # --- GLFW ---
+    find_package(glfw3 QUIET)
+    if(NOT glfw3_FOUND)
+        FetchContent_Declare(glfw
+            GIT_REPOSITORY https://github.com/glfw/glfw.git
+            GIT_TAG        3.4
+        )
+        set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+        FetchContent_MakeAvailable(glfw)
+    endif()
 
-find_package(nlohmann_json CONFIG REQUIRED)
+    # --- fmt ---
+    find_package(fmt QUIET)
+    if(NOT fmt_FOUND)
+        FetchContent_Declare(fmt
+            GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+            GIT_TAG        11.0.2
+        )
+        FetchContent_MakeAvailable(fmt)
+    endif()
+
+    # --- nlohmann_json ---
+    find_package(nlohmann_json QUIET)
+    if(NOT nlohmann_json_FOUND)
+        FetchContent_Declare(nlohmann_json
+            GIT_REPOSITORY https://github.com/nlohmann/json.git
+            GIT_TAG        v3.11.3
+        )
+        FetchContent_MakeAvailable(nlohmann_json)
+    endif()
+else()
+    find_package(glfw3 REQUIRED)
+    find_package(fmt REQUIRED)
+    find_package(nlohmann_json CONFIG REQUIRED)
+endif()
 
 add_library(Engine SHARED
 
@@ -340,6 +373,9 @@ target_link_libraries(Engine PUBLIC
         CODE_PATHFINDER
 )
 
+if(WIN32)
+    target_link_libraries(Engine PUBLIC opengl32)
+endif()
 
 target_include_directories(GUI PUBLIC
         "${IMGUI_COLOR_TEXT_EDITOR_DIR}"
