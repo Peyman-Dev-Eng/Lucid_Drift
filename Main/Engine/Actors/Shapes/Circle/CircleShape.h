@@ -1,5 +1,5 @@
-#ifndef LUCID_DRIFT_CIRCLESHAPE_H
-#define LUCID_DRIFT_CIRCLESHAPE_H
+#ifndef LUCID_DRIFT_CIRCLE_SHAPE_H
+#define LUCID_DRIFT_CIRCLE_SHAPE_H
 #include "../MainShape/Shape.h"
 
 namespace LDDrift::Actors
