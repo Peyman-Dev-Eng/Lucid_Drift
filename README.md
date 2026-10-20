@@ -1,6 +1,8 @@
 <div align="center">
-**Lucid Drift — A free flow of imagination, with the clarity to create your own world.**
+    
 # 🌊 Lucid Drift
+
+**Lucid Drift — A free flow of imagination, with the clarity to create your own world.**
 
 **A lucid exploration of modern C++ game engine design.**
 
