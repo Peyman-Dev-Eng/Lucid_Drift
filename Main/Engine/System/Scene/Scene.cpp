@@ -27,7 +27,7 @@ void LDDrift::Scene::SetRendererPTR(LDDrift::Renderer* rendererPTR) {
     renderer = rendererPTR;
 }
 
-void LDDrift::Scene::SendShapesToRender() {
+void LDDrift::Scene::ReSendShapesToRender() {
     NPV_assert(renderer)
 
     for (auto& [circleName, circle] : circleShapes) {
@@ -65,6 +65,7 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
     newCircle.circle->SetOriginalPositionToCenter();
     newCircle.circle->Rebuild();
     circleShapes.push_back({.circleName = newCircle.circleName, .circle = newCircle.circle});
+    renderer->AddShapeToRender(newCircle.circle);
 }
 
 LDDrift::Actors::Polygon* LDDrift::Scene::GetPolygon(const std::string& name) const {
@@ -91,6 +92,7 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                      });
     }
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
+    renderer->AddShapeToRender(newPolygon.polygon);
 }
 
 void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickness, const int* startPos,
@@ -106,6 +108,7 @@ void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickne
     newLine.line->SetLineColor(color);
     newLine.line->CreateTriangles();
     lines.push_back({.lineName = newLine.lineName, .line = newLine.line});
+    renderer->AddLineToRender(newLine.line);
 }
 
 LDDrift::Actors::Line* LDDrift::Scene::GetLine(const std::string& name) const {
@@ -161,4 +164,5 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, int _pointCount
                                      });
     }
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
+    renderer->AddShapeToRender(newPolygon.polygon);
 }

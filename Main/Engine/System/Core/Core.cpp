@@ -50,6 +50,7 @@ void LDDrift::Core::EngineHandler() {
         LDDrift::input::Mouse::GetMouseInputEvent();
         LDDrift::GUI::BeginRenderGUI();
         window.ClearBuffer();
+        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A))
         render.render();
         gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
         gui.UpdateWindow("Project Watch Tower");
@@ -64,12 +65,11 @@ void LDDrift::Core::EngineHandler() {
         if (gui.runGame) {
             LDDrift::EngineAPI::beginPlay();
             while (gui.runGame) {
+                LDDrift::input::Keyboard::GetKeyInputEvent();
+                LDDrift::input::Mouse::GetMouseInputEvent();
                 LDDrift::GUI::BeginRenderGUI();
                 window.ClearBuffer();
                 render.render();
-                if (LDDrift::input::Keyboard::IsKeyPressed(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_T)) {
-                    std::cout << "t is pressed" << std::endl;
-                }
                 LDDrift::EngineAPI::tick(LDDrift::func::GetDeltaTime());
                 gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
                 gui.UpdateWindow("Project Watch Tower");

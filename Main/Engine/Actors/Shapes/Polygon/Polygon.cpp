@@ -18,8 +18,24 @@ void LDDrift::Actors::Polygon::Rebuild() {
     this->SetOriginalPosition(this->CalculateAveragePointPosition());
 }
 
-void LDDrift::Actors::Polygon::Rebuild(int width, int height) {
+void LDDrift::Actors::Polygon::Rebuild(const int width, const int height) {
     this->SetScreenSize({static_cast<float>(width), static_cast<float>(height)});
+}
+
+void LDDrift::Actors::Polygon::Move(const Dir direction) {
+    if (direction == Dir::UP) {
+        this->MoveUp();
+        return;
+    } else if (direction == Dir::DOWN) {
+        this->MoveDown();
+        return;
+    } else if (direction == Dir::LEFT) {
+        this->MoveLeft();
+        return;
+    } else if (direction == Dir::RIGHT) {
+        this->MoveRight();
+        return;
+    }
 }
 
 LDDrift::Actors::Polygon::~Polygon() = default;

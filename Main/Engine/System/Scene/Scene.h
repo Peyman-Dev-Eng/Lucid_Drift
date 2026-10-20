@@ -46,7 +46,7 @@ namespace LDDrift
         Scene();
         void SetCorePTR(LDDrift::Core* corePtr);
         void SetRendererPTR(LDDrift::Renderer* rendererPTR);
-        void SendShapesToRender();
+        void ReSendShapesToRender();
         [[nodiscard]] bool FindCircleWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Circle* GetCircle(const std::string& name) const;
         void CreateCircleShape(const std::string& name,

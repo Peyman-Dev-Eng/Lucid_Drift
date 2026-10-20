@@ -15,13 +15,54 @@ namespace LDDrift
         LDDrift::Actors::Shape* shape;
 
     private: // functions
+
+        static float Cross(const VecPos2D& a, const VecPos2D& b, const VecPos2D& c) {
+            return (b.X - a.X) * (c.Y - a.Y) -
+                   (b.Y - a.Y) * (c.X - a.X);
+        }
+
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {
-            std::size_t pointCountOfShape = shape->GetPointCount();
+            const std::vector<LDDrift::VecPos2D> points = shape->GetNDC_Points();
+            const std::size_t pointCountOfShape = shape->GetPointCount();
             if (pointCountOfShape < 3) {
                 throw std::runtime_error("this shape is not available");
             }
-            for (std::size_t pointIndex = 0; pointIndex < pointCountOfShape; ++pointIndex) {
+            for (std::size_t pointINdex = 0; pointINdex < pointCountOfShape; ++pointINdex) {
+                const std::size_t point_A_number = pointINdex == 0 ? pointCountOfShape - 1 : pointINdex - 1;
+                const std::size_t point_B_number = pointINdex;
+                const std::size_t point_C_number = (pointINdex + 1) % pointCountOfShape;
 
+                const LDDrift::VecPos2D& point_A = points[point_A_number];
+                const LDDrift::VecPos2D& point_B = points[point_B_number];
+                const LDDrift::VecPos2D& point_C = points[point_C_number];
+
+                if (Cross(point_A, point_B, point_C) <= 0.0f) {
+                    continue;
+                }
+                bool isEar = true;
+                for (std::size_t point = 0; point < pointCountOfShape; ++point) {
+                    if (point == point_A_number || point == point_B_number || point == point_C_number) {
+                        continue;
+                    }
+                    if (LDDrift::PointHitTesting::pointHitTesting(points[point],
+                                                                  std::vector<LDDrift::VecPos2D>{
+                                                                      point_A, point_B, point_C
+                                                                  })) {
+                        isEar = false;
+                        break;
+                    }
+                }
+                if (isEar) {
+                    vertices.push_back(point_A.X);
+                    vertices.push_back(point_A.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(point_B.X);
+                    vertices.push_back(point_B.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(point_C.X);
+                    vertices.push_back(point_C.Y);
+                    vertices.push_back(0.0f);
+                }
             }
         }
 

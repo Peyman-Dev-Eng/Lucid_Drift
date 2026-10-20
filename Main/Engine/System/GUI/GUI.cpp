@@ -710,7 +710,6 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                                           circleSpeed,
                                           {static_cast<float>(xPos), static_cast<float>(yPos)},
                                           {redValueColor, greenValueColor, blueValueColor, alphaValueColor});
-            core->scene.SendShapesToRender();
             window->Show = false;
         }
         ImGui::SameLine();
@@ -834,7 +833,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 circle.value()->SetAllPointsColor({redValueColor, greenValueColor, blueValueColor, alphaValueColor});
                 circle.value()->SetOriginalPositionToCenter();
                 circle.value()->Rebuild();
-                this->core->scene.SendShapesToRender();
+                this->core->scene.ReSendShapesToRender();
                 window->Show = false;
                 inThisBrace = false;
             }
@@ -947,7 +946,6 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         if (ImGui::Button("Create")) {
             core->scene.CreateLineActor(std::string(window->searchBuffer), thickness, startPos, endPos,
                                         {color[0], color[1], color[2], color[3]});
-            core->scene.SendShapesToRender();
             window->Show = false;
         }
         ImGui::SameLine();
@@ -1065,7 +1063,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
                     line.value()->SetThickness(static_cast<float>(thickness));
                     line.value()->SetLineColor({color[0], color[1], color[2], color[3]});
                     line.value()->CreateTriangles();
-                    core->scene.SendShapesToRender();
+                    core->scene.ReSendShapesToRender();
                     window->Show = false;
                 }
                 if (ImGui::Button("Close")) {
@@ -1273,13 +1271,11 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                    polygonActorRedColor, polygonActorGreenColor, polygonActorBlueColor,
                                                    polygonActorAlpha
                                                });
-                core->scene.SendShapesToRender();
                 window->Show = false;
             } else if (fillColorWithOneColorOrEachVertexHaveAColor == 1) {
                 core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
                                                polygonActorSpeed,
                                                pointPositions.data(), pointColors);
-                core->scene.SendShapesToRender();
                 window->Show = false;
             }
         }
@@ -1407,7 +1403,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                            static_cast<float>(pointPositions[pointIndex * 2 + 1])
                                                        });
                     }
-                    core->scene.SendShapesToRender();
+                    core->scene.ReSendShapesToRender();
                     window->Show = false;
                 }
                 if (ImGui::Button("Close")) {
