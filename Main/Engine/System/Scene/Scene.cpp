@@ -28,6 +28,10 @@ void LDDrift::Scene::SetRendererPTR(LDDrift::Renderer* rendererPTR) {
 }
 
 void LDDrift::Scene::ReSendShapesToRender() {
+    if (sendDataToGPU == false) {
+        return;
+    }
+
     NPV_assert(renderer)
 
     for (auto& [circleName, circle] : circleShapes) {
@@ -41,6 +45,7 @@ void LDDrift::Scene::ReSendShapesToRender() {
     }
     renderer->UpdateShapeData();
     renderer->SendDataToGPU();
+    sendDataToGPU = false;
 }
 
 LDDrift::Actors::Circle* LDDrift::Scene::GetCircle(const std::string& name) const {
@@ -66,6 +71,8 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
     newCircle.circle->Rebuild();
     circleShapes.push_back({.circleName = newCircle.circleName, .circle = newCircle.circle});
     renderer->AddShapeToRender(newCircle.circle);
+    renderer->UpdateShapeData();
+    renderer->SendDataToGPU();
 }
 
 LDDrift::Actors::Polygon* LDDrift::Scene::GetPolygon(const std::string& name) const {
@@ -93,6 +100,8 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     }
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
     renderer->AddShapeToRender(newPolygon.polygon);
+    renderer->UpdateShapeData();
+    renderer->SendDataToGPU();
 }
 
 void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickness, const int* startPos,
@@ -109,6 +118,8 @@ void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickne
     newLine.line->CreateTriangles();
     lines.push_back({.lineName = newLine.lineName, .line = newLine.line});
     renderer->AddLineToRender(newLine.line);
+    renderer->UpdateShapeData();
+    renderer->SendDataToGPU();
 }
 
 LDDrift::Actors::Line* LDDrift::Scene::GetLine(const std::string& name) const {
@@ -147,7 +158,8 @@ bool LDDrift::Scene::FindLineWithName(const std::string& name) const {
     return false;
 }
 
-void LDDrift::Scene::CreatePolygonShape(const std::string& name, int _pointCount, int _speed, const int* pos,
+void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _pointCount, const int _speed,
+                                        const int* pos,
                                         const std::vector<LDDrift::VecCol>& colors) {
     const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
     newPolygon.polygon->SetPointCount(_pointCount);
@@ -165,4 +177,49 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, int _pointCount
     }
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
     renderer->AddShapeToRender(newPolygon.polygon);
+    renderer->UpdateShapeData();
+    renderer->SendDataToGPU();
+}
+
+void LDDrift::Scene::MarkSendDataToGPU() {
+    sendDataToGPU = true;
+}
+
+bool LDDrift::Scene::DeletePolygonShape(const std::string& name) {
+    long int pos = 0;
+    for (const auto& [polygonName, polygon] : polygonShapes) {
+        if (polygonName == name) {
+            polygonShapes.erase(polygonShapes.begin() + pos);
+            core->render.RemoveShapeFromRender(polygon);
+            return true;
+        }
+        ++pos;
+    }
+    return false;
+}
+
+bool LDDrift::Scene::DeleteLineShape(const std::string& name) {
+    long int pos = 0;
+    for (const auto& [lineName, line] : lines) {
+        if (lineName == name) {
+            lines.erase(lines.begin() + pos);
+            core->render.RemoveLineFromRender(line);
+            return true;
+        }
+        ++pos;
+    }
+    return false;
+}
+
+bool LDDrift::Scene::DeleteCircleShape(const std::string& name) {
+    long int pos = 0;
+    for (const auto& [circleName, circle] : circleShapes) {
+        if (circleName == name) {
+            circleShapes.erase(circleShapes.begin() + pos);
+            core->render.RemoveShapeFromRender(circle);
+            return true;
+        }
+        ++pos;
+    }
+    return false;
 }

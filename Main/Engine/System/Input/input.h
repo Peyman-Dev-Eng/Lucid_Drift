@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <Assertions.h>
 #include <array>
+#include <set>
 #include <algorithm>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -284,7 +285,7 @@ namespace LDDrift
 
 #endif
 
-    inline std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> TargetKeys;
+    inline std::set<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> TargetKeys;
 
     namespace input
     {
@@ -362,5 +363,4 @@ namespace LDDrift
     }
 }
 
-inline std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> TargetKeys;
 #endif

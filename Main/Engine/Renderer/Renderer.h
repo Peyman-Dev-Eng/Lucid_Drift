@@ -57,6 +57,8 @@ namespace LDDrift
         void SendDataToGPU() const;
         void AddShapeToRender(LDDrift::Actors::Shape*);
         void AddLineToRender(LDDrift::Actors::Line*);
+        void RemoveLineFromRender(LDDrift::Actors::Line*);
+        void RemoveShapeFromRender(LDDrift::Actors::Shape*);
         void UpdateShapeData();
         void render() const;
     };

@@ -619,6 +619,8 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
     ImGui::RadioButton("##Create New Circle", &CheckBoxIsOn, 0);
     ImGui::SameLine();
     ImGui::RadioButton("##Configure Circle", &CheckBoxIsOn, 1);
+    ImGui::SameLine();
+    ImGui::RadioButton("##Delete Circle", &CheckBoxIsOn, 2);
     if (CheckBoxIsOn == 0) {
         ImGui::TextUnformatted("window: Create New Circle");
         ImGui::Separator();
@@ -711,10 +713,12 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                                           {static_cast<float>(xPos), static_cast<float>(yPos)},
                                           {redValueColor, greenValueColor, blueValueColor, alphaValueColor});
             window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
     } else if (CheckBoxIsOn == 1) {
         static std::optional<bool> inThisBrace;
@@ -836,16 +840,42 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 this->core->scene.ReSendShapesToRender();
                 window->Show = false;
                 inThisBrace = false;
+                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
             }
             ImGui::SameLine();
             if (ImGui::Button("Close")) {
                 window->Show = false;
                 inThisBrace = false;
+                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
             }
         } else {
             if (ImGui::Button("Close")) {
                 window->Show = false;
+                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
             }
+        }
+    } else if (CheckBoxIsOn == 2) {
+        ImGui::Separator();
+        ImGui::TextUnformatted("window: Delete Circle");
+        ImGui::InputTextWithHint("##Circle name", "Enter Circle name: ", window->searchBuffer,
+                                 sizeof(window->searchBuffer));
+        static std::optional<bool> foundCircle;
+        if (ImGui::Button("Delete")) {
+            foundCircle = core->scene.FindCircleWithName(std::string(window->searchBuffer));
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close")) {
+            window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+        }
+        if (foundCircle.has_value() && foundCircle.value() == false) {
+            ImGui::TextUnformatted(("Can not find circle with name -> " + std::string(window->searchBuffer)).c_str());
+        } else if (foundCircle.has_value() && foundCircle.value() == true) {
+            core->scene.DeleteCircleShape(std::string(window->searchBuffer));
+            core->scene.MarkSendDataToGPU();
+            core->scene.ReSendShapesToRender();
+            window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
     }
 }
@@ -1136,7 +1166,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         ImGui::Separator(); // END --- point count of polygon
         ImGui::RadioButton("fill shape with##fill shape (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 0);
         ImGui::SameLine();
-        ImGui::RadioButton("set color for any vertexes##each vertex have a color (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 1);
+        ImGui::RadioButton("set color for any vertexes##each vertex have a color (00)",
+                           &fillColorWithOneColorOrEachVertexHaveAColor, 1);
         if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
             ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
             ImGui::SameLine();

@@ -36,6 +36,7 @@ namespace LDDrift
         };
 
     private:
+        bool sendDataToGPU = false;
         LDDrift::Core* core = nullptr;
         LDDrift::Renderer* renderer = nullptr;
         std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
@@ -45,8 +46,10 @@ namespace LDDrift
     public:
         Scene();
         void SetCorePTR(LDDrift::Core* corePtr);
+        void MarkSendDataToGPU();
         void SetRendererPTR(LDDrift::Renderer* rendererPTR);
         void ReSendShapesToRender();
+        // circle
         [[nodiscard]] bool FindCircleWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Circle* GetCircle(const std::string& name) const;
         void CreateCircleShape(const std::string& name,
@@ -55,6 +58,8 @@ namespace LDDrift
                                int _speed,
                                const LDDrift::VecPos2D& pos,
                                const LDDrift::VecCol& color);
+        bool DeleteCircleShape(const std::string& name);
+        // polygon
         [[nodiscard]] bool FindPolygonWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Polygon* GetPolygon(const std::string& name) const;
         void CreatePolygonShape(const std::string& name,
@@ -67,6 +72,8 @@ namespace LDDrift
                                 int _speed,
                                 const int* pos,
                                 const std::vector<LDDrift::VecCol>& colors);
+        bool DeletePolygonShape(const std::string& name);
+        // Line
         [[nodiscard]] bool FindLineWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Line* GetLine(const std::string& name) const;
         void CreateLineActor(const std::string& name,
@@ -74,6 +81,7 @@ namespace LDDrift
                              const int* startPos,
                              const int* endPos,
                              const LDDrift::VecCol& color);
+        bool DeleteLineShape(const std::string& name);
         ~Scene();
     };
 }

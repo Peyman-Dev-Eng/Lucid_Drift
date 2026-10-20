@@ -259,7 +259,7 @@ void LDDrift::input::Keyboard::Init() {
 
 void LDDrift::input::Keyboard::SetKeyTarget(const std::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys) {
     for (const auto& key : keys) {
-        TargetKeys.push_back(key);
+        TargetKeys.insert(key);
     }
 }
 
@@ -368,7 +368,7 @@ std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyb
 }
 
 void LDDrift::input::Keyboard::SetKeyTarget(const std::string& key) {
-    TargetKeys.push_back(KeyStringName[key]);
+    TargetKeys.insert(KeyStringName[key]);
 }
 
 std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyHeld() {

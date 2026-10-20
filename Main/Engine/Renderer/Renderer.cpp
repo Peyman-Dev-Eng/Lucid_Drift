@@ -198,7 +198,8 @@ void LDDrift::Renderer::UpdateShapeData() {
         vertices.push_back(lineColor.A);
 
         howToReadShapeData.push_back({
-            .drawType = LUCID_DRIFT_SHAPE_RENDER_AS_FILLED, .startIndex = indexOfFirstVertexInVertexArray, .count = vertexCount
+            .drawType = LUCID_DRIFT_SHAPE_RENDER_AS_FILLED, .startIndex = indexOfFirstVertexInVertexArray,
+            .count = vertexCount
         });
 
         indexOfFirstVertexInVertexArray += vertexCount;
@@ -289,4 +290,12 @@ void LDDrift::Renderer::RebuildShapes() {
     }
     this->UpdateShapeData();
     this->SendDataToGPU();
+}
+
+void LDDrift::Renderer::RemoveLineFromRender(LDDrift::Actors::Line* line) {
+    linePTRs.erase(line);
+}
+
+void LDDrift::Renderer::RemoveShapeFromRender(LDDrift::Actors::Shape* shape) {
+    shapePTRs.erase(shape);
 }

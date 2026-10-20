@@ -50,7 +50,6 @@ void LDDrift::Core::EngineHandler() {
         LDDrift::input::Mouse::GetMouseInputEvent();
         LDDrift::GUI::BeginRenderGUI();
         window.ClearBuffer();
-        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A))
         render.render();
         gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
         gui.UpdateWindow("Project Watch Tower");
@@ -69,8 +68,8 @@ void LDDrift::Core::EngineHandler() {
                 LDDrift::input::Mouse::GetMouseInputEvent();
                 LDDrift::GUI::BeginRenderGUI();
                 window.ClearBuffer();
-                render.render();
                 LDDrift::EngineAPI::tick(LDDrift::func::GetDeltaTime());
+                render.render();
                 gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
                 gui.UpdateWindow("Project Watch Tower");
                 gui.EndRenderGUI();
