@@ -872,8 +872,6 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
             ImGui::TextUnformatted(("Can not find circle with name -> " + std::string(window->searchBuffer)).c_str());
         } else if (foundCircle.has_value() && foundCircle.value() == true) {
             core->scene.DeleteCircleShape(std::string(window->searchBuffer));
-            core->scene.MarkSendDataToGPU();
-            core->scene.ReSendShapesToRender();
             window->Show = false;
             std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
@@ -892,6 +890,8 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
     ImGui::RadioButton("##Create New Line", &radioButton, 0);
     ImGui::SameLine();
     ImGui::RadioButton("##Create New Polygon", &radioButton, 1);
+    ImGui::SameLine();
+    ImGui::RadioButton("##Delete Line", &radioButton, 2);
     if (radioButton == 0) {
         ImGui::TextUnformatted("Window: Create New Line");
         ImGui::Separator();
@@ -1111,6 +1111,27 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         if (findLineWithName.has_value() && findLineWithName.value() == false) {
             ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->searchBuffer)).c_str());
         }
+    } else if (radioButton == 2) {
+        ImGui::Separator();
+        ImGui::TextUnformatted("window: Delete Line");
+        ImGui::InputTextWithHint("##Line Name", "Enter Line name: ", window->searchBuffer,
+                                 sizeof(window->searchBuffer));
+        static std::optional<bool> foundLine;
+        if (ImGui::Button("Delete")) {
+            foundLine = core->scene.FindLineWithName(std::string(window->searchBuffer));
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close")) {
+            window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+        }
+        if (foundLine.has_value() && foundLine.value() == false) {
+            ImGui::TextUnformatted(("can not find line with name -> " + std::string(window->searchBuffer)).c_str());
+        } else if (foundLine.has_value() && foundLine.value() == true) {
+            core->scene.DeleteLineShape(std::string(window->searchBuffer));
+            window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+        }
     }
 }
 
@@ -1149,6 +1170,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     ImGui::RadioButton("Create##Create New Polygon", &radioButton, 0);
     ImGui::SameLine();
     ImGui::RadioButton("Configure##Configure Polygon", &radioButton, 1);
+    ImGui::SameLine();
+    ImGui::RadioButton("##Delete polygon", &radioButton, 2);
 
     if (radioButton == 0) {
         ImGui::TextUnformatted("window: create new polygon");
@@ -1451,6 +1474,27 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         }
         if (findShapeWithName.has_value() && findShapeWithName.value() == false) {
             ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->searchBuffer)).c_str());
+        }
+    } else if (radioButton == 2) {
+        ImGui::Separator();
+        ImGui::TextUnformatted("window: Delete Polygon");
+        ImGui::InputTextWithHint("##polygon name", "Enter polygon Name: ", window->searchBuffer,
+                                 sizeof(window->searchBuffer));
+        static std::optional<bool> foundPolygon;
+        if (ImGui::Button("Delete")) {
+            foundPolygon = core->scene.FindPolygonWithName(std::string(window->searchBuffer));
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("Close")) {
+            window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+        }
+        if (foundPolygon.has_value() && foundPolygon.value() == false) {
+            ImGui::TextUnformatted(("can not find polygon with name -> " + std::string(window->searchBuffer)).c_str());
+        } else if (foundPolygon.has_value() && foundPolygon.value() == true) {
+            core->scene.DeletePolygonShape(std::string(window->searchBuffer));
+            window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
     }
 }
