@@ -4,7 +4,7 @@ LDDrift::Actors::Shape::Shape() : screenSize(0, 0), OriginalPosition(0, 0), Poin
                                   SpeedNDC_Y(0), FillShape(true), Thickness(0), HaveThickness(false) {}
 
 void LDDrift::Actors::Shape::MoveUp() {
-    for (VecPos2D& point : Points) {
+    for (LDDrift::VecPos2D& point : Points) {
         point.Y += Speed;
     }
     OriginalPosition.Y += Speed;
@@ -42,21 +42,20 @@ void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
     const float sinRadians = std::sin(radians);
 
     std::vector<LDDrift::VecPos2D> globalPoints = this->GetGlobalPoints();
-    const LDDrift::VecPos2D globalOriginalPosition = LDDrift::Transform::TransformToGlobalPosition(OriginalPosition);
     for (LDDrift::VecPos2D& point : globalPoints) {
-        const float x = point.X - globalOriginalPosition.X;
-        const float y = point.Y - globalOriginalPosition.Y;
+        const float x = point.X - OriginalPosition.X;
+        const float y = point.Y - OriginalPosition.Y;
 
         const float rotatedX = x * cinRadians - y * sinRadians;
         const float rotatedY = x * sinRadians + y * cinRadians;
 
-        point.X = rotatedX + globalOriginalPosition.X;
-        point.Y = rotatedY + globalOriginalPosition.Y;
+        point.X = rotatedX + OriginalPosition.X;
+        point.Y = rotatedY + OriginalPosition.Y;
     }
     Points = globalPoints;
 }
 
-LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPositionToCenter() const {
+LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPositionToCenter_global() const {
     LDDrift::VecPos2D CenterPos;
     float area = 0.0f;
     float cx = 0.0f;
@@ -90,34 +89,45 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPositionToCenter() const {
 }
 
 void LDDrift::Actors::Shape::SetOriginalPositionToCenter() {
-    float area = 0.0f;
-    float cx = 0.0f;
-    float cy = 0.0f;
+    if (ShapeIsConvex()) {
+        LDDrift::VecPos2D sum;
+        for (const auto& point : Points) {
+            sum += point;
+        }
+        sum /= Points.size();
+        OriginalPosition = sum;
+        return;
+    } else {
+        float area = 0.0f;
+        float cx = 0.0f;
+        float cy = 0.0f;
 
-    for (std::size_t i = 0; i < PointCount; ++i) {
-        const VecPos2D& p0 = Points[i];
-        const VecPos2D& p1 = Points[(i + 1) % PointCount];
+        for (std::size_t i = 0; i < PointCount; ++i) {
+            const VecPos2D& p0 = Points[i];
+            const VecPos2D& p1 = Points[(i + 1) % PointCount];
 
-        const float cross =
-            p0.X * p1.Y -
-            p1.X * p0.Y;
+            const float cross =
+                p0.X * p1.Y -
+                p1.X * p0.Y;
 
-        area += cross;
-        cx += (p0.X + p1.X) * cross;
-        cy += (p0.Y + p1.Y) * cross;
-    }
+            area += cross;
+            cx += (p0.X + p1.X) * cross;
+            cy += (p0.Y + p1.Y) * cross;
+        }
 
-    area *= 0.5f;
+        area *= 0.5f;
 
-    if (std::abs(area) < std::numeric_limits<float>::epsilon()) {
-        OriginalPosition = {0.0f, 0.0f};
+        if (std::abs(area) < std::numeric_limits<float>::epsilon()) {
+            OriginalPosition = {0.0f, 0.0f};
+            return;
+        }
+
+        cx /= 6.0f * area;
+        cy /= 6.0f * area;
+
+        OriginalPosition = {cx, cy};
         return;
     }
-
-    cx /= 6.0f * area;
-    cy /= 6.0f * area;
-
-    OriginalPosition = {cx, cy};
 }
 
 void LDDrift::Actors::Shape::SetPointCount(const std::size_t point_count) {
@@ -169,7 +179,7 @@ void LDDrift::Actors::Shape::SetPointColor(const uint point_index, const LDDrift
     ColorOfPoints[point_index] = color;
 }
 
-const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetOriginalPosition() const {
+const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetOriginalPosition_global() const {
     return OriginalPosition;
 }
 
@@ -285,30 +295,8 @@ bool LDDrift::Actors::Shape::IsHaveThickness() const {
     return HaveThickness;
 }
 
-LDDrift::Actors::Shape::isConvexData LDDrift::Actors::Shape::ShapeIsConvex() const {
-    bool hasPositive = false;
-    bool hasNegative = false;
-    for (std::size_t point = 0; point < PointCount; ++point) {
-        const LDDrift::VecPos2D& point_A = Points[point];
-        const LDDrift::VecPos2D& point_B = Points[(point + 1) % PointCount];
-        const LDDrift::VecPos2D& point_C = Points[(point + 2) % PointCount];
-        const float cross =
-            (point_B.X - point_A.X) * (point_C.Y - point_B.Y) -
-            (point_B.Y - point_A.Y) * (point_C.X - point_B.X);
-        if (cross > 0.0f) {
-            hasPositive = true;
-        }
-        if (cross < 0.0f) {
-            hasNegative = true;
-        }
-        if (hasPositive && hasNegative) {
-            return {.isConvex = false, .pointDirection = 0};
-        }
-    }
-    if (!hasPositive && !hasNegative) {
-        return {.isConvex = false, .pointDirection = 0};
-    }
-    return {.isConvex = true, .pointDirection = hasNegative ? 1 : -1};
+bool LDDrift::Actors::Shape::ShapeIsConvex() const {
+    return isConvex;
 }
 
 void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColor) {
@@ -318,6 +306,14 @@ void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColo
     for (std::size_t point = 0; point < pointCountShape; ++point) {
         ColorOfPoints.push_back(targetColor);
     }
+}
+
+LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPosition_NDC() const {
+    return LDDrift::Transform::TransformToNDC_Position(OriginalPosition);
+}
+
+bool LDDrift::Actors::Shape::ShapeIsConcave() const {
+    return isConcave;
 }
 
 LDDrift::Actors::Shape::~Shape() = default;

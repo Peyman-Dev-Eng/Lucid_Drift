@@ -83,7 +83,7 @@ void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
     shapePTRs.insert(shape);
     const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
     std::vector<float> VTC = {};
-    if (shape->ShapeIsConvex().isConvex) {
+    if (shape->ShapeIsConvex()) {
         const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
         VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
     } else {
@@ -128,7 +128,7 @@ void LDDrift::Renderer::UpdateShapeData() {
     for (const auto& shape : shapePTRs) {
         const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
         std::vector<float> VTC = {};
-        if (shape->ShapeIsConvex().isConvex) {
+        if (shape->ShapeIsConvex()) {
             const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
             VTC = triangulation.CreateTriangles();
         } else {

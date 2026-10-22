@@ -465,6 +465,9 @@ void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
     ImGui::Separator();
 
     for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
+        if (is_directory(path)) {
+            continue;
+        }
         ImGui::TextUnformatted(path.string().c_str());
     }
 }
@@ -1819,16 +1822,30 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
 
     ImGui::Text("Camera Speed: %s", std::to_string(core->camera.GetSpeed()).c_str());
     ImGui::SameLine();
+    if (ImGui::Button("-##Sub Speed")) {
+        core->camera.SubSpeedCamera(5);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("+##Add Speed")) {
+        core->camera.AddSpeedCamera(5);
+    }
+    ImGui::SameLine();
     if (ImGui::Button("Reset##Reset Speed Camera Value")) {
         core->camera.SetSpeedCamera(1);
     }
     ImGui::Text("Camera Zoom: %s", std::to_string(core->camera.GetZoom()).c_str());
     ImGui::SameLine();
+    if (ImGui::Button("-##Sub Zoom")) {
+        core->camera.SubZoomCamera(0.1f);
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("+##Add Zoom")) {
+        core->camera.AddZoomCamera(0.1f);
+    }
+    ImGui::SameLine();
     if (ImGui::Button("Reset##Reset Zoom Camera Value")) {
         core->camera.SetZoomCamera(1);
     }
-
-    ImGui::Separator();
     if (ImGui::Button("Close")) {
         window->Show = false;
     }

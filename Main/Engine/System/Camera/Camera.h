@@ -3,6 +3,7 @@
 #include <VecPos.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <Actors/Shapes/MainShape/Shape.h>
 
 namespace LDDrift
 {
@@ -11,15 +12,25 @@ namespace LDDrift
     class Camera
     {
     private:
+        struct ShapeFollowing
+        {
+            LDDrift::Actors::Shape* targetShape = nullptr;
+            bool isEqualCameraPositionAndShapePos = false;
+        };
+
+        ShapeFollowing shapeFollowing;
+
         LDDrift::Core* core = nullptr;
         LDDrift::VecPos2D position;
         float rotation = 0.0f; // In radians
         float zoom = 1;
-        float speed = 1;
+        float speed = 10;
 
     public:
         Camera();
         ~Camera();
+        void FallowTargetShape();
+        void SetTargetShape(LDDrift::Actors::Shape* targetShape_ptr);
         void SetSpeedCamera(float speed_v);
         void SetZoomCamera(float zoom_v);
         void AddZoomCamera(float addZoom_v);

@@ -65,6 +65,7 @@ namespace LDDrift
     namespace func
     {
         LDDrift::Scene* GetSceneObjectPointer();
+        LDDrift::Camera* GetCameraObjectPointer();
     }
 }
 

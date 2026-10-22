@@ -42,13 +42,6 @@ namespace LDDrift::Actors
     class Shape
     {
     private:
-        struct isConvexData
-        {
-            bool isConvex;
-            int pointDirection;
-        };
-
-    private:
         LDDrift::VecPos2D screenSize;
         LDDrift::VecPos2D OriginalPosition;
         std::vector<LDDrift::VecPos2D> Points;
@@ -60,6 +53,8 @@ namespace LDDrift::Actors
         bool FillShape;
         float Thickness;
         bool HaveThickness;
+        bool isConvex;
+        bool isConcave;
 
     protected: // private functions
         void MoveUp();
@@ -68,6 +63,17 @@ namespace LDDrift::Actors
         void MoveRight();
 
     public:
+        template <typename TYPE_>
+        void SetType() {
+            if constexpr (std::is_same_v<TYPE_, LDDrift::ActorType::convex>) {
+                isConvex = true;
+                isConcave = false;
+            } else if (std::is_same_v<TYPE_, LDDrift::ActorType::concave>) {
+                isConvex = false;
+                isConcave = true;
+            }
+        }
+
         Shape();
         [[nodiscard]] const std::vector<VecPos2D>& GetGlobalPoints() const;
         [[nodiscard]] std::vector<LDDrift::VecPos2D> GetNDC_Points() const;
@@ -84,8 +90,9 @@ namespace LDDrift::Actors
         void SetSpeed(float spd);
         void SetOriginalPosition(const LDDrift::VecPos2D& pos);
         void SetOriginalPositionToCenter();
-        [[nodiscard]] const LDDrift::VecPos2D& GetOriginalPosition() const;
-        [[nodiscard]] LDDrift::VecPos2D GetOriginalPositionToCenter() const;
+        [[nodiscard]] LDDrift::VecPos2D GetOriginalPosition_NDC() const;
+        [[nodiscard]] const LDDrift::VecPos2D& GetOriginalPosition_global() const;
+        [[nodiscard]] LDDrift::VecPos2D GetOriginalPositionToCenter_global() const;
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
         [[nodiscard]] const LDDrift::VecCol& GetPointColor(std::size_t point_index) const;
         [[nodiscard]] const std::vector<LDDrift::VecCol>& GetColorOfPoints() const;
@@ -106,7 +113,8 @@ namespace LDDrift::Actors
         virtual void Rebuild() = 0;
         virtual void Rebuild(int width, int height) = 0;
         virtual ~Shape();
-        [[nodiscard]] isConvexData ShapeIsConvex() const;
+        [[nodiscard]] bool ShapeIsConvex() const;
+        [[nodiscard]] bool ShapeIsConcave() const;
 
     protected:
         [[nodiscard]] const LDDrift::VecPos2D& GetScreenSize() const;

@@ -120,4 +120,12 @@ LDDrift::VecPos2D& LDDrift::VecPos2D::operator/=(const float& value) {
     return *this;
 }
 
+bool LDDrift::VecPos2D::operator==(const VecPos2D& vec) const {
+    return this->X == vec.X && this->Y == vec.Y;
+}
+
+bool LDDrift::VecPos2D::operator!=(const VecPos2D&) const {
+    return this->X != this->X && this->Y != this->Y;
+}
+
 LDDrift::VecPos2D::~VecPos2D() = default;

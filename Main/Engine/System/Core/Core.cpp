@@ -3,6 +3,7 @@
 namespace
 {
     LDDrift::Scene* currentScene = nullptr;
+    LDDrift::Camera* currentCamera = nullptr;
 }
 
 LDDrift::Core::Core() = default;
@@ -41,6 +42,7 @@ void LDDrift::Core::InitCore() {
     scene.SetRendererPTR(&render);
     scene.SetCorePTR(this);
     currentScene = &scene;
+    currentCamera = &camera;
     codePathfinder.initializeCodePathfinder();
 }
 
@@ -69,21 +71,13 @@ void LDDrift::Core::CameraController() {
     if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
         LDDrift::input::Mouse::IsRightMouseButtonHeld() == false &&
         LDDrift::input::Mouse::ScrollUp()) {
-        if (camera.GetSpeed() >= 1)
-            camera.AddSpeedCamera(1.0f);
-        else {
-            camera.AddSpeedCamera(0.1f);
-        }
+        camera.AddSpeedCamera(5.0f);
         render.UpdateViewMatrix();
     }
     if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
         LDDrift::input::Mouse::IsRightMouseButtonHeld() == false &&
         LDDrift::input::Mouse::ScrollDown()) {
-        if (camera.GetSpeed() >= 1)
-            camera.SubSpeedCamera(1.0f);
-        else {
-            camera.SubSpeedCamera(0.1f);
-        }
+        camera.SubSpeedCamera(5.0f);
         render.UpdateViewMatrix();
     }
 
@@ -102,9 +96,11 @@ void LDDrift::Core::CameraController() {
 }
 
 void LDDrift::Core::RunEngineFrame() {
+    LDDrift::func::TickDeltaTime();
     LDDrift::input::Keyboard::GetKeyInputEvent();
     LDDrift::input::Mouse::GetMouseInputEvent();
     LDDrift::GUI::BeginRenderGUI();
+    LDDrift::Core::CameraController();
     window.ClearBuffer();
     render.render();
     gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
@@ -114,7 +110,6 @@ void LDDrift::Core::RunEngineFrame() {
     }
     gui.EndRenderGUI();
     window.Update();
-    CameraController();
     LDDrift::input::Keyboard::Update();
     LDDrift::input::Mouse::Update();
     std::this_thread::sleep_for(std::chrono::milliseconds(16));
@@ -126,6 +121,7 @@ void LDDrift::Core::RunGameFrame() {
     }
     EngineAPI::beginPlay();
     while (gui.runGame) {
+        LDDrift::func::TickDeltaTime();
         input::Keyboard::GetKeyInputEvent();
         input::Mouse::GetMouseInputEvent();
         GUI::BeginRenderGUI();
@@ -166,4 +162,8 @@ LDDrift::Core::~Core() {
 
 LDDrift::Scene* LDDrift::func::GetSceneObjectPointer() {
     return currentScene;
+}
+
+LDDrift::Camera* LDDrift::func::GetCameraObjectPointer() {
+    return currentCamera;
 }

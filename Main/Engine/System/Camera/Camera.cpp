@@ -2,22 +2,22 @@
 #include <System/Core/Core.h>
 
 void LDDrift::Camera::MoveUp() {
-    position.Y += speed;
+    position.Y += (speed * LDDrift::func::GetDeltaTime());
     core->render.UpdateViewMatrix();
 }
 
 void LDDrift::Camera::MoveDown() {
-    position.Y -= speed;
+    position.Y -= (speed * LDDrift::func::GetDeltaTime());
     core->render.UpdateViewMatrix();
 }
 
 void LDDrift::Camera::MoveLeft() {
-    position.X -= speed;
+    position.X -= (speed * LDDrift::func::GetDeltaTime());
     core->render.UpdateViewMatrix();
 }
 
 void LDDrift::Camera::MoveRight() {
-    position.X += speed;
+    position.X += (speed * LDDrift::func::GetDeltaTime());
     core->render.UpdateViewMatrix();
 }
 
@@ -30,18 +30,19 @@ void LDDrift::Camera::InitializeCameraSystem(LDDrift::Core* corePTR) {
     position = core->window.GetViewportSize() / 2;
     rotation = 0;
     zoom = 1.0f;
+    speed = 50;
 }
 
 glm::mat4 LDDrift::Camera::GetViewMatrix() const {
     glm::mat4 view(1.0f);
 
-    view = glm::rotate(
+    view = rotate(
         view,
         -rotation,
         glm::vec3(0.0f, 0.0f, 1.0f)
     );
 
-    view = glm::translate(
+    view = translate(
         view,
         glm::vec3(glm::vec2(-position.X, -position.Y), 0.0f)
     );
@@ -104,4 +105,45 @@ float LDDrift::Camera::GetZoom() const {
 
 void LDDrift::Camera::SetZoomCamera(const float zoom_v) {
     zoom = zoom_v;
+}
+
+void LDDrift::Camera::SetTargetShape(LDDrift::Actors::Shape* targetShape_ptr) {
+    shapeFollowing.targetShape = targetShape_ptr;
+}
+
+void LDDrift::Camera::FallowTargetShape() {
+    if (shapeFollowing.targetShape == nullptr) {
+        shapeFollowing.isEqualCameraPositionAndShapePos = false;
+        return;
+    }
+
+    const LDDrift::VecPos2D& targetPosition =
+        shapeFollowing.targetShape->GetOriginalPosition_global();
+
+    const float _deltaTime = LDDrift::func::GetDeltaTime();
+    const float step = std::max(0.0f, speed * _deltaTime);
+
+    const float oldX = position.X;
+    const float oldY = position.Y;
+
+    const auto moveToward = [step](float& current, const float target) {
+        const float delta = target - current;
+
+        if (const float distance = std::abs(delta); distance <= step) {
+            current = target;
+        } else if (step > 0.0f) {
+            current += std::copysign(step, delta);
+        }
+    };
+
+    moveToward(position.X, targetPosition.X);
+    moveToward(position.Y, targetPosition.Y);
+
+    shapeFollowing.isEqualCameraPositionAndShapePos =
+        position.X == targetPosition.X &&
+        position.Y == targetPosition.Y;
+
+    if (position.X != oldX || position.Y != oldY) {
+        core->render.UpdateViewMatrix();
+    }
 }

@@ -67,7 +67,6 @@ namespace LDDrift
         }
 
         void TrianglesForConvexShape(std::vector<float>& vertices) const {
-            std::cout << "Convex Shape" << std::endl;
             // get center point position of shape
             LDDrift::VecPos2D CenterPos = {0, 0};
             const std::size_t shapePointNumber = shape->GetPointCount();
@@ -107,7 +106,6 @@ namespace LDDrift
         }
 
         [[nodiscard]] std::vector<float> CreateTriangles() const {
-            std::cout << "CreateTriangles" << std::endl;
             const std::size_t pointNumber = shape->GetPointCount();
             if (pointNumber < 3) {
                 std::cout <<

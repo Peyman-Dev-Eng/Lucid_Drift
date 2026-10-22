@@ -63,9 +63,11 @@ void LDDrift::Window::CreateFullscreenWindow() {
     glfwMakeContextCurrent(screen);
     GLB_assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     glfwSetWindowUserPointer(screen, this);
-    glViewport(350, 180, mode->width, mode->height - CONSOLE_Y_SIZE);
+    glViewport(350, 180, VIEWPORT_WINDOW_WIDTH, VIEWPORT_WINDOW_WIDTH);
     settings.width = mode->width;
     settings.height = mode->height;
+    glfwSetFramebufferSizeCallback(screen, LDDrift::Window::FrameBufferSizeCallback);
+
 #ifdef __WIN32
     glfwSetScrollCallback(screen, LDDrift::input::Mouse::ScrollCallback);
 #endif
@@ -99,8 +101,10 @@ void LDDrift::Window::ClearBuffer() const {
     glClearColor(settings.FillColorScreen.R, settings.FillColorScreen.G, settings.FillColorScreen.B,
                  settings.FillColorScreen.A);
     glClear(GL_COLOR_BUFFER_BIT);
-    glViewport(PROJECT_WATCH_TOWER_X_SIZE, CONSOLE_Y_SIZE,
-               settings.width, settings.height - CONSOLE_Y_SIZE);
+    const int viewportWidth = std::max(0, settings.width - PROJECT_WATCH_TOWER_X_SIZE);
+
+    const int viewportHeight = std::max(0, settings.height - CONSOLE_Y_SIZE);
+    glViewport(PROJECT_WATCH_TOWER_X_SIZE, CONSOLE_Y_SIZE, viewportWidth, viewportHeight);
 }
 
 void LDDrift::Window::SetPosition(const int x, const int y) {

@@ -14,6 +14,7 @@
 #include <Compile.h>
 #include <cstdio>
 #include <iterator>
+#include <GraphicalUserInterfaceWindowHandler.h>
 #include "TextEditor.h"
 #define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
 #define PROJECT_WATCH_TOWER_X_SIZE 350
@@ -89,17 +90,6 @@ namespace LDDrift
         static std::vector<std::string> ExtractTextFromString(const std::string& text);
 
     public:
-        struct DefaultWindowsData
-        {
-            std::string name;
-            bool canMoveWindow;
-            bool canResizeWindow;
-            std::vector<std::string> textPrintInWindow;
-            VecPos2D position;
-            VecPos2D size;
-            bool Show;
-            char searchBuffer[256];
-        };
 
         struct EditorWindowsData
         {

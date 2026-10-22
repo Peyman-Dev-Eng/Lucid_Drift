@@ -18,6 +18,7 @@ namespace LDDrift::func
     std::filesystem::path GetExecutablePath();
     std::filesystem::path GetDefaultDiskPath();
     void InitDeltaTime();
+    void TickDeltaTime();
     float GetDeltaTime();
 }
 

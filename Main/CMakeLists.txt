@@ -230,52 +230,65 @@ add_library(CODE_PATHFINDER STATIC
 target_include_directories(CODE_PATHFINDER PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/CodePathfinder
 )
+# ============================================================================
+# END
+# ============================================================================
+
+add_library(__GUIWH__ STATIC
+        Engine/SubSystems/GraphicalUserInterfaceWindowHandler/GraphicalUserInterfaceWindowHandler.cpp
+)
+
+target_include_directories(__GUIWH__ PUBLIC
+        Engine/SubSystems/GraphicalUserInterfaceWindowHandler
+)
+
+target_link_libraries(__GUIWH__ PUBLIC GUI)
 
 # ============================================================================
 # END
 # ============================================================================
 
 
-if(WIN32)
+if (WIN32)
     include(FetchContent)
 
     # --- GLFW ---
     find_package(glfw3 QUIET)
-    if(NOT glfw3_FOUND)
+    if (NOT glfw3_FOUND)
         FetchContent_Declare(glfw
-            GIT_REPOSITORY https://github.com/glfw/glfw.git
-            GIT_TAG        3.4
+                GIT_REPOSITORY https://github.com/glfw/glfw.git
+                GIT_TAG 3.4
         )
-        set(GLFW_BUILD_DOCS     OFF CACHE BOOL "" FORCE)
-        set(GLFW_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+        set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
         set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
         FetchContent_MakeAvailable(glfw)
-    endif()
+    endif ()
 
     # --- fmt ---
     find_package(fmt QUIET)
-    if(NOT fmt_FOUND)
+    if (NOT fmt_FOUND)
         FetchContent_Declare(fmt
-            GIT_REPOSITORY https://github.com/fmtlib/fmt.git
-            GIT_TAG        11.0.2
+                GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+                GIT_TAG 11.0.2
         )
         FetchContent_MakeAvailable(fmt)
-    endif()
+    endif ()
 
     # --- nlohmann_json ---
     find_package(nlohmann_json QUIET)
-    if(NOT nlohmann_json_FOUND)
+    if (NOT nlohmann_json_FOUND)
         FetchContent_Declare(nlohmann_json
-            GIT_REPOSITORY https://github.com/nlohmann/json.git
-            GIT_TAG        v3.11.3
+                GIT_REPOSITORY https://github.com/nlohmann/json.git
+                GIT_TAG v3.11.3
         )
         FetchContent_MakeAvailable(nlohmann_json)
-    endif()
-else()
+    endif ()
+else ()
     find_package(glfw3 REQUIRED)
     find_package(fmt REQUIRED)
     find_package(nlohmann_json CONFIG REQUIRED)
-endif()
+endif ()
 
 add_library(Engine SHARED
 
@@ -346,6 +359,8 @@ add_library(Engine SHARED
         # Write and Read Setting System
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.cpp
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.h
+
+        # cmera - system
         Engine/System/Camera/Camera.cpp
         Engine/System/Camera/Camera.h
 )
@@ -373,11 +388,12 @@ target_link_libraries(Engine PUBLIC
         COMP
         ENG_API
         CODE_PATHFINDER
+        __GUIWH__
 )
 
-if(WIN32)
+if (WIN32)
     target_link_libraries(Engine PUBLIC opengl32)
-endif()
+endif ()
 
 target_include_directories(GUI PUBLIC
         "${IMGUI_COLOR_TEXT_EDITOR_DIR}"

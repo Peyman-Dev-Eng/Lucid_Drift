@@ -28,8 +28,7 @@ std::filesystem::path LDDrift::func::GetDefaultDiskPath() {
         &path
     );
 
-    if (FAILED(result))
-    {
+    if (FAILED(result)) {
         throw std::runtime_error("Failed to get Desktop path.");
     }
 
@@ -50,9 +49,12 @@ void LDDrift::func::InitDeltaTime() {
     lastTime = glfwGetTime();
 }
 
-float LDDrift::func::GetDeltaTime() {
+void LDDrift::func::TickDeltaTime() {
     currentTime = glfwGetTime();
     deltaTime = static_cast<float>(currentTime - lastTime);
     lastTime = currentTime;
+}
+
+float LDDrift::func::GetDeltaTime() {
     return deltaTime;
 }

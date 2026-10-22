@@ -1,8 +1,8 @@
 #ifndef LUCID_DRIFT_VECPOS_H
 #define LUCID_DRIFT_VECPOS_H
-#include <initializer_list>
 #include <Assertions.h>
 #include <cmath>
+#include <initializer_list>
 
 namespace LDDrift
 {
@@ -52,10 +52,12 @@ namespace LDDrift
         VecPos2D& operator*=(const float& value);
         VecPos2D& operator/=(const VecPos2D& vec2);
         VecPos2D& operator/=(const float& value);
+        bool operator==(const VecPos2D& vec) const;
+        bool operator!=(const VecPos2D&) const;
 
         ~VecPos2D();
     };
-}
+} // namespace LDDrift
 
 inline std::ostream& operator<<(std::ostream& stream, const LDDrift::VecPos2D& vec) {
     stream << "X: ";
@@ -64,4 +66,4 @@ inline std::ostream& operator<<(std::ostream& stream, const LDDrift::VecPos2D& v
     stream << vec.Y;
     return stream;
 }
-#endif //LUCID_DRIFT_VECPOS_H
+#endif // LUCID_DRIFT_VECPOS_H

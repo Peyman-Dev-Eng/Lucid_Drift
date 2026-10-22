@@ -9,8 +9,8 @@
 #include <string>
 #define FULLSCREEN_WINDOW_WIDTH 1920
 #define FULLSCREEN_WINDOW_HEIGHT 1080
-#define HALF_FULLSCREEN_WINDOW_WIDTH (FULLSCREEN_WINDOW_WIDTH / 2)
-#define HALF_FULLSCREEN_WINDOW_HEIGHT (FULLSCREEN_WINDOW_HEIGHT / 2)
+#define HALF_FULLSCREEN_WINDOW_WIDTH (FULLSCREEN_WINDOW_WIDTH() / 2)
+#define HALF_FULLSCREEN_WINDOW_HEIGHT (FULLSCREEN_WINDOW_HEIGHT() / 2)
 #define VIEWPORT_WINDOW_WIDTH 1570
 #define VIEWPORT_WINDOW_HEIGHT 900
 #define HALF_VIEWPORT_WINDOW_WIDTH (VIEWPORT_WINDOW_WIDTH / 2)
@@ -58,8 +58,6 @@ namespace LDDrift
         GLFWmonitor* monitor{nullptr};
         const GLFWvidmode* mode{nullptr};
         Settings settings;
-
-    private: // functions
 
     public:
         Window();
