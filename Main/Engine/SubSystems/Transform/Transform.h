@@ -19,6 +19,8 @@ namespace LDDrift
         static int heightScreen;
         static int halfWidthScreen;
         static int halfHeightScreen;
+        static std::vector<float> TransformToNDC_Position(const std::vector<float>&);
+        static std::vector<float> TransformToGlobalPosition(const std::vector<float>&);
         static float TransformToNDC_Position(float pointPos, char posType);
         static float TransformToGlobalPosition(float pointPos, char posType);
         static std::vector<LDDrift::VecPos2D> TransformToNDC_Position(const LDDrift::Actors::Shape*);

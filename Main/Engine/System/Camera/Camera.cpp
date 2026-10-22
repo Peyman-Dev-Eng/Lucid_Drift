@@ -49,7 +49,7 @@ glm::mat4 LDDrift::Camera::GetViewMatrix() const {
     return view;
 }
 
-glm::mat4 LDDrift::Camera::GetProjectionMatrix(float viewportWidth, float viewportHeight) const {
+glm::mat4 LDDrift::Camera::GetProjectionMatrix(const float viewportWidth, const float viewportHeight) const {
     const float halfWidth =
         viewportWidth / (2.0f * zoom);
 

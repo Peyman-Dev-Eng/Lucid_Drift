@@ -95,3 +95,27 @@ std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transform::TransformToNDC_Posit
     }
     return NDC_pointPositon;
 }
+
+std::vector<float> LDDrift::Transform::TransformToGlobalPosition(const std::vector<float>& positions) {
+    std::vector<float> globalPosition;
+    const std::size_t vertexCount = positions.size() / 3;
+    for (std::size_t point = 0; point < vertexCount; ++point) {
+        globalPosition.push_back((positions[point * 3 + 0] + 1.0f) * static_cast<float>(halfWidthScreen));
+        globalPosition.push_back((positions[point * 3 + 1] + 1.0f) * static_cast<float>(halfHeightScreen));
+        globalPosition.push_back(0.0f);
+    }
+    return globalPosition;
+}
+
+std::vector<float> LDDrift::Transform::TransformToNDC_Position(const std::vector<float>& positions) {
+    std::vector<float> NDCPosition;
+    const std::size_t vertexCount = positions.size() / 3;
+    for (std::size_t point = 0; point < vertexCount; ++point) {
+        NDCPosition.push_back(
+            (positions[point * 3 + 0] - static_cast<float>(halfWidthScreen)) / static_cast<float>(halfWidthScreen));
+        NDCPosition.push_back(
+            (positions[point * 3 + 1] - static_cast<float>(halfHeightScreen)) / static_cast<float>(halfHeightScreen));
+        NDCPosition.push_back(0.0f);
+    }
+    return NDCPosition;
+}

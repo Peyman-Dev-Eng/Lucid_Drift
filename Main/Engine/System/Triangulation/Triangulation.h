@@ -127,7 +127,7 @@ namespace LDDrift
             if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::convex>) {
                 std::vector<float> vertices;
                 this->TrianglesForConvexShape(vertices);
-                return vertices;
+                return LDDrift::Transform::TransformToGlobalPosition(vertices);
             } else if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::concave>) {
                 std::vector<float> vertices;
                 try {
@@ -135,7 +135,7 @@ namespace LDDrift
                 } catch (const std::runtime_error& e) {
                     std::cout << "Error: " << e.what() << std::endl;
                 }
-                return vertices;
+                return LDDrift::Transform::TransformToGlobalPosition(vertices);
             } else {
                 std::cerr << RED <<
                     R"( You did not submit a valid type for constructing a triangle on the shape.
