@@ -32,7 +32,7 @@ void LDDrift::Actors::Shape::MoveRight() {
 }
 
 void LDDrift::Actors::Shape::SetOriginalPosition(const LDDrift::VecPos2D& pos) {
-    OriginalPosition = LDDrift::Transform::TransformToNDC_Position(pos);
+    OriginalPosition = pos;
 }
 
 void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
@@ -53,7 +53,7 @@ void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
         point.X = rotatedX + globalOriginalPosition.X;
         point.Y = rotatedY + globalOriginalPosition.Y;
     }
-    Points = LDDrift::Transform::TransformToNDC_Position(globalPoints);
+    Points = globalPoints;
 }
 
 LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPositionToCenter() const {

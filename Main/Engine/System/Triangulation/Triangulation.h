@@ -22,7 +22,7 @@ namespace LDDrift
         }
 
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {
-            const std::vector<LDDrift::VecPos2D> points = shape->GetNDC_Points();
+            std::vector<LDDrift::VecPos2D> points = shape->GetGlobalPoints();
             const std::size_t pointCountOfShape = shape->GetPointCount();
             if (pointCountOfShape < 3) {
                 throw std::runtime_error("this shape is not available");
@@ -67,6 +67,7 @@ namespace LDDrift
         }
 
         void TrianglesForConvexShape(std::vector<float>& vertices) const {
+            std::cout << "Convex Shape" << std::endl;
             // get center point position of shape
             LDDrift::VecPos2D CenterPos = {0, 0};
             const std::size_t shapePointNumber = shape->GetPointCount();
@@ -79,14 +80,14 @@ namespace LDDrift
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
                 const std::size_t currentPoint = pointNumber;
                 const std::size_t nextPoint = pointNumber == shapePointNumber - 1 ? 0 : pointNumber + 1;
-                vertices.push_back(LDDrift::Transform::TransformToNDC_Position(CenterPos.X, 'x'));
-                vertices.push_back(LDDrift::Transform::TransformToNDC_Position(CenterPos.Y, 'y'));
+                vertices.push_back(CenterPos.X);
+                vertices.push_back(CenterPos.Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetNDC_Point(currentPoint).X);
-                vertices.push_back(shape->GetNDC_Point(currentPoint).Y);
+                vertices.push_back(shape->GetGlobalPoint(currentPoint).X);
+                vertices.push_back(shape->GetGlobalPoint(currentPoint).Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetNDC_Point(nextPoint).X);
-                vertices.push_back(shape->GetNDC_Point(nextPoint).Y);
+                vertices.push_back(shape->GetGlobalPoint(nextPoint).X);
+                vertices.push_back(shape->GetGlobalPoint(nextPoint).Y);
                 vertices.push_back(0.0f);
             }
         }
@@ -106,9 +107,10 @@ namespace LDDrift
         }
 
         [[nodiscard]] std::vector<float> CreateTriangles() const {
+            std::cout << "CreateTriangles" << std::endl;
             const std::size_t pointNumber = shape->GetPointCount();
             if (pointNumber < 3) {
-                std::cerr <<
+                std::cout <<
                     R"( The shape you are attempting to convert into a triangle is either already a triangle,
                         or its number of vertices is invalid.
                         Therefore, be mindful of the valid data you extract from this function.)" << std::endl;
@@ -117,7 +119,7 @@ namespace LDDrift
             if (pointNumber == 3) {
                 std::vector<float> vertices;
                 for (std::size_t pointIndex = 0; pointIndex < 3; ++pointIndex) {
-                    const LDDrift::VecPos2D& point = shape->GetNDC_Point(pointIndex);
+                    const LDDrift::VecPos2D& point = shape->GetGlobalPoint(pointIndex);
                     vertices.push_back(point.X);
                     vertices.push_back(point.Y);
                     vertices.push_back(0.0f);
@@ -127,7 +129,7 @@ namespace LDDrift
             if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::convex>) {
                 std::vector<float> vertices;
                 this->TrianglesForConvexShape(vertices);
-                return LDDrift::Transform::TransformToGlobalPosition(vertices);
+                return vertices;
             } else if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::concave>) {
                 std::vector<float> vertices;
                 try {
@@ -135,9 +137,9 @@ namespace LDDrift
                 } catch (const std::runtime_error& e) {
                     std::cout << "Error: " << e.what() << std::endl;
                 }
-                return LDDrift::Transform::TransformToGlobalPosition(vertices);
+                return vertices;
             } else {
-                std::cerr << RED <<
+                std::cout <<
                     R"( You did not submit a valid type for constructing a triangle on the shape.
                         You can choose between two categories of shapes: convex or concave.)";
                 return std::vector<float>{0.0f};

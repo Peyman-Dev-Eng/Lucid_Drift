@@ -91,11 +91,13 @@ void LDDrift::Core::CameraController() {
         LDDrift::input::Mouse::IsRightMouseButtonHeld() &&
         LDDrift::input::Mouse::ScrollDown()) {
         camera.SubZoomCamera(0.1f);
+        render.UpdateViewMatrix();
     }
     if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
         LDDrift::input::Mouse::IsRightMouseButtonHeld() &&
         LDDrift::input::Mouse::ScrollUp()) {
         camera.AddZoomCamera(0.1f);
+        render.UpdateViewMatrix();
     }
 }
 

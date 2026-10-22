@@ -1337,16 +1337,19 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                    polygonActorAlpha
                                                });
                 window->Show = false;
+                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
             } else if (fillColorWithOneColorOrEachVertexHaveAColor == 1) {
                 core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
                                                polygonActorSpeed,
                                                pointPositions.data(), pointColors);
                 window->Show = false;
+                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
             }
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
     } else if (radioButton == 1) {
         static std::optional<LDDrift::Actors::Polygon*> polygonActor = std::nullopt;

@@ -8,7 +8,7 @@ LDDrift::Window::Window() : renderer(nullptr) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     settings.title = "NONE";
@@ -131,10 +131,10 @@ void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int widt
     auto* currentWindow = static_cast<LDDrift::Window*>(glfwGetWindowUserPointer(window));
     currentWindow->settings.width = width;
     currentWindow->settings.height = height;
-    currentWindow->renderer->SetWidthScreen(width);
-    currentWindow->renderer->SetHeightScreen(height);
+    currentWindow->renderer->SetWidthScreen(width - PROJECT_WATCH_TOWER_X_SIZE);
+    currentWindow->renderer->SetHeightScreen(height - CONSOLE_Y_SIZE);
     currentWindow->renderer->RebuildShapes();
-    glViewport(0, 0, width, height);
+    glViewport(350, 180, width, height - CONSOLE_Y_SIZE);
 }
 
 LDDrift::VecCol LDDrift::Window::GetFillScreenColor() const {
