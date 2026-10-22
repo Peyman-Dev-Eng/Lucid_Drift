@@ -57,7 +57,8 @@ namespace LDDrift
                                int _radius,
                                int _speed,
                                const LDDrift::VecPos2D& pos,
-                               const LDDrift::VecCol& color);
+                               const LDDrift::VecCol& color,
+                               float thickness);
         bool DeleteCircleShape(const std::string& name);
         // polygon
         [[nodiscard]] bool FindPolygonWithName(const std::string& name) const;

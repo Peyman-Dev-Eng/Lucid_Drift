@@ -86,12 +86,25 @@ void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
     shapePTRs.insert(shape);
     const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
     std::vector<float> VTC = {};
-    if (shape->ShapeIsConvex()) {
-        const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
-        VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
+
+    if (const bool isOutline = !shape->IsFillShape() || shape->IsHaveThickness(); isOutline == true) {
+        const auto& points = shape->GetGlobalPoints();
+
+        VTC.reserve(points.size() * 3);
+
+        for (const LDDrift::VecPos2D& point : points) {
+            VTC.push_back(point.X);
+            VTC.push_back(point.Y);
+            VTC.push_back(0.0f);
+        }
     } else {
-        const LDDrift::Triangulation<LDDrift::ActorType::concave> triangulation(shape);
-        VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
+        if (shape->ShapeIsConvex()) {
+            const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
+            VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
+        } else {
+            const LDDrift::Triangulation<LDDrift::ActorType::concave> triangulation(shape);
+            VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
+        }
     }
     const std::size_t vertexCount = VTC.size() / 3;
     for (std::size_t vertex = 0; vertex < vertexCount; ++vertex) {
@@ -105,7 +118,9 @@ void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
         vertices.push_back(vertexColor[vertex % vertexColor.size()].A);
     }
     howToReadShapeData.push_back({
-        .drawType = shape->IsHaveThickness() ? LUCID_DRIFT_SHAPE_RENDER_AS_OUTLINE : LUCID_DRIFT_SHAPE_RENDER_AS_FILLED,
+        .drawType = shape->IsHaveThickness() || !shape->IsFillShape()
+                        ? LUCID_DRIFT_SHAPE_RENDER_AS_OUTLINE
+                        : LUCID_DRIFT_SHAPE_RENDER_AS_FILLED,
         .startIndex = indexOfFirstVertexInVertexArray, .count = vertexCount
     });
     indexOfFirstVertexInVertexArray += vertexCount;

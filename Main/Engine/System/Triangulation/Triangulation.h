@@ -3,6 +3,7 @@
 #define UPPER_BOUND 100
 #include <vector>
 #include <algorithm>
+#include <numbers>
 #include <Actors/Shapes/MainShape/Shape.h>
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 
@@ -18,7 +19,36 @@ namespace LDDrift
 
         static float Cross(const VecPos2D& a, const VecPos2D& b, const VecPos2D& c) {
             return (b.X - a.X) * (c.Y - a.Y) -
-                   (b.Y - a.Y) * (c.X - a.X);
+                (b.Y - a.Y) * (c.X - a.X);
+        }
+
+        void TrianglesForThickShapes(std::vector<float>& vertices) const {
+            const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+            const std::size_t pointCountOfShape = points.size();
+            const float angle = 360.0f / pointCountOfShape;
+            const float rad = angle * std::numbers::pi_v<float> / 180.0f;
+            const float halfThick = shape->GetThickness() / 2;
+            for (std::size_t point = 0; point < pointCountOfShape; ++point) {
+                const std::size_t currentPoint = point;
+                const std::size_t nextPoint = (point + 1) % pointCountOfShape;
+
+                LDDrift::Actors::Line line(points[currentPoint], points[nextPoint]);
+                line.SetThickness(halfThick * 2);
+                line.SetScreenSize(shape->GetScreenSize());
+
+                /*
+                 *
+                 *
+                 *   create shape out liner
+                 *
+                 *
+                 *
+                 *
+                 */
+
+
+
+            }
         }
 
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {

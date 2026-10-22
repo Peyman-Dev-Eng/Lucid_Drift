@@ -413,6 +413,8 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         return;
     }
     static int CheckBoxIsOn = 0;
+    static int thick = 1;
+    static int useThickForCircleShape = 0;
     static int circlePointCount = 45;
     static float redValueColor = 0;
     static float greenValueColor = 0;
@@ -494,6 +496,22 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
             alphaValueColor = 0;
         }
         ImGui::Separator();
+        ImGui::RadioButton("Without Thick## ignore Thickness for circle shape", &useThickForCircleShape, 0);
+        ImGui::SameLine();
+        ImGui::RadioButton("With Thick## set Thickness for circle shape", &useThickForCircleShape, 1);
+        if (useThickForCircleShape == 0) {
+            ImGui::Separator();
+        }
+        if (useThickForCircleShape == 1) {
+            ImGui::TextUnformatted("Enter thickness: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(545);
+            ImGui::InputInt("##Get Thick OF Circle Shape", &thick, 1, 1);
+            if (thick < 1) {
+                thick = 1;
+            }
+            ImGui::Separator();
+        }
         ImGui::TextUnformatted("Circle Speed: ");
         ImGui::SameLine();
         ImGui::SetNextItemWidth(110);
@@ -514,10 +532,16 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         ImGui::InputInt("##Y position", &yPos, 1, 1);
         ImGui::Separator();
         if (ImGui::Button("Create")) {
-            core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius,
-                                          circleSpeed,
-                                          {static_cast<float>(xPos), static_cast<float>(yPos)},
-                                          {redValueColor, greenValueColor, blueValueColor, alphaValueColor});
+            if (useThickForCircleShape == 0)
+                core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius,
+                                              circleSpeed,
+                                              {static_cast<float>(xPos), static_cast<float>(yPos)},
+                                              {redValueColor, greenValueColor, blueValueColor, alphaValueColor}, -1);
+            else if (useThickForCircleShape == 1)
+                core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius,
+                                              circleSpeed,
+                                              {static_cast<float>(xPos), static_cast<float>(yPos)},
+                                              {redValueColor, greenValueColor, blueValueColor, alphaValueColor}, static_cast<float>(thick));
             window->Show = false;
             std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }

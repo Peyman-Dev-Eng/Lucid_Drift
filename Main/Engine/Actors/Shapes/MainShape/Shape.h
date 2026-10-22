@@ -115,8 +115,6 @@ namespace LDDrift::Actors
         virtual ~Shape();
         [[nodiscard]] bool ShapeIsConvex() const;
         [[nodiscard]] bool ShapeIsConcave() const;
-
-    protected:
         [[nodiscard]] const LDDrift::VecPos2D& GetScreenSize() const;
     };
 }

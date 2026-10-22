@@ -59,9 +59,12 @@ LDDrift::Actors::Circle* LDDrift::Scene::GetCircle(const std::string& name) cons
 
 
 void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _pointCount, const int _radius,
-                                       const int _speed, const LDDrift::VecPos2D& pos, const LDDrift::VecCol& color) {
+                                       const int _speed, const LDDrift::VecPos2D& pos, const LDDrift::VecCol& color,
+                                       float thickness) {
     const CIRCLE_SHAPE_INFORMATION newCircle{.circleName = name, .circle = new LDDrift::Actors::Circle()};
     newCircle.circle->SetType<LDDrift::ActorType::convex>();
+    if (thickness != -1)
+        newCircle.circle->SetThickness(thickness);
     newCircle.circle->SetCirclePosition(pos);
     newCircle.circle->SetPointCount(_pointCount);
     newCircle.circle->SetScreenSize(core->window.GetViewportSize());
