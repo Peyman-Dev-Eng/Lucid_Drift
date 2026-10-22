@@ -1,8 +1,8 @@
 <div align="center">
 
-<img src="docs/images/lucid-drift-banner.png" alt="Lucid Drift — abstract 2D geometry and rendering banner" width="100%">
-
 # 🌊 Lucid Drift
+
+<img src="docs/images/lucid-drift-banner.png" alt="Lucid Drift — abstract 2D geometry and rendering banner" width="100%">
 
 ### *A free-flowing stream of imagination — with the clarity to build your own world.*
 
