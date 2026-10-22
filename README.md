@@ -1,17 +1,22 @@
 <div align="center">
-    
+
+<img src="docs/images/lucid-drift-banner.png" alt="Lucid Drift — abstract 2D geometry and rendering banner" width="100%">
+
 # 🌊 Lucid Drift
 
-**Lucid Drift — A free flow of imagination, with the clarity to create your own world.**
+### *A free-flowing stream of imagination — with the clarity to build your own world.*
 
-**A lucid exploration of modern C++ game engine design.**
+**A native C++ game-engine project exploring the foundations of 2D worlds, rendering, and an integrated editor.**
 
-[![C++](https://img.shields.io/badge/C%2B%2B-26-blue?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
+[![C++](https://img.shields.io/badge/C%2B%2B-26-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
 [![OpenGL](https://img.shields.io/badge/OpenGL-4.6-5586A4?style=for-the-badge&logo=opengl&logoColor=white)](https://www.opengl.org/)
-[![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20Linux-lightgrey?style=for-the-badge)]()
+[![CMake](https://img.shields.io/badge/CMake-4.3%2B-064F8C?style=for-the-badge&logo=cmake&logoColor=white)](https://cmake.org/)
 [![Status](https://img.shields.io/badge/status-experimental-orange?style=for-the-badge)]()
+[![Focus](https://img.shields.io/badge/focus-2D%20engine-7B61FF?style=for-the-badge)]()
 
-*Still growing. Already stable enough to drift.* 🌊
+[✨ Explore the source](https://github.com/Peyman-Dev-Eng/Lucid_Drift/tree/master) · [🐛 Report a bug](https://github.com/Peyman-Dev-Eng/Lucid_Drift/issues) · [💡 Suggest an idea](https://github.com/Peyman-Dev-Eng/Lucid_Drift/issues)
+
+*Still growing. Every system is another step toward a world of its own.* 🌌
 
 </div>
 
@@ -19,247 +24,296 @@
 
 ## 📖 Overview
 
-**Lucid Drift** is an experimental 2D game engine written in modern C++ with OpenGL and Dear ImGui.
-It's designed as a **learning / research project** for exploring modern engine architecture — a plugin-based runtime, a custom renderer, and an integrated editor.
+**Lucid Drift** is an experimental **2D game engine and editor written in C++26**, using OpenGL for rendering and Dear ImGui for its editor interface.
 
-> ⚠️ This is **not production-ready software**. Expect breaking changes between commits.
+The project brings together the parts of a small game-development workflow: rendering 2D geometry, browsing project files, editing source code, building a user game project, and loading its compiled module through an engine-facing API. The goal is not to imitate every feature of a mature commercial engine; it is to understand and build the underlying systems one piece at a time.
+
+> [!WARNING]
+> **Lucid Drift is a work in progress, not production-ready software.** APIs and workflows may change between commits, and some systems still need more testing—especially edge cases in geometry, camera transforms, input, and cross-platform support.
+
+## ✨ Features at a glance
+
+| System | What it brings | Status |
+|:--|:--|:--:|
+| 🎨 **OpenGL renderer** | A custom rendering path using OpenGL and GLSL shaders | Evolving |
+| 🔷 **2D shape system** | Circle, line, and polygon workflows | Evolving |
+| 📐 **Polygon triangulation** | Triangulation work for filled polygons, including concave shapes | In progress |
+| 🖥️ **Editor interface** | Editor windows and controls built with Dear ImGui | Evolving |
+| 🗂️ **Project Watch Tower** | Browse project folders and source files | Evolving |
+| 📝 **Embedded code editor** | Source editing through ImGuiColorTextEdit | Integrated / evolving |
+| 💡 **Code suggestions** | A custom keyword-based suggestion popup | In progress; not a full C++ language server |
+| 🛠️ **Project compilation** | Build a user game project through CMake | Available in the current workflow |
+| 🔌 **Engine API** | Call game lifecycle functions from a compiled module | Current Linux loading path |
+| ⌨️ **Input system** | Engine-level keyboard and mouse input work | Evolving |
+| 🎥 **Camera and transforms** | Keep world-space data separate from render-space conversion | In progress |
+
+The status labels describe ongoing development, not a guarantee that every edge case is supported.
+
+## 🧰 Technology stack
+
+- **C++26** — primary implementation language
+- **CMake** — project configuration and build system
+- **Ninja** — recommended generator for the commands below
+- **OpenGL 4.6 Core Profile / GLSL 4.60** — graphics and shaders
+- **GLFW** — window and OpenGL context management
+- **GLM** — vector and matrix mathematics
+- **Dear ImGui** — editor interface
+- **ImGuiColorTextEdit** — embedded source editor
+
+The repository's CMake configuration is the source of truth for required libraries and include paths. Dependencies can vary with the current branch and system setup.
 
 ---
 
-## ✨ Features
+## 🏗️ Project structure
 
-- 🎮 **Plugin-based game runtime** — games are compiled as shared libraries and hot-loaded
-- 🎨 **Custom OpenGL renderer** with GLSL shaders and batched draw calls
-- 🔷 **2D Shape system** — Circle, Polygon (convex & concave), and Line
-- 📐 **Polygon triangulation** — supports concave geometry
-- 🖥️ **Dear ImGui editor** with dockable windows
-- 📂 **Project explorer** & code buffer
-- 🛠️ **In-editor compilation pipeline**
-- ⌨️ **Basic input handling**
+The tree below highlights the main subsystems and how the code is organized. It is intentionally a subsystem-level view rather than a list of every source file; exact paths can change as the project evolves.
 
----
-
-## 🖼️ Project Structure
-
-<details>
-<summary><b>📁 Click to expand</b></summary>
+<details open>
+<summary><b>📁 Explore the codebase</b></summary>
 
 ```text
 Lucid_Drift/
+├── CMakeLists.txt                 # Root CMake configuration
+├── main.cpp                       # Application entry point
+├── glad.c                         # GLAD implementation, if present in this checkout
+├── glad/                          # OpenGL loader headers
 │
-├── 📄 CMakeLists.txt
-├── 📄 main.cpp
-├── 📄 glad.c
-│
-├── 📁 glad/
-│   └── 📁 include/glad/
-│
-├── 📁 Main/
-│   ├── 📄 CMakeLists.txt
+├── Main/
+│   ├── CMakeLists.txt
+│   ├── Assertion/                  # Assertion helpers
+│   ├── EngineLibraries/
+│   │   ├── Angle/                  # Angle utilities
+│   │   ├── ShapeData/              # Shape-related data
+│   │   ├── VecColor/               # Color utilities
+│   │   └── VecPosition/            # 2D position/vector utilities
 │   │
-│   ├── 📁 Assertion/
-│   │   └── Assertions
-│   │
-│   ├── 📁 EngineLibraries/
-│   │   ├── 📁 Angle/
-│   │   ├── 📁 ShapeData/
-│   │   ├── 📁 VecColor/
-│   │   └── 📁 VecPosition/
-│   │
-│   └── 📁 Engine/
+│   └── Engine/
+│       ├── Actors/
+│       │   ├── Line/               # Line shape
+│       │   └── Shapes/
+│       │       ├── MainShape/      # Shared shape foundation
+│       │       ├── Circle/         # Circle shape
+│       │       └── Polygon/        # Polygon shape
 │       │
-│       ├── 📁 API/
-│       │   └── EngineAPI                  # Runtime plugin system
+│       ├── Renderer/               # OpenGL rendering
+│       ├── API/                    # Engine-facing game API
+│       ├── Functions/              # Shared engine functions
+│       ├── SubSystems/
+│       │   ├── GUI_LOGIC/          # GUI-facing logic
+│       │   ├── PointHitTesting/    # Point / shape hit testing
+│       │   ├── ProjectExplorer/    # Project Watch Tower / file browsing
+│       │   ├── Transform/          # Transform-related logic
+│       │   └── WR_SettingSystem/   # Window/render settings
 │       │
-│       ├── 📁 Actors/
-│       │   ├── 📁 Line/
-│       │   └── 📁 Shapes/
-│       │       ├── 📁 MainShape/          # Base Shape
-│       │       ├── 📁 Circle/
-│       │       └── 📁 Polygon/
-│       │
-│       ├── 📁 Functions/
-│       │
-│       ├── 📁 Renderer/                   # OpenGL Renderer
-│       │
-│       ├── 📁 SubSystems/
-│       │   ├── 📁 GUI_lOGIC/
-│       │   ├── 📁 PointHitTesting/
-│       │   ├── 📁 ProjectExplorer/        # ProjectWatchTower
-│       │   ├── 📁 Transform/
-│       │   └── 📁 WR_SettingSystem/
-│       │
-│       └── 📁 System/
-│           ├── 📁 Compilation/            # Compile system
-│           ├── 📁 Core/                   # Main engine coordinator
-│           ├── 📁 GUI/                    # Dear ImGui
-│           ├── 📁 Input/
-│           ├── 📁 Scene/
-│           ├── 📁 Triangulation/
-│           └── 📁 Window/
+│       └── System/
+│           ├── Compilation/        # User-project build and module loading
+│           ├── Core/               # Main engine coordination
+│           ├── GUI/                # Dear ImGui windows and editor UI
+│           ├── Input/              # Keyboard and mouse input
+│           ├── Scene/               # Scene-related functionality
+│           ├── Triangulation/      # Polygon triangulation
+│           └── Window/              # Window/context management
 │
-└── 📁 ThirdParty/
-    └── 📁 imgui/                          # Dear ImGui (must be added)
+└── ThirdParty/
+    └── ImGuiColorTextEdit/         # Embedded code-editor component
 ```
 
 </details>
 
+### 🧭 Where should I start?
+
+| If you're interested in… | Start with… |
+|:--|:--|
+| How the project is built | `CMakeLists.txt` and `Main/CMakeLists.txt` |
+| 2D geometry | `Actors/Shapes/`, `Actors/Line/`, and `Triangulation/` |
+| Rendering | `Renderer/` |
+| Editor windows | `System/GUI/` and `SubSystems/GUI_LOGIC/` |
+| Finding project files | `SubSystems/ProjectExplorer/` |
+| Running user-written game code | `API/` and `System/Compilation/` |
+| Input and window behavior | `System/Input/` and `System/Window/` |
+
+> [!TIP]
+> For the exact source paths and build targets in your checkout, check the current `CMakeLists.txt` files. The structure shown here is a guide to the main responsibilities, not a promise that every folder name is identical across branches.
+
 ---
 
-## 🔌 Game Plugin API
+## 🔌 Game module API
 
-Writing gameplay logic in Lucid Drift needs only **three functions**.
-Compile your code → the engine loads it → the game begins. 🚀
+The current game-module workflow connects user-written C++ code to the engine through three lifecycle functions:
+
+- `BeginPlay()` — called when gameplay starts
+- `Tick(float deltaTime)` — called during the game update loop
+- `EndPlay()` — called when gameplay ends
+
+### Example
 
 ```cpp
-#if defined(_WIN32)
-    #define LUCID_DRIFT_GAME_EXPORT __declspec(dllexport)
-#else
-    #define LUCID_DRIFT_GAME_EXPORT __attribute__((visibility("default")))
-#endif
+#include <EngineAPI.h>
 
-extern "C" {
-
-LUCID_DRIFT_GAME_EXPORT void BeginPlay() {
-    // Called once when gameplay starts
+extern "C" void BeginPlay()
+{
+    // Initialize game-specific state.
 }
 
-LUCID_DRIFT_GAME_EXPORT void Tick(float deltaTime) {
-    // Called every frame
+extern "C" void Tick(float deltaTime)
+{
+    // Update game logic using the elapsed frame time.
     (void)deltaTime;
 }
 
-LUCID_DRIFT_GAME_EXPORT void EndPlay() {
-    // Called when gameplay ends
-}
-
+extern "C" void EndPlay()
+{
+    // Release game-specific state.
 }
 ```
 
-### 📜 The Golden Rules
+### 📜 Important rules
 
-| ✅ | Rule |
-|:--:|:-----|
-| 🔤 | Function names must be **exactly** `BeginPlay`, `Tick`, `EndPlay` |
-| 🌐 | Must use `extern "C"` (no name mangling) |
-| ⏱️ | `Tick` **must** take a `float` parameter (delta time) |
-| 📦 | Build as a **shared library** → `lib<ProjectName>.so` (Linux) / `<ProjectName>.dll` (Windows) |
-| 🪟 | On Windows, export symbols with `__declspec(dllexport)` |
-| 🔗 | Engine loads the library after compilation and calls the lifecycle through the **EngineAPI** subsystem |
+| Rule | Why it matters |
+|:--|:--|
+| Use the exact names `BeginPlay`, `Tick`, and `EndPlay` | The loader looks up these entry points by name. |
+| Keep `extern "C"` | Prevents C++ name mangling from changing the symbol names. |
+| Use the exact `Tick(float)` signature | A different parameter type produces a different symbol/signature. |
+| Build the game project as a shared library | The engine must be able to load the compiled module. |
+| Match the expected name and output directory | The loader must find the generated library. |
 
-### 🎬 Lifecycle
+On the current Linux loading path, the expected library name follows `lib<ProjectName>.so` (for example, `libTestProject.so`). The engine uses this shared library and the lifecycle entry points to connect user code to the runtime. Do not assume the same loading behavior on Windows until the platform-specific loader path has been verified in the branch you are using.
+
+### 🎬 Lifecycle at a glance
 
 ```text
-┌─────────────┐     ┌──────────────┐     ┌─────────────┐
-│  BeginPlay  │ ──▶ │     Tick     │ ──▶ │   EndPlay   │
-│   (once)    │     │ (every frame)│     │   (once)    │
-└─────────────┘     └──────┬───────┘     └─────────────┘
-                           │
-                    ↻ loops until quit
+┌─────────────┐        ┌────────────────┐        ┌─────────────┐
+│  BeginPlay  │ ─────▶ │ Tick(deltaTime)│ ─────▶ │   EndPlay   │
+│   once      │        │   each frame   │        │   once      │
+└─────────────┘        └───────┬────────┘        └─────────────┘
+                               │
+                               └── repeats while gameplay runs
 ```
 
 ---
 
-## 🧩 Key Subsystems
+## 🎨 Rendering & geometry
 
-### 🔷 Shape System
+Lucid Drift's rendering foundation is built around a GLFW-created window and OpenGL context, with GLSL shaders handling the GPU-side rendering work.
 
-| Shape | Status | Notes |
-|:------|:------:|:------|
-| **Base Shape** | ✅ | Foundation class for all shapes |
-| **CircleShape** | ✅ | Smooth, fast, trivial triangulation |
-| **Polygon** | ✅ | Supports **convex & concave** via Triangulation |
-| **Line** | ✅ | Lightweight primitive for outlines & grids |
+- **Circles** are represented by polygonal geometry; the point count affects how smooth the outline appears.
+- **Lines** have their own shape and configuration workflow.
+- **Polygons** use vertex data and triangulation for filled rendering.
+- **Concave geometry** requires extra care during triangulation and remains an important area to test.
+- **World and screen coordinates** are intended to remain separate: shape data belongs to the world, while camera/viewport transforms determine how it is rendered.
 
-### 🎨 Renderer
-
-- 🖌️ Custom **GLSL shaders**
-- 📦 **Batched rendering** — shapes & lines share a single VBO
-- 🎭 Supports **filled** and **outline** modes
-- 🔄 Auto-rebuilds geometry when shapes change
-
-### 🖥️ Editor / GUI
-
-- 🪟 Multiple **dockable windows**
-- 📂 **Project explorer** integration
-- 📝 **Code buffer** for viewing & editing
-- 📺 **Console-like** output redirection
-
-### ⚙️ Project & Compilation Pipeline
+### 🔭 Coordinate flow
 
 ```text
-  ┌──────────────┐      ┌───────────────┐      ┌──────────────┐
-  │ Create/Open  │ ───▶ │  Write Code   │ ───▶ │  Compile →   │
-  │   Project    │      │  in Editor    │      │  .so / .dll  │
-  └──────────────┘      └───────────────┘      └──────┬───────┘
-                                                       │
-                                                       ▼
-  ┌──────────────┐      ┌───────────────┐      ┌──────────────┐
-  │   EndPlay    │ ◀─── │  Tick Loop    │ ◀─── │  BeginPlay   │
-  └──────────────┘      └───────────────┘      └──────────────┘
+Shape data in world space
+          │
+          ▼
+ Camera / viewport transform
+          │
+          ▼
+   Renderer vertex data
+          │
+          ▼
+ OpenGL buffers + shaders
+          │
+          ▼
+     Rendered frame
 ```
+
+This is a conceptual view of the pipeline. Camera behavior, zoom, viewport conversion, and edge cases are still under active development.
 
 ---
 
-## 🚦 Development Status & Limitations
+## 🚀 Build the engine
 
-> Lucid Drift has reached a **stable foundation** — but it is **not a finished engine**.
-> Treat it as a **research / learning / experimental** project.
+These commands are a starting point for a Linux development environment. Confirm the dependencies against the CMake errors and the current build configuration.
 
-### ✅ What's Stable
+### 1. Install the basic tools (Arch Linux)
 
-- 🏗️ Core architecture & main loop
-- 🪟 Window + OpenGL context creation
-- 🔷 Basic 2D shape rendering (Circle + Polygon)
-- 📐 Polygon triangulation
-- 🖥️ Dear ImGui editor integration
-- 📁 Project file/folder management
-- 🛠️ Compilation triggering & shared-library loading
-- 🔌 Runtime lifecycle API (`BeginPlay` / `Tick` / `EndPlay`)
-- ⌨️ Basic input handling
+```bash
+sudo pacman -S --needed base-devel git cmake ninja glfw glm mesa libglvnd
+```
 
-### 🧪 What's Incomplete / Experimental
+This is not guaranteed to be an exhaustive dependency list for every revision. Install any additional development packages required by your checkout.
 
-- ✏️ Full shape editing tools & property panels
-- 🧭 Advanced transform system
-- 💥 Physics / collision *(beyond basic point hit testing)*
-- 🎥 Camera system
-- 📦 Asset pipeline *(textures, fonts, audio, …)*
-- 💾 Serialization of scenes / projects
-- 🌍 Cross-platform polish & packaging
-- 📚 Documentation of all internal APIs
-- ⚡ Performance optimizations & batching improvements
-- 🛡️ Complete error handling & recovery paths
+### 2. Clone the repository
 
-> ⚠️ **Expect breaking changes** in internal APIs between commits.
+```bash
+git clone --branch master --single-branch https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
+cd Lucid_Drift
+```
+
+### 3. Configure
+
+```bash
+cmake -S . -B BUILD -G Ninja -DCMAKE_BUILD_TYPE=Debug
+```
+
+### 4. Compile
+
+```bash
+cmake --build BUILD --parallel 14
+```
+
+Adjust the parallel job count to suit your machine. The application target is named `Lucid_Drift`; exact output paths are controlled by the active CMake configuration. Run the executable from the path reported by the build system.
+
+> [!NOTE]
+> The project requests an OpenGL 4.6 Core Profile context. Building successfully does not guarantee that the active graphics driver can create this context at runtime.
+
+---
+
+## 🚦 Development status
+
+Lucid Drift is being built incrementally. Current areas of work include:
+
+### 🌱 Actively evolving
+
+- Improving circle, line, and polygon rendering and validating triangulation against difficult inputs.
+- Refining camera movement, zoom, viewport handling, and world-to-screen conversion.
+- Improving the editor workflow for browsing, editing, compiling, and running game projects.
+- Developing keyboard/mouse input handling and editor key selection.
+- Improving keyword suggestions while keeping the source editor responsive.
+- Making build and module-loading errors clearer and easier to diagnose.
+
+### 🧪 Not presented as finished
+
+A complete physics engine, audio system, animation framework, asset pipeline, scene serialization format, visual scripting system, and production-ready packaging workflow are **not claimed as finished features** by this README.
+
+> ⚠️ Features may be incomplete, platform-specific, or subject to breaking changes. Check the source and recent commits to see the state of a particular subsystem.
 
 ---
 
 ## 🩺 Troubleshooting
 
-| 🚨 Problem | 💡 Possible Solution |
-|:-----------|:---------------------|
-| CMake cannot find GLFW / fmt | Install dev packages or set `CMAKE_PREFIX_PATH` |
-| OpenGL context creation fails | Ensure your GPU driver supports **OpenGL 4.6** |
-| ImGui not found | Place Dear ImGui sources in `ThirdParty/imgui` |
-| Library loads but entry points missing | Check `extern "C"`, exact signatures, and export visibility |
-| Build fails with C++26 features | Use a recent compiler (**GCC 14+**, **Clang 18+**, latest **MSVC**) |
-| Shapes not rendering | Check they're added to the Renderer and triangulation succeeded |
+| Problem | What to check |
+|:--|:--|
+| CMake cannot find a dependency | Read the first relevant CMake error; check installed development packages and include/library paths. |
+| The compiler rejects a C++26 feature | Verify the compiler version selected by CMake, not only the compiler installed on your system. |
+| OpenGL context creation fails | Confirm the active driver exposes OpenGL 4.6 and supports the requested context. |
+| A shape does not render correctly | Check the input points, generated vertices, triangulation output, and draw mode. |
+| A game module builds but does not load | Check the exact shared-library filename, output directory, and exported entry-point names. |
+| A lifecycle function cannot be found | Confirm the function name, `extern "C"`, and exact `Tick(float)` signature. |
+| ImGui reports an unfinished frame | Trace the order of `NewFrame()`, `Render()`, and the backend drawing calls; do not add a second render call blindly. |
+
+When reporting a bug, include your operating system, compiler and CMake versions, the build command, steps to reproduce, and the first relevant error or runtime log.
 
 ---
 
-## 🤝 Contributing & Feedback
+## 🤝 Contributing & feedback
 
-This is primarily a personal experimental project by **[Peyman-Dev-Eng](https://github.com/Peyman-Dev-Eng)**.
-Bug reports, architectural suggestions, and pull requests are **welcome**! 🌱
+Lucid Drift is a personal experimental project by **[Peyman-Dev-Eng](https://github.com/Peyman-Dev-Eng)**. Bug reports, focused fixes, and architectural suggestions are welcome. 🌱
 
-When reporting an issue, please include:
+When opening an issue, please include:
 
-- 🖥️ Operating system
-- 🛠️ Compiler + CMake versions
-- 🎮 Graphics driver / OpenGL version
-- 🔁 Steps to reproduce
-- 📋 Relevant build or runtime logs
+- 🖥️ Operating system and compiler version
+- 🛠️ CMake version and build command
+- 🎮 GPU / OpenGL information for graphics problems
+- 🔁 Minimal steps to reproduce the issue
+- 📋 Relevant build output or runtime logs
+
+## 📄 License
+
+Check the repository's `LICENSE` file for the applicable license and reuse terms. Third-party components may have their own licenses.
 
 ---
 
@@ -267,10 +321,10 @@ When reporting an issue, please include:
 
 ### 🌊 Lucid Drift
 
-*A lucid exploration of modern C++ game engine design.*
+*Build the systems. Shape the geometry. Create your world.*
 
-**Still growing. Already stable enough to drift.**
+**Still growing. Always drifting forward.**
 
-⭐ If you find this project interesting, consider giving it a star!
+⭐ If this project interests you, consider giving the repository a star!
 
 </div>
