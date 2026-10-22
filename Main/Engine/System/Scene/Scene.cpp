@@ -191,6 +191,7 @@ bool LDDrift::Scene::DeletePolygonShape(const std::string& name) {
         if (polygonName == name) {
             polygonShapes.erase(polygonShapes.begin() + pos);
             core->render.RemoveShapeFromRender(polygon);
+            core->render.UpdateShapeData();
             return true;
         }
         ++pos;
@@ -204,6 +205,7 @@ bool LDDrift::Scene::DeleteLineShape(const std::string& name) {
         if (lineName == name) {
             lines.erase(lines.begin() + pos);
             core->render.RemoveLineFromRender(line);
+            core->render.UpdateShapeData();
             return true;
         }
         ++pos;
@@ -217,6 +219,7 @@ bool LDDrift::Scene::DeleteCircleShape(const std::string& name) {
         if (circleName == name) {
             circleShapes.erase(circleShapes.begin() + pos);
             core->render.RemoveShapeFromRender(circle);
+            core->render.UpdateShapeData();
             return true;
         }
         ++pos;

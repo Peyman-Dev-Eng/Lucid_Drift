@@ -35,6 +35,8 @@ void LDDrift::Core::InitCore() {
     scene.SetCorePTR(this);
     currentScene = &scene;
     codePathfinder.initializeCodePathfinder();
+    camera.InitializeCameraSystem(this);
+    render.SetCorePTR(this);
 }
 
 void LDDrift::Core::Begin() {
@@ -58,6 +60,18 @@ void LDDrift::Core::EngineHandler() {
         }
         gui.EndRenderGUI();
         window.Update();
+        /*if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A)) {
+            camera.MoveLeft();
+        }
+        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D)) {
+            camera.MoveRight();
+        }
+        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_W)) {
+            camera.MoveUp();
+        }
+        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S)) {
+            camera.MoveDown();
+        }*/
         LDDrift::input::Keyboard::Update();
         LDDrift::input::Mouse::Update();
         std::this_thread::sleep_for(std::chrono::milliseconds(16));

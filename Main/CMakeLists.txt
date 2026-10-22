@@ -346,6 +346,8 @@ add_library(Engine SHARED
         # Write and Read Setting System
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.cpp
         Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.h
+        Engine/System/Camera/Camera.cpp
+        Engine/System/Camera/Camera.h
 )
 
 target_include_directories(Engine PUBLIC

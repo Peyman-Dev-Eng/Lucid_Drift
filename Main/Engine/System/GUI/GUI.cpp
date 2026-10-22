@@ -977,10 +977,12 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
             core->scene.CreateLineActor(std::string(window->searchBuffer), thickness, startPos, endPos,
                                         {color[0], color[1], color[2], color[3]});
             window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
+            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
     } else if (radioButton == 1) {
         static std::optional<LDDrift::Actors::Line*> line = std::nullopt;
@@ -1095,9 +1097,11 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
                     line.value()->CreateTriangles();
                     core->scene.ReSendShapesToRender();
                     window->Show = false;
+                    std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
                 }
                 if (ImGui::Button("Close")) {
                     window->Show = false;
+                    std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
                 }
             } else {
                 findLineWithName = false;
@@ -1124,6 +1128,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         if (ImGui::Button("Close")) {
             window->Show = false;
             std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            foundLine = std::nullopt;
         }
         if (foundLine.has_value() && foundLine.value() == false) {
             ImGui::TextUnformatted(("can not find line with name -> " + std::string(window->searchBuffer)).c_str());
@@ -1131,6 +1136,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
             core->scene.DeleteLineShape(std::string(window->searchBuffer));
             window->Show = false;
             std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            foundLine = std::nullopt;
         }
     }
 }
@@ -1488,6 +1494,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         if (ImGui::Button("Close")) {
             window->Show = false;
             std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            foundPolygon = std::nullopt;
         }
         if (foundPolygon.has_value() && foundPolygon.value() == false) {
             ImGui::TextUnformatted(("can not find polygon with name -> " + std::string(window->searchBuffer)).c_str());
@@ -1495,6 +1502,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
             core->scene.DeletePolygonShape(std::string(window->searchBuffer));
             window->Show = false;
             std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            foundPolygon = std::nullopt;
         }
     }
 }

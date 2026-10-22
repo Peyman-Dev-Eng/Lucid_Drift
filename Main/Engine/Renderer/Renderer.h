@@ -4,6 +4,7 @@
 #include <vector>
 #include <ShapeData.h>
 #include <Actors/Line/Line.h>
+#include <glm/gtc/type_ptr.hpp>
 #include <set>
 #include <System/Triangulation/Triangulation.h>
 #define LUCID_DRIFT_SHAPE_RENDER_AS_FILLED 1
@@ -27,6 +28,7 @@ namespace LDDrift
         };
 
     private: // opengl data
+        LDDrift::Core* core;
         std::set<LDDrift::Actors::Line*> linePTRs;
         std::set<LDDrift::Actors::Shape*> shapePTRs;
         std::vector<ReadShapeVertices> howToReadShapeData;
@@ -50,6 +52,7 @@ namespace LDDrift
         explicit Renderer(const int& widthScreen = 500 /* Width screen */,
                           const int& heightScreen = 500 /* height screen */);
         void Initialize();
+        void SetCorePTR(LDDrift::Core* corePTR);
         void RebuildShapes();
         void SetWidthScreen(int WS);
         void SetHeightScreen(int HS);

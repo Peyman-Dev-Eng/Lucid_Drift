@@ -1,15 +1,19 @@
 #include "Renderer.h"
 
+#include "System/Core/Core.h"
+
 void LDDrift::Renderer::SetVertexShaderSource() {
     VertexShaderSource = R"(
     #version 460 core
     layout (location = 0) in vec3 aPos;
     layout (location = 1) in vec4 aColor;
 
+    uniform mat4 uViewProjection;
+
     out vec4 outColor;
 
     void main() {
-        gl_Position = vec4(aPos, 1.0);
+        gl_Position = uViewProjection * vec4(aPos, 1.0);
         outColor = aColor;
     }
 )";
@@ -65,6 +69,14 @@ void LDDrift::Renderer::Initialize() {
     // create vertex array
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
+
+    // init uniform mat4 uViewProjection in Vertex shader source
+    LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
+    glUseProgram(program);
+    const GLint viewProjectionLocation = glGetUniformLocation(program, "uViewProjection");
+    const glm::mat4 viewProjection = core->camera.GetViewMatrix() * core->camera.GetProjectionMatrix(
+        viewPortSize.X, viewPortSize.Y);
+    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, glm::value_ptr(viewProjection));
 }
 
 void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
@@ -298,4 +310,8 @@ void LDDrift::Renderer::RemoveLineFromRender(LDDrift::Actors::Line* line) {
 
 void LDDrift::Renderer::RemoveShapeFromRender(LDDrift::Actors::Shape* shape) {
     shapePTRs.erase(shape);
+}
+
+void LDDrift::Renderer::SetCorePTR(LDDrift::Core* corePTR) {
+    core = corePTR;
 }

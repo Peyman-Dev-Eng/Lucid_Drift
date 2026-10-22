@@ -24,6 +24,7 @@
 #include "API/EngineAPI.h"
 #include <System/Scene/Scene.h>
 #include <CodePathfinder.h>
+#include <System/Camera/Camera.h>
 
 namespace LDDrift
 {
@@ -39,6 +40,7 @@ namespace LDDrift
 
     public:
         // data
+        LDDrift::Camera camera;
         LDDrift::Window window;
         LDDrift::Renderer render;
         LDDrift::ProjectWatchTower projectWatchTower;
