@@ -1,5 +1,18 @@
-Lucid Drift
-Lucid Drift — A free-flowing stream of imagination, with the clarity to build your own world.
+<div align="center">
+
+🌌 Lucid Drift
+A free-flowing stream of imagination — with the clarity to build your own world.
+A native C++ 2D game engine and editor, built to turn code into worlds.
+
+
+
+
+
+✨ Explore the source · 🐛 Report a bug · 💡 Suggest an idea
+</div>
+
+[!IMPORTANT]
+A note about screenshots: This README uses badges and diagrams for visual structure. Add real screenshots from the current editor to the repository (for example under docs/images/) and link them here once those images are committed. No mock screenshots are presented as real engine output.
 
 Lucid Drift is an experimental, native 2D game engine and editor written in C++. The project brings together an OpenGL-based renderer, a Dear ImGui editor interface, project browsing, CMake-driven game-project builds, and an engine API for running user-written C++ game code.
 
@@ -7,7 +20,12 @@ The goal is to create a development environment where the developer can work wit
 [!WARNING]
 Lucid Drift is a work in progress. It is not yet a finished or production-ready game engine. Some systems are implemented, others are actively being developed, and public interfaces or project formats may change. A feature mentioned below should not be interpreted as a guarantee that every edge case is handled or that the feature is stable on every platform.
 
-Table of contents
+<div align="center">
+
+🧱 Build it.   🎨 Shape it.   💻 Code it.   🌍 Create your world.
+</div>
+
+🧭 Table of contents
 - Project goals
 - Feature overview
 - Technology stack
@@ -24,7 +42,22 @@ Table of contents
 - Troubleshooting
 - Contributing
 - License
-Project goals
+📸 Screenshots & visuals
+The best way to show Lucid Drift is with real screenshots from the running editor. When you add captures to the repository, keep them in a stable folder such as docs/images/ and use relative links so they work for anyone who clones the project.
+
+Suggested gallery layout:
+docs/
+└── images/
+    ├── editor-overview.png       # Main editor and its panels
+    ├── project-watch-tower.png   # Project browser
+    ├── shape-editor.png          # Circle / polygon configuration
+    └── code-editor.png           # Embedded source editor
+Then add the committed screenshots here:
+![Lucid Drift editor overview](docs/images/editor-overview.png)
+![Project Watch Tower](docs/images/project-watch-tower.png)
+![Shape editor](docs/images/shape-editor.png)
+These are suggested filenames, not files that currently exist. Replace them with the actual screenshots and paths before uncommenting the image links. This avoids broken images or misleading mockups in the project README.
+🎯 Project goals
 Lucid Drift is being developed around a few core ideas:
 - C++-first development. Game behavior is intended to be authored in C++, with a small lifecycle API connecting user code to the engine.
 - A native editor. The editor is built with Dear ImGui and runs alongside the rendering and project-management systems.
@@ -32,7 +65,7 @@ Lucid Drift is being developed around a few core ideas:
 - A clear separation between engine and game code. The engine/editor is built as its own program, while a game project is built separately and, on the Linux loading path, produced as a shared library that the engine can load.
 - Incremental development. Rendering, geometry, camera behavior, the editor, input, and the game-module workflow are developed as distinct parts that can evolve over time.
 Lucid Drift is primarily a learning and engineering project. Its architecture and supported workflows should be evaluated against the current source, not against the feature set of a mature engine.
-Feature overview
+🧩 Feature overview
 The table below describes the current development areas and deliberately distinguishes active work from stable, completed functionality.
 Area	Current scope	Status
 2D rendering	OpenGL rendering for primitive geometry	Implemented and evolving
@@ -51,7 +84,7 @@ Camera / coordinate conversion	Keep world-space shape data separate from render-
 This is not a claim that every item is complete, portable, or free of bugs. In particular, robust triangulation for every polygon, stable camera behavior, comprehensive input coverage, and production-quality project/module management should not be assumed without testing the exact revision being used.
 What is not promised yet
 Do not assume that the current project provides a complete physics engine, audio system, animation framework, texture/asset pipeline, scene serialization format, visual scripting system, or production-ready packaging workflow. These are not presented here as finished features.
-Technology stack
+🛠️ Technology stack
 Technology	Role
 C++26	Primary implementation language configured by the project
 CMake	Configuration and build-system generation
@@ -66,7 +99,7 @@ CMake-built shared libraries / dlopen path	Current Linux game-module build and l
 
 
 The root CMake configuration is the authoritative source for the exact dependency setup. Some third-party code may be kept in the repository, while other dependencies may be expected from the host system. If a dependency is missing, consult the CMake error and the relevant CMake files rather than assuming every library is installed or bundled in the same way.
-Requirements
+📋 Requirements
 Before building, check that your system has:
 - A C++ compiler with the C++26 language features required by the current source.
 - CMake 4.3 or newer, matching the current minimum version configured by the project.
@@ -85,7 +118,7 @@ git --version
 cmake --version
 ninja --version
 c++ --version
-Build the engine
+⚙️ Build the engine
 Run the commands from the repository root — the directory containing the top-level CMakeLists.txt.
 1. Clone the repository
 git clone --branch master --single-branch https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
@@ -110,13 +143,13 @@ After changing CMake files or switching revisions, rerun configuration and then 
 cmake -S . -B BUILD -G Ninja -DCMAKE_BUILD_TYPE=Debug
 cmake --build BUILD --parallel 14
 If the build directory contains stale configuration from a different generator, compiler, or source checkout, create a new build directory rather than mixing configurations. For example, use BUILD-debug or BUILD-clang.
-Run the editor
+🚀 Run the editor
 After the build succeeds, run the Lucid_Drift executable from the path reported by the build system. If the executable is located directly inside BUILD, the command is:
 ./BUILD/Lucid_Drift
 If it is emitted into another configured output directory, use that path instead. Launch the program from a terminal while debugging so that runtime errors and diagnostic output remain visible.
 
 The current renderer requests an OpenGL 4.6 Core Profile context. A system can successfully compile the program and still fail at runtime if the active driver or GPU cannot provide the required context. Verify the actual OpenGL version exposed by the driver if the window or renderer fails during initialization.
-Using the editor
+🖥️ Using the editor
 The editor brings together the engine's project-facing tools and rendering-related controls. Window names and workflows can change as the interface develops; the following are the main areas present in the current development work.
 Project browsing
 Project Watch Tower is the project/file-browsing subsystem. It is responsible for browsing directories and files and for reporting file selections to the editor. The GUI owns the ImGui window and its presentation; project browsing logic is kept separate from the general window-management responsibilities.
@@ -137,7 +170,7 @@ Embedded source editor and suggestions
 The embedded editor is based on ImGuiColorTextEdit. The project also contains work on a custom keyword-suggestion mechanism intended to propose likely completions from the text being edited.
 
 These suggestions should not be confused with full C++ semantic completion. Correct C++ completion requires understanding scopes, overloads, types, templates, macros, included headers, and the active build configuration; the custom suggestion system is an evolving editor feature rather than a replacement for clangd or another language server.
-Rendering and coordinate spaces
+🎨 Rendering and coordinate spaces
 Lucid Drift's current graphics foundation uses GLFW to establish a window and OpenGL context, then renders primitive geometry through its renderer and shaders. The renderer uses a modern OpenGL core context and GLSL 4.60 shaders.
 Primitive geometry
 - Circles are represented using a configurable set of points and rendered as polygonal geometry. Increasing the point count can make the approximation smoother, at the cost of additional geometry.
@@ -168,7 +201,7 @@ OpenGL buffers and GLSL shaders
         v
 Rendered frame
 This diagram describes the conceptual flow; it is not a promise that every stage is already implemented as a separate public API.
-Creating a game module
+🕹️ Creating a game module
 The engine/editor and a user-created game project are separate build contexts:
 - Engine build: compiles the Lucid_Drift application and the engine's own components.
 - Game-project build: compiles your project's C++ source into a shared library that the engine can load using its current module-loading workflow.
@@ -215,24 +248,42 @@ Keep exported signatures exact. A function with a different parameter list is a 
 [!NOTE]
 The shared-library naming and dlopen workflow described here are specific to the current Linux path. Equivalent behavior on Windows or macOS should not be assumed unless that platform's loader and build implementation have been verified in the source.
 
-Project structure
-The source tree is evolving, so the table below is a logical map of responsibilities rather than a guarantee of every exact directory or filename in every revision.
-Component / subsystem	Responsibility
-Core / engine handler	Coordinates engine execution and connects the runtime systems.
-Window and renderer	Creates the rendering context and manages the OpenGL rendering path.
-Shape systems	Store and configure primitive geometry such as circles, lines, and polygons.
-Camera / coordinate conversion	Translates world-space data into the coordinate system used for rendering.
-GUI	Creates and manages the Dear ImGui editor windows and controls.
-Project Watch Tower	Browses project files and directories and supplies file selections to the editor.
-Embedded editor	Provides source editing through ImGuiColorTextEdit and evolving code suggestions.
-Compile / project loading	Starts the user project's CMake build and loads the resulting library through the engine's module workflow.
-Engine API	Defines the entry points used to start, tick, and stop user game code.
-Input	Provides keyboard/mouse input handling, including platform-specific implementation work.
-Third-party components	Contains or references external components used by the renderer and editor.
+🗂️ Project structure
+The repository is organized around the engine, its runtime systems, the editor, and third-party components. The tree below is a high-level guide to the codebase, not a verbatim dump of every path in the current commit; check the repository browser for exact filenames.
+Lucid_Drift/
+├── CMakeLists.txt                 # Top-level CMake configuration
+├── README.md                      # Project overview and setup guide
+├── Main/                          # Main application and engine implementation
+│   ├── Core/                      # Core runtime / engine coordination
+│   ├── Engine/                    # Engine systems
+│   │   ├── System/
+│   │   │   └── Input/             # Keyboard and mouse input
+│   │   ├── Renderer/              # OpenGL rendering path
+│   │   ├── Window/                # Window and graphics-context setup
+│   │   └── ...                    # Other engine subsystems
+│   ├── GUI/                       # Dear ImGui editor and window logic
+│   ├── Compile/                   # User-project build / module loading
+│   └── ...                        # Additional engine modules
+├── EngineAPI/                     # Public-facing game lifecycle API
+├── ThirdParty/                    # External libraries / embedded components
+│   └── ImGuiColorTextEdit/        # Embedded source-editor component
+└── BUILD/                         # Local generated build output (not source)
+What the main areas do
+Path / subsystem	Purpose
+Main/	Main engine implementation and runtime code.
+Main/Engine/	Engine-level systems such as windowing, rendering, input, and geometry-related functionality.
+Main/GUI/	Editor windows, controls, project-facing workflows, and ImGui integration.
+Main/Compile/	Builds user game projects and coordinates loading of the resulting module.
+EngineAPI/	Interface between the engine runtime and user-authored game code. Confirm the exact include path in the current CMake configuration.
+ThirdParty/	Third-party dependencies or components used by the project.
+ThirdParty/ImGuiColorTextEdit/	Text editor component used for embedded C++ source editing.
+BUILD/	Example local build directory. Generated output should normally stay out of version control.
 
 
-When changing the architecture, prefer documenting the real dependency direction in code and CMake rather than adding new responsibilities to a subsystem solely because it is convenient from the GUI.
-High-level architecture
+[!TIP]
+Want to understand the project quickly? Start with the top-level CMakeLists.txt, then follow the engine entry point and core handler, inspect the GUI setup, and finally trace the renderer and EngineAPI lifecycle. That path gives you a useful overview of how the editor, runtime, and game module connect.
+
+🏗️ High-level architecture
 A simplified view of the relationship between the editor, runtime, and user game code is:
 ```mermaid
 flowchart TD
@@ -251,7 +302,7 @@ flowchart TD
     Renderer --> Frame[Rendered Window]
 ```
 This is a conceptual diagram for orientation, not an exact call graph. The source code and CMake targets define the actual ownership, initialization order, and dependencies.
-Development status and roadmap
+🧪 Development status and roadmap
 Lucid Drift is being built incrementally. The areas most relevant to the current architecture include:
 - Improving circle, line, and polygon rendering and validating polygon triangulation against concave and degenerate inputs.
 - Making camera movement, zoom, viewport dimensions, and world-to-screen conversion behave consistently.
@@ -260,7 +311,7 @@ Lucid Drift is being built incrementally. The areas most relevant to the current
 - Developing keyword suggestions while keeping the embedded editor responsive.
 - Making build and shared-library loading failures easier to diagnose through clear console output.
 This list is a summary of active engineering areas, not a promise of release dates or a guarantee that any item is complete. Check the source and recent commits for the exact state of the current branch.
-Troubleshooting
+🩹 Troubleshooting
 CMake reports that the version is too old
 Check the version selected by your shell:
 cmake --version
@@ -283,7 +334,7 @@ The build or editor behaves differently after changing branches
 Confirm the current branch and working tree, then reconfigure the correct source/build pair. Old cache values and generated files can preserve settings from another branch or compiler. Use a clean, separate build directory when necessary.
 
 When reporting a bug, include the operating system, compiler and version, CMake version, GPU/OpenGL version if rendering is involved, the exact build command, and the first complete error message or relevant log.
-Contributing
+🤝 Contributing
 Contributions, bug reports, and focused improvements are welcome. Because the codebase is actively evolving, small, reproducible changes are easier to review than broad changes that combine unrelated systems.
 
 Before submitting a change:
@@ -293,6 +344,6 @@ Before submitting a change:
 4. Test the affected path manually, especially rendering, polygon geometry, camera transforms, or module loading when those systems are touched.
 5. Include the exact steps needed to reproduce a bug or verify a fix.
 Please avoid describing a feature as complete merely because its simplest demonstration works. Boundary cases and failure behavior matter for an engine intended to be used by other C++ projects.
-License
+📄 License
 Check the repository's LICENSE file for the applicable license and reuse terms. Do not assume that every third-party dependency uses the same license as Lucid Drift.
 Lucid Drift is a work in progress. Its long-term aim is to provide a clear C++-oriented workflow for creating and running interactive 2D worlds, while keeping the underlying engine systems understandable and extensible.
