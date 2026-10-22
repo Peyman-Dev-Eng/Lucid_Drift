@@ -15,11 +15,12 @@ LDDrift::VecCol LDDrift::Actors::Polygon::CalculateAverageVertexColor() const {
 }
 
 void LDDrift::Actors::Polygon::Rebuild() {
-    this->SetOriginalPosition(this->CalculateAveragePointPosition());
+    this->SetOriginalPositionToCenter();
 }
 
 void LDDrift::Actors::Polygon::Rebuild(const int width, const int height) {
     this->SetScreenSize({static_cast<float>(width), static_cast<float>(height)});
+
 }
 
 void LDDrift::Actors::Polygon::Move(const Dir direction) {

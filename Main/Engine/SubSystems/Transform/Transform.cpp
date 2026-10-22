@@ -1,11 +1,9 @@
 #include "Transform.h"
 #include <Actors/Shapes/MainShape/Shape.h>
-
-int LDDrift::Transform::widthScreen = VIEWPORT_WINDOW_WIDTH;
-int LDDrift::Transform::heightScreen = VIEWPORT_WINDOW_HEIGHT;
-int LDDrift::Transform::halfWidthScreen = HALF_VIEWPORT_WINDOW_WIDTH;
-int LDDrift::Transform::halfHeightScreen = HALF_VIEWPORT_WINDOW_HEIGHT;
-
+int LDDrift::Transform::widthScreen = 1920;
+int LDDrift::Transform::halfWidthScreen = (1920 / 2);
+int LDDrift::Transform::heightScreen = 1080;
+int LDDrift::Transform::halfHeightScreen = (1080 / 2);
 float LDDrift::Transform::TransformToNDC_Position(const float pointPos, const char posType) {
     if (posType == 'x' || posType == 'X') {
         return (pointPos - static_cast<float>(halfWidthScreen)) / static_cast<float>(halfWidthScreen);
@@ -16,7 +14,7 @@ float LDDrift::Transform::TransformToNDC_Position(const float pointPos, const ch
     GLB_assert(posTypeInputArgumentFunctionIsNotAvailable);
 }
 
-float LDDrift::Transform::TransformToGlobalPosition(float pointPos, char posType) {
+float LDDrift::Transform::TransformToGlobalPosition(const float pointPos, const char posType) {
     if (posType == 'x' || posType == 'X') {
         return (pointPos + 1.0f) * static_cast<float>(halfWidthScreen);
     } else if (posType == 'y' || posType == 'Y') {

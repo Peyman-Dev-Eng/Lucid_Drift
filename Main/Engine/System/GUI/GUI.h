@@ -17,17 +17,9 @@
 #include <GraphicalUserInterfaceWindowHandler.h>
 #include "TextEditor.h"
 #define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
-#define PROJECT_WATCH_TOWER_X_SIZE 350
-#define PROJECT_WATCH_TOWER_Y_SIZE 540
 #define PROJECT_MANAGER_WINDOW_NAME "Project Manager"
-#define PROJECT_MANAGER_X_SIZE 350
-#define PROJECT_MANAGER_Y_SIZE 540
 #define CONSOLE_WINDOW_NAME "Console"
-#define CONSOLE_X_SIZE 1570
-#define CONSOLE_Y_SIZE 180
 #define MAIN_WINDOW_NAME "Main Window"
-#define MAIN_WINDOW_X_SIZE 350
-#define MAIN_WINDOW_Y_SIZE 600
 #define CIRCLE_CONFIGURE_WINDOW_NAME "Circle Configure Window"
 #define POLYGON_CONFIGURE_WINDOW_NAME "Polygon Configure Window"
 #define LINE_CONFIGURE_WINDOW_NAME "Line Configure Window"
@@ -39,7 +31,6 @@
 namespace LDDrift
 {
     class Core;
-    class GuiLogic;
 }
 
 namespace LDDrift
@@ -56,7 +47,7 @@ namespace LDDrift
      */
     class GUI final
     {
-    private:
+    public:
         std::thread reloadCmakeFileThread;
     private: // editor window handing functions
         bool DrawCodeSuggestionPopup(bool& shouldOpen, const std::vector<std::string>& suggestions,
@@ -100,6 +91,9 @@ namespace LDDrift
         };
 
     public:
+        LDDrift::Console_GraphicalWindow consoleWindow;
+        LDDrift::ProjectWatchTower_GraphicalWindow projectWatchTowerWindow;
+        LDDrift::Main_GraphicalWindow mainWindow;
         EditorWindowsData ImGuiEditorWindow;
         std::vector<DefaultWindowsData> defaultWindows;
         LDDrift::ProjectWatchTower* ProjectWatchTower_PTR = nullptr;
@@ -122,6 +116,7 @@ namespace LDDrift
                               bool deletePreviousMessages = false);
         void RenameEditorWindow(const std::string& newWindowName);
         void SetCorePTR(LDDrift::Core* corePTR);
+        void OpenWindow(const std::string& name);
         void SetShowEditorWindow(bool show);
         [[nodiscard]] DefaultWindowsData GetWindow(const std::string& nameWindow) const;
         DefaultWindowsData* GetWindowPTR(const std::string& nameWindow);
@@ -132,8 +127,6 @@ namespace LDDrift
 
     private:
         void GameSettingWindowHandler(DefaultWindowsData* window);
-        void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
-        void MainWindowHandler(const DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window);
         void PolygonConfigureWindowHandler(DefaultWindowsData* window) const;
         void LineConfigureWindowHandler(DefaultWindowsData* window) const;

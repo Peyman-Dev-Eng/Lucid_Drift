@@ -6,6 +6,7 @@
 
 namespace LDDrift
 {
+    class Core;
     struct DefaultWindowsData
     {
         std::string name;
@@ -16,15 +17,58 @@ namespace LDDrift
         VecPos2D size;
         bool Show;
         char searchBuffer[256];
+
+        void SetTextPrintInWindow(const std::string& text);
     };
 
-    class GraphicalUserInterfaceWindowHandler : private DefaultWindowsData
+    class Main_GraphicalWindow : private DefaultWindowsData
     {
     private:
-        std::string windowName;
+        LDDrift::Core* core = nullptr;
 
     public:
-        GraphicalUserInterfaceWindowHandler();
+        Main_GraphicalWindow();
+        ~Main_GraphicalWindow();
+        [[nodiscard]] const LDDrift::VecPos2D& GetPosition() const;
+        [[nodiscard]] const LDDrift::VecPos2D& GetSize() const;
+        void Initialize();
+        void SetCorePTR(LDDrift::Core* core_ptr);
+        void Resize();
+        void Render() const;
+    };
+
+    class ProjectWatchTower_GraphicalWindow : private DefaultWindowsData
+    {
+    private:
+        LDDrift::Core* core = nullptr;
+        char createFileBuffer[256]{};
+        char openFileBuffer[256]{};
+
+    public:
+        ProjectWatchTower_GraphicalWindow();
+        ~ProjectWatchTower_GraphicalWindow();
+        [[nodiscard]] const LDDrift::VecPos2D& GetPosition() const;
+        [[nodiscard]] const LDDrift::VecPos2D& GetSize() const;
+        void Initialize();
+        void SetCorePTR(LDDrift::Core* core_ptr);
+        void Resize();
+        void Render();
+    };
+
+    class Console_GraphicalWindow : private DefaultWindowsData
+    {
+    private:
+        LDDrift::Core* core = nullptr;
+
+    public:
+        Console_GraphicalWindow();
+        ~Console_GraphicalWindow();
+        [[nodiscard]] const LDDrift::VecPos2D& GetPosition() const;
+        [[nodiscard]] const LDDrift::VecPos2D& GetSize() const;
+        void Initialize();
+        void SetCorePTR(LDDrift::Core* core_ptr);
+        void Resize();
+        void Render() const;
     };
 } // LDDrift
 

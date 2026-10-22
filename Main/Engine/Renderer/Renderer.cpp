@@ -80,6 +80,9 @@ void LDDrift::Renderer::Initialize() {
 }
 
 void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
+    if (shapePTRs.contains(shape)) {
+        return;
+    }
     shapePTRs.insert(shape);
     const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
     std::vector<float> VTC = {};

@@ -23,11 +23,23 @@ namespace LDDrift
 
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {
             std::vector<LDDrift::VecPos2D> points = shape->GetGlobalPoints();
-            const std::size_t pointCountOfShape = shape->GetPointCount();
+            std::size_t pointCountOfShape = shape->GetPointCount();
             if (pointCountOfShape < 3) {
                 throw std::runtime_error("this shape is not available");
             }
             for (std::size_t pointINdex = 0; pointINdex < pointCountOfShape; ++pointINdex) {
+                if (points.size() == 3) {
+                    vertices.push_back(points[0].X);
+                    vertices.push_back(points[0].Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(points[1].X);
+                    vertices.push_back(points[1].Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(points[2].X);
+                    vertices.push_back(points[2].Y);
+                    vertices.push_back(0.0f);
+                    break;
+                }
                 const std::size_t point_A_number = pointINdex == 0 ? pointCountOfShape - 1 : pointINdex - 1;
                 const std::size_t point_B_number = pointINdex;
                 const std::size_t point_C_number = (pointINdex + 1) % pointCountOfShape;
@@ -62,6 +74,9 @@ namespace LDDrift
                     vertices.push_back(point_C.X);
                     vertices.push_back(point_C.Y);
                     vertices.push_back(0.0f);
+                    points.erase(points.begin() + static_cast<long int>(pointINdex));
+                    --pointCountOfShape;
+                    --pointINdex;
                 }
             }
         }

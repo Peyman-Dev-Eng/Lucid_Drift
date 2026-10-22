@@ -12,6 +12,7 @@ void LDDrift::Core::InitCore() {
     camera.InitializeCameraSystem(this);
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     projectWatchTower.CreateNewProject("TestProject");
+    window.SetCorePTR(this);
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
     window.SetFillScreenColor({0, 0, 0, 1});
@@ -142,7 +143,6 @@ void LDDrift::Core::RunGameFrame() {
 void LDDrift::Core::EngineHandler() {
     using namespace std::chrono_literals;
     projectWatchTower.SetPaths();
-    LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
     while (window.ScreenIsOpen() && engineRun) {
         RunEngineFrame();
         RunGameFrame();

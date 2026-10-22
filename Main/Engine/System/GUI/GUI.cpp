@@ -1,7 +1,4 @@
 #include "GUI.h"
-#include <GuiLogic.h>
-#include <oneapi/tbb/parallel_reduce.h>
-
 #include "System/Core/Core.h"
 
 static bool RemoveTextFromCurrentLine(
@@ -314,14 +311,6 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
     ImGui_ImplGlfw_InitForOpenGL(glfwWindow, true);
     ImGui_ImplOpenGL3_Init();
-    this->CreateNewWindow(PROJECT_WATCH_TOWER_WINDOW_NAME, false, true,
-                          "", {0, 720}, {350, 360}, true);
-    this->CreateNewWindow(PROJECT_MANAGER_WINDOW_NAME, false, true,
-                          "", {0, 600}, {350, 120}, true);
-    this->CreateNewWindow(CONSOLE_WINDOW_NAME, false, true,
-                          "", {350, 900}, {1570, 180}, true);
-    this->CreateNewWindow(MAIN_WINDOW_NAME, false, true,
-                          "", {0, 0}, {350, 600}, true);
     this->CreateNewWindow(CIRCLE_CONFIGURE_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(POLYGON_CONFIGURE_WINDOW_NAME, true, true,
@@ -381,7 +370,7 @@ void LDDrift::GUI::BeginRenderGUI() {
     ImGui::NewFrame();
 }
 
-LDDrift::GUI::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& nameWindow) const {
+LDDrift::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& nameWindow) const {
     for (const auto& window : defaultWindows) {
         if (window.name == nameWindow) {
             return window;
@@ -393,91 +382,19 @@ LDDrift::GUI::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& name
     };
 }
 
-void LDDrift::GUI::ProjectWatchTowerWidowHandler(DefaultWindowsData* window) {
-    if (window->name != PROJECT_WATCH_TOWER_WINDOW_NAME) {
-        return;
-    }
-
-    if (ProjectWatchTower_PTR == nullptr) {
-        return;
-    }
-
-    if (DefaultWindowsData result =
-            LDDrift::GuiLogic::PressEnterInSearchBarInProjectWatchTower(window);
-        result.name != NULL_STR_VALUE) {
-        if (!ProjectWatchTower_PTR->FindFile(
-            std::filesystem::path(result.searchBuffer))) {
-            std::cout << "Not Found File! File: "
-                << result.searchBuffer << '\n';
-        } else {
-            for (const auto& paths = ProjectWatchTower_PTR->GetPaths();
-                 const auto& path : paths) {
-                if (LDDrift::ProjectWatchTower::Extract::GetLastFileName(
-                    path.string()) != result.searchBuffer) {
-                    continue;
-                }
-
-                if (is_directory(path)) {
-                    std::cout
-                        << "Invalid input. The specified path is a folder. "
-                        << "Please provide a file path where the code can be written.\n";
-
-                    break;
-                }
-
-                std::ifstream inputFile(path, std::ios::binary);
-
-                if (!inputFile.is_open()) {
-                    std::cerr << "Failed to open file: "
-                        << path.string() << '\n';
-
-                    break;
-                }
-
-                const std::string sourceCode(
-                    (std::istreambuf_iterator<char>(inputFile)),
-                    std::istreambuf_iterator<char>()
-                );
-
-                ImGuiEditorWindow.editorWindow.SetText(sourceCode);
-                ImGuiEditorWindow.name = path.string();
-                ImGuiEditorWindow.Show = true;
-
-                break;
-            }
-        }
-    }
-
-    ImGui::TextUnformatted("Project Information");
-
-    ImGui::Separator();
-
-    ImGui::Text(
-        "Project name: %s",
-        ProjectWatchTower_PTR->GetProjectName().c_str()
-    );
-
-    ImGui::Text(
-        "Project path: %s",
-        ProjectWatchTower_PTR->GetProjectPath().c_str()
-    );
-
-    ImGui::Separator();
-
-    for (const auto& path : ProjectWatchTower_PTR->GetPaths()) {
-        if (is_directory(path)) {
-            continue;
-        }
-        ImGui::TextUnformatted(path.string().c_str());
-    }
-}
 
 void LDDrift::GUI::SetCorePTR(LDDrift::Core* corePTR) {
     NPV_assert(corePTR)
     core = corePTR;
+    consoleWindow.SetCorePTR(core);
+    mainWindow.SetCorePTR(core);
+    projectWatchTowerWindow.SetCorePTR(core);
+    projectWatchTowerWindow.Initialize();
+    mainWindow.Initialize();
+    consoleWindow.Initialize();
 }
 
-LDDrift::GUI::DefaultWindowsData* LDDrift::GUI::GetWindowPTR(const std::string& nameWindow) {
+LDDrift::DefaultWindowsData* LDDrift::GUI::GetWindowPTR(const std::string& nameWindow) {
     const std::size_t windowNumber = defaultWindows.size();
     for (std::size_t windowIndex = 0; windowIndex < windowNumber; ++windowIndex) {
         if (defaultWindows[windowIndex].name == nameWindow) {
@@ -485,125 +402,6 @@ LDDrift::GUI::DefaultWindowsData* LDDrift::GUI::GetWindowPTR(const std::string& 
         }
     }
     return nullptr;
-}
-
-void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
-    if (window->name != MAIN_WINDOW_NAME) {
-        return;
-    }
-    ImGui::Text("Setting");
-    ImGui::Separator();
-    if (ImGui::Button("Game Setting")) {
-        DefaultWindowsData* GameSettingWindow = GetWindowPTR(GAME_SETTING_WINDOW_NAME);
-        NPV_assert(GameSettingWindow);
-        GameSettingWindow->Show = true;
-    }
-    ImGui::Separator();
-    if (ImGui::Button("Compile")) {
-        ProjectWatchTower_PTR->RemoveBuildFile();
-        CompilePTR->BuildProject();
-    }
-    ImGui::SameLine();
-    static bool initializedShowError = false;
-    static std::optional<int> showError; // show error if value of this var equals to ( 1 or one )
-    if (initializedShowError == false && !showError.has_value()) {
-        initializedShowError = true;
-        showError = 0;
-    }
-    const LDDrift::CompileBuildStatus build = CompilePTR->GetStatus();
-    if (runGame == false) {
-        if (ImGui::Button("Run")) {
-            if (build == LDDrift::CompileBuildStatus::Succeeded) {
-                runGame = true;
-                LDDrift::EngineAPI::AfterCompileProject();
-            }
-        }
-    } else {
-        if (ImGui::Button("Pause")) {
-            runGame = false;
-        }
-    }
-    ImGui::TextUnformatted("Build Status: ");
-    ImGui::SameLine();
-    if (build == LDDrift::CompileBuildStatus::Building) {
-        ImGui::TextUnformatted("Compiling...");
-        showError = 0;
-    } else if (build == LDDrift::CompileBuildStatus::Succeeded) {
-        ImGui::TextUnformatted("Compiled");
-    } else if (build == LDDrift::CompileBuildStatus::Failed) {
-        ImGui::TextUnformatted("Failed");
-        ++showError.value();
-    } else if (build == LDDrift::CompileBuildStatus::Idle) {
-        ImGui::TextUnformatted("Idle");
-    }
-    if (showError.value() == 1) {
-        for (const auto& [file, line, column, severity, message] : CompilePTR->GetErrorLog()) {
-            std::cout << "----------------------------" << std::endl;
-            std::cout << "Error: " << message << std::endl;
-            std::cout << "Line: " << line << " | ";
-            std::cout << "Column: " << column << " | ";
-            std::cout << "File: " << file << " | ";
-            std::cout << "Severity: " << severity << std::endl;
-            std::cout << "----------------------------" << std::endl;
-        }
-    }
-#ifdef __linux__
-    ImGui::Separator();
-    if (ImGui::Button("Add Key Target")) {
-        GetWindowPTR(SET_KEY_TARGET_WINDOW_NAME)->Show = true;
-    }
-#endif
-    ImGui::Separator();
-    if (ImGui::Button("Reload Cmake File")) {
-        std::string command =
-            "cmake -S \"" + ProjectWatchTower_PTR->GetProjectPath().string() +
-            "\" -B \"" + ProjectWatchTower_PTR->GetBuildFolderPath().string() +
-            "\" 2>&1";
-
-        reloadCmakeFileThread = std::thread([command]()
-        {
-            FILE* pipe = popen(command.c_str(), "r");
-
-            if (pipe == nullptr) {
-                std::cout << "[CMake] Failed to start CMake.\n";
-                return;
-            }
-
-            char buffer[4096 * 2];
-
-            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                std::cout << buffer << std::flush;
-            }
-
-            pclose(pipe);
-        });
-    }
-    if (reloadCmakeFileThread.joinable()) {
-        reloadCmakeFileThread.join();
-    }
-    ImGui::Separator();
-    static bool showExitMenu = false;
-    if (ImGui::Button("Exit")) {
-        if (runGame) {
-            showExitMenu = true;
-        } else {
-            core->engineRun = false;
-        }
-    }
-    if (showExitMenu) {
-        ImGui::TextUnformatted("Are you sure you want to exit the engine?");
-        ImGui::TextUnformatted("Your game is currently running.");
-        ImGui::TextUnformatted("Exiting the engine now may cause");
-        ImGui::TextUnformatted("issues with your project.");
-        if (ImGui::Button("YES")) {
-            runGame = false;
-            core->engineRun = false;
-        }
-        ImGui::SameLine();
-        if (ImGui::Button("NO")) {
-            showExitMenu = false;
-        }
-    }
 }
 
 void LDDrift::GUI::SetCompilePTR(LDDrift::Compile* compilePTR) {
@@ -1610,6 +1408,22 @@ void LDDrift::GUI::PopupCompletionLogic() {
 }
 
 void LDDrift::GUI::EndRenderGUI() {
+    constexpr ImGuiWindowFlags FLAGS = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoMove;
+    ImGui::SetNextWindowPos({mainWindow.GetPosition().X, mainWindow.GetPosition().Y});
+    ImGui::SetNextWindowSize({mainWindow.GetSize().X, mainWindow.GetSize().Y});
+    ImGui::Begin(MAIN_WINDOW_NAME, nullptr, FLAGS);
+    mainWindow.Render();
+    ImGui::End();
+    ImGui::SetNextWindowPos({projectWatchTowerWindow.GetPosition().X, projectWatchTowerWindow.GetPosition().Y});
+    ImGui::SetNextWindowSize({projectWatchTowerWindow.GetSize().X, projectWatchTowerWindow.GetSize().Y});
+    ImGui::Begin(PROJECT_WATCH_TOWER_WINDOW_NAME, nullptr, FLAGS);
+    projectWatchTowerWindow.Render();
+    ImGui::End();
+    ImGui::SetNextWindowPos({consoleWindow.GetPosition().X, consoleWindow.GetPosition().Y});
+    ImGui::SetNextWindowSize({consoleWindow.GetSize().X, consoleWindow.GetSize().Y});
+    ImGui::Begin(CONSOLE_WINDOW_NAME, nullptr, FLAGS);
+    consoleWindow.Render();
+    ImGui::End();
     for (DefaultWindowsData& window : defaultWindows) {
         if (!window.Show || window.name.empty()) {
             continue;
@@ -1630,33 +1444,16 @@ void LDDrift::GUI::EndRenderGUI() {
         }
 
         ImGui::Begin(window.name.c_str(), nullptr, flags);
-        // مدیریت صفحه اصلی بازی
-        MainWindowHandler(&window);
         // مدیریت صفحه ساخت دایره
         CircleConfigureWindowHandler(&window);
         // مدیریت صفحه ساخت خط
         LineConfigureWindowHandler(&window);
         // مدیریت صفحه ساخت چند ضلعی
         PolygonConfigureWindowHandler(&window);
-        // مدیریت صفحه برج دیده بانی پروژه موتور بازی
-        this->ProjectWatchTowerWidowHandler(&window);
         // مدیریت صفحه تنظیمات بازی
         this->GameSettingWindowHandler(&window);
         // مدیریت رویداده های کلید های مورد نظر کاربر
         this->SetKeyTargetWindowHandler(&window);
-        if (window.name == PROJECT_WATCH_TOWER_WINDOW_NAME) {
-            ImGui::End();
-            continue;
-        }
-        // مدیریت صفحه console موتور بازی
-        if (window.name == CONSOLE_WINDOW_NAME) {
-            if (ImGui::Button("Clear")) {
-                core->consoleBuffer.str("");
-                core->consoleBuffer.clear();
-            }
-        }
-        // مدیریت صفحه مدیریت پروژه موتور بازی
-        LDDrift::GuiLogic::ProjectManagerHandling(&window);
         if (!window.textPrintInWindow.empty())
             for (const std::string& text : window.textPrintInWindow) {
                 ImGui::TextUnformatted(text.c_str());
@@ -1848,6 +1645,14 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
     }
     if (ImGui::Button("Close")) {
         window->Show = false;
+    }
+}
+
+void LDDrift::GUI::OpenWindow(const std::string& name) {
+    for (auto& window : defaultWindows) {
+        if (window.name == name) {
+            window.Show = true;
+        }
     }
 }
 

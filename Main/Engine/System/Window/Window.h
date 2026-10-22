@@ -7,17 +7,10 @@
 #include <VecPos.h>
 #include <GUI.h>
 #include <string>
-#define FULLSCREEN_WINDOW_WIDTH 1920
-#define FULLSCREEN_WINDOW_HEIGHT 1080
-#define HALF_FULLSCREEN_WINDOW_WIDTH (FULLSCREEN_WINDOW_WIDTH() / 2)
-#define HALF_FULLSCREEN_WINDOW_HEIGHT (FULLSCREEN_WINDOW_HEIGHT() / 2)
-#define VIEWPORT_WINDOW_WIDTH 1570
-#define VIEWPORT_WINDOW_HEIGHT 900
-#define HALF_VIEWPORT_WINDOW_WIDTH (VIEWPORT_WINDOW_WIDTH / 2)
-#define HALF_VIEWPORT_WINDOW_HEIGHT (VIEWPORT_WINDOW_HEIGHT / 2)
 
 namespace LDDrift
 {
+    class Core;
     /**
      * Window class represents a graphical window in the application.
      *
@@ -43,6 +36,7 @@ namespace LDDrift
     private:
         struct Settings
         {
+            int viewPortWidth, viewPortHeight;
             int pos_x, pos_y;
             int width, height;
             bool CanResize;
@@ -53,6 +47,7 @@ namespace LDDrift
         };
 
     private:
+        LDDrift::Core* core = nullptr;
         LDDrift::Renderer* renderer;
         GLFWwindow* screen{nullptr};
         GLFWmonitor* monitor{nullptr};
@@ -61,6 +56,7 @@ namespace LDDrift
 
     public:
         Window();
+        void SetCorePTR(LDDrift::Core* core_ptr);
         void SetRendererPTR(LDDrift::Renderer*);
         void CreateWindow();
         void CreateFullscreenWindow();
@@ -73,7 +69,7 @@ namespace LDDrift
         [[nodiscard]] const char* GetTitle() const;
         void SetSize(int width, int height);
         [[nodiscard]] LDDrift::VecPos2D GetWindowSize() const;
-        static LDDrift::VecPos2D GetViewportSize();
+        [[nodiscard]] LDDrift::VecPos2D GetViewportSize() const;
         void SetPosition(int x, int y);
         [[nodiscard]] VecPos2D GetPosition() const;
         [[nodiscard]] LDDrift::VecPos2D GetCenterPosition() const;

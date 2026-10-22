@@ -1,6 +1,6 @@
 #include "Window.h"
 #include <Renderer/Renderer.h>
-
+#include <System/Core/Core.h>
 #include "System/Input/input.h"
 
 LDDrift::Window::Window() : renderer(nullptr) {
@@ -18,6 +18,10 @@ LDDrift::Window::Window() : renderer(nullptr) {
     settings.FillColorScreen = {0.0f, 0.0f, 0.0f, 1.0f};
     this->monitor = glfwGetPrimaryMonitor();
     mode = glfwGetVideoMode(monitor);
+}
+
+void LDDrift::Window::SetCorePTR(LDDrift::Core* core_ptr) {
+    core = core_ptr;
 }
 
 void LDDrift::Window::CreateWindow() {
@@ -41,12 +45,12 @@ void LDDrift::Window::CreateWindow() {
     glfwSetWindowUserPointer(screen, this);
 }
 
-LDDrift::VecPos2D LDDrift::Window::GetViewportSize() {
-    return {VIEWPORT_WINDOW_WIDTH, VIEWPORT_WINDOW_HEIGHT};
+LDDrift::VecPos2D LDDrift::Window::GetViewportSize() const {
+    return {static_cast<float>(settings.viewPortWidth), static_cast<float>(settings.viewPortHeight)};
 }
 
 void LDDrift::Window::CreateFullscreenWindow() {
-    screen = glfwCreateWindow(mode->width, mode->height, settings.title.c_str(), monitor, nullptr);
+    screen = glfwCreateWindow(mode->width, mode->height - 300, settings.title.c_str(), monitor, nullptr);
     if (screen == nullptr) {
         const char* description = nullptr;
         const int code = glfwGetError(&description);
@@ -63,10 +67,16 @@ void LDDrift::Window::CreateFullscreenWindow() {
     glfwMakeContextCurrent(screen);
     GLB_assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     glfwSetWindowUserPointer(screen, this);
-    glViewport(350, 180, VIEWPORT_WINDOW_WIDTH, VIEWPORT_WINDOW_WIDTH);
+    glViewport(350, 180, mode->width - 350, mode->height - 180);
     settings.width = mode->width;
     settings.height = mode->height;
+    settings.viewPortWidth = mode->width - 350;
+    settings.viewPortHeight = mode->height - 180;
     glfwSetFramebufferSizeCallback(screen, LDDrift::Window::FrameBufferSizeCallback);
+    LDDrift::Transform::widthScreen = settings.viewPortWidth;
+    LDDrift::Transform::heightScreen = settings.viewPortHeight;
+    LDDrift::Transform::halfWidthScreen = settings.viewPortWidth / 2;
+    LDDrift::Transform::halfHeightScreen = settings.viewPortHeight / 2;
 
 #ifdef __WIN32
     glfwSetScrollCallback(screen, LDDrift::input::Mouse::ScrollCallback);
@@ -84,8 +94,16 @@ void LDDrift::Window::SetSize(const int width, const int height) {
     glfwSetWindowSize(screen, width, height);
     settings.width = width;
     settings.height = height;
-    glViewport(PROJECT_WATCH_TOWER_X_SIZE, CONSOLE_Y_SIZE,
-               width - PROJECT_WATCH_TOWER_X_SIZE, height - CONSOLE_Y_SIZE);
+    core->gui.mainWindow.Resize();
+    core->gui.consoleWindow.Resize();
+    core->gui.projectWatchTowerWindow.Resize();
+    settings.viewPortWidth = width - 350;
+    settings.viewPortHeight = height - 180;
+    glViewport(350, 180, settings.viewPortWidth, settings.viewPortHeight);
+    LDDrift::Transform::widthScreen = settings.viewPortWidth;
+    LDDrift::Transform::heightScreen = settings.viewPortHeight;
+    LDDrift::Transform::halfWidthScreen = settings.viewPortWidth / 2;
+    LDDrift::Transform::halfHeightScreen = settings.viewPortHeight / 2;
 }
 
 void LDDrift::Window::SetFillScreenColor(const LDDrift::VecCol& color) {
@@ -101,10 +119,10 @@ void LDDrift::Window::ClearBuffer() const {
     glClearColor(settings.FillColorScreen.R, settings.FillColorScreen.G, settings.FillColorScreen.B,
                  settings.FillColorScreen.A);
     glClear(GL_COLOR_BUFFER_BIT);
-    const int viewportWidth = std::max(0, settings.width - PROJECT_WATCH_TOWER_X_SIZE);
-
-    const int viewportHeight = std::max(0, settings.height - CONSOLE_Y_SIZE);
-    glViewport(PROJECT_WATCH_TOWER_X_SIZE, CONSOLE_Y_SIZE, viewportWidth, viewportHeight);
+    core->gui.mainWindow.Resize();
+    core->gui.consoleWindow.Resize();
+    core->gui.projectWatchTowerWindow.Resize();
+    glViewport(350, 180, settings.viewPortWidth, settings.viewPortHeight);
 }
 
 void LDDrift::Window::SetPosition(const int x, const int y) {
@@ -135,10 +153,19 @@ void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int widt
     auto* currentWindow = static_cast<LDDrift::Window*>(glfwGetWindowUserPointer(window));
     currentWindow->settings.width = width;
     currentWindow->settings.height = height;
-    currentWindow->renderer->SetWidthScreen(width - PROJECT_WATCH_TOWER_X_SIZE);
-    currentWindow->renderer->SetHeightScreen(height - CONSOLE_Y_SIZE);
+    currentWindow->renderer->SetWidthScreen(width - 350);
+    currentWindow->renderer->SetHeightScreen(height - 180);
     currentWindow->renderer->RebuildShapes();
-    glViewport(350, 180, width, height - CONSOLE_Y_SIZE);
+    currentWindow->core->gui.mainWindow.Resize();
+    currentWindow->core->gui.consoleWindow.Resize();
+    currentWindow->core->gui.projectWatchTowerWindow.Resize();
+    currentWindow->settings.viewPortWidth = (width - 350);
+    currentWindow->settings.viewPortHeight = (height - 180);
+    LDDrift::Transform::widthScreen = currentWindow->settings.viewPortWidth;
+    LDDrift::Transform::heightScreen = currentWindow->settings.viewPortHeight;
+    LDDrift::Transform::halfWidthScreen = (currentWindow->settings.viewPortWidth / 2);
+    LDDrift::Transform::halfHeightScreen = (currentWindow->settings.viewPortHeight / 2);
+    glViewport(350, 180, width - 350, height - 180);
 }
 
 LDDrift::VecCol LDDrift::Window::GetFillScreenColor() const {

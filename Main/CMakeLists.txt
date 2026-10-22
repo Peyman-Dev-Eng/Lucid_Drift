@@ -109,21 +109,6 @@ target_include_directories(FUNCTIONS PUBLIC
 )
 
 # ============================================================================
-# GUI LOGIC
-# ============================================================================
-
-add_library(GL STATIC
-        Engine/SubSystems/GUI_lOGIC/GuiLogic.cpp
-)
-
-target_include_directories(GL PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/GUI_lOGIC
-)
-
-target_link_libraries(GL PUBLIC
-        GUI
-)
-# ============================================================================
 # GUI SYSTEM
 # ============================================================================
 
@@ -134,7 +119,11 @@ add_library(GUI STATIC
 target_include_directories(GUI PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/GUI
-        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/GUI_lOGIC
+
+        # GUI SubSystems
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/GraphicalUserInterfaceWindowHandler
+
+        # Third-party libraries
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
         ${LUCID_DRIFT_ROOT}/glad/include
@@ -382,7 +371,6 @@ target_link_libraries(Engine PUBLIC
         SHAPE_DATA
         PWT
         FUNCTIONS
-        GL
         GUI
         TRM
         COMP

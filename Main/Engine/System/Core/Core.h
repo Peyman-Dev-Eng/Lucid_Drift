@@ -20,7 +20,6 @@
 #include <SubSystems/ProjectExplorer/ProjectWatchTower.h>
 #include <sstream>
 #include <streambuf>
-#include <GuiLogic.h>
 #include "API/EngineAPI.h"
 #include <System/Scene/Scene.h>
 #include <CodePathfinder.h>
