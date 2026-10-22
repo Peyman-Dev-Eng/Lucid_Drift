@@ -3,22 +3,22 @@
 
 void LDDrift::Camera::MoveUp() {
     position.Y += speed;
-    core->render.Update();
+    core->render.UpdateViewMatrix();
 }
 
 void LDDrift::Camera::MoveDown() {
     position.Y -= speed;
-    core->render.Update();
+    core->render.UpdateViewMatrix();
 }
 
 void LDDrift::Camera::MoveLeft() {
     position.X -= speed;
-    core->render.Update();
+    core->render.UpdateViewMatrix();
 }
 
 void LDDrift::Camera::MoveRight() {
     position.X += speed;
-    core->render.Update();
+    core->render.UpdateViewMatrix();
 }
 
 LDDrift::Camera::Camera() = default;
@@ -80,4 +80,28 @@ void LDDrift::Camera::SubSpeedCamera(const float subSpeed_v) {
         return;
     }
     speed -= subSpeed_v;
+}
+
+void LDDrift::Camera::AddZoomCamera(const float addZoom_v) {
+    zoom += addZoom_v;
+}
+
+void LDDrift::Camera::SubZoomCamera(const float subZoom_v) {
+    if ((zoom - subZoom_v) < 0.1f) {
+        zoom = 0.1f;
+        return;
+    }
+    zoom -= subZoom_v;
+}
+
+float LDDrift::Camera::GetSpeed() const {
+    return speed;
+}
+
+float LDDrift::Camera::GetZoom() const {
+    return zoom;
+}
+
+void LDDrift::Camera::SetZoomCamera(const float zoom_v) {
+    zoom = zoom_v;
 }

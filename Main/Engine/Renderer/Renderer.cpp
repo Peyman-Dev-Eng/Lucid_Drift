@@ -71,12 +71,12 @@ void LDDrift::Renderer::Initialize() {
     glBindVertexArray(VAO);
 
     // init uniform mat4 uViewProjection in Vertex shader source
-    LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
+    const LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
     glUseProgram(program);
     const GLint viewProjectionLocation = glGetUniformLocation(program, "uViewProjection");
     const glm::mat4 viewProjection = core->camera.GetProjectionMatrix(viewPortSize.X, viewPortSize.Y) *
         core->camera.GetViewMatrix();
-    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, glm::value_ptr(viewProjection));
+    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 }
 
 void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
@@ -316,11 +316,11 @@ void LDDrift::Renderer::SetCorePTR(LDDrift::Core* corePTR) {
     core = corePTR;
 }
 
-void LDDrift::Renderer::Update() {
+void LDDrift::Renderer::UpdateViewMatrix() const {
     const LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
     glUseProgram(program);
     const GLint viewProjectionLocation = glGetUniformLocation(program, "uViewProjection");
     const glm::mat4 viewProjection = core->camera.GetProjectionMatrix(viewPortSize.X, viewPortSize.Y) *
         core->camera.GetViewMatrix();
-    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, glm::value_ptr(viewProjection));
+    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 }

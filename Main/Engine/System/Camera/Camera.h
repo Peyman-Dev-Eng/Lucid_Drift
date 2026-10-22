@@ -21,11 +21,16 @@ namespace LDDrift
         Camera();
         ~Camera();
         void SetSpeedCamera(float speed_v);
+        void SetZoomCamera(float zoom_v);
+        void AddZoomCamera(float addZoom_v);
+        void SubZoomCamera(float subZoom_v);
         void AddSpeedCamera(float addSpeed_v);
         void SubSpeedCamera(float subSpeed_v);
         void InitializeCameraSystem(LDDrift::Core* corePTR);
         [[nodiscard]] glm::mat4 GetViewMatrix() const;
         [[nodiscard]] glm::mat4 GetProjectionMatrix(float viewportWidth, float viewportHeight) const;
+        [[nodiscard]] float GetZoom() const;
+        [[nodiscard]] float GetSpeed() const;
         void MoveUp();
         void MoveDown();
         void MoveLeft();

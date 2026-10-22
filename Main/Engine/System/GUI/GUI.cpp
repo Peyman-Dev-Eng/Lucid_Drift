@@ -332,6 +332,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 40}, false);
     this->CreateNewWindow(EXIT_WARNING_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(GAME_SETTING_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -486,24 +488,12 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
     if (window->name != MAIN_WINDOW_NAME) {
         return;
     }
-    ImGui::Text("Create New");
+    ImGui::Text("Setting");
     ImGui::Separator();
-    if (ImGui::Button("Circle")) {
-        DefaultWindowsData* circleConfigureWindow = GetWindowPTR(CIRCLE_CONFIGURE_WINDOW_NAME);
-        NPV_assert(circleConfigureWindow);
-        circleConfigureWindow->Show = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Polygon")) {
-        DefaultWindowsData* polygonConfigureWindow = GetWindowPTR(POLYGON_CONFIGURE_WINDOW_NAME);
-        NPV_assert(polygonConfigureWindow);
-        polygonConfigureWindow->Show = true;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("Line")) {
-        DefaultWindowsData* lineConfigureWindow = GetWindowPTR(LINE_CONFIGURE_WINDOW_NAME);
-        NPV_assert(lineConfigureWindow);
-        lineConfigureWindow->Show = true;
+    if (ImGui::Button("Game Setting")) {
+        DefaultWindowsData* GameSettingWindow = GetWindowPTR(GAME_SETTING_WINDOW_NAME);
+        NPV_assert(GameSettingWindow);
+        GameSettingWindow->Show = true;
     }
     ImGui::Separator();
     if (ImGui::Button("Compile")) {
@@ -561,13 +551,28 @@ void LDDrift::GUI::MainWindowHandler(const DefaultWindowsData* window) {
     }
 #endif
     ImGui::Separator();
-    std::thread reloadCmakeFileThread;
     if (ImGui::Button("Reload Cmake File")) {
-        std::string command = "cmake -S " + ProjectWatchTower_PTR->GetProjectPath().string() + " -B " +
-            ProjectWatchTower_PTR->GetBuildFolderPath().string();
+        std::string command =
+            "cmake -S \"" + ProjectWatchTower_PTR->GetProjectPath().string() +
+            "\" -B \"" + ProjectWatchTower_PTR->GetBuildFolderPath().string() +
+            "\" 2>&1";
+
         reloadCmakeFileThread = std::thread([command]()
         {
-            std::system(command.c_str());
+            FILE* pipe = popen(command.c_str(), "r");
+
+            if (pipe == nullptr) {
+                std::cout << "[CMake] Failed to start CMake.\n";
+                return;
+            }
+
+            char buffer[4096 * 2];
+
+            while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
+                std::cout << buffer << std::flush;
+            }
+
+            pclose(pipe);
         });
     }
     if (reloadCmakeFileThread.joinable()) {
@@ -1613,7 +1618,7 @@ void LDDrift::GUI::EndRenderGUI() {
         }
         if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) &&
             (window.name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME) &&
-            (window.name != EXIT_WARNING_WINDOW_NAME)) {
+            (window.name != EXIT_WARNING_WINDOW_NAME) && (window.name != GAME_SETTING_WINDOW_NAME)) {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }
@@ -1629,7 +1634,9 @@ void LDDrift::GUI::EndRenderGUI() {
         PolygonConfigureWindowHandler(&window);
         // مدیریت صفحه برج دیده بانی پروژه موتور بازی
         this->ProjectWatchTowerWidowHandler(&window);
-
+        // مدیریت صفحه تنظیمات بازی
+        this->GameSettingWindowHandler(&window);
+        // مدیریت رویداده های کلید های مورد نظر کاربر
         this->SetKeyTargetWindowHandler(&window);
         if (window.name == PROJECT_WATCH_TOWER_WINDOW_NAME) {
             ImGui::End();
@@ -1781,4 +1788,51 @@ int LDDrift::GUI::CodeEditorCallback(ImGuiInputTextCallbackData* data) {
     return 0;
 }
 
-LDDrift::GUI::~GUI() = default;
+void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
+    if (window->name != GAME_SETTING_WINDOW_NAME) {
+        return;
+    }
+    ImGui::Separator();
+    ImGui::TextUnformatted("actors");
+    if (ImGui::Button("Circle")) {
+        DefaultWindowsData* circleWindow = GetWindowPTR(CIRCLE_CONFIGURE_WINDOW_NAME);
+        NPV_assert(circleWindow)
+        circleWindow->Show = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Polygon")) {
+        DefaultWindowsData* polygonWindow = GetWindowPTR(POLYGON_CONFIGURE_WINDOW_NAME);
+        NPV_assert(polygonWindow)
+        polygonWindow->Show = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Line")) {
+        DefaultWindowsData* lineWindow = GetWindowPTR(LINE_CONFIGURE_WINDOW_NAME);
+        NPV_assert(lineWindow)
+        lineWindow->Show = true;
+    }
+    ImGui::Separator();
+    ImGui::TextUnformatted("Camera");
+
+    ImGui::Text("Camera Speed: %s", std::to_string(core->camera.GetSpeed()).c_str());
+    ImGui::SameLine();
+    if (ImGui::Button("Reset##Reset Speed Camera Value")) {
+        core->camera.SetSpeedCamera(1);
+    }
+    ImGui::Text("Camera Zoom: %s", std::to_string(core->camera.GetZoom()).c_str());
+    ImGui::SameLine();
+    if (ImGui::Button("Reset##Reset Zoom Camera Value")) {
+        core->camera.SetZoomCamera(1);
+    }
+
+    ImGui::Separator();
+    if (ImGui::Button("Close")) {
+        window->Show = false;
+    }
+}
+
+LDDrift::GUI::~GUI() {
+    if (reloadCmakeFileThread.joinable()) {
+        reloadCmakeFileThread.join();
+    }
+}

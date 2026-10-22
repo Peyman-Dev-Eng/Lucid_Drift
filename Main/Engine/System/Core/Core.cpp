@@ -25,6 +25,7 @@ void LDDrift::Core::InitCore() {
     LDDrift::input::Mouse::Init();
     LDDrift::input::Keyboard::SetKeyTarget({
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LSHIFT,
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL,
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_T,
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A,
@@ -66,14 +67,35 @@ void LDDrift::Core::CameraController() {
     }
 
     if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
+        LDDrift::input::Mouse::IsRightMouseButtonHeld() == false &&
         LDDrift::input::Mouse::ScrollUp()) {
-        camera.AddSpeedCamera(0.1f);
-        render.Update();
+        if (camera.GetSpeed() >= 1)
+            camera.AddSpeedCamera(1.0f);
+        else {
+            camera.AddSpeedCamera(0.1f);
+        }
+        render.UpdateViewMatrix();
     }
     if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
+        LDDrift::input::Mouse::IsRightMouseButtonHeld() == false &&
         LDDrift::input::Mouse::ScrollDown()) {
-        camera.SubSpeedCamera(0.1f);
-        render.Update();
+        if (camera.GetSpeed() >= 1)
+            camera.SubSpeedCamera(1.0f);
+        else {
+            camera.SubSpeedCamera(0.1f);
+        }
+        render.UpdateViewMatrix();
+    }
+
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
+        LDDrift::input::Mouse::IsRightMouseButtonHeld() &&
+        LDDrift::input::Mouse::ScrollDown()) {
+        camera.SubZoomCamera(0.1f);
+    }
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
+        LDDrift::input::Mouse::IsRightMouseButtonHeld() &&
+        LDDrift::input::Mouse::ScrollUp()) {
+        camera.AddZoomCamera(0.1f);
     }
 }
 

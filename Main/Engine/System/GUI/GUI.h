@@ -12,6 +12,7 @@
 #include <VecPos.h>
 #include <imgui_internal.h>
 #include <Compile.h>
+#include <cstdio>
 #include <iterator>
 #include "TextEditor.h"
 #define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
@@ -32,6 +33,7 @@
 #define SET_KEY_TARGET_WINDOW_NAME "Set Key Target"
 #define EXIT_WARNING_WINDOW_NAME "Exit Warning Window"
 #define CREATE_NEW_CIRCLE_ACTOR_WINDOW_NAME "Create New Circle Actor"
+#define GAME_SETTING_WINDOW_NAME "Game Setting"
 
 namespace LDDrift
 {
@@ -53,6 +55,8 @@ namespace LDDrift
      */
     class GUI final
     {
+    private:
+        std::thread reloadCmakeFileThread;
     private: // editor window handing functions
         bool DrawCodeSuggestionPopup(bool& shouldOpen, const std::vector<std::string>& suggestions,
                                      std::string& selectedSuggestion, ImVec2 position = ImVec2(-1.0f, -1.0f)
@@ -137,6 +141,7 @@ namespace LDDrift
         ~GUI();
 
     private:
+        void GameSettingWindowHandler(DefaultWindowsData* window);
         void ProjectWatchTowerWidowHandler(DefaultWindowsData* window);
         void MainWindowHandler(const DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window);

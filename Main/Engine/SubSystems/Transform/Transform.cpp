@@ -96,6 +96,20 @@ std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transform::TransformToNDC_Posit
     return NDC_pointPositon;
 }
 
+std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transform::TransformToGlobalPosition(
+    const std::vector<LDDrift::Actors::Line::PNT>& points) {
+    std::vector<LDDrift::Actors::Line::PNT> globalPosition;
+    LDDrift::Actors::Line::PNT globalPoint;
+    for (const auto& [Point_1, Point_2, Point_3] : points) {
+        globalPoint.Point_1 = LDDrift::Transform::TransformToGlobalPosition(Point_1);
+        globalPoint.Point_2 = LDDrift::Transform::TransformToGlobalPosition(Point_2);
+        globalPoint.Point_3 = LDDrift::Transform::TransformToGlobalPosition(Point_3);
+
+        globalPosition.push_back(globalPoint);
+    }
+    return globalPosition;
+}
+
 std::vector<float> LDDrift::Transform::TransformToGlobalPosition(const std::vector<float>& positions) {
     std::vector<float> globalPosition;
     const std::size_t vertexCount = positions.size() / 3;
