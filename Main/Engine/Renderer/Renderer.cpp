@@ -38,7 +38,7 @@ GLuint LDDrift::Renderer::Compile(const GLenum type, const char* source) {
 }
 
 LDDrift::Renderer::Renderer(const int& widthScreen, const int& heightScreen) :
-    WidthScreen(widthScreen), HeightScreen(heightScreen), indexOfFirstVertexInVertexArray(0) {}
+    core(nullptr), WidthScreen(widthScreen), HeightScreen(heightScreen), indexOfFirstVertexInVertexArray(0) {}
 
 GLuint LDDrift::Renderer::GetProgram() const {
     return program;
@@ -74,8 +74,8 @@ void LDDrift::Renderer::Initialize() {
     LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
     glUseProgram(program);
     const GLint viewProjectionLocation = glGetUniformLocation(program, "uViewProjection");
-    const glm::mat4 viewProjection = core->camera.GetViewMatrix() * core->camera.GetProjectionMatrix(
-        viewPortSize.X, viewPortSize.Y);
+    const glm::mat4 viewProjection = core->camera.GetProjectionMatrix(viewPortSize.X, viewPortSize.Y) *
+        core->camera.GetViewMatrix();
     glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, glm::value_ptr(viewProjection));
 }
 
@@ -156,8 +156,8 @@ void LDDrift::Renderer::UpdateShapeData() {
     }
     for (const auto& line : linePTRs) {
         const LDDrift::VecCol& lineColor = line->GetColor();
-        const std::vector<LDDrift::Actors::Line::PNT>& points = LDDrift::Transform::TransformToNDC_Position(
-            line->GetPoints());
+        const std::vector<LDDrift::Actors::Line::PNT>& points =
+            line->GetPoints();
 
         constexpr int vertexCount = 6;
 
@@ -235,8 +235,8 @@ void LDDrift::Renderer::render() const {
 void LDDrift::Renderer::AddLineToRender(LDDrift::Actors::Line* line) {
     linePTRs.insert(line);
     const LDDrift::VecCol& lineColor = line->GetColor();
-    const std::vector<LDDrift::Actors::Line::PNT>& points = LDDrift::Transform::TransformToNDC_Position(
-        line->GetPoints());
+    const std::vector<LDDrift::Actors::Line::PNT>& points =
+        line->GetPoints();
 
     constexpr int vertexCount = 6;
 
@@ -314,4 +314,13 @@ void LDDrift::Renderer::RemoveShapeFromRender(LDDrift::Actors::Shape* shape) {
 
 void LDDrift::Renderer::SetCorePTR(LDDrift::Core* corePTR) {
     core = corePTR;
+}
+
+void LDDrift::Renderer::Update() {
+    const LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
+    glUseProgram(program);
+    const GLint viewProjectionLocation = glGetUniformLocation(program, "uViewProjection");
+    const glm::mat4 viewProjection = core->camera.GetProjectionMatrix(viewPortSize.X, viewPortSize.Y) *
+        core->camera.GetViewMatrix();
+    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, glm::value_ptr(viewProjection));
 }

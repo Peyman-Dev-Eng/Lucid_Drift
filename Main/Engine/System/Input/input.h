@@ -336,9 +336,15 @@ namespace LDDrift
          *
          * @see Keyboard
          */
+
+        inline bool scrollOfMouseIsDown = false;
+        inline bool scrollOfMouseIsUp = false;
+
+
         class Mouse
         {
         public:
+            static void ScrollCallback(GLFWwindow* window, double xOffset, double yOffset);
             static void Init();
             static void GetMouseInputEvent();
             static VecPos2D GetCursorPos(GLFWwindow* window);
@@ -357,6 +363,8 @@ namespace LDDrift
             static bool IsMiddleMouseButtonHeld();
             static bool IsXButton1Held();
             static bool IsXButton2Held();
+            static bool ScrollDown();
+            static bool ScrollUp();
             static void Update();
             static void Destroy();
         };

@@ -32,6 +32,11 @@ namespace LDDrift
     {
     private:
         void InitCore();
+        void RunEngineFrame();
+        void RunGameFrame();
+
+
+        void CameraController();
 
     public:
         std::stringstream consoleBuffer;

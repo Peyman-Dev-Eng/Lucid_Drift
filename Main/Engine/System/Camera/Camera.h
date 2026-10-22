@@ -14,18 +14,22 @@ namespace LDDrift
         LDDrift::Core* core = nullptr;
         LDDrift::VecPos2D position;
         float rotation = 0.0f; // In radians
-        float zoom = 1.0f;
+        float zoom = 1;
+        float speed = 1;
 
     public:
         Camera();
         ~Camera();
+        void SetSpeedCamera(float speed_v);
+        void AddSpeedCamera(float addSpeed_v);
+        void SubSpeedCamera(float subSpeed_v);
         void InitializeCameraSystem(LDDrift::Core* corePTR);
+        [[nodiscard]] glm::mat4 GetViewMatrix() const;
+        [[nodiscard]] glm::mat4 GetProjectionMatrix(float viewportWidth, float viewportHeight) const;
         void MoveUp();
         void MoveDown();
         void MoveLeft();
         void MoveRight();
-        [[nodiscard]] glm::mat4 GetViewMatrix() const;
-        [[nodiscard]] glm::mat4 GetProjectionMatrix(float viewportWidth, float viewportHeight) const;
     };
 } // LDDrift
 

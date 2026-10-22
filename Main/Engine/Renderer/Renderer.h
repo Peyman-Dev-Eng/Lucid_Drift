@@ -63,6 +63,7 @@ namespace LDDrift
         void RemoveLineFromRender(LDDrift::Actors::Line*);
         void RemoveShapeFromRender(LDDrift::Actors::Shape*);
         void UpdateShapeData();
+        void Update();
         void render() const;
     };
 }

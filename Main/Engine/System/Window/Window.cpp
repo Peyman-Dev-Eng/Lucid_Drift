@@ -1,6 +1,8 @@
 #include "Window.h"
 #include <Renderer/Renderer.h>
 
+#include "System/Input/input.h"
+
 LDDrift::Window::Window() : renderer(nullptr) {
     GLB_assert(glfwInit())
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -64,6 +66,9 @@ void LDDrift::Window::CreateFullscreenWindow() {
     glViewport(350, 180, mode->width, mode->height - CONSOLE_Y_SIZE);
     settings.width = mode->width;
     settings.height = mode->height;
+#ifdef __WIN32
+    glfwSetScrollCallback(screen, LDDrift::input::Mouse::ScrollCallback);
+#endif
 }
 
 void LDDrift::Window::SetTitle(const char* title) {

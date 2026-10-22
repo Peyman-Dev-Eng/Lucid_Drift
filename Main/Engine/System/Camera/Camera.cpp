@@ -1,6 +1,26 @@
 #include "Camera.h"
 #include <System/Core/Core.h>
 
+void LDDrift::Camera::MoveUp() {
+    position.Y += speed;
+    core->render.Update();
+}
+
+void LDDrift::Camera::MoveDown() {
+    position.Y -= speed;
+    core->render.Update();
+}
+
+void LDDrift::Camera::MoveLeft() {
+    position.X -= speed;
+    core->render.Update();
+}
+
+void LDDrift::Camera::MoveRight() {
+    position.X += speed;
+    core->render.Update();
+}
+
 LDDrift::Camera::Camera() = default;
 
 LDDrift::Camera::~Camera() = default;
@@ -46,18 +66,18 @@ glm::mat4 LDDrift::Camera::GetProjectionMatrix(float viewportWidth, float viewpo
     );
 }
 
-void LDDrift::Camera::MoveUp() {
-    position.Y += zoom;
+void LDDrift::Camera::SetSpeedCamera(const float speed_v) {
+    speed = speed_v;
 }
 
-void LDDrift::Camera::MoveDown() {
-    position.Y -= zoom;
+void LDDrift::Camera::AddSpeedCamera(const float addSpeed_v) {
+    speed += addSpeed_v;
 }
 
-void LDDrift::Camera::MoveLeft() {
-    position.X -= zoom;
-}
-
-void LDDrift::Camera::MoveRight() {
-    position.X += zoom;
+void LDDrift::Camera::SubSpeedCamera(const float subSpeed_v) {
+    if ((speed - subSpeed_v) < 0) {
+        speed = 0;
+        return;
+    }
+    speed -= subSpeed_v;
 }

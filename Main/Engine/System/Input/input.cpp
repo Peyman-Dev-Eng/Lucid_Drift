@@ -477,6 +477,15 @@ void LDDrift::input::Mouse::GetMouseInputEvent() {
                         LinuxMouse[event.code - 272].Current = false;
                     }
                 }
+                if (event.type == EV_REL && event.code == 11) {
+                    if (event.value == 120) {
+                        scrollOfMouseIsUp = true;
+                        scrollOfMouseIsDown = false;
+                    } else if (event.value == -120) {
+                        scrollOfMouseIsDown = true;
+                        scrollOfMouseIsUp = false;
+                    }
+                }
             } else {
                 break;
             }
@@ -642,8 +651,26 @@ void LDDrift::input::Mouse::Update() {
         WindowsKeyCodes[value].Before = WindowsKeyCodes[value].Current;
     }
 #endif
+    scrollOfMouseIsDown = false;
+    scrollOfMouseIsUp = false;
 }
 
 void LDDrift::input::Mouse::Destroy() {
     CloseFileMouseInputEvent();
+}
+
+void LDDrift::input::Mouse::ScrollCallback(GLFWwindow* window, double xOffset, double yOffset) {
+    if (yOffset > 0.0) {
+        scrollOfMouseIsUp = true;
+    } else if (yOffset < 0.0) {
+        scrollOfMouseIsDown = true;
+    }
+}
+
+bool LDDrift::input::Mouse::ScrollDown() {
+    return scrollOfMouseIsDown;
+}
+
+bool LDDrift::input::Mouse::ScrollUp() {
+    return scrollOfMouseIsUp;
 }

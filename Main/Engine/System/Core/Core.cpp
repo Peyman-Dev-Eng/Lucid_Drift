@@ -8,11 +8,13 @@ namespace
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
+    camera.InitializeCameraSystem(this);
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     projectWatchTower.CreateNewProject("TestProject");
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
     window.SetFillScreenColor({0, 0, 0, 1});
+    render.SetCorePTR(this);
     render.Initialize();
     render.SetWidthScreen(window.GetWidth());
     render.SetHeightScreen(window.GetHeight());
@@ -24,7 +26,11 @@ void LDDrift::Core::InitCore() {
     LDDrift::input::Keyboard::SetKeyTarget({
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_ESC,
         LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL,
-        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_T
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_T,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_W,
+        LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S
     });
     gui.SetCorePTR(this);
     LDDrift::func::InitDeltaTime();
@@ -35,12 +41,78 @@ void LDDrift::Core::InitCore() {
     scene.SetCorePTR(this);
     currentScene = &scene;
     codePathfinder.initializeCodePathfinder();
-    camera.InitializeCameraSystem(this);
-    render.SetCorePTR(this);
 }
 
 void LDDrift::Core::Begin() {
     this->InitCore();
+}
+
+void LDDrift::Core::CameraController() {
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A)) {
+        camera.MoveLeft();
+    }
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D)) {
+        camera.MoveRight();
+    }
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_W)) {
+        camera.MoveUp();
+    }
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S)) {
+        camera.MoveDown();
+    }
+
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
+        LDDrift::input::Mouse::ScrollUp()) {
+        camera.AddSpeedCamera(0.1f);
+        render.Update();
+    }
+    if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
+        LDDrift::input::Mouse::ScrollDown()) {
+        camera.SubSpeedCamera(0.1f);
+        render.Update();
+    }
+}
+
+void LDDrift::Core::RunEngineFrame() {
+    LDDrift::input::Keyboard::GetKeyInputEvent();
+    LDDrift::input::Mouse::GetMouseInputEvent();
+    LDDrift::GUI::BeginRenderGUI();
+    window.ClearBuffer();
+    render.render();
+    gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
+    gui.UpdateWindow("Project Watch Tower");
+    for (const auto& path : projectWatchTower.GetPaths()) {
+        gui.SetTextForWindow("Project Watch Tower", path.string(), false);
+    }
+    gui.EndRenderGUI();
+    window.Update();
+    CameraController();
+    LDDrift::input::Keyboard::Update();
+    LDDrift::input::Mouse::Update();
+    std::this_thread::sleep_for(std::chrono::milliseconds(16));
+}
+
+void LDDrift::Core::RunGameFrame() {
+    if (gui.runGame == false) {
+        return;
+    }
+    EngineAPI::beginPlay();
+    while (gui.runGame) {
+        input::Keyboard::GetKeyInputEvent();
+        input::Mouse::GetMouseInputEvent();
+        GUI::BeginRenderGUI();
+        window.ClearBuffer();
+        EngineAPI::tick(LDDrift::func::GetDeltaTime());
+        render.render();
+        gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
+        gui.UpdateWindow("Project Watch Tower");
+        gui.EndRenderGUI();
+        window.Update();
+        input::Keyboard::Update();
+        input::Mouse::Update();
+        std::this_thread::sleep_for(std::chrono::milliseconds(16));
+    }
+    EngineAPI::endPlay();
 }
 
 void LDDrift::Core::EngineHandler() {
@@ -48,52 +120,8 @@ void LDDrift::Core::EngineHandler() {
     projectWatchTower.SetPaths();
     LDDrift::GuiLogic::SetProjectWatchTowerPtr(&projectWatchTower);
     while (window.ScreenIsOpen() && engineRun) {
-        LDDrift::input::Keyboard::GetKeyInputEvent();
-        LDDrift::input::Mouse::GetMouseInputEvent();
-        LDDrift::GUI::BeginRenderGUI();
-        window.ClearBuffer();
-        render.render();
-        gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
-        gui.UpdateWindow("Project Watch Tower");
-        for (const auto& path : projectWatchTower.GetPaths()) {
-            gui.SetTextForWindow("Project Watch Tower", path.string(), false);
-        }
-        gui.EndRenderGUI();
-        window.Update();
-        /*if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_A)) {
-            camera.MoveLeft();
-        }
-        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_D)) {
-            camera.MoveRight();
-        }
-        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_W)) {
-            camera.MoveUp();
-        }
-        if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_S)) {
-            camera.MoveDown();
-        }*/
-        LDDrift::input::Keyboard::Update();
-        LDDrift::input::Mouse::Update();
-        std::this_thread::sleep_for(std::chrono::milliseconds(16));
-        if (gui.runGame) {
-            LDDrift::EngineAPI::beginPlay();
-            while (gui.runGame) {
-                LDDrift::input::Keyboard::GetKeyInputEvent();
-                LDDrift::input::Mouse::GetMouseInputEvent();
-                LDDrift::GUI::BeginRenderGUI();
-                window.ClearBuffer();
-                LDDrift::EngineAPI::tick(LDDrift::func::GetDeltaTime());
-                render.render();
-                gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
-                gui.UpdateWindow("Project Watch Tower");
-                gui.EndRenderGUI();
-                window.Update();
-                LDDrift::input::Keyboard::Update();
-                LDDrift::input::Mouse::Update();
-                std::this_thread::sleep_for(std::chrono::milliseconds(16));
-            }
-            LDDrift::EngineAPI::endPlay();
-        }
+        RunEngineFrame();
+        RunGameFrame();
     }
 }
 
