@@ -27,7 +27,7 @@ LDDrift::Camera::~Camera() = default;
 
 void LDDrift::Camera::InitializeCameraSystem(LDDrift::Core* corePTR) {
     core = corePTR;
-    position = core->window.GetViewportSize() / 2;
+    position = core->window.GetViewportSize() / 2.0f;
     rotation = 0;
     zoom = 1.0f;
     speed = 50;

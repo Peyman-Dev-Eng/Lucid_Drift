@@ -24,30 +24,52 @@ namespace LDDrift
 
         void TrianglesForThickShapes(std::vector<float>& vertices) const {
             const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+
             const std::size_t pointCountOfShape = points.size();
-            const float angle = 360.0f / pointCountOfShape;
-            const float rad = angle * std::numbers::pi_v<float> / 180.0f;
             const float halfThick = shape->GetThickness() / 2;
             for (std::size_t point = 0; point < pointCountOfShape; ++point) {
+                const std::size_t previousPoint = (point + pointCountOfShape - 1) % pointCountOfShape;
                 const std::size_t currentPoint = point;
                 const std::size_t nextPoint = (point + 1) % pointCountOfShape;
 
                 LDDrift::Actors::Line line(points[currentPoint], points[nextPoint]);
                 line.SetThickness(halfThick * 2);
                 line.SetScreenSize(shape->GetScreenSize());
+                line.CreateTriangles();
 
-                /*
-                 *
-                 *
-                 *   create shape out liner
-                 *
-                 *
-                 *
-                 *
-                 */
+                const std::vector<LDDrift::Actors::Line::PNT>& pointsOfTriangleForLine = line.GetPoints();
 
+                for (std::size_t i = 0; i < 2; ++i) {
+                    vertices.push_back(pointsOfTriangleForLine[i].Point_1.X);
+                    vertices.push_back(pointsOfTriangleForLine[i].Point_1.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointsOfTriangleForLine[i].Point_2.X);
+                    vertices.push_back(pointsOfTriangleForLine[i].Point_2.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointsOfTriangleForLine[i].Point_3.X);
+                    vertices.push_back(pointsOfTriangleForLine[i].Point_3.Y);
+                    vertices.push_back(0.0f);
+                }
 
+                const LDDrift::VecPos2D& p0 = points[previousPoint];
+                const LDDrift::VecPos2D& p1 = points[currentPoint];
+                const LDDrift::VecPos2D& p2 = points[nextPoint];
 
+                LDDrift::VecPos2D normalLineOfLine1 = LDDrift::VecPos2D::NormalLine(p0, p1);
+                LDDrift::VecPos2D normalLineOfLine2 = LDDrift::VecPos2D::NormalLine(p1, p2);
+
+                LDDrift::VecPos2D firstPointOfTriangle = p1 + normalLineOfLine1 * halfThick;
+                LDDrift::VecPos2D secondPointOfTriangle = p1 + normalLineOfLine2 * halfThick;
+
+                vertices.push_back(firstPointOfTriangle.X);
+                vertices.push_back(firstPointOfTriangle.Y);
+                vertices.push_back(0.0f);
+                vertices.push_back(secondPointOfTriangle.X);
+                vertices.push_back(secondPointOfTriangle.Y);
+                vertices.push_back(0.0f);
+                vertices.push_back(p1.X);
+                vertices.push_back(p1.Y);
+                vertices.push_back(0.0f);
             }
         }
 
@@ -169,23 +191,29 @@ namespace LDDrift
                 }
                 return vertices;
             }
-            if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::convex>) {
+            if (shape->IsHaveThickness() || !shape->IsFillShape()) {
                 std::vector<float> vertices;
-                this->TrianglesForConvexShape(vertices);
-                return vertices;
-            } else if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::concave>) {
-                std::vector<float> vertices;
-                try {
-                    this->TrianglesForConcaveShape(vertices);
-                } catch (const std::runtime_error& e) {
-                    std::cout << "Error: " << e.what() << std::endl;
-                }
+                this->TrianglesForThickShapes(vertices);
                 return vertices;
             } else {
-                std::cout <<
-                    R"( You did not submit a valid type for constructing a triangle on the shape.
+                if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::convex>) {
+                    std::vector<float> vertices;
+                    this->TrianglesForConvexShape(vertices);
+                    return vertices;
+                } else if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::concave>) {
+                    std::vector<float> vertices;
+                    try {
+                        this->TrianglesForConcaveShape(vertices);
+                    } catch (const std::runtime_error& e) {
+                        std::cout << "Error: " << e.what() << std::endl;
+                    }
+                    return vertices;
+                } else {
+                    std::cout <<
+                        R"( You did not submit a valid type for constructing a triangle on the shape.
                         You can choose between two categories of shapes: convex or concave.)";
-                return std::vector<float>{0.0f};
+                    return std::vector<float>{0.0f};
+                }
             }
         }
 
