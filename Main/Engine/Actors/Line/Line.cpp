@@ -16,7 +16,9 @@ void LDDrift::Actors::Line::CreateTriangles() {
         .Point_1 = FirstPoint - normal, .Point_2 = FirstPoint + normal, .Point_3 = SecondPoint - normal
     });
     Points.push_back({
-        .Point_1 = FirstPoint + normal, .Point_2 = SecondPoint - normal, .Point_3 = SecondPoint + normal
+        .Point_1 = FirstPoint + normal,
+        .Point_2 = SecondPoint + normal,
+        .Point_3 = SecondPoint - normal
     });
 }
 
