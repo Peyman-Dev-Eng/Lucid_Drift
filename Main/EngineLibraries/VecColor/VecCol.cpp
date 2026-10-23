@@ -1,7 +1,5 @@
 #include "VecCol.h"
 
-#include <sys/cdefs.h>
-
 LDDrift::VecCol::VecCol() = default;
 
 LDDrift::VecCol::VecCol(const float red, const float green, const float blue, const float alpha) :

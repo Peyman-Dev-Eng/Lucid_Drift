@@ -143,7 +143,7 @@ void LDDrift::Renderer::UpdateShapeData() {
     vertices.clear();
     howToReadShapeData.clear();
     indexOfFirstVertexInVertexArray = 0;
-    for (const auto& shape : shapePTRs) {
+    for (LDDrift::Actors::Shape* shape : shapePTRs) {
         const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
         std::vector<float> VTC = {};
         if (shape->ShapeIsConvex()) {
