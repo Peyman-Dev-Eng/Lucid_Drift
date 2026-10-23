@@ -9,13 +9,13 @@ namespace
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
-    camera.InitializeCameraSystem(this);
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     projectWatchTower.CreateNewProject("TestProject");
     window.SetCorePTR(this);
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
     window.SetFillScreenColor({0, 0, 0, 1});
+    camera.InitializeCameraSystem(this);
     render.SetCorePTR(this);
     render.Initialize();
     render.SetWidthScreen(window.GetWidth());
