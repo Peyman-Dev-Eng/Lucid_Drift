@@ -2,28 +2,28 @@
 #define LUCID_DRIFT_CORE_H
 
 // standard C++ library include
-#include <vector>
+#include <chrono>
 #include <string>
 #include <thread>
-#include <chrono>
+#include <vector>
 
 // engine files include
+#include "API/EngineAPI.h"
+#include <Actors/Line/Line.h>
 #include <Actors/Shapes/Circle/CircleShape.h>
 #include <Actors/Shapes/Polygon/Polygon.h>
-#include <Actors/Line/Line.h>
-#include <System/Input/input.h>
-#include <System/Window/Window.h>
+#include <CodePathfinder.h>
 #include <GUI.h>
-#include <System/Triangulation/Triangulation.h>
 #include <Renderer/Renderer.h>
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 #include <SubSystems/ProjectExplorer/ProjectWatchTower.h>
+#include <System/Camera/Camera.h>
+#include <System/Input/input.h>
+#include <System/Scene/Scene.h>
+#include <System/Triangulation/Triangulation.h>
+#include <System/Window/Window.h>
 #include <sstream>
 #include <streambuf>
-#include "API/EngineAPI.h"
-#include <System/Scene/Scene.h>
-#include <CodePathfinder.h>
-#include <System/Camera/Camera.h>
 
 namespace LDDrift
 {
@@ -33,7 +33,6 @@ namespace LDDrift
         void InitCore();
         void RunEngineFrame();
         void RunGameFrame();
-
 
         void CameraController();
 
@@ -65,7 +64,7 @@ namespace LDDrift
     {
         LDDrift::Scene* GetSceneObjectPointer();
         LDDrift::Camera* GetCameraObjectPointer();
-    }
-}
+    } // namespace func
+} // namespace LDDrift
 
 #endif

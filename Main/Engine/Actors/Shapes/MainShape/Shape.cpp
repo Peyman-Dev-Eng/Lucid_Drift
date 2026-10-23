@@ -1,7 +1,8 @@
 #include "Shape.h"
 
-LDDrift::Actors::Shape::Shape() : screenSize(0, 0), OriginalPosition(0, 0), PointCount(0), Speed(0.01), SpeedNDC_X(0),
-                                  SpeedNDC_Y(0), FillShape(true), Thickness(0), HaveThickness(false) {}
+LDDrift::Actors::Shape::Shape() : joinLineAlgorithm(std::nullopt), screenSize(0, 0), OriginalPosition(0, 0),
+                                  PointCount(0), Speed(0.01),
+                                  SpeedNDC_X(0), SpeedNDC_Y(0), FillShape(true), Thickness(0), HaveThickness(false) {}
 
 void LDDrift::Actors::Shape::MoveUp() {
     for (LDDrift::VecPos2D& point : Points) {
@@ -94,7 +95,7 @@ void LDDrift::Actors::Shape::SetOriginalPositionToCenter() {
         for (const auto& point : Points) {
             sum += point;
         }
-        sum /= Points.size();
+        sum /= static_cast<float>(Points.size());
         OriginalPosition = sum;
         return;
     } else {
@@ -314,6 +315,19 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPosition_NDC() const {
 
 bool LDDrift::Actors::Shape::ShapeIsConcave() const {
     return isConcave;
+}
+
+void LDDrift::Actors::Shape::SetJoinLineAlgorithm(const LDDrift::JoinLineType _joinLineAlgorithm) {
+    if (_joinLineAlgorithm == LDDrift::JoinLineType::Round || _joinLineAlgorithm == LDDrift::JoinLineType::Bevel ||
+        _joinLineAlgorithm == LDDrift::JoinLineType::Miter) {
+        joinLineAlgorithm = _joinLineAlgorithm;
+    } else {
+        joinLineAlgorithm = std::nullopt;
+    }
+}
+
+std::optional<LDDrift::JoinLineType> LDDrift::Actors::Shape::GetJoinLineAlgorithm() const {
+    return joinLineAlgorithm.has_value() ? joinLineAlgorithm : std::nullopt;
 }
 
 LDDrift::Actors::Shape::~Shape() = default;

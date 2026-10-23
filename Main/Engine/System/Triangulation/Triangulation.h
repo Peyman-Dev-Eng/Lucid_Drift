@@ -1,30 +1,30 @@
 #ifndef LUCID_DRIFT_TRIANGLE_H
 #define LUCID_DRIFT_TRIANGLE_H
 #define UPPER_BOUND 100
+#define MITER 0
+#define ROUND 1
+#define BEVEL 2
 #include <vector>
 #include <algorithm>
 #include <numbers>
+#include <cmath>
+#include <typeinfo>
 #include <Actors/Shapes/MainShape/Shape.h>
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 
 namespace LDDrift
 {
+
     template <typename ShapeType>
     class Triangulation final
     {
-    private:
-        LDDrift::Actors::Shape* shape;
+    private: // join line algorithm functions
 
-    private: // functions
+        /// bevel join lining
 
-        static float Cross(const VecPos2D& a, const VecPos2D& b, const VecPos2D& c) {
-            return (b.X - a.X) * (c.Y - a.Y) -
-                (b.Y - a.Y) * (c.X - a.X);
-        }
-
-        void TrianglesForThickShapes(std::vector<float>& vertices) const {
+        [[nodiscard]] std::vector<float> BevelAlgorithm() const {
             const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
-
+            std::vector<float> vertices;
             const std::size_t pointCountOfShape = points.size();
             const float halfThick = shape->GetThickness() / 2;
             for (std::size_t point = 0; point < pointCountOfShape; ++point) {
@@ -70,6 +70,113 @@ namespace LDDrift
                 vertices.push_back(p1.X);
                 vertices.push_back(p1.Y);
                 vertices.push_back(0.0f);
+            }
+            return vertices;
+        }
+
+        /// round line joining
+
+        [[nodiscard]] std::vector<float> RoundAlgorithm() const {
+            std::vector<float> vertices;
+            const std::size_t pointCountOfShape = shape->GetPointCount();
+            const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+            const float thick = shape->GetThickness();
+            const float halfThick = thick / 2;
+            for (std::size_t point = 0; point < pointCountOfShape; ++point) {
+                const std::size_t previousPointNumber = (point + pointCountOfShape - 1) % pointCountOfShape;
+                const std::size_t currentPointNumber = point;
+                const std::size_t nextPointNumber = (point + 1) % pointCountOfShape;
+
+                const LDDrift::VecPos2D& previousPoint = points[previousPointNumber];
+                const LDDrift::VecPos2D& currentPoint = points[currentPointNumber];
+                const LDDrift::VecPos2D& nextPoint = points[nextPointNumber];
+
+                LDDrift::Actors::Line line(currentPoint, nextPoint);
+                line.SetThickness(thick);
+                line.SetScreenSize(shape->GetScreenSize());
+                line.CreateTriangles();
+
+                const std::vector<LDDrift::Actors::Line::PNT>& pointOfTriangles = line.GetPoints();
+
+                for (std::size_t pointTriangleIndex = 0; pointTriangleIndex < 2; ++pointTriangleIndex) {
+                    vertices.push_back(pointOfTriangles[pointTriangleIndex].Point_1.X);
+                    vertices.push_back(pointOfTriangles[pointTriangleIndex].Point_1.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointOfTriangles[pointTriangleIndex].Point_2.X);
+                    vertices.push_back(pointOfTriangles[pointTriangleIndex].Point_2.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointOfTriangles[pointTriangleIndex].Point_3.X);
+                    vertices.push_back(pointOfTriangles[pointTriangleIndex].Point_3.Y);
+                    vertices.push_back(0.0f);
+                }
+
+                const LDDrift::VecPos2D normalLine1 = LDDrift::VecPos2D::NormalLine(previousPoint, currentPoint);
+                const LDDrift::VecPos2D normalLine2 = LDDrift::VecPos2D::NormalLine(currentPoint, nextPoint);
+
+                const LDDrift::VecPos2D p1 = currentPoint + normalLine1 * halfThick;
+                const LDDrift::VecPos2D p2 = currentPoint + normalLine2 * halfThick;
+
+                const LDDrift::VecPos2D A = p1 - currentPoint;
+                const LDDrift::VecPos2D B = p2 - currentPoint;
+
+                const float a = std::atan2(A.Y, A.X);
+                const float b = std::atan2((B.Y), B.X);
+
+                const float angleDifference = std::remainder(b - a, 2.0f * std::numbers::pi_v<float>);
+
+                const int segments = static_cast<int>(std::ceil(
+                    std::abs(angleDifference) * 180.0f / std::numbers::pi_v<float>));
+
+                float previous_X = p1.X;
+                float previous_Y = p1.Y;
+
+                for (int i = 0; i <= segments; ++i) {
+                    const float t = static_cast<float>(i) / static_cast<float>(segments);
+                    const float angle = a + angleDifference * t;
+
+                    const float x = currentPoint.X + halfThick * std::cos(angle);
+                    const float y = currentPoint.Y + halfThick * std::sin(angle);
+
+                    vertices.push_back(currentPoint.X);
+                    vertices.push_back(currentPoint.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(x);
+                    vertices.push_back(y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(previous_X);
+                    vertices.push_back(previous_Y);
+                    vertices.push_back(0.0f);
+
+                    previous_X = x;
+                    previous_Y = y;
+                }
+            }
+            return vertices;
+        }
+
+    private:
+        LDDrift::Actors::Shape* shape;
+
+    private: // functions
+
+        static float Cross(const VecPos2D& a, const VecPos2D& b, const VecPos2D& c) {
+            return (b.X - a.X) * (c.Y - a.Y) -
+                (b.Y - a.Y) * (c.X - a.X);
+        }
+
+        void TrianglesForThickShapes(std::vector<float>& vertices) const {
+            const std::optional<LDDrift::JoinLineType> joinLineAlg = shape->GetJoinLineAlgorithm();
+            if (!joinLineAlg.has_value()) {
+                std::cout << "Undefined Line Connection Algorithm" << std::endl;
+                return;
+            }
+            if (joinLineAlg.value() == LDDrift::JoinLineType::Bevel) {
+                vertices = BevelAlgorithm();
+                return;
+            }
+            if (joinLineAlg.value() == LDDrift::JoinLineType::Round) {
+                vertices = RoundAlgorithm();
+                return;
             }
         }
 
@@ -181,7 +288,7 @@ namespace LDDrift
                         Therefore, be mindful of the valid data you extract from this function.)" << std::endl;
                 return std::vector<float>{0.0f};
             }
-            if (pointNumber == 3) {
+            if (pointNumber == 3 && !shape->IsHaveThickness()) {
                 std::vector<float> vertices;
                 for (std::size_t pointIndex = 0; pointIndex < 3; ++pointIndex) {
                     const LDDrift::VecPos2D& point = shape->GetGlobalPoint(pointIndex);

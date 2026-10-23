@@ -67,12 +67,16 @@ namespace LDDrift
                                 int _pointCount,
                                 int _speed,
                                 const int* pos,
-                                const LDDrift::VecCol& color);
+                                const LDDrift::VecCol& color,
+                                float thickness,
+                                int joinLine_A);
         void CreatePolygonShape(const std::string& name,
                                 int _pointCount,
                                 int _speed,
                                 const int* pos,
-                                const std::vector<LDDrift::VecCol>& colors);
+                                const std::vector<LDDrift::VecCol>& colors,
+                                float thickness,
+                                int joinLine_A);
         bool DeletePolygonShape(const std::string& name);
         // Line
         [[nodiscard]] bool FindLineWithName(const std::string& name) const;

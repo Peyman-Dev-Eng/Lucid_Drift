@@ -541,7 +541,8 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius,
                                               circleSpeed,
                                               {static_cast<float>(xPos), static_cast<float>(yPos)},
-                                              {redValueColor, greenValueColor, blueValueColor, alphaValueColor}, static_cast<float>(thick));
+                                              {redValueColor, greenValueColor, blueValueColor, alphaValueColor},
+                                              static_cast<float>(thick));
             window->Show = false;
             std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
         }
@@ -985,6 +986,9 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
      *      and ...
      */
     static int fillColorWithOneColorOrEachVertexHaveAColor = 0;
+    static int if_withThick = 0;
+    static int drawThicknessRadioButton = 0;
+    static int thickness = 1;
     static int radioButton = 0;
     static int polygonActorPointCount = 3;
     static float polygonActorRedColor = 0;
@@ -1007,7 +1011,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     ImGui::SameLine();
     ImGui::RadioButton("Configure##Configure Polygon", &radioButton, 1);
     ImGui::SameLine();
-    ImGui::RadioButton("##Delete polygon", &radioButton, 2);
+    ImGui::RadioButton("Delete##Delete polygon", &radioButton, 2);
 
     if (radioButton == 0) {
         ImGui::TextUnformatted("window: create new polygon");
@@ -1023,6 +1027,26 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         }
         polygonActorPointCount = std::clamp(polygonActorPointCount, 3, 100);
         ImGui::Separator(); // END --- point count of polygon
+        ImGui::RadioButton("without Thickness## not use thickness for polygon shapes", &if_withThick, 0);
+        ImGui::SameLine();
+        ImGui::RadioButton("With thickness## use thickness for polygon shapes", &if_withThick, 1);
+        if (if_withThick == 0) {
+            ImGui::Separator();
+        } else if (if_withThick == 1) {
+            ImGui::TextUnformatted("Enter Thickness: ");
+            ImGui::SameLine();
+            ImGui::SetNextItemWidth(580);
+            ImGui::InputInt("##Thickness for shape", &thickness, 1, 1);
+            if (thickness < 1) {
+                thickness = 1;
+            }
+            ImGui::RadioButton("Mitter## Miter join line algorithm", &drawThicknessRadioButton, 0);
+            ImGui::SameLine();
+            ImGui::RadioButton("Round## round join line algorithm", &drawThicknessRadioButton, 1);
+            ImGui::SameLine();
+            ImGui::RadioButton("Bevel## bevel join line algorithm", &drawThicknessRadioButton, 2);
+            ImGui::Separator();
+        }
         ImGui::RadioButton("fill shape with##fill shape (00)", &fillColorWithOneColorOrEachVertexHaveAColor, 0);
         ImGui::SameLine();
         ImGui::RadioButton("set color for any vertexes##each vertex have a color (00)",
@@ -1155,18 +1179,36 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
 
         if (ImGui::Button("Create")) {
             if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
-                core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
-                                               polygonActorSpeed,
-                                               pointPositions.data(), {
-                                                   polygonActorRedColor, polygonActorGreenColor, polygonActorBlueColor,
-                                                   polygonActorAlpha
-                                               });
+                if (if_withThick == 0) {
+                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                                                   polygonActorSpeed,
+                                                   pointPositions.data(), {
+                                                       polygonActorRedColor, polygonActorGreenColor,
+                                                       polygonActorBlueColor,
+                                                       polygonActorAlpha
+                                                   }, -1, -1);
+                } else if (if_withThick == 1) {
+                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                                                   polygonActorSpeed,
+                                                   pointPositions.data(), {
+                                                       polygonActorRedColor, polygonActorGreenColor,
+                                                       polygonActorBlueColor,
+                                                       polygonActorAlpha
+                                                   }, static_cast<float>(thickness), drawThicknessRadioButton);
+                }
                 window->Show = false;
                 std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
             } else if (fillColorWithOneColorOrEachVertexHaveAColor == 1) {
-                core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
-                                               polygonActorSpeed,
-                                               pointPositions.data(), pointColors);
+                if (if_withThick == 0) {
+                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                                                   polygonActorSpeed,
+                                                   pointPositions.data(), pointColors, -1, -1);
+                } else if (if_withThick == 1) {
+                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                                                   polygonActorSpeed,
+                                                   pointPositions.data(), pointColors, static_cast<float>(thickness),
+                                                   drawThicknessRadioButton);
+                }
                 window->Show = false;
                 std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
             }

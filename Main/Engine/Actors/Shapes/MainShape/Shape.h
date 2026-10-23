@@ -42,6 +42,7 @@ namespace LDDrift::Actors
     class Shape
     {
     private:
+        std::optional<LDDrift::JoinLineType> joinLineAlgorithm;
         LDDrift::VecPos2D screenSize;
         LDDrift::VecPos2D OriginalPosition;
         std::vector<LDDrift::VecPos2D> Points;
@@ -96,11 +97,13 @@ namespace LDDrift::Actors
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
         [[nodiscard]] const LDDrift::VecCol& GetPointColor(std::size_t point_index) const;
         [[nodiscard]] const std::vector<LDDrift::VecCol>& GetColorOfPoints() const;
+        [[nodiscard]] std::optional<LDDrift::JoinLineType> GetJoinLineAlgorithm() const;
         void ResetPointCount();
         void ResetPoints();
         void ResetColorOfPoints();
         void ResetOriginalPosition();
         void SetFillColor(bool IsFillShape);
+        void SetJoinLineAlgorithm(LDDrift::JoinLineType _joinLineAlgorithm);
         void SetThickness(float thickness);
         void SetScreenSize(const LDDrift::VecPos2D& size);
         void SetAllPointsColor(const LDDrift::VecCol& targetColor);
