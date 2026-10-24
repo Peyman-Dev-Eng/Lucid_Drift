@@ -1,6 +1,5 @@
 #include "VecPos.h"
-
-#include "../VecColor/VecCol.h"
+#include "../Engine/System/Triangulation/Triangulation.h"
 
 LDDrift::VecPos2D::VecPos2D() = default;
 
@@ -25,18 +24,23 @@ LDDrift::VecPos2D::VecPos2D(const std::initializer_list<float> list) {
 LDDrift::VecPos2D LDDrift::VecPos2D::Normalize(const VecPos2D& vec) {
     VecPos2D NormalizedPoint = vec;
     const float length = std::sqrt(NormalizedPoint.X * NormalizedPoint.X + NormalizedPoint.Y * NormalizedPoint.Y);
-    if (length == std::numeric_limits<float>::epsilon() || length == 0.0f) {
-        return VecPos2D{0, 0};
+    if (length == 0.0f) {
+        return VecPos2D{0.0f, 0.0f};
     }
     NormalizedPoint.X /= length;
     NormalizedPoint.Y /= length;
     return NormalizedPoint;
 }
 
-LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const LDDrift::VecPos2D& FirstVec, const LDDrift::VecPos2D& SecondVec) {
-    VecPos2D edge = LDDrift::VecPos2D::Normalize(FirstVec - SecondVec);
-    edge = VecPos2D{-edge.Y, edge.X};
-    return edge;
+LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const LDDrift::VecPos2D& FirstVec, const LDDrift::VecPos2D& SecondVec,
+                                                const char& dir) {
+    const VecPos2D edge = LDDrift::VecPos2D::Normalize(FirstVec - SecondVec);
+    if (dir == 'u' || dir == 'U') {
+        return VecPos2D{-edge.Y, edge.X};
+    } else if (dir == 'd' || dir == 'D') {
+        return VecPos2D{edge.Y, -edge.X};
+    }
+    CTM_assert(false, "direction input for normalize line is invalid")
 }
 
 

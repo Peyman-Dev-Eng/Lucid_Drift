@@ -3,9 +3,12 @@
 #include <Assertions.h>
 #include <cmath>
 #include <initializer_list>
+#include "../Engine/Actors/Shapes/MainShape/Shape.h"
 
 namespace LDDrift
 {
+    template <typename SHAPE_TYPE>
+    class Triangulation;
     /**
      * VecPos2D class represents a two-dimensional vector with positive x and y coordinates.
      *
@@ -35,7 +38,7 @@ namespace LDDrift
         VecPos2D(float x, float y);
         VecPos2D(std::initializer_list<float> list);
         static VecPos2D Normalize(const VecPos2D& vec);
-        static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec);
+        static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec, const char& dir);
         VecPos2D operator-(const VecPos2D& vec2) const;
         VecPos2D operator-(const float& value) const;
         VecPos2D operator+(const VecPos2D& vec2) const;
