@@ -668,6 +668,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 circle.value()->SetAllPointsColor({redValueColor, greenValueColor, blueValueColor, alphaValueColor});
                 circle.value()->SetOriginalPositionToCenter();
                 circle.value()->Rebuild();
+                core->scene.MarkSendDataToGPU();
                 this->core->scene.ReSendShapesToRender();
                 window->Show = false;
                 inThisBrace = false;
@@ -926,6 +927,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
                     line.value()->SetThickness(static_cast<float>(thickness));
                     line.value()->SetLineColor({color[0], color[1], color[2], color[3]});
                     line.value()->CreateTriangles();
+                    core->scene.MarkSendDataToGPU();
                     core->scene.ReSendShapesToRender();
                     window->Show = false;
                     std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
@@ -1051,6 +1053,9 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         ImGui::SameLine();
         ImGui::RadioButton("set color for any vertexes##each vertex have a color (00)",
                            &fillColorWithOneColorOrEachVertexHaveAColor, 1);
+        if (if_withThick == 1) {
+            fillColorWithOneColorOrEachVertexHaveAColor = 0;
+        }
         if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
             ImGui::TextUnformatted("Red: "); // START --- Red Color Of Polygon
             ImGui::SameLine();
@@ -1116,7 +1121,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                 ImGui::Text("point %s ( BLUE ): ", std::to_string(pointIndex).c_str());
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(120);
-                ImGui::InputFloat("##Polygon blue Color Value (001)", &pointColors[pointIndex].B, 0.005, 0.005, "%.3f");
+                ImGui::InputFloat("##Polygon blue Color Value (001)", &pointColors[pointIndex].B, 0.005, 0.005,
+                                  "%.3f");
                 if (pointColors[pointIndex].B > 1) {
                     pointColors[pointIndex].B = 1;
                 }
@@ -1338,6 +1344,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                            static_cast<float>(pointPositions[pointIndex * 2 + 1])
                                                        });
                     }
+                    core->scene.MarkSendDataToGPU();
                     core->scene.ReSendShapesToRender();
                     window->Show = false;
                 }

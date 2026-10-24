@@ -17,6 +17,18 @@ namespace LDDrift
     template <typename ShapeType>
     class Triangulation final
     {
+    private:
+        static bool find(const std::vector<LDDrift::Actors::Line::PNT>& from, const LDDrift::VecPos2D& target) {
+            bool found = false;
+            for (const auto& [Point_1, Point_2, Point_3] : from) {
+                if (Point_1 == target || Point_2 == target || Point_3 == target) {
+                    found = true;
+                    break;
+                }
+            }
+            return found;
+        }
+
     private: // join line algorithm functions
 
         /// bevel join lining
@@ -132,8 +144,7 @@ namespace LDDrift
                 float y = currentPoint.Y + halfThick * std::sin(rad);
 
                 LDDrift::VecPos2D PP = {x, y};
-
-                constexpr int angleRad = 360 / 40;
+                constexpr int angleRad = 360 / 20;
                 for (angle = angleRad; angle <= 360; angle += angleRad) {
                     rad = static_cast<float>(angle) * std::numbers::pi_v<float> / 180.0f;
                     x = currentPoint.X + halfThick * std::cos(rad);
@@ -152,6 +163,15 @@ namespace LDDrift
                     PP = {x, y};
                 }
             }
+            return vertices;
+        }
+
+        [[nodiscard]] std::vector<float> MiterAlgorithm() const {
+            std::vector<float> vertices;
+            const std::size_t pointCount = shape->GetPointCount();
+            const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+            const float thick = shape->GetThickness();
+            const float halfThick = thick / 2;
             return vertices;
         }
 
@@ -195,6 +215,10 @@ namespace LDDrift
             }
             if (joinLineAlg.value() == LDDrift::JoinLineType::Round) {
                 vertices = RoundAlgorithm();
+                return;
+            }
+            if (joinLineAlg.value() == LDDrift::JoinLineType::Miter) {
+                vertices = MiterAlgorithm();
                 return;
             }
         }
@@ -270,13 +294,12 @@ namespace LDDrift
             /////////////////////////////////////////////
             // create triangles
             for (std::size_t pointNumber = 0; pointNumber < shapePointNumber; ++pointNumber) {
-                const std::size_t currentPoint = pointNumber;
                 const std::size_t nextPoint = pointNumber == shapePointNumber - 1 ? 0 : pointNumber + 1;
                 vertices.push_back(CenterPos.X);
                 vertices.push_back(CenterPos.Y);
                 vertices.push_back(0.0f);
-                vertices.push_back(shape->GetGlobalPoint(currentPoint).X);
-                vertices.push_back(shape->GetGlobalPoint(currentPoint).Y);
+                vertices.push_back(shape->GetGlobalPoint(pointNumber).X);
+                vertices.push_back(shape->GetGlobalPoint(pointNumber).Y);
                 vertices.push_back(0.0f);
                 vertices.push_back(shape->GetGlobalPoint(nextPoint).X);
                 vertices.push_back(shape->GetGlobalPoint(nextPoint).Y);
