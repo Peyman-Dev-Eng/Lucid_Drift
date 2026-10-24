@@ -1699,15 +1699,18 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
     ImGui::Text("Camera Zoom: %s", std::to_string(core->camera.GetZoom()).c_str());
     ImGui::SameLine();
     if (ImGui::Button("-##Sub Zoom")) {
-        core->camera.SubZoomCamera(0.1f);
+        core->camera.SubZoomCamera(1.0f);
+        core->render.UpdateViewMatrix();
     }
     ImGui::SameLine();
     if (ImGui::Button("+##Add Zoom")) {
-        core->camera.AddZoomCamera(0.1f);
+        core->camera.AddZoomCamera(1.0f);
+        core->render.UpdateViewMatrix();
     }
     ImGui::SameLine();
     if (ImGui::Button("Reset##Reset Zoom Camera Value")) {
         core->camera.SetZoomCamera(1);
+        core->render.UpdateViewMatrix();
     }
     if (ImGui::Button("Close")) {
         window->Show = false;

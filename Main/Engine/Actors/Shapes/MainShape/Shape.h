@@ -11,6 +11,8 @@
 
 namespace LDDrift::ActorType
 {
+    class NONE_TYPE {};
+
     class convex {};
 
     class concave {};

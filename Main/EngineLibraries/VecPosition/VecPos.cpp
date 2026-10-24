@@ -43,6 +43,11 @@ LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const LDDrift::VecPos2D& FirstVe
     CTM_assert(false, "direction input for normalize line is invalid")
 }
 
+LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec) {
+    const VecPos2D edge = LDDrift::VecPos2D::Normalize(FirstVec - SecondVec);
+    return VecPos2D{-edge.Y, edge.X};
+}
+
 
 LDDrift::VecPos2D LDDrift::VecPos2D::operator-(const LDDrift::VecPos2D& vec2) const {
     return VecPos2D{this->X - vec2.X, this->Y - vec2.Y};

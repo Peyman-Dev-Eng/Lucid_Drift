@@ -31,10 +31,14 @@ add_library(VECPOS2D STATIC
 
 target_include_directories(VECPOS2D PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine
+        ${LUCID_DRIFT_ROOT}/glad/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/GUI
+        ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
 )
 
 target_link_libraries(VECPOS2D PUBLIC
-        ASSERT
+        ASSERT VecColor ANGLE SHAPE_DATA PWT TRM COMP
 )
 
 

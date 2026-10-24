@@ -3,7 +3,6 @@
 #include <Assertions.h>
 #include <cmath>
 #include <initializer_list>
-#include "../Engine/Actors/Shapes/MainShape/Shape.h"
 
 namespace LDDrift
 {
@@ -39,6 +38,7 @@ namespace LDDrift
         VecPos2D(std::initializer_list<float> list);
         static VecPos2D Normalize(const VecPos2D& vec);
         static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec, const char& dir);
+        static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec);
         VecPos2D operator-(const VecPos2D& vec2) const;
         VecPos2D operator-(const float& value) const;
         VecPos2D operator+(const VecPos2D& vec2) const;
