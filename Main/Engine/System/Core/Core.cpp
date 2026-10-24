@@ -104,7 +104,7 @@ void LDDrift::Core::RunEngineFrame() {
     LDDrift::Core::CameraController();
     window.ClearBuffer();
     render.render();
-    gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
+    gui.consoleWindow.SetText(consoleBuffer.str());
     gui.UpdateWindow("Project Watch Tower");
     for (const auto& path : projectWatchTower.GetPaths()) {
         gui.SetTextForWindow("Project Watch Tower", path.string(), false);

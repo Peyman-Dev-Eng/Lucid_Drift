@@ -43,6 +43,37 @@ LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const LDDrift::VecPos2D& FirstVe
     CTM_assert(false, "direction input for normalize line is invalid")
 }
 
+#include <cmath>
+#include <algorithm>
+
+float LDDrift::VecPos2D::AngleBetween(
+    const VecPos2D& origin,
+    const VecPos2D& a,
+    const VecPos2D& b)
+{
+    const float ax = a.X - origin.X;
+    const float ay = a.Y - origin.Y;
+
+    const float bx = b.X - origin.X;
+    const float by = b.Y - origin.Y;
+
+    const float dot = ax * bx + ay * by;
+
+    const float lenA = std::sqrt(ax * ax + ay * ay);
+    const float lenB = std::sqrt(bx * bx + by * by);
+
+    if (lenA == 0.0f || lenB == 0.0f)
+        return 0.0f;
+
+    const float cosine = std::clamp(
+        dot / (lenA * lenB),
+        -1.0f,
+        1.0f
+    );
+
+    return std::acos(cosine) * 180.0f / std::acos(-1.0f);
+}
+
 LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec) {
     const VecPos2D edge = LDDrift::VecPos2D::Normalize(FirstVec - SecondVec);
     return VecPos2D{-edge.Y, edge.X};

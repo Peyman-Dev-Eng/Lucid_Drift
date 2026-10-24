@@ -92,7 +92,7 @@ namespace LDDrift
 
         /// round line joining
 
-        /*[[nodiscard]] std::vector<float> RoundAlgorithm() const {
+        [[nodiscard]] std::vector<float> RoundAlgorithm() const {
             std::vector<float> vertices;
             const std::size_t pointCountOfShape = shape->GetPointCount();
             const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
@@ -126,32 +126,18 @@ namespace LDDrift
                     vertices.push_back(0.0f);
                 }
 
-                const LDDrift::VecPos2D normalLine1 = LDDrift::VecPos2D::NormalLine(previousPoint, currentPoint);
-                const LDDrift::VecPos2D normalLine2 = LDDrift::VecPos2D::NormalLine(currentPoint, nextPoint);
+                int angle = 0;
+                float rad = static_cast<float>(angle) * std::numbers::pi_v<float> / 180.0f;
+                float x = currentPoint.X + halfThick * std::cos(rad);
+                float y = currentPoint.Y + halfThick * std::sin(rad);
 
-                const LDDrift::VecPos2D p1 = currentPoint + normalLine1 * halfThick;
-                const LDDrift::VecPos2D p2 = currentPoint + normalLine2 * halfThick;
+                LDDrift::VecPos2D PP = {x, y};
 
-                const LDDrift::VecPos2D A = p1 - currentPoint;
-                const LDDrift::VecPos2D B = p2 - currentPoint;
-
-                const float a = std::atan2(A.Y, A.X);
-                const float b = std::atan2((B.Y), B.X);
-
-                const float angleDifference = std::remainder(b - a, 2.0f * std::numbers::pi_v<float>);
-
-                const int segments = static_cast<int>(std::ceil(
-                    std::abs(angleDifference) * 180.0f / std::numbers::pi_v<float>));
-
-                float previous_X = p1.X;
-                float previous_Y = p1.Y;
-
-                for (int i = 0; i <= segments; ++i) {
-                    const float t = static_cast<float>(i) / static_cast<float>(segments);
-                    const float angle = a + angleDifference * t;
-
-                    const float x = currentPoint.X + halfThick * std::cos(angle);
-                    const float y = currentPoint.Y + halfThick * std::sin(angle);
+                constexpr int angleRad = 360 / 40;
+                for (angle = angleRad; angle <= 360; angle += angleRad) {
+                    rad = static_cast<float>(angle) * std::numbers::pi_v<float> / 180.0f;
+                    x = currentPoint.X + halfThick * std::cos(rad);
+                    y = currentPoint.Y + halfThick * std::sin(rad);
 
                     vertices.push_back(currentPoint.X);
                     vertices.push_back(currentPoint.Y);
@@ -159,16 +145,15 @@ namespace LDDrift
                     vertices.push_back(x);
                     vertices.push_back(y);
                     vertices.push_back(0.0f);
-                    vertices.push_back(previous_X);
-                    vertices.push_back(previous_Y);
+                    vertices.push_back(PP.X);
+                    vertices.push_back(PP.Y);
                     vertices.push_back(0.0f);
 
-                    previous_X = x;
-                    previous_Y = y;
+                    PP = {x, y};
                 }
             }
             return vertices;
-        }*/
+        }
 
     private:
         LDDrift::Actors::Shape* shape;
@@ -208,10 +193,10 @@ namespace LDDrift
                 vertices = BevelAlgorithm();
                 return;
             }
-            /*if (joinLineAlg.value() == LDDrift::JoinLineType::Round) {
+            if (joinLineAlg.value() == LDDrift::JoinLineType::Round) {
                 vertices = RoundAlgorithm();
                 return;
-            }*/
+            }
         }
 
         void TrianglesForConcaveShape(std::vector<float>& vertices) const {

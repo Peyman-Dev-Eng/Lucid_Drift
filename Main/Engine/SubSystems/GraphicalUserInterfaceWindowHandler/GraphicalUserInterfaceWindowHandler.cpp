@@ -289,10 +289,21 @@ void LDDrift::Console_GraphicalWindow::Resize() {
     position = {350, windowSize.Y - 180};
 }
 
+void LDDrift::Console_GraphicalWindow::SetText(const std::string& text) {
+    if (text != lastInputTextForSetTextFunction || std::ranges::find(texts, text) == texts.end()) {
+        texts.clear();
+        texts.push_back(text);
+        lastInputTextForSetTextFunction = text;
+    }
+}
+
 void LDDrift::Console_GraphicalWindow::Render() const {
     if (ImGui::Button("Clear")) {
         core->consoleBuffer.str("");
         core->consoleBuffer.clear();
+    }
+    for (const std::string& text : texts) {
+        ImGui::TextUnformatted(text.c_str());
     }
 }
 

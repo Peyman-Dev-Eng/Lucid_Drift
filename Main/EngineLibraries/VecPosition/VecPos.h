@@ -1,8 +1,10 @@
-#ifndef LUCID_DRIFT_VECPOS_H
-#define LUCID_DRIFT_VECPOS_H
+#ifndef LUCID_DRIFT_VECTOR_POSITION_H
+#define LUCID_DRIFT_VECTOR_POSITION_H
 #include <Assertions.h>
 #include <cmath>
 #include <initializer_list>
+#include <cmath>
+#include <algorithm>
 
 namespace LDDrift
 {
@@ -29,7 +31,6 @@ namespace LDDrift
      */
     class VecPos2D
     {
-    private:
     public:
         float Y{};
         float X{};
@@ -39,6 +40,7 @@ namespace LDDrift
         static VecPos2D Normalize(const VecPos2D& vec);
         static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec, const char& dir);
         static VecPos2D NormalLine(const VecPos2D& FirstVec, const VecPos2D& SecondVec);
+        static float AngleBetween(const VecPos2D& origin, const VecPos2D& a, const VecPos2D& b);
         VecPos2D operator-(const VecPos2D& vec2) const;
         VecPos2D operator-(const float& value) const;
         VecPos2D operator+(const VecPos2D& vec2) const;

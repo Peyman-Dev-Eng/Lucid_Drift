@@ -59,6 +59,8 @@ namespace LDDrift
     {
     private:
         LDDrift::Core* core = nullptr;
+        std::vector<std::string> texts;
+        std::string lastInputTextForSetTextFunction;
 
     public:
         Console_GraphicalWindow();
@@ -67,6 +69,7 @@ namespace LDDrift
         [[nodiscard]] const LDDrift::VecPos2D& GetSize() const;
         void Initialize();
         void SetCorePTR(LDDrift::Core* core_ptr);
+        void SetText(const std::string& text);
         void Resize();
         void Render() const;
     };
