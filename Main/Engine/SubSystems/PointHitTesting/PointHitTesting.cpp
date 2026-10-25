@@ -26,7 +26,7 @@ bool LDDrift::PointHitTesting::pointHitTesting(
         const float distanceFromCurrentLinePoints = pointsOfTargetShape[currentPoint].Y - pointsOfTargetShape[
             previousPoint].Y;
         const float distanceFromTargetPointToFirstPointOfLine = targetPoint.Y - pointsOfTargetShape[previousPoint].Y;
-        float targetPathProgress = distanceFromTargetPointToFirstPointOfLine / distanceFromCurrentLinePoints;
+        const float targetPathProgress = distanceFromTargetPointToFirstPointOfLine / distanceFromCurrentLinePoints;
 
         const float xDistanceFromLinePoints = std::abs(
             pointsOfTargetShape[previousPoint].X - pointsOfTargetShape[currentPoint].X);
@@ -35,8 +35,6 @@ bool LDDrift::PointHitTesting::pointHitTesting(
                 targetPathProgress);
             targetPoint.X < intersectionX_Position) {
             pointInsideShape = !pointInsideShape;
-        } else {
-            continue;
         }
     }
     return pointInsideShape;

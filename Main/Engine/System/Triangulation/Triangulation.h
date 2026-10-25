@@ -18,6 +18,17 @@ namespace LDDrift
     class Triangulation final
     {
     private:
+        [[nodiscard]] static LDDrift::VecPos2D LineIntersection(
+            const LDDrift::VecPos2D& start1,
+            const LDDrift::VecPos2D& direction1,
+            const LDDrift::VecPos2D& start2,
+            const LDDrift::VecPos2D& direction2
+        ) {
+            const float t = Cross(start2 - start1, direction2) / Cross(direction1, direction2);
+
+            return start1 + direction1 * t;
+        }
+
         static bool find(const std::vector<LDDrift::Actors::Line::PNT>& from, const LDDrift::VecPos2D& target) {
             bool found = false;
             for (const auto& [Point_1, Point_2, Point_3] : from) {
@@ -172,13 +183,93 @@ namespace LDDrift
             const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
             const float thick = shape->GetThickness();
             const float halfThick = thick / 2;
+            for (std::size_t point = 0; point < pointCount; ++point) {
+                const std::size_t previousPointNumber = (point + pointCount - 1) % pointCount;
+                const std::size_t currentPointNumber = point;
+                const std::size_t nextPointNumber = (point + 1) % pointCount;
+
+                const LDDrift::VecPos2D& previousPoint = points[previousPointNumber];
+                const LDDrift::VecPos2D& currentPoint = points[currentPointNumber];
+                const LDDrift::VecPos2D& nextPoint = points[nextPointNumber];
+
+                LDDrift::Actors::Line line(currentPoint, nextPoint);
+                line.SetThickness(thick);
+                line.SetScreenSize(shape->GetScreenSize());
+                line.CreateTriangles();
+
+                const std::vector<LDDrift::Actors::Line::PNT>& pointOfTriangles = line.GetPoints();
+
+                for (std::size_t i = 0; i < 2; ++i) {
+                    vertices.push_back(pointOfTriangles[i].Point_1.X);
+                    vertices.push_back(pointOfTriangles[i].Point_1.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointOfTriangles[i].Point_2.X);
+                    vertices.push_back(pointOfTriangles[i].Point_2.Y);
+                    vertices.push_back(0.0f);
+                    vertices.push_back(pointOfTriangles[i].Point_3.X);
+                    vertices.push_back(pointOfTriangles[i].Point_3.Y);
+                    vertices.push_back(0.0f);
+                }
+                const LDDrift::VecPos2D distanceOfLine1 = currentPoint - previousPoint;
+                const LDDrift::VecPos2D distanceOfLine2 = nextPoint - currentPoint;
+
+                const float length1 = std::sqrt(
+                    distanceOfLine1.X * distanceOfLine1.X + distanceOfLine1.Y * distanceOfLine1.Y);
+                const float length2 = std::sqrt(
+                    distanceOfLine2.X * distanceOfLine2.X + distanceOfLine2.Y * distanceOfLine2.Y);
+
+                const LDDrift::VecPos2D N1 = LDDrift::VecPos2D{-distanceOfLine1.Y, distanceOfLine1.X} / length1;
+                const LDDrift::VecPos2D N2 = LDDrift::VecPos2D{-distanceOfLine2.Y, distanceOfLine2.X} / length2;
+
+                const float cross = Cross(distanceOfLine1, distanceOfLine2);
+
+                if (std::abs(cross) <= 1e-6f * length1 * length2)
+                    continue;
+
+                const float side = cross > 0.0 ? -1.0f : 1.0f;
+
+                const LDDrift::VecPos2D resultPoint1 = currentPoint + (N1 * (halfThick * side));
+                const LDDrift::VecPos2D resultPoint2 = currentPoint + (N2 * (halfThick * side));
+
+                const LDDrift::VecPos2D& dir1 = currentPoint - previousPoint;
+                const LDDrift::VecPos2D& dir2 = nextPoint - currentPoint;
+
+                LDDrift::VecPos2D p = LineIntersection(resultPoint1, dir1, resultPoint2, dir2);
+
+                vertices.push_back(currentPoint.X);
+                vertices.push_back(currentPoint.Y);
+                vertices.push_back(0.0f);
+                vertices.push_back(resultPoint1.X);
+                vertices.push_back(resultPoint1.Y);
+                vertices.push_back(0.0f);
+                vertices.push_back(resultPoint2.X);
+                vertices.push_back(resultPoint2.Y);
+                vertices.push_back(0.0f);
+                vertices.push_back(resultPoint1.X);
+                vertices.push_back(resultPoint1.Y);
+                vertices.push_back(0.0f);
+                vertices.push_back(resultPoint2.X);
+                vertices.push_back(resultPoint2.Y);
+                vertices.push_back(0.0f);
+                vertices.push_back(p.X);
+                vertices.push_back(p.Y);
+                vertices.push_back(0.0f);
+            }
             return vertices;
         }
 
-    private:
         LDDrift::Actors::Shape* shape;
 
     public: // functions
+
+        static float DotProduct(const VecPos2D& origin, const VecPos2D& b, const VecPos2D& c) {
+            return (origin.X - b.X) * (c.X - b.X)
+                + (origin.Y - b.Y) * (c.Y - b.Y);
+        }
+
+        static float DotProduct(const LDDrift::VecPos2D& p1, const LDDrift::VecPos2D& p2) {
+            return p1.X * p2.X + p1.Y * p2.Y;
+        }
 
         static float Cross(const LDDrift::VecPos2D& vec1, const LDDrift::VecPos2D& vec2) {
             return vec1.X * vec2.Y - vec1.Y * vec2.X;

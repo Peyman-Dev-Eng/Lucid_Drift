@@ -71,4 +71,7 @@ inline std::ostream& operator<<(std::ostream& stream, const LDDrift::VecPos2D& v
     stream << vec.Y;
     return stream;
 }
-#endif // LUCID_DRIFT_VECPOS_H
+inline LDDrift::VecPos2D operator* (const float& value, const LDDrift::VecPos2D& vec) {
+    return vec * value;
+}
+#endif
