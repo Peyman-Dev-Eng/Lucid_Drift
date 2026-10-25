@@ -85,7 +85,7 @@ namespace LDDrift
         struct EditorWindowsData
         {
             char buffer[256];
-            std::string name = NULL_STR_VALUE;
+            std::string name = NULL_STRING;
             TextEditor editorWindow;
             bool Show = false;
         };

@@ -34,7 +34,7 @@ namespace LDDrift
         void Initialize();
         void SetCorePTR(LDDrift::Core* core_ptr);
         void Resize();
-        void Render() const;
+        void Render();
     };
 
     class ProjectWatchTower_GraphicalWindow : private DefaultWindowsData

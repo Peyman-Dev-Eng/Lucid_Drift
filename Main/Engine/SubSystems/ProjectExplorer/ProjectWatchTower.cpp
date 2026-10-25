@@ -111,7 +111,7 @@ std::string LDDrift::ProjectWatchTower::Extract::GetLastFileName(const std::stri
     if (counter < LOWER_BOUND_WHILE_LOOP) {
         std::cerr << RED << "Error: Failed to extract the last file name because the maximum search limit was exceeded."
             << RESET << std::endl;
-        return NULL_STR_VALUE;
+        return NULL_STRING;
     }
     std::ranges::reverse(result);
     return result;
@@ -157,7 +157,7 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
     const std::string& fileName, std::vector<std::filesystem::path>& _paths) {
     for (std::filesystem::path& path : _paths) {
         if (std::string lastFileName = LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string());
-            lastFileName == NULL_STR_VALUE || lastFileName != fileName) {
+            lastFileName == NULL_STRING || lastFileName != fileName) {
             continue;
         }
         std::size_t counter = path.string().size() - 1;
@@ -167,7 +167,7 @@ std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
         OOR_assert(counter > 0)
         return path.string().substr(0, counter);
     }
-    return NULL_STR_VALUE;
+    return NULL_STRING;
 }
 
 bool LDDrift::ProjectWatchTower::PathIsFile(const std::filesystem::path& path) {
@@ -184,11 +184,11 @@ bool LDDrift::ProjectWatchTower::PathIsFile(const std::filesystem::path& path) {
 }
 
 std::string LDDrift::ProjectWatchTower::IsAvailableFileInProject(const std::string& fileName) const {
-    std::string _is = NULL_STR_VALUE;
+    std::string _is = NULL_STRING;
     for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(projectPath)) {
         std::string lastFileName =
             LDDrift::ProjectWatchTower::Extract::GetLastFileName(entry.path().string());
-        if (lastFileName == NULL_STR_VALUE) {
+        if (lastFileName == NULL_STRING) {
             continue;
         }
         if (fileName == lastFileName) {

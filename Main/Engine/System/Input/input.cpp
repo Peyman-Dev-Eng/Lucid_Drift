@@ -674,3 +674,12 @@ bool LDDrift::input::Mouse::ScrollDown() {
 bool LDDrift::input::Mouse::ScrollUp() {
     return scrollOfMouseIsUp;
 }
+
+std::string LDDrift::input::ConvertKeyEnumToString(const Event::Keyboard::LinuxKeyboardKeyCode& target) {
+    for (const auto& [_str, _enum] : LDDrift::KeyStringName) {
+        if (_enum == target) {
+            return _str;
+        }
+    }
+    return NULL_STRING;
+}

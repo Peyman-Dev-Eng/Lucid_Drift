@@ -11,6 +11,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <VecPos.h>
+#define NULL_STRING "NULL_VALUE"
 
 using LD_uint = unsigned int;
 using LD_lint = long int;
@@ -255,7 +256,8 @@ namespace LDDrift
 
     // keyboard
     std::string GetFileKeyboardInputEvent();
-    void OpenFileKeyboardInputEvent(const std::vector<std::string>&); // open file input event of linux and save result this up variable
+    void OpenFileKeyboardInputEvent(const std::vector<std::string>&);
+    // open file input event of linux and save result this up variable
     inline void CloseFileKeyboardInputEvent(); // close file input event of linux
 
     // mouse
@@ -289,6 +291,7 @@ namespace LDDrift
 
     namespace input
     {
+        std::string ConvertKeyEnumToString(const Event::Keyboard::LinuxKeyboardKeyCode&);
         /**
          * @class Keyboard
          * @brief Manages keyboard input events and provides utility functions to query the state of keyboard keys.

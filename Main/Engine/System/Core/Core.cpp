@@ -45,6 +45,8 @@ void LDDrift::Core::InitCore() {
     currentScene = &scene;
     currentCamera = &camera;
     codePathfinder.initializeCodePathfinder();
+    this->Write_Read_UserProjectSetting.SetCore_PTR(this);
+    this->Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);
 }
 
 void LDDrift::Core::Begin() {
@@ -147,6 +149,9 @@ void LDDrift::Core::EngineHandler() {
         RunEngineFrame();
         RunGameFrame();
     }
+    userProjectSetting.SetSettings(this);
+    Write_Read_UserProjectSetting.CreateSettingFolder();
+    Write_Read_UserProjectSetting.WriteSettingsOfUserProject();
 }
 
 LDDrift::Core::~Core() {

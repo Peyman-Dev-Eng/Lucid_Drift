@@ -7,7 +7,7 @@
 #include <set>
 #include <ranges>
 #include <type_traits>
-#define NULL_STRING "NULL"
+#define NULL_STRING "NULL_VALUE"
 
 namespace LDDrift
 {

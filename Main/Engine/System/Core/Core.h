@@ -8,6 +8,7 @@
 #include <vector>
 
 // engine files include
+#include <WR_SettingSystem.h>
 #include "API/EngineAPI.h"
 #include <Actors/Line/Line.h>
 #include <Actors/Shapes/Circle/CircleShape.h>
@@ -52,6 +53,8 @@ namespace LDDrift
         LDDrift::Compile compile;
         LDDrift::Scene scene;
         LDDrift::CodePathfinder codePathfinder;
+        LDDrift::UserProjectSetting userProjectSetting;
+        LDDrift::WR_SettingSystem Write_Read_UserProjectSetting;
 
         // functions
         explicit Core();

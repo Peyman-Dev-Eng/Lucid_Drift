@@ -377,7 +377,7 @@ LDDrift::DefaultWindowsData LDDrift::GUI::GetWindow(const std::string& nameWindo
         }
     }
     return {
-        .name = NULL_STR_VALUE, .canMoveWindow = false, .canResizeWindow = false, .textPrintInWindow = {},
+        .name = NULL_STRING, .canMoveWindow = false, .canResizeWindow = false, .textPrintInWindow = {},
         .position = {0, 0}, .size = {0, 0}
     };
 }

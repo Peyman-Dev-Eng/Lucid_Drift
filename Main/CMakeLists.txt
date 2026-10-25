@@ -131,6 +131,7 @@ target_include_directories(GUI PUBLIC
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
         ${LUCID_DRIFT_ROOT}/glad/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/WR_SettingSystem
 )
 
 target_link_libraries(GUI PUBLIC
@@ -176,6 +177,7 @@ add_library(ENG_API STATIC
 
 target_include_directories(ENG_API PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/API
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/WR_SettingSystem
 )
 
 target_link_libraries(ENG_API PUBLIC
@@ -208,9 +210,12 @@ add_library(WRSS STATIC
 
 target_include_directories(WRSS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/WR_SettingSystem
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecColor
 )
 
-target_link_libraries(WRSS PUBLIC PWT)
+target_link_libraries(WRSS PUBLIC PWT ANGLE SHAPE_DATA )
 
 # ============================================================================
 # Code Pathfinder system
@@ -233,6 +238,7 @@ add_library(__GUIWH__ STATIC
 
 target_include_directories(__GUIWH__ PUBLIC
         Engine/SubSystems/GraphicalUserInterfaceWindowHandler
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/WR_SettingSystem
 )
 
 target_link_libraries(__GUIWH__ PUBLIC GUI)
@@ -381,6 +387,7 @@ target_link_libraries(Engine PUBLIC
         ENG_API
         CODE_PATHFINDER
         __GUIWH__
+        WRSS
 )
 
 if (WIN32)
@@ -396,5 +403,9 @@ target_sources(GUI PRIVATE
 )
 
 target_link_libraries(GUI PRIVATE
+        nlohmann_json::nlohmann_json
+)
+target_link_libraries(Engine
+        PRIVATE
         nlohmann_json::nlohmann_json
 )

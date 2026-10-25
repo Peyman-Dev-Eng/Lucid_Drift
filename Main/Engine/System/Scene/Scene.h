@@ -16,7 +16,7 @@ namespace LDDrift
 {
     class Scene
     {
-    private:
+    public:
         struct CIRCLE_SHAPE_INFORMATION
         {
             std::string circleName;
@@ -35,7 +35,7 @@ namespace LDDrift
             LDDrift::Actors::Line* line;
         };
 
-    private:
+    public:
         bool sendDataToGPU = false;
         LDDrift::Core* core = nullptr;
         LDDrift::Renderer* renderer = nullptr;

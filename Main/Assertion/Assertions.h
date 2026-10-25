@@ -18,7 +18,7 @@ namespace LDDrift::Assertions
 
 // can`t open file assert
 #define COF_assert(cond) \
-    cond ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "can not open file");
+    cond.is_open() ? (void)0 : LDDrift::Assertions::PrintLog(#cond, __FILE__, __LINE__, __func__, "can not open file");
 
 // not available os assert
 #define NAO_assert(cond) \
