@@ -50,6 +50,10 @@ LDDrift::VecPos2D LDDrift::Window::GetViewportSize() const {
 }
 
 void LDDrift::Window::CreateFullscreenWindow() {
+    glfwWindowHintString(
+        GLFW_WAYLAND_APP_ID,
+        "lucid-drift"
+    );
     screen = glfwCreateWindow(mode->width, mode->height - 300, settings.title.c_str(), monitor, nullptr);
     if (screen == nullptr) {
         const char* description = nullptr;
@@ -77,6 +81,39 @@ void LDDrift::Window::CreateFullscreenWindow() {
     LDDrift::Transform::heightScreen = settings.viewPortHeight;
     LDDrift::Transform::halfWidthScreen = settings.viewPortWidth / 2;
     LDDrift::Transform::halfHeightScreen = settings.viewPortHeight / 2;
+
+    int width = 0;
+    int height = 0;
+    int channels = 0;
+
+    unsigned char* pixels = stbi_load(
+        "docs/images/LucidDrift_Blue_Water_Emblem.png",
+        &width,
+        &height,
+        &channels,
+        4
+    );
+
+    if (pixels == nullptr) {
+        std::cerr << "Failed to load window icon!\n";
+        std::cerr << "Working directory: "
+            << std::filesystem::current_path() << '\n';
+        std::cerr << "Reason: "
+            << stbi_failure_reason() << '\n';
+    }
+
+    if (pixels) {
+        GLFWimage icon{};
+        icon.width = width;
+        icon.height = height;
+        icon.pixels = pixels;
+
+        if (glfwGetPlatform() != GLFW_PLATFORM_WAYLAND) {
+            glfwSetWindowIcon(screen, 1, &icon);
+        }
+
+        stbi_image_free(pixels);
+    }
 
 #ifdef __WIN32
     glfwSetScrollCallback(screen, LDDrift::input::Mouse::ScrollCallback);

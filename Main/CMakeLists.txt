@@ -165,6 +165,7 @@ target_link_libraries(TRM PUBLIC
         ASSERT
         FUNCTIONS
         GUI
+        stb_image
 )
 
 # ============================================================================
@@ -229,7 +230,7 @@ target_include_directories(CODE_PATHFINDER PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/CodePathfinder
 )
 # ============================================================================
-# END
+# Graphical user interface window handler
 # ============================================================================
 
 add_library(__GUIWH__ STATIC
@@ -242,6 +243,16 @@ target_include_directories(__GUIWH__ PUBLIC
 )
 
 target_link_libraries(__GUIWH__ PUBLIC GUI)
+
+# ============================================================================
+# stb image reader
+# ============================================================================
+
+add_library(stb_image INTERFACE)
+
+target_include_directories(stb_image INTERFACE
+        ${CMAKE_SOURCE_DIR}/ThirdParty/stb
+)
 
 # ============================================================================
 # END
@@ -370,6 +381,7 @@ target_include_directories(Engine PUBLIC
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
         ${CMAKE_CURRENT_LIST_DIR}/Engine
         ${CMAKE_CURRENT_LIST_DIR}/Engine/API
+        ${CMAKE_SOURCE_DIR}/ThirdParty/stb
 )
 
 target_link_libraries(Engine PUBLIC

@@ -1,6 +1,9 @@
 #ifndef LUCID_DRIFT_WINDOW_SYSTEM_H
 #define LUCID_DRIFT_WINDOW_SYSTEM_H
 #include <Assertions.h>
+#define STB_IMAGE_STATIC
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <VecCol.h>
