@@ -92,14 +92,16 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                         const int* pos,
                                         const LDDrift::VecCol& color, const float thickness, const int joinLine_A) {
     const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
-    if (joinLine_A == MITER) {
-        newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Miter);
-    } else if (joinLine_A == ROUND) {
-        newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Round);
-    } else if (joinLine_A == BEVEL) {
-        newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Bevel);
+    if (thickness != -1) {
+        if (joinLine_A == MITER) {
+            newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Miter);
+        } else if (joinLine_A == ROUND) {
+            newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Round);
+        } else if (joinLine_A == BEVEL) {
+            newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Bevel);
+        }
+        newPolygon.polygon->SetThickness(thickness);
     }
-    newPolygon.polygon->SetThickness(thickness);
     newPolygon.polygon->SetPointCount(_pointCount);
     newPolygon.polygon->SetScreenSize(core->window.GetViewportSize());
     newPolygon.polygon->SetSpeed(static_cast<float>(_speed));

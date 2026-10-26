@@ -6,7 +6,7 @@ LDDrift::UserProjectSetting::UserProjectSetting() = default;
 
 LDDrift::UserProjectSetting::~UserProjectSetting() = default;
 
-void LDDrift::UserProjectSetting::SetSettings(LDDrift::Core* core) {
+void LDDrift::UserProjectSetting::SetSettings(const LDDrift::Core* core) {
     circles = core->scene.circleShapes;
     polygons = core->scene.polygonShapes;
     lines = core->scene.lines;
@@ -88,19 +88,20 @@ LDDrift::VecPos2D LDDrift::WR_SettingSystem::Convert_Vector_To_Point(const std::
     return LDDrift::VecPos2D{vector[0], vector[1]};
 }
 
-void LDDrift::WR_SettingSystem::saveCircleActor() {
-    std::ofstream out((settingFolderPath / settingFilename).string(), std::ios::app | std::ios::out);
+void LDDrift::WR_SettingSystem::saveCircleActor() const {
+    std::ofstream out((settingFolderPath / settingFilename).string(), std::ios::out);
     COF_assert(out)
     for (const auto& [circleName, circle] : core->userProjectSetting.circles) {
         json data;
-        data["actor"]["circle"][circleName]["radius"] = circle->GetRadius();
-        data["actor"]["circle"][circleName]["point_count"] = circle->GetPointCount();
-        data["actor"]["circle"][circleName]["point_positions"] = ConvertPointsToFloats(circle->GetGlobalPoints());
-        data["actor"]["circle"][circleName]["color"] = ConvertPointColorsToFloats(circle->GetColorOfPoints());
-        data["actor"]["circle"][circleName]["original_point_position"] =
+        data[ACTOR][CIRCLE][circleName]["radius"] = circle->GetRadius();
+        data[ACTOR][CIRCLE][circleName]["point_count"] = circle->GetPointCount();
+        data[ACTOR][CIRCLE][circleName]["point_positions"] = ConvertPointsToFloats(circle->GetGlobalPoints());
+        data[ACTOR][CIRCLE][circleName]["color"] = ConvertPointColorsToFloats(circle->GetColorOfPoints());
+        data[ACTOR][CIRCLE][circleName]["original_point_position"] =
             Convert_Point_ToVector(circle->GetOriginalPosition_global());
-        data["actor"]["circle"][circleName]["speed"] = circle->GetSpeed();
-        data["actor"]["circle"][circleName]["center_pos"] = Convert_Point_ToVector(circle->GetCirclePosition());
+        data[ACTOR][CIRCLE][circleName]["speed"] = circle->GetSpeed();
+        data[ACTOR][CIRCLE][circleName]["center_pos"] = Convert_Point_ToVector(circle->GetCirclePosition());
+        data[ACTOR][CIRCLE][circleName]["thickness"] = circle->GetThickness();
         out << data;
     }
 }

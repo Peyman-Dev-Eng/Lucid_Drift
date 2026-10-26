@@ -7,6 +7,11 @@
 #include <Actors/Line/Line.h>
 #include <System/Scene/Scene.h>
 #include <nlohmann/json.hpp>
+#define ACTOR "actor"
+#define CIRCLE "circle"
+#define LINE "line"
+#define POLYGON "polygon"
+#define KEY_TARGETS "key_targets"
 using json = nlohmann::json;
 
 namespace LDDrift
@@ -22,7 +27,7 @@ namespace LDDrift
     public:
         UserProjectSetting();
         ~UserProjectSetting();
-        void SetSettings(LDDrift::Core* core);
+        void SetSettings(const LDDrift::Core* core);
     };
 
     class WR_SettingSystem final
@@ -41,10 +46,11 @@ namespace LDDrift
         static std::vector<LDDrift::VecCol> ConvertFloatColorsToVectors(const std::vector<float>& points);
         static std::vector<float> Convert_Point_ToVector(const LDDrift::VecPos2D& point);
         static LDDrift::VecPos2D Convert_Vector_To_Point(const std::vector<float>& vector);
-        void saveCircleActor();
+        void saveCircleActor() const;
         //void savePolygonActor();
         //void saveLinesActor();
         void saveActors();
+
     public:
         WR_SettingSystem();
         ~WR_SettingSystem();
