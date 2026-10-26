@@ -1,5 +1,7 @@
 #include "VecCol.h"
 
+#include <ranges>
+
 LDDrift::VecCol::VecCol() = default;
 
 LDDrift::VecCol::VecCol(const float red, const float green, const float blue, const float alpha) :
@@ -162,6 +164,18 @@ LDDrift::VecCol& LDDrift::VecCol::operator/=(const VecCol& vec) {
     this->B /= vec.B;
     this->A /= vec.A;
     return *this;
+}
+
+bool LDDrift::VecCol::operator==(const VecCol& vec) const {
+    return R == vec.R && G == vec.G && B == vec.B && A == vec.A;
+}
+
+bool LDDrift::VecCol::operator!=(const VecCol& vec) const {
+    if (this == &vec) {
+        return false;
+    } else {
+        return R != vec.R || G != vec.G || B != vec.B || A != vec.A;
+    }
 }
 
 LDDrift::VecCol::~VecCol() = default;

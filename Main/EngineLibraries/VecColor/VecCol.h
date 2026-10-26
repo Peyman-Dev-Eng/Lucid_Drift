@@ -51,6 +51,8 @@ namespace LDDrift
         VecCol operator*(const float& color) const;
         VecCol operator/(const float& color) const;
         VecCol operator+(const float& color) const;
+        bool operator==(const VecCol& vec) const;
+        bool operator!=(const VecCol& vec) const;
         ~VecCol();
     };
 }
