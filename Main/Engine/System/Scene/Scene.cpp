@@ -112,6 +112,11 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                          static_cast<float>(pos[pointIndex * 2 + 1])
                                      });
     }
+    if (newPolygon.polygon->ShapeIsConcave()) {
+        newPolygon.polygon->SetType<LDDrift::ActorType::concave>();
+    } else {
+        newPolygon.polygon->SetType<LDDrift::ActorType::convex>();
+    }
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
     renderer->AddShapeToRender(newPolygon.polygon);
     renderer->UpdateShapeData();
@@ -177,6 +182,13 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                         const std::vector<LDDrift::VecCol>& colors, const float thickness,
                                         const int joinLine_A) {
     const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
+    if (newPolygon.polygon->ShapeIsConcave()) {
+        newPolygon.polygon->SetType<LDDrift::ActorType::concave>();
+        std::cout << "is concave" << std::endl;
+    } else {
+        newPolygon.polygon->SetType<LDDrift::ActorType::convex>();
+        std::cout << "is convex" << std::endl;
+    }
     if (joinLine_A == MITER) {
         newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Miter);
     } else if (joinLine_A == ROUND) {

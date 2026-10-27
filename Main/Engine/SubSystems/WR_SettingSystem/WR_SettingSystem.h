@@ -47,9 +47,10 @@ namespace LDDrift
         static std::vector<float> Convert_Point_ToVector(const LDDrift::VecPos2D& point);
         static LDDrift::VecPos2D Convert_Vector_To_Point(const std::vector<float>& vector);
         void saveCircleActor() const;
-        //void savePolygonActor();
-        //void saveLinesActor();
+        void savePolygonActor();
+        void saveLinesActor();
         void saveActors();
+        std::string ConvertLineJoiningAlgorithmToString(const LDDrift::JoinLineType& jlt);
 
     public:
         WR_SettingSystem();

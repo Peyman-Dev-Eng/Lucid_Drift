@@ -60,6 +60,18 @@ std::vector<float> LDDrift::WR_SettingSystem::ConvertPointColorsToFloats(const s
     return result;
 }
 
+std::string LDDrift::WR_SettingSystem::ConvertLineJoiningAlgorithmToString(const LDDrift::JoinLineType& jlt) {
+    if (jlt == LDDrift::JoinLineType::Miter) {
+        return "Miter";
+    } else if (jlt == LDDrift::JoinLineType::Round) {
+        return "Round";
+    } else if (jlt == LDDrift::JoinLineType::Bevel) {
+        return "Bevel";
+    } else {
+        return NULL_STRING;
+    }
+}
+
 std::vector<LDDrift::VecCol> LDDrift::WR_SettingSystem::ConvertFloatColorsToVectors(const std::vector<float>& points) {
     std::vector<LDDrift::VecCol> result;
     result.reserve(points.size() / 4);
@@ -89,10 +101,10 @@ LDDrift::VecPos2D LDDrift::WR_SettingSystem::Convert_Vector_To_Point(const std::
 }
 
 void LDDrift::WR_SettingSystem::saveCircleActor() const {
-    std::ofstream out((settingFolderPath / settingFilename).string(), std::ios::out);
-    COF_assert(out)
+    std::ofstream jsonOut((settingFolderPath / settingFilename).string(), std::ios::out);
+    COF_assert(jsonOut)
+    json data;
     for (const auto& [circleName, circle] : core->userProjectSetting.circles) {
-        json data;
         data[ACTOR][CIRCLE][circleName]["radius"] = circle->GetRadius();
         data[ACTOR][CIRCLE][circleName]["point_count"] = circle->GetPointCount();
         data[ACTOR][CIRCLE][circleName]["point_positions"] = ConvertPointsToFloats(circle->GetGlobalPoints());
@@ -102,16 +114,35 @@ void LDDrift::WR_SettingSystem::saveCircleActor() const {
         data[ACTOR][CIRCLE][circleName]["speed"] = circle->GetSpeed();
         data[ACTOR][CIRCLE][circleName]["center_pos"] = Convert_Point_ToVector(circle->GetCirclePosition());
         data[ACTOR][CIRCLE][circleName]["thickness"] = circle->GetThickness();
-        out << data;
     }
+    jsonOut << data;
+}
+
+void LDDrift::WR_SettingSystem::savePolygonActor() {
+    std::ofstream jsonOut((settingFolderPath / settingFilename).string(), std::ios::out);
+    COF_assert(jsonOut)
+    json data;
+    for (const auto& [polyName, polygon] : core->userProjectSetting.polygons) {
+        data[ACTOR][POLYGON][polyName]["thickness"] = polygon->GetThickness();
+        data[ACTOR][POLYGON][polyName]["join_line_type"] = ConvertLineJoiningAlgorithmToString(polygon->GetJoinLineAlgorithm().value());
+        data[ACTOR][POLYGON][polyName]["point_count"] = polygon->GetPointCount();
+        data[ACTOR][POLYGON][polyName]["point_positions"] = ConvertPointsToFloats(polygon->GetGlobalPoints());
+        data[ACTOR][POLYGON][polyName]["point_colors"] = ConvertPointColorsToFloats(polygon->GetColorOfPoints());
+        data[ACTOR][POLYGON][polyName]["original_point_position"] = Convert_Point_ToVector(polygon->GetOriginalPosition_global());
+    }
+    jsonOut << data;
+}
+
+void LDDrift::WR_SettingSystem::saveLinesActor() {
+
 }
 
 void LDDrift::WR_SettingSystem::saveActors() {
-    saveCircleActor();
+    //saveCircleActor();
     //savePolygonActor();
     //saveLinesActor();
 }
 
 void LDDrift::WR_SettingSystem::WriteSettingsOfUserProject() {
-    saveCircleActor();
+    //saveCircleActor();
 }
