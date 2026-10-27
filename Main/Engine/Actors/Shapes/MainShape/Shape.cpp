@@ -296,8 +296,9 @@ bool LDDrift::Actors::Shape::IsHaveThickness() const {
     return HaveThickness;
 }
 
-bool LDDrift::Actors::Shape::ShapeIsConvex() const {
-    return isConvex;
+// پیاده سازی تابع بررسی convex بودن شکل
+bool LDDrift::Actors::Shape::ShapeIsConvex() {
+    return !ShapeIsConcave();
 }
 
 void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColor) {
@@ -313,7 +314,60 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPosition_NDC() const {
     return LDDrift::Transform::TransformToNDC_Position(OriginalPosition);
 }
 
-bool LDDrift::Actors::Shape::ShapeIsConcave() const {
+bool LDDrift::Actors::Shape::ShapeIsConcave() {
+    std::cerr << "shape is concave Called" << std::endl;
+    std::cout << "shape is concave Called" << std::endl;
+    isConcave = false;
+    if (PointCount < 3) {
+        return false;
+    }
+    const auto Cross = [](const VecPos2D& a, const VecPos2D& b, const VecPos2D& c) -> const float
+    {
+        return (b.X - a.X) * (c.Y - a.Y) - (b.Y - a.Y) * (c.X - a.X);
+    };
+    const auto TranslateCross = [](const float crossValue) -> const int
+    {
+        if (crossValue == 0) {
+            return 0;
+        } else if (crossValue > 0) {
+            return 1;
+        } else {
+            return -1;
+        }
+    };
+    const float crossOfBeginPoints = Cross(GetGlobalPoint(0), GetGlobalPoint(1), GetGlobalPoint(2));
+    int prevDir = TranslateCross(crossOfBeginPoints);
+    for (std::size_t curr = 1; curr < PointCount; ++curr) {
+        const std::size_t prev = (curr + PointCount - 1) % PointCount;
+        const std::size_t next = (curr + 1) % PointCount;
+
+        const float crossResult = Cross(GetGlobalPoint(prev), GetGlobalPoint(curr), GetGlobalPoint(next));
+
+        std::cerr << "curr: " << curr
+          << ", cross: " << crossResult
+          << ", prevDir: " << prevDir
+          << '\n';
+
+        if (crossResult == 0) {
+            continue;
+        }
+
+        if (prev > 0) {
+            const int currentCrossDir = TranslateCross(crossResult);
+            if (std::abs(currentCrossDir - prevDir) == 0) { // start of -if-
+                isConcave = true;
+                break;
+            } // end of -if-
+            prevDir = currentCrossDir;
+        } else {
+            const int currentCrossDir = TranslateCross(crossResult);
+            if (std::abs(currentCrossDir - prevDir) == 0) {
+                isConcave = true;
+                break;
+            }
+            prevDir = currentCrossDir;
+        }
+    }
     return isConcave;
 }
 

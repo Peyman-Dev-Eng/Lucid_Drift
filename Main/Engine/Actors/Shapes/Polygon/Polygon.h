@@ -9,7 +9,7 @@ namespace LDDrift::Actors
     public:
         Polygon();
         void Move(Dir direction) override;
-        [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
+        [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() override;
         void Rebuild() override;
         void Rebuild(int, int) override;
         ~Polygon() override;

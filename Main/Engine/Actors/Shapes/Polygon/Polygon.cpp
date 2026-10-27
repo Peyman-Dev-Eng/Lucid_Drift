@@ -2,8 +2,8 @@
 
 LDDrift::Actors::Polygon::Polygon() = default;
 
-LDDrift::VecCol LDDrift::Actors::Polygon::CalculateAverageVertexColor() const {
-    CTM_assert(this->ShapeIsConvex(), "this is shape is not a convex polygon");
+LDDrift::VecCol LDDrift::Actors::Polygon::CalculateAverageVertexColor() {
+    CTM_assert(ShapeIsConvex(), "this is shape is not a convex polygon");
     LDDrift::VecCol resultColor;
     const std::vector<LDDrift::VecCol>& verticesColor = this->GetColorOfPoints();
     const std::size_t pointCount = this->GetPointCount();

@@ -34,7 +34,7 @@ namespace LDDrift::Actors
         void SetCirclePosition(const LDDrift::VecPos2D& position);
         [[nodiscard]] const LDDrift::VecPos2D& GetCirclePosition() const;
         [[nodiscard]] float GetRadius() const;
-        [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() const override;
+        [[nodiscard]] LDDrift::VecCol CalculateAverageVertexColor() override;
         void Rebuild() override;
         void Rebuild(int width, int height) override;
         void Rotate(const Angle& angle) override;

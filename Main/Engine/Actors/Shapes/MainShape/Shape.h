@@ -113,13 +113,13 @@ namespace LDDrift::Actors
         [[nodiscard]] bool IsHaveThickness() const;
         [[nodiscard]] float GetThickness() const;
         [[nodiscard]] std::vector<LDDrift::VecPos2D> TransformPoints() const;
-        [[nodiscard]] virtual LDDrift::VecCol CalculateAverageVertexColor() const = 0;
+        [[nodiscard]] virtual LDDrift::VecCol CalculateAverageVertexColor() = 0;
         [[nodiscard]] LDDrift::VecPos2D CalculateAveragePointPosition() const;
         virtual void Rebuild() = 0;
         virtual void Rebuild(int width, int height) = 0;
         virtual ~Shape();
-        [[nodiscard]] bool ShapeIsConvex() const;
-        [[nodiscard]] bool ShapeIsConcave() const;
+        bool ShapeIsConvex();
+        bool ShapeIsConcave();
         [[nodiscard]] const LDDrift::VecPos2D& GetScreenSize() const;
     };
 }

@@ -27,7 +27,7 @@ float LDDrift::Actors::Circle::GetRadius() const {
     return radius;
 }
 
-LDDrift::VecCol LDDrift::Actors::Circle::CalculateAverageVertexColor() const {
+LDDrift::VecCol LDDrift::Actors::Circle::CalculateAverageVertexColor() {
     if (this->IsFillShape()) {
         return this->GetPointColor(0);
     } else {
