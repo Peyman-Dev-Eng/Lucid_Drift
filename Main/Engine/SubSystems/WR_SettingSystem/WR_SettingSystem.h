@@ -46,11 +46,13 @@ namespace LDDrift
         static std::vector<LDDrift::VecCol> ConvertFloatColorsToVectors(const std::vector<float>& points);
         static std::vector<float> Convert_Point_ToVector(const LDDrift::VecPos2D& point);
         static LDDrift::VecPos2D Convert_Vector_To_Point(const std::vector<float>& vector);
-        void saveCircleActor() const;
-        void savePolygonActor();
-        void saveLinesActor();
-        void saveActors();
-        std::string ConvertLineJoiningAlgorithmToString(const LDDrift::JoinLineType& jlt);
+        void saveCircleActor(json& j) const;
+        void savePolygonActor(json& j) const;
+        void saveLinesActor(json& j) const;
+        static std::string ConvertLineJoiningAlgorithmToString(const LDDrift::JoinLineType& jlt);
+        static LDDrift::JoinLineType ConvertStringToLineJoiningAlgorithm(const std::string& _st);
+        static std::vector<float> ConvertColorToVector(const LDDrift::VecCol& color);
+        static int Convert_JLT_ToInteger(const LDDrift::JoinLineType& jlt);
 
     public:
         WR_SettingSystem();
@@ -59,8 +61,8 @@ namespace LDDrift
         void SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* projectWatchTowerPTR);
         void Init();
         void CreateSettingFolder();
-        void WriteSettingsOfUserProject();
-        void ReadSettingsOfUserProject();
+        void WriteSettingsOfUserProject() const;
+        void ReadSettingsOfUserProject() const;
     };
 }
 

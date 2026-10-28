@@ -45,8 +45,10 @@ void LDDrift::Core::InitCore() {
     currentScene = &scene;
     currentCamera = &camera;
     codePathfinder.initializeCodePathfinder();
-    this->Write_Read_UserProjectSetting.SetCore_PTR(this);
-    this->Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);
+    Write_Read_UserProjectSetting.SetCore_PTR(this);
+    Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);
+    Write_Read_UserProjectSetting.CreateSettingFolder();
+    Write_Read_UserProjectSetting.ReadSettingsOfUserProject();
 }
 
 void LDDrift::Core::Begin() {
@@ -150,11 +152,10 @@ void LDDrift::Core::EngineHandler() {
         RunGameFrame();
     }
     userProjectSetting.SetSettings(this);
-    Write_Read_UserProjectSetting.CreateSettingFolder();
-    Write_Read_UserProjectSetting.WriteSettingsOfUserProject();
 }
 
 LDDrift::Core::~Core() {
+    Write_Read_UserProjectSetting.WriteSettingsOfUserProject();
     std::cout.rdbuf(oldC_outBuf);
     LDDrift::input::Keyboard::Destroy();
     LDDrift::input::Mouse::Destroy();

@@ -117,6 +117,7 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     } else {
         newPolygon.polygon->SetType<LDDrift::ActorType::convex>();
     }
+    newPolygon.polygon->SetOriginalPositionToCenter();
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
     renderer->AddShapeToRender(newPolygon.polygon);
     renderer->UpdateShapeData();
@@ -184,19 +185,19 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
     if (newPolygon.polygon->ShapeIsConcave()) {
         newPolygon.polygon->SetType<LDDrift::ActorType::concave>();
-        std::cout << "is concave" << std::endl;
     } else {
         newPolygon.polygon->SetType<LDDrift::ActorType::convex>();
-        std::cout << "is convex" << std::endl;
     }
-    if (joinLine_A == MITER) {
-        newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Miter);
-    } else if (joinLine_A == ROUND) {
-        newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Round);
-    } else if (joinLine_A == BEVEL) {
-        newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Bevel);
+    if (thickness != 0.0f) {
+        if (joinLine_A == MITER) {
+            newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Miter);
+        } else if (joinLine_A == ROUND) {
+            newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Round);
+        } else if (joinLine_A == BEVEL) {
+            newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Bevel);
+        }
+        newPolygon.polygon->SetThickness(thickness);
     }
-    newPolygon.polygon->SetThickness(thickness);
     newPolygon.polygon->SetPointCount(_pointCount);
     newPolygon.polygon->SetScreenSize(core->window.GetViewportSize());
     newPolygon.polygon->SetSpeed(static_cast<float>(_speed));
@@ -210,6 +211,7 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                          static_cast<float>(pos[pointIndex * 2 + 1])
                                      });
     }
+    newPolygon.polygon->SetOriginalPositionToCenter();
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
     renderer->AddShapeToRender(newPolygon.polygon);
     renderer->UpdateShapeData();

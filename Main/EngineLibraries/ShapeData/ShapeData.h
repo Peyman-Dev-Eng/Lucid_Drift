@@ -6,11 +6,12 @@
 
 namespace LDDrift
 {
-    enum class JoinLineType : std::size_t
+    enum class JoinLineType : long long int
     {
         Miter = 2147483647,
         Round = 4294967291,
-        Bevel = 9999999967
+        Bevel = 9999999967,
+        Null = -1
     };
 
     class ShapeData

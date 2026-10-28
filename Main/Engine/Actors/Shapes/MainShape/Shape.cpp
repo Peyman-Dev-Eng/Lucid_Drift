@@ -1,6 +1,6 @@
 #include "Shape.h"
 
-LDDrift::Actors::Shape::Shape() : joinLineAlgorithm(std::nullopt), screenSize(0, 0), OriginalPosition(0, 0),
+LDDrift::Actors::Shape::Shape() : joinLineAlgorithm(LDDrift::JoinLineType::Null), screenSize(0, 0), OriginalPosition(0, 0),
                                   PointCount(0), Speed(0.01),
                                   SpeedNDC_X(0), SpeedNDC_Y(0), FillShape(true), Thickness(0), HaveThickness(false) {}
 
@@ -315,8 +315,6 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPosition_NDC() const {
 }
 
 bool LDDrift::Actors::Shape::ShapeIsConcave() {
-    std::cerr << "shape is concave Called" << std::endl;
-    std::cout << "shape is concave Called" << std::endl;
     isConcave = false;
     if (PointCount < 3) {
         return false;
@@ -342,11 +340,6 @@ bool LDDrift::Actors::Shape::ShapeIsConcave() {
         const std::size_t next = (curr + 1) % PointCount;
 
         const float crossResult = Cross(GetGlobalPoint(prev), GetGlobalPoint(curr), GetGlobalPoint(next));
-
-        std::cerr << "curr: " << curr
-          << ", cross: " << crossResult
-          << ", prevDir: " << prevDir
-          << '\n';
 
         if (crossResult == 0) {
             continue;
