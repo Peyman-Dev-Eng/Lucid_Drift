@@ -16,6 +16,8 @@
 #include <iterator>
 #include <GraphicalUserInterfaceWindowHandler.h>
 #include "TextEditor.h"
+#include <VecCol.h>
+#include "WR_SettingSystem.h"
 #define PROJECT_WATCH_TOWER_WINDOW_NAME "Project Watch Tower"
 #define PROJECT_MANAGER_WINDOW_NAME "Project Manager"
 #define CONSOLE_WINDOW_NAME "Console"
@@ -27,6 +29,7 @@
 #define EXIT_WARNING_WINDOW_NAME "Exit Warning Window"
 #define CREATE_NEW_CIRCLE_ACTOR_WINDOW_NAME "Create New Circle Actor"
 #define GAME_SETTING_WINDOW_NAME "Game Setting"
+#define SEE_OBJECTS_WINDOW_NAME "See Objects"
 
 namespace LDDrift
 {
@@ -49,6 +52,7 @@ namespace LDDrift
     {
     public:
         std::thread reloadCmakeFileThread;
+
     private: // editor window handing functions
         bool DrawCodeSuggestionPopup(bool& shouldOpen, const std::vector<std::string>& suggestions,
                                      std::string& selectedSuggestion, ImVec2 position = ImVec2(-1.0f, -1.0f)
@@ -81,7 +85,6 @@ namespace LDDrift
         static std::vector<std::string> ExtractTextFromString(const std::string& text);
 
     public:
-
         struct EditorWindowsData
         {
             char buffer[256];
@@ -126,6 +129,7 @@ namespace LDDrift
         ~GUI();
 
     private:
+        void SeeObjectsWindowHandler(const DefaultWindowsData* window) const;
         void GameSettingWindowHandler(DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window);
         void PolygonConfigureWindowHandler(DefaultWindowsData* window) const;

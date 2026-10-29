@@ -6,7 +6,6 @@
 #include <Angle.h>
 #include <codecvt>
 #include <ShapeData.h>
-#include <SubSystems/Transform/Transform.h>
 #include <numeric>
 
 namespace LDDrift::ActorType
@@ -16,6 +15,11 @@ namespace LDDrift::ActorType
     class convex {};
 
     class concave {};
+}
+
+namespace LDDrift
+{
+    class Transform;
 }
 
 namespace LDDrift::Actors

@@ -1,6 +1,7 @@
 #include "Scene.h"
-
 #include "Actors/Shapes/Circle/CircleShape.h"
+#include "Actors/Shapes/Polygon/Polygon.h"
+#include "Actors/Line/Line.h"
 #include "System/Core/Core.h"
 
 LDDrift::Scene::Scene() = default;
@@ -262,4 +263,52 @@ bool LDDrift::Scene::DeleteCircleShape(const std::string& name) {
         ++pos;
     }
     return false;
+}
+
+std::vector<std::string> LDDrift::Scene::GetCircleNames() const {
+    std::vector<std::string> circleNames;
+    for (const auto& [circleName, circle] : circleShapes) {
+        circleNames.push_back(circleName);
+    }
+    return circleNames;
+}
+
+std::vector<std::string> LDDrift::Scene::GetPolygonNames() const {
+    std::vector<std::string> polygonNames;
+    for (const auto& [polygonName, polygon] : polygonShapes) {
+        polygonNames.push_back(polygonName);
+    }
+    return polygonNames;
+}
+
+std::vector<std::string> LDDrift::Scene::GetLineNames() const {
+    std::vector<std::string> lineNames;
+    for (const auto& [lineName, line] : lines) {
+        lineNames.push_back(lineName);
+    }
+    return lineNames;
+}
+
+std::vector<LDDrift::Actors::Circle*> LDDrift::Scene::GetCircles_ptr() const {
+    std::vector<LDDrift::Actors::Circle*> circles;
+    for (const auto& [circleName, circle] : circleShapes) {
+        circles.push_back(circle);
+    }
+    return circles;
+}
+
+std::vector<LDDrift::Actors::Polygon*> LDDrift::Scene::GetPolygons_ptr() const {
+    std::vector<LDDrift::Actors::Polygon*> polygons;
+    for (const auto& [polygonName, polygon] : polygonShapes) {
+        polygons.push_back(polygon);
+    }
+    return polygons;
+}
+
+std::vector<LDDrift::Actors::Line*> LDDrift::Scene::GetLines_ptr() const {
+    std::vector<LDDrift::Actors::Line*> Lines;
+    for (const auto& [lineName, line] : lines) {
+        Lines.push_back(line);
+    }
+    return Lines;
 }

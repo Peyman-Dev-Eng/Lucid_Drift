@@ -13,6 +13,7 @@
 
 namespace LDDrift
 {
+    class Transform;
     class Core;
     /**
      * Window class represents a graphical window in the application.

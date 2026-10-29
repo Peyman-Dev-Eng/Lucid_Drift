@@ -1,6 +1,8 @@
 #include "Renderer.h"
-
 #include "System/Core/Core.h"
+#include "Actors/Shapes/MainShape/Shape.h"
+#include "Actors/Line/Line.h"
+#include "SubSystems/Transform/Transform.h"
 
 void LDDrift::Renderer::SetVertexShaderSource() {
     VertexShaderSource = R"(

@@ -3,7 +3,6 @@
 #include "glad/glad.h"
 #include <vector>
 #include <ShapeData.h>
-#include <Actors/Line/Line.h>
 #include <glm/gtc/type_ptr.hpp>
 #include <set>
 #include <System/Triangulation/Triangulation.h>
@@ -15,7 +14,10 @@ namespace LDDrift
     namespace Actors
     {
         class Shape;
+        class Line;
     }
+    class Transform;
+    class Core;
 
     class Renderer final
     {

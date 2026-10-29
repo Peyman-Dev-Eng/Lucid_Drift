@@ -1,4 +1,5 @@
 #include "Shape.h"
+#include "SubSystems/Transform/Transform.h"
 
 LDDrift::Actors::Shape::Shape() : joinLineAlgorithm(LDDrift::JoinLineType::Null), screenSize(0, 0), OriginalPosition(0, 0),
                                   PointCount(0), Speed(0.01),

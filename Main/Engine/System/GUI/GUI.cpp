@@ -323,6 +323,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(GAME_SETTING_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(SEE_OBJECTS_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -1602,7 +1604,8 @@ void LDDrift::GUI::EndRenderGUI() {
         }
         if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) &&
             (window.name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME) &&
-            (window.name != EXIT_WARNING_WINDOW_NAME) && (window.name != GAME_SETTING_WINDOW_NAME)) {
+            (window.name != EXIT_WARNING_WINDOW_NAME) && (window.name != GAME_SETTING_WINDOW_NAME) &&
+            (window.name != SEE_OBJECTS_WINDOW_NAME)) {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }
@@ -1618,6 +1621,7 @@ void LDDrift::GUI::EndRenderGUI() {
         this->GameSettingWindowHandler(&window);
         // مدیریت رویداده های کلید های مورد نظر کاربر
         this->SetKeyTargetWindowHandler(&window);
+        this->SeeObjectsWindowHandler(&window);
         if (!window.textPrintInWindow.empty())
             for (const std::string& text : window.textPrintInWindow) {
                 ImGui::TextUnformatted(text.c_str());
@@ -1759,6 +1763,7 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
     if (window->name != GAME_SETTING_WINDOW_NAME) {
         return;
     }
+    static bool checkbox = false;
     ImGui::Separator();
     ImGui::TextUnformatted("actors");
     if (ImGui::Button("Circle")) {
@@ -1810,6 +1815,13 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
         core->camera.SetZoomCamera(1);
         core->render.UpdateViewMatrix();
     }
+    ImGui::Separator();
+    ImGui::Checkbox("See Objects## se objects window", &checkbox);
+    if (checkbox) {
+        GetWindowPTR(SEE_OBJECTS_WINDOW_NAME)->Show = true;
+    } else {
+        GetWindowPTR(SEE_OBJECTS_WINDOW_NAME)->Show = false;
+    }
     if (ImGui::Button("Close")) {
         window->Show = false;
     }
@@ -1820,6 +1832,137 @@ void LDDrift::GUI::OpenWindow(const std::string& name) {
         if (window.name == name) {
             window.Show = true;
         }
+    }
+}
+
+void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) const {
+    if (window->name != SEE_OBJECTS_WINDOW_NAME) {
+        return;
+    }
+    const auto init = [](std::vector<bool>& arr, const std::size_t sz) -> void
+    {
+        for (std::size_t i = 0; i < sz; ++i) {
+            arr.push_back(false);
+        }
+    };
+    const auto ConvertLineJoiningAlgorithmToString = [](const LDDrift::JoinLineType& jlt) -> const char*
+    {
+        if (jlt == LDDrift::JoinLineType::Miter) {
+            return "Miter";
+        } else if (jlt == LDDrift::JoinLineType::Round) {
+            return "Round";
+        } else if (jlt == LDDrift::JoinLineType::Bevel) {
+            return "Bevel";
+        } else {
+            return NULL_STRING;
+        }
+    };
+    // start - circle
+    const std::vector<std::string> circles_name = core->scene.GetCircleNames();
+    const std::vector<LDDrift::Actors::Circle*> circles = core->scene.GetCircles_ptr();
+    static std::vector<bool> checkBoxState_circle;
+    // end - circle
+    //-------------//
+    // start - line
+    const std::vector<std::string> polygons_name = core->scene.GetPolygonNames();
+    const std::vector<LDDrift::Actors::Line*> lines = core->scene.GetLines_ptr();
+    static std::vector<bool> checkBoxState_line;
+    // end - line
+    //-------------//
+    // start - polygon
+    const std::vector<std::string> lines_name = core->scene.GetLineNames();
+    const std::vector<LDDrift::Actors::Polygon*> polygons = core->scene.GetPolygons_ptr();
+    static std::vector<bool> checkBoxState_polygon;
+    // end - polygon
+
+    // circle objects
+    const std::size_t circleCount = circles.size();
+    init(checkBoxState_circle, circleCount);
+    for (std::size_t circleNumber = 0; circleNumber < circleCount; ++circleNumber) {
+        ImGui::PushID(static_cast<int>(circleNumber));
+        const LDDrift::Actors::Circle* c_ptr = circles[circleNumber];
+        bool state = checkBoxState_circle[circleNumber];
+        ImGui::Checkbox("##show", &state);
+        ImGui::SameLine();
+        ImGui::TextUnformatted(circles_name[circleNumber].c_str());
+        checkBoxState_circle[circleNumber] = state;
+        if (state) {
+            ImGui::Text("Point Count: %zu", c_ptr->GetPointCount());
+            ImGui::SameLine();
+            ImGui::Text("radius: %.0f", c_ptr->GetRadius());
+            ImGui::SameLine();
+            if (c_ptr->IsHaveThickness()) {
+                ImGui::Text("thick: %.0f", c_ptr->GetThickness());
+                ImGui::SameLine();
+            }
+            ImGui::Text("position: {x: %.1f, y: %.1f}", c_ptr->GetCirclePosition().X, c_ptr->GetCirclePosition().Y);
+            const LDDrift::VecCol col = c_ptr->GetPointColor(0);
+            ImGui::Text("red: %.3f - green: %.3f - blue: %.3f - alpha: %.3f", col.R, col.G, col.B, col.A);
+            ImGui::Separator();
+        }
+        ImGui::PopID();
+    }
+    // line objects
+    const std::size_t lineCount = lines.size();
+    init(checkBoxState_line, lineCount);
+    for (std::size_t lineNumber = 0; lineNumber < lineCount; ++lineNumber) {
+        ImGui::PushID(static_cast<int>(lineNumber));
+        bool state = checkBoxState_line[lineNumber];
+        ImGui::Checkbox("##show", &state);
+        ImGui::SameLine();
+        ImGui::TextUnformatted(lines_name[lineNumber].c_str());
+        checkBoxState_line[lineNumber] = state;
+        if (state) {
+            const LDDrift::Actors::Line* l_ptr = lines[lineNumber];
+            ImGui::Text("start pos: {x: %.1f, y: %.1f}", l_ptr->GetFirstPoint().X, l_ptr->GetFirstPoint().Y);
+            ImGui::SameLine();
+            ImGui::Text("end pod: {x: %.1f, y: %.1f}", l_ptr->GetSecondPoint().X, l_ptr->GetSecondPoint().Y);
+            ImGui::SameLine();
+            const LDDrift::VecCol col = l_ptr->GetColor();
+            ImGui::Text("red: %.3f - green: %.3f - blue: %.3f - alpha: %.3f", col.R, col.G, col.B, col.A);
+            ImGui::SameLine();
+            ImGui::Text("thick: %.0f", l_ptr->GetThickness());
+        }
+        ImGui::PopID();
+    }
+
+    // polygon objects
+    const std::size_t polygonCount = polygons.size();
+    init(checkBoxState_polygon, polygonCount);
+    for (std::size_t polygonNumber = 0; polygonNumber < polygonCount; ++polygonNumber) {
+        ImGui::PushID(static_cast<int>(polygonNumber));
+        bool state = checkBoxState_polygon[polygonNumber];
+        ImGui::Checkbox("##show", &state);
+        ImGui::SameLine();
+        ImGui::TextUnformatted(polygons_name[polygonNumber].c_str());
+        checkBoxState_polygon[polygonNumber] = state;
+        if (state) {
+            const LDDrift::Actors::Polygon* p_ptr = polygons[polygonNumber];
+            ImGui::Text("point count: %zu", p_ptr->GetPointCount());
+            ImGui::SameLine();
+            ImGui::Text("speed: %.0f", p_ptr->GetSpeed());
+            ImGui::SameLine();
+            if (p_ptr->IsHaveThickness()) {
+                ImGui::Text("thickness: %.0f", p_ptr->GetThickness());
+                ImGui::SameLine();
+                ImGui::Text("join line alg: %s",
+                            ConvertLineJoiningAlgorithmToString(p_ptr->GetJoinLineAlgorithm().value()));
+                const LDDrift::VecCol col = p_ptr->GetPointColor(0);
+                ImGui::Text("red: %.3f - green: %.3f - blue: %.3f - alpha: %.3f", col.R, col.G, col.B, col.A);
+            } else {
+                for (std::size_t pointNumber = 0; pointNumber < p_ptr->GetPointCount(); ++pointNumber) {
+                    const LDDrift::VecCol col = p_ptr->GetPointColor(pointNumber);
+                    ImGui::Text("point %zu: red: %.3f - green: %.3f - blue: %.3f - alpha: %.3f", pointNumber, col.R,
+                                col.G, col.B, col.A);
+                }
+            }
+            for (std::size_t pointNumber = 0; pointNumber < p_ptr->GetPointCount(); ++pointNumber) {
+                ImGui::Text("point %zu: {x: %0.0f, y: %0.0f}", pointNumber, p_ptr->GetGlobalPoint(pointNumber).X,
+                            p_ptr->GetGlobalPoint(pointNumber).Y);
+                if (pointNumber % 3 != 0) ImGui::SameLine();
+            }
+        }
+        ImGui::PopID();
     }
 }
 

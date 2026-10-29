@@ -2,9 +2,6 @@
 #define LUCID_DRIFT_WR_SETTING_SYSTEM_H
 #include <ProjectWatchTower.h>
 #include <unordered_map>
-#include <Actors/Shapes/MainShape/Shape.h>
-#include <Actors/Shapes/Circle/CircleShape.h>
-#include <Actors/Shapes/Polygon/Polygon.h>
 #include <Actors/Line/Line.h>
 #include <System/Scene/Scene.h>
 #include <nlohmann/json.hpp>
@@ -17,6 +14,15 @@ using json = nlohmann::json;
 
 namespace LDDrift
 {
+    namespace Actors
+    {
+        class Shape;
+        class Polygon;
+        class Circle;
+        class Line;
+    }
+    class Core;
+
     class UserProjectSetting final
     {
     public: // variables

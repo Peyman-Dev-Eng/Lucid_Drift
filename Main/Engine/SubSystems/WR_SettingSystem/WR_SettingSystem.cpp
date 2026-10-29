@@ -1,7 +1,8 @@
 #include "WR_SettingSystem.h"
-
-#include <typeinfo>
-
+#include "Actors/Shapes/MainShape/Shape.h"
+#include "Actors/Shapes/Circle/CircleShape.h"
+#include "Actors/Shapes/Polygon/Polygon.h"
+#include "Actors/Line/Line.h"
 #include "System/Core/Core.h"
 
 LDDrift::UserProjectSetting::UserProjectSetting() = default;

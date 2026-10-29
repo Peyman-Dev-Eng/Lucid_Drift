@@ -1,20 +1,24 @@
 #ifndef LUCID_DRIFT_SCENE_SYSTEM_H
 #define LUCID_DRIFT_SCENE_SYSTEM_H
 #include <vector>
-#include <Actors/Shapes/MainShape/Shape.h>
-#include <Actors/Shapes/Circle/CircleShape.h>
-#include <Actors/Shapes/Polygon/Polygon.h>
-#include <Actors/Line/Line.h>
 #include <Renderer/Renderer.h>
 #include <thread>
-#include <linux/input-event-codes.h>
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0x000002
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L 0x000003
 
 namespace LDDrift
 {
-    class Scene
+    namespace Actors
+    {
+        class Shape;
+        class Polygon;
+        class Line;
+        class Circle;
+    }
+    class Core;
+
+    class Scene final
     {
     public:
         struct CIRCLE_SHAPE_INFORMATION
@@ -60,6 +64,8 @@ namespace LDDrift
                                const LDDrift::VecCol& color,
                                float thickness);
         bool DeleteCircleShape(const std::string& name);
+        [[nodiscard]] std::vector<std::string> GetCircleNames() const;
+        [[nodiscard]] std::vector<LDDrift::Actors::Circle*> GetCircles_ptr() const;
         // polygon
         [[nodiscard]] bool FindPolygonWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Polygon* GetPolygon(const std::string& name) const;
@@ -78,6 +84,8 @@ namespace LDDrift
                                 float thickness,
                                 int joinLine_A);
         bool DeletePolygonShape(const std::string& name);
+        [[nodiscard]] std::vector<std::string> GetPolygonNames() const;
+        [[nodiscard]] std::vector<LDDrift::Actors::Polygon*> GetPolygons_ptr() const;
         // Line
         [[nodiscard]] bool FindLineWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Line* GetLine(const std::string& name) const;
@@ -87,6 +95,8 @@ namespace LDDrift
                              const int* endPos,
                              const LDDrift::VecCol& color);
         bool DeleteLineShape(const std::string& name);
+        [[nodiscard]] std::vector<std::string> GetLineNames() const;
+        [[nodiscard]] std::vector<LDDrift::Actors::Line*> GetLines_ptr() const;
         ~Scene();
     };
 }

@@ -9,7 +9,8 @@
 #include <numbers>
 #include <cmath>
 #include <typeinfo>
-#include <Actors/Shapes/MainShape/Shape.h>
+#include "Actors/Shapes/MainShape/Shape.h"
+#include "Actors/Line/Line.h"
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 
 namespace LDDrift

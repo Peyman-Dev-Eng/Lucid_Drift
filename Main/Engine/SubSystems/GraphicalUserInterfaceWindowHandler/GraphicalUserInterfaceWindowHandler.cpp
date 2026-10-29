@@ -49,7 +49,7 @@ void LDDrift::Main_GraphicalWindow::Resize() {
     size = {350, windowSize.Y / 2};
 }
 
-void LDDrift::Main_GraphicalWindow::Render() {
+void LDDrift::Main_GraphicalWindow::Render() const {
     if (ImGui::Button("Game Setting")) {
         core->gui.OpenWindow(GAME_SETTING_WINDOW_NAME);
     }
