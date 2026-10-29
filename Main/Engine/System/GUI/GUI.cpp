@@ -1244,8 +1244,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         static std::optional<LDDrift::Actors::Polygon*> polygonActor = std::nullopt;
         static std::optional<bool> variablesInitialized = false;
         static std::optional<bool> findShapeWithName = std::nullopt;
-        static std::vector<int> pointPositions(polygonActorPointCount * 2);
-        pointPositions.resize(polygonActorPointCount * 2);
+        static std::vector<int> pointPositions;
         ImGui::TextUnformatted("window: polygon configuration");
         if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || ImGui::InputTextWithHint(
             "##Polygon Name", "Enter Polygon Name: ", window->searchBuffer,
@@ -1268,8 +1267,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                     polygonActorSpeed = static_cast<int>(polygonActor.value()->GetSpeed());
                     for (std::size_t point = 0; point < polygonActorPointCount; ++point) {
                         const LDDrift::VecPos2D& pointPos = polygonActor.value()->GetGlobalPoint(point);
-                        pointPositions[point * 2] = static_cast<int>(pointPos.X);
-                        pointPositions[point * 2 + 1] = static_cast<int>(pointPos.Y);
+                        pointPositions.push_back(static_cast<int>(pointPos.X));
+                        pointPositions.push_back(static_cast<int>(pointPos.Y));
                     }
                     if_withThick = 0;
                     thickness = 1;
