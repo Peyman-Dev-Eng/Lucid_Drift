@@ -1882,7 +1882,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
         ImGui::PushID(static_cast<int>(circleNumber));
         const LDDrift::Actors::Circle* c_ptr = circles[circleNumber];
         bool state = checkBoxState_circle[circleNumber];
-        ImGui::Checkbox("##show", &state);
+        ImGui::Checkbox("##showc", &state);
         ImGui::SameLine();
         ImGui::TextUnformatted(circles_name[circleNumber].c_str());
         checkBoxState_circle[circleNumber] = state;
@@ -1908,7 +1908,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
     for (std::size_t lineNumber = 0; lineNumber < lineCount; ++lineNumber) {
         ImGui::PushID(static_cast<int>(lineNumber));
         bool state = checkBoxState_line[lineNumber];
-        ImGui::Checkbox("##show", &state);
+        ImGui::Checkbox("##showl", &state);
         ImGui::SameLine();
         ImGui::TextUnformatted(lines_name[lineNumber].c_str());
         checkBoxState_line[lineNumber] = state;
@@ -1932,7 +1932,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
     for (std::size_t polygonNumber = 0; polygonNumber < polygonCount; ++polygonNumber) {
         ImGui::PushID(static_cast<int>(polygonNumber));
         bool state = checkBoxState_polygon[polygonNumber];
-        ImGui::Checkbox("##show", &state);
+        ImGui::Checkbox("##showp", &state);
         ImGui::SameLine();
         ImGui::TextUnformatted(polygons_name[polygonNumber].c_str());
         checkBoxState_polygon[polygonNumber] = state;

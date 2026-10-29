@@ -165,7 +165,7 @@ bool LDDrift::VecPos2D::operator==(const VecPos2D& vec) const {
 }
 
 bool LDDrift::VecPos2D::operator!=(const VecPos2D&) const {
-    return this->X != this->X && this->Y != this->Y;
+    return this->X != this->X || this->Y != this->Y;
 }
 
 LDDrift::VecPos2D::~VecPos2D() = default;

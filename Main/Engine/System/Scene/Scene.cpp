@@ -64,8 +64,10 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
                                        const float thickness) {
     const CIRCLE_SHAPE_INFORMATION newCircle{.circleName = name, .circle = new LDDrift::Actors::Circle()};
     newCircle.circle->SetType<LDDrift::ActorType::convex>();
-    if (thickness != -1)
+    if (thickness != -1) {
+        newCircle.circle->SetJoinLineAlgorithm(LDDrift::JoinLineType::Bevel);
         newCircle.circle->SetThickness(thickness);
+    }
     newCircle.circle->SetCirclePosition(pos);
     newCircle.circle->SetPointCount(_pointCount);
     newCircle.circle->SetScreenSize(core->window.GetViewportSize());
