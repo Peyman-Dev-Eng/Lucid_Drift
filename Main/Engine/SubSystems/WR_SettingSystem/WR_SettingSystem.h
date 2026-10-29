@@ -1,6 +1,7 @@
 #ifndef LUCID_DRIFT_WR_SETTING_SYSTEM_H
 #define LUCID_DRIFT_WR_SETTING_SYSTEM_H
 #include <ProjectWatchTower.h>
+#include <unordered_map>
 #include <Actors/Shapes/MainShape/Shape.h>
 #include <Actors/Shapes/Circle/CircleShape.h>
 #include <Actors/Shapes/Polygon/Polygon.h>

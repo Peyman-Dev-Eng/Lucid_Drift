@@ -347,14 +347,14 @@ bool LDDrift::Actors::Shape::ShapeIsConcave() {
 
         if (prev > 0) {
             const int currentCrossDir = TranslateCross(crossResult);
-            if (std::abs(currentCrossDir - prevDir) == 0) { // start of -if-
+            if (std::abs(currentCrossDir - prevDir) == 2) { // start of -if-
                 isConcave = true;
                 break;
             } // end of -if-
             prevDir = currentCrossDir;
         } else {
             const int currentCrossDir = TranslateCross(crossResult);
-            if (std::abs(currentCrossDir - prevDir) == 0) {
+            if (std::abs(currentCrossDir - prevDir) == 2) {
                 isConcave = true;
                 break;
             }

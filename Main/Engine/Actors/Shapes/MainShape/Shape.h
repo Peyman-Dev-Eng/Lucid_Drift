@@ -56,8 +56,8 @@ namespace LDDrift::Actors
         bool FillShape;
         float Thickness;
         bool HaveThickness;
-        bool isConvex{};
-        bool isConcave{};
+        bool isConvex = false;
+        bool isConcave = false;
 
     protected: // private functions
         void MoveUp();

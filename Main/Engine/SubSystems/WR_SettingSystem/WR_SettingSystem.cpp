@@ -190,14 +190,16 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
         for (const auto& circle : circles_json.items()) {
             // extract data
             // start
-            const int pointCount = circles_json[circle.key()]["point_count"];
-            const int radius = circles_json[circle.key()]["radius"];
-            const int speed = circles_json[circle.key()]["speed"];
-            const LDDrift::VecPos2D pos = Convert_Vector_To_Point(circles_json[circle.key()]["center_pos"]);
-            const LDDrift::VecCol col = ConvertFloatColorsToVectors(circles_json[circle.key()]["color"])[0];
-            const float thick = circles_json[circle.key()]["thickness"];
+            const std::string& name = circle.key();
+            const json& value = circle.value();
+            const int pointCount = value["point_count"];
+            const int radius = value["radius"];
+            const int speed = value["speed"];
+            const LDDrift::VecPos2D pos = Convert_Vector_To_Point(value["center_pos"]);
+            const LDDrift::VecCol col = ConvertFloatColorsToVectors(value["color"])[0];
+            const float thick = value["thickness"];
             // end
-            core->scene.CreateCircleShape(circle.key(), pointCount, radius, speed, pos, col, thick);
+            core->scene.CreateCircleShape(name, pointCount, radius, speed, pos, col, thick == 0 ? -1 : thick);
         }
 
         for (const auto& lines : lines_json.items()) {
@@ -215,14 +217,15 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
         }
         for (const auto& polygon : polygons_json.items()) {
             const std::string& name = polygon.key();
-            const int pointCount = polygons_json[polygon.key()]["point_count"];
-            const float thick = polygons_json[name]["thickness"];
-            const std::vector<int> points = polygons_json[name]["point_positions"];
+            const json& value = polygon.value();
+            const int pointCount = value["point_count"];
+            const float thick = value["thickness"];
+            const std::vector<int> points = value["point_positions"];
             const std::vector<LDDrift::VecCol> colors =
-                ConvertFloatColorsToVectors(polygons_json[name]["point_colors"]);
+                ConvertFloatColorsToVectors(value["point_colors"]);
             const LDDrift::JoinLineType jlt =
-                ConvertStringToLineJoiningAlgorithm(polygons_json[name]["join_line_type"]);
-            const int speed = polygons_json[name]["speed"];
+                ConvertStringToLineJoiningAlgorithm(value["join_line_type"]);
+            const int speed = value["speed"];
             core->scene.CreatePolygonShape(name, pointCount, speed, points.data(), colors, thick,
                                            Convert_JLT_ToInteger(jlt));
         }
