@@ -6,7 +6,7 @@
 
 </div>
 
-> [!NOTE]
+> [!WARNING]
 > **I develop Lucid Drift primarily on Linux.**  
 > If you work on Windows and would like to help make the engine run properly on that platform (build system, module loading, OpenGL context, input, etc.), I warmly welcome collaboration.  
 > Pull requests, testing feedback, and platform-specific fixes are all appreciated.
