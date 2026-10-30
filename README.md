@@ -6,6 +6,11 @@
 
 ### *A free-flowing stream of imagination — with the clarity to build your own world.*
 
+### *WARNING: only runs on Linux
+I develop Lucid Drift primarily on Linux.  
+If you work on Windows and would like to help make the engine run properly on that platform (build system, module loading, OpenGL context, input, etc.), I warmly welcome collaboration.  
+Pull requests, testing feedback, and platform-specific fixes are all appreciated.*
+
 **A native C++ game-engine project exploring the foundations of 2D worlds, rendering, and an integrated editor.**
 
 [![C++](https://img.shields.io/badge/C%2B%2B-23%2F26-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
