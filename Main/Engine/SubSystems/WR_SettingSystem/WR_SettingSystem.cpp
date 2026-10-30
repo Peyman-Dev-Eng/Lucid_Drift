@@ -13,11 +13,10 @@ void LDDrift::UserProjectSetting::SetSettings(const LDDrift::Core* core) {
     circles = core->scene.circleShapes;
     polygons = core->scene.polygonShapes;
     lines = core->scene.lines;
-    for (std::size_t i = 0; i <= 180; ++i) {
-        std::string key = LDDrift::input::ConvertKeyEnumToString(
-            static_cast<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode>(i));
-        if (key != NULL_STRING)
-            key_targets.push_back(key);
+    for (const LDDrift::Event::Keyboard::LinuxKeyboardKeyCode& key : LDDrift::TargetKeys) {
+        if (const std::string keyName = LDDrift::input::ConvertKeyEnumToString(key);
+            keyName != NULL_STRING)
+            key_targets.push_back(keyName);
     }
 }
 
@@ -156,11 +155,16 @@ void LDDrift::WR_SettingSystem::saveLinesActor(json& j) const {
     }
 }
 
+void LDDrift::WR_SettingSystem::saveKeyTargetsOfKeyboard(json& j) const {
+    j[KEY_TARGETS] = core->userProjectSetting.key_targets;
+}
+
 void LDDrift::WR_SettingSystem::WriteSettingsOfUserProject() const {
     json _json;
     saveCircleActor(_json);
     savePolygonActor(_json);
     saveLinesActor(_json);
+    saveKeyTargetsOfKeyboard(_json);
 
     std::ofstream out((settingFolderPath / settingFilename).string(), std::ios::out);
     out << _json.dump(4);
@@ -187,7 +191,9 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
         json circles_json = main_json[ACTOR][CIRCLE];
         json lines_json = main_json[ACTOR][LINE];
         json polygons_json = main_json[ACTOR][POLYGON];
-
+        std::vector<std::string> key_targets;
+        if (main_json.contains(KEY_TARGETS))
+            key_targets = main_json[KEY_TARGETS];
         for (const auto& circle : circles_json.items()) {
             // extract data
             // start
@@ -204,19 +210,24 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
         }
 
         for (const auto& lines : lines_json.items()) {
+            // extract data
+            // start
             const std::string& name = lines.key();
             const int thick = lines_json[lines.key()]["thickness"];
             const LDDrift::VecPos2D st_pnt = Convert_Vector_To_Point(lines_json[name]["start_pos"]);
             // start position point
             const LDDrift::VecPos2D ed_pnt = Convert_Vector_To_Point(lines_json[name]["end_pos"]);
+            // end position point
             const LDDrift::VecCol col = ConvertFloatColorsToVectors(lines_json[name]["color"])[0];
 
             const int st[2] = {static_cast<int>(st_pnt.X), static_cast<int>(st_pnt.Y)};
             const int ed[2] = {static_cast<int>(ed_pnt.X), static_cast<int>(ed_pnt.Y)};
-
+            // end
             core->scene.CreateLineActor(name, thick, st, ed, col);
         }
         for (const auto& polygon : polygons_json.items()) {
+            // extract data
+            // start
             const std::string& name = polygon.key();
             const json& value = polygon.value();
             const int pointCount = value["point_count"];
@@ -227,8 +238,12 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
             const LDDrift::JoinLineType jlt =
                 ConvertStringToLineJoiningAlgorithm(value["join_line_type"]);
             const int speed = value["speed"];
+            // end
             core->scene.CreatePolygonShape(name, pointCount, speed, points.data(), colors, thick,
                                            Convert_JLT_ToInteger(jlt));
+        }
+        for (const std::string& key : key_targets) {
+            LDDrift::input::Keyboard::SetKeyTarget(key);
         }
     }
 }

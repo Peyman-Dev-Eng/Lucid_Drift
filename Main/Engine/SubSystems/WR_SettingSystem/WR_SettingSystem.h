@@ -56,6 +56,7 @@ namespace LDDrift
         void saveCircleActor(json& j) const;
         void savePolygonActor(json& j) const;
         void saveLinesActor(json& j) const;
+        void saveKeyTargetsOfKeyboard(json& j) const;
         static std::string ConvertLineJoiningAlgorithmToString(const LDDrift::JoinLineType& jlt);
         static LDDrift::JoinLineType ConvertStringToLineJoiningAlgorithm(const std::string& _st);
         static std::vector<float> ConvertColorToVector(const LDDrift::VecCol& color);
