@@ -8,9 +8,10 @@
 
 **A native C++ game-engine project exploring the foundations of 2D worlds, rendering, and an integrated editor.**
 
-[![C++](https://img.shields.io/badge/C%2B%2B-26-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
+[![C++](https://img.shields.io/badge/C%2B%2B-23%2F26-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
 [![OpenGL](https://img.shields.io/badge/OpenGL-4.6-5586A4?style=for-the-badge&logo=opengl&logoColor=white)](https://www.opengl.org/)
 [![CMake](https://img.shields.io/badge/CMake-4.3%2B-064F8C?style=for-the-badge&logo=cmake&logoColor=white)](https://cmake.org/)
+[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/status-experimental-orange?style=for-the-badge)]()
 [![Focus](https://img.shields.io/badge/focus-2D%20engine-7B61FF?style=for-the-badge)]()
 
@@ -24,7 +25,7 @@
 
 ## 📖 Overview
 
-**Lucid Drift** is an experimental **2D game engine and editor written in C++26**, using OpenGL for rendering and Dear ImGui for its editor interface.
+**Lucid Drift** is an experimental **2D game engine and editor written in modern C++ (C++23/C++26)**, using OpenGL for rendering and Dear ImGui for its editor interface.
 
 The project brings together the parts of a small game-development workflow: rendering 2D geometry, browsing project files, editing source code, building a user game project, and loading its compiled module through an engine-facing API. The goal is not to imitate every feature of a mature commercial engine; it is to understand and build the underlying systems one piece at a time.
 
@@ -36,22 +37,26 @@ The project brings together the parts of a small game-development workflow: rend
 | System | What it brings | Status |
 |:--|:--|:--:|
 | 🎨 **OpenGL renderer** | A custom rendering path using OpenGL and GLSL shaders | Evolving |
-| 🔷 **2D shape system** | Circle, line, and polygon workflows | Evolving |
-| 📐 **Polygon triangulation** | Triangulation work for filled polygons, including concave shapes | In progress |
+| 🔷 **2D shape system** | Circle, line, and polygon workflows with thickness & joining | Evolving |
+| 📐 **Polygon triangulation** | Triangulation for filled polygons, including concave shapes | In progress |
+| 🔗 **Line joining algorithms** | Bevel, round, and miter joining for shape outlines | Evolving |
 | 🖥️ **Editor interface** | Editor windows and controls built with Dear ImGui | Evolving |
 | 🗂️ **Project Watch Tower** | Browse project folders and source files | Evolving |
 | 📝 **Embedded code editor** | Source editing through ImGuiColorTextEdit | Integrated / evolving |
 | 💡 **Code suggestions** | A custom keyword-based suggestion popup | In progress; not a full C++ language server |
 | 🛠️ **Project compilation** | Build a user game project through CMake | Available in the current workflow |
 | 🔌 **Engine API** | Call game lifecycle functions from a compiled module | Current Linux loading path |
-| ⌨️ **Input system** | Engine-level keyboard and mouse input work | Evolving |
-| 🎥 **Camera and transforms** | Keep world-space data separate from render-space conversion | In progress |
+| ⌨️ **Input system** | Engine-level keyboard/mouse input + key-target configuration | Evolving |
+| 🎥 **Camera system** | Camera movement, zoom, and world-to-screen conversion | Evolving |
+| 💾 **User project settings** | Read/write system for project settings and actor data | Experimental |
+| 👁️ **Object management** | Object inspection / control window for scene actors | In progress |
+| 🔍 **Convex / concave detection** | Shape classification helpers (`ShapeIsConcave`, etc.) | Evolving |
 
 The status labels describe ongoing development, not a guarantee that every edge case is supported.
 
 ## 🧰 Technology stack
 
-- **C++26** — primary implementation language
+- **C++23 / C++26** — primary implementation language (CMake currently targets C++23)
 - **CMake** — project configuration and build system
 - **Ninja** — recommended generator for the commands below
 - **OpenGL 4.6 Core Profile / GLSL 4.60** — graphics and shaders
@@ -59,6 +64,8 @@ The status labels describe ongoing development, not a guarantee that every edge 
 - **GLM** — vector and matrix mathematics
 - **Dear ImGui** — editor interface
 - **ImGuiColorTextEdit** — embedded source editor
+- **stb** — vendored image / utility support (where used)
+- **GLAD** — OpenGL function loading
 
 The repository's CMake configuration is the source of truth for required libraries and include paths. Dependencies can vary with the current branch and system setup.
 
@@ -75,8 +82,9 @@ The tree below highlights the main subsystems and how the code is organized. It 
 Lucid_Drift/
 ├── CMakeLists.txt                 # Root CMake configuration
 ├── main.cpp                       # Application entry point
-├── glad.c                         # GLAD implementation, if present in this checkout
+├── glad.c                         # GLAD implementation
 ├── glad/                          # OpenGL loader headers
+├── LICENSE                        # MIT License
 │
 ├── Main/
 │   ├── CMakeLists.txt
@@ -91,7 +99,7 @@ Lucid_Drift/
 │       ├── Actors/
 │       │   ├── Line/               # Line shape
 │       │   └── Shapes/
-│       │       ├── MainShape/      # Shared shape foundation
+│       │       ├── MainShape/      # Shared shape foundation (convex/concave helpers)
 │       │       ├── Circle/         # Circle shape
 │       │       └── Polygon/        # Polygon shape
 │       │
@@ -99,22 +107,25 @@ Lucid_Drift/
 │       ├── API/                    # Engine-facing game API
 │       ├── Functions/              # Shared engine functions
 │       ├── SubSystems/
-│       │   ├── GUI_LOGIC/          # GUI-facing logic
+│       │   ├── GraphicalUserInterfaceWindowHandler/  # GUI window handling logic
 │       │   ├── PointHitTesting/    # Point / shape hit testing
 │       │   ├── ProjectExplorer/    # Project Watch Tower / file browsing
 │       │   ├── Transform/          # Transform-related logic
-│       │   └── WR_SettingSystem/   # Window/render settings
+│       │   └── WR_SettingSystem/   # Window/render + user-project settings (read/write)
 │       │
 │       └── System/
+│           ├── Camera/             # Camera movement, zoom, view matrix
+│           ├── CodePathfinder/     # Code path / suggestion support
 │           ├── Compilation/        # User-project build and module loading
 │           ├── Core/               # Main engine coordination
 │           ├── GUI/                # Dear ImGui windows and editor UI
 │           ├── Input/              # Keyboard and mouse input
-│           ├── Scene/               # Scene-related functionality
+│           ├── Scene/              # Scene-related functionality
 │           ├── Triangulation/      # Polygon triangulation
-│           └── Window/              # Window/context management
+│           └── Window/             # Window/context management
 │
 └── ThirdParty/
+    ├── imgui/                      # Dear ImGui sources
     └── ImGuiColorTextEdit/         # Embedded code-editor component
 ```
 
@@ -125,12 +136,14 @@ Lucid_Drift/
 | If you're interested in… | Start with… |
 |:--|:--|
 | How the project is built | `CMakeLists.txt` and `Main/CMakeLists.txt` |
-| 2D geometry | `Actors/Shapes/`, `Actors/Line/`, and `Triangulation/` |
+| 2D geometry & line joining | `Actors/Shapes/`, `Actors/Line/`, and `Triangulation/` |
 | Rendering | `Renderer/` |
-| Editor windows | `System/GUI/` and `SubSystems/GUI_LOGIC/` |
+| Editor windows | `System/GUI/` and `SubSystems/GraphicalUserInterfaceWindowHandler/` |
 | Finding project files | `SubSystems/ProjectExplorer/` |
 | Running user-written game code | `API/` and `System/Compilation/` |
-| Input and window behavior | `System/Input/` and `System/Window/` |
+| Input and key targets | `System/Input/` and `SubSystems/WR_SettingSystem/` |
+| Camera & transforms | `System/Camera/` and `SubSystems/Transform/` |
+| Project settings persistence | `SubSystems/WR_SettingSystem/` |
 
 > [!TIP]
 > For the exact source paths and build targets in your checkout, check the current `CMakeLists.txt` files. The structure shown here is a guide to the main responsibilities, not a promise that every folder name is identical across branches.
@@ -196,11 +209,13 @@ On the current Linux loading path, the expected library name follows `lib<Projec
 
 Lucid Drift's rendering foundation is built around a GLFW-created window and OpenGL context, with GLSL shaders handling the GPU-side rendering work.
 
-- **Circles** are represented by polygonal geometry; the point count affects how smooth the outline appears.
+- **Circles** are represented by polygonal geometry; the point count affects how smooth the outline appears. Thickness support is present and under refinement.
 - **Lines** have their own shape and configuration workflow.
 - **Polygons** use vertex data and triangulation for filled rendering.
-- **Concave geometry** requires extra care during triangulation and remains an important area to test.
+- **Concave geometry** is detected via helpers such as `ShapeIsConcave` and remains an important area of active testing.
+- **Line joining** supports bevel, round, and miter algorithms for outline corners.
 - **World and screen coordinates** are intended to remain separate: shape data belongs to the world, while camera/viewport transforms determine how it is rendered.
+- **Minimum window size** constraints are applied to keep the editor usable.
 
 ### 🔭 Coordinate flow
 
@@ -268,16 +283,19 @@ Lucid Drift is being built incrementally. Current areas of work include:
 
 ### 🌱 Actively evolving
 
-- Improving circle, line, and polygon rendering and validating triangulation against difficult inputs.
+- Improving circle, line, and polygon rendering (including thickness) and validating triangulation against difficult inputs.
 - Refining camera movement, zoom, viewport handling, and world-to-screen conversion.
+- Developing line-joining algorithms (bevel / round / miter) for clean outline corners.
 - Improving the editor workflow for browsing, editing, compiling, and running game projects.
-- Developing keyboard/mouse input handling and editor key selection.
-- Improving keyword suggestions while keeping the source editor responsive.
+- Expanding keyboard/mouse input handling, key-target configuration, and persistence to user project settings.
+- Building an object-management / inspection window for scene actors.
+- Experimental read/write system for user-project settings and actor data.
 - Making build and module-loading errors clearer and easier to diagnose.
+- Convex / concave shape classification and related geometry helpers.
 
 ### 🧪 Not presented as finished
 
-A complete physics engine, audio system, animation framework, asset pipeline, scene serialization format, visual scripting system, and production-ready packaging workflow are **not claimed as finished features** by this README.
+A complete physics engine, audio system, animation framework, asset pipeline, full scene serialization format, visual scripting system, and production-ready packaging workflow are **not claimed as finished features** by this README.
 
 > ⚠️ Features may be incomplete, platform-specific, or subject to breaking changes. Check the source and recent commits to see the state of a particular subsystem.
 
@@ -288,12 +306,14 @@ A complete physics engine, audio system, animation framework, asset pipeline, sc
 | Problem | What to check |
 |:--|:--|
 | CMake cannot find a dependency | Read the first relevant CMake error; check installed development packages and include/library paths. |
-| The compiler rejects a C++26 feature | Verify the compiler version selected by CMake, not only the compiler installed on your system. |
+| The compiler rejects a modern C++ feature | Verify the compiler version selected by CMake, not only the compiler installed on your system. |
 | OpenGL context creation fails | Confirm the active driver exposes OpenGL 4.6 and supports the requested context. |
-| A shape does not render correctly | Check the input points, generated vertices, triangulation output, and draw mode. |
+| A shape does not render correctly | Check the input points, generated vertices, triangulation output, thickness, and draw mode. |
+| Line joining looks wrong | Verify the active joining algorithm (bevel / round / miter) and the geometry of the corner. |
 | A game module builds but does not load | Check the exact shared-library filename, output directory, and exported entry-point names. |
 | A lifecycle function cannot be found | Confirm the function name, `extern "C"`, and exact `Tick(float)` signature. |
 | ImGui reports an unfinished frame | Trace the order of `NewFrame()`, `Render()`, and the backend drawing calls; do not add a second render call blindly. |
+| Project settings are not saved / loaded | Inspect the experimental read-write path in `WR_SettingSystem` and the user project setting files. |
 
 When reporting a bug, include your operating system, compiler and CMake versions, the build command, steps to reproduce, and the first relevant error or runtime log.
 
@@ -313,7 +333,9 @@ When opening an issue, please include:
 
 ## 📄 License
 
-Check the repository's `LICENSE` file for the applicable license and reuse terms. Third-party components may have their own licenses.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+Third-party components (Dear ImGui, ImGuiColorTextEdit, stb, GLFW, GLM, etc.) retain their own licenses.
 
 ---
 
