@@ -4,10 +4,14 @@
 
 <img src="docs/images/lucid-drift-banner.png" alt="Lucid Drift — abstract 2D geometry and rendering banner" width="100%">
 
+</div>
+
 > [!NOTE]
 > **I develop Lucid Drift primarily on Linux.**  
 > If you work on Windows and would like to help make the engine run properly on that platform (build system, module loading, OpenGL context, input, etc.), I warmly welcome collaboration.  
 > Pull requests, testing feedback, and platform-specific fixes are all appreciated.
+
+<div align="center">
 
 ### *A free-flowing stream of imagination — with the clarity to build your own world.*
 
