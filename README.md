@@ -6,7 +6,7 @@
 
 ### *A free-flowing stream of imagination — with the clarity to build your own world.*
 
-### *WARNING: only runs on Linux ـ I develop Lucid Drift primarily on Linux.  
+> [WARNING] only runs on Linux ـ I develop Lucid Drift primarily on Linux.  
 If you work on Windows and would like to help make the engine run properly on that platform (build system, module loading, OpenGL context, input, etc.), I warmly welcome collaboration.  
 Pull requests, testing feedback, and platform-specific fixes are all appreciated.*
 
