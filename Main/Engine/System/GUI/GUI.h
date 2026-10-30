@@ -30,6 +30,7 @@
 #define CREATE_NEW_CIRCLE_ACTOR_WINDOW_NAME "Create New Circle Actor"
 #define GAME_SETTING_WINDOW_NAME "Game Setting"
 #define SEE_OBJECTS_WINDOW_NAME "See Objects"
+#define SEE_KEY_TARGETS_WINDOW_NAME "See Key Targets"
 
 namespace LDDrift
 {
@@ -129,6 +130,7 @@ namespace LDDrift
         ~GUI();
 
     private:
+        static void SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window);
         void SeeObjectsWindowHandler(const DefaultWindowsData* window) const;
         void GameSettingWindowHandler(DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window);

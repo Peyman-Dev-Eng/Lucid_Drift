@@ -325,6 +325,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(SEE_OBJECTS_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(SEE_KEY_TARGETS_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -1604,7 +1606,7 @@ void LDDrift::GUI::EndRenderGUI() {
         if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) &&
             (window.name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME) &&
             (window.name != EXIT_WARNING_WINDOW_NAME) && (window.name != GAME_SETTING_WINDOW_NAME) &&
-            (window.name != SEE_OBJECTS_WINDOW_NAME)) {
+            (window.name != SEE_OBJECTS_WINDOW_NAME) && (window.name != SEE_KEY_TARGETS_WINDOW_NAME)) {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }
@@ -1620,7 +1622,10 @@ void LDDrift::GUI::EndRenderGUI() {
         this->GameSettingWindowHandler(&window);
         // مدیریت رویداده های کلید های مورد نظر کاربر
         this->SetKeyTargetWindowHandler(&window);
+        // مدیریت صفحه به نمایش گذاشتن ابجکت های بازی
         this->SeeObjectsWindowHandler(&window);
+        // مدیریت صفحه به نمایش گذاشتن کلید های انتخاب شده
+        this->SeeKeyTargetsOfKeyboardWindowHandler(&window);
         if (!window.textPrintInWindow.empty())
             for (const std::string& text : window.textPrintInWindow) {
                 ImGui::TextUnformatted(text.c_str());
@@ -1962,6 +1967,31 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
             }
         }
         ImGui::PopID();
+    }
+}
+
+void LDDrift::GUI::SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window) {
+    if (window->name != SEE_KEY_TARGETS_WINDOW_NAME) {
+        return;
+    }
+    std::vector<std::string> options;
+    for (const LDDrift::Event::Keyboard::LinuxKeyboardKeyCode& key : LDDrift::TargetKeys) {
+        options.push_back(LDDrift::input::ConvertKeyEnumToString(key));
+    }
+    std::size_t counter = 0;
+    for (const std::string& option : options) {
+        if (counter % 5 != 0 || counter == 0) {
+            ImGui::SameLine();
+        }
+        if (counter != (options.size() - 1))
+            ImGui::TextUnformatted((option + " - ").c_str());
+        else
+            ImGui::TextUnformatted(option.c_str());
+        ++counter;
+    }
+    ImGui::Separator();
+    if (ImGui::Button("Close")) {
+        window->Show = false;
     }
 }
 

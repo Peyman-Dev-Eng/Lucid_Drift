@@ -107,6 +107,10 @@ void LDDrift::Main_GraphicalWindow::Render() const {
     if (ImGui::Button("Add Key Target")) {
         core->gui.GetWindowPTR(SET_KEY_TARGET_WINDOW_NAME)->Show = true;
     }
+    ImGui::SameLine();
+    if (ImGui::Button("See Key Targets")) {
+        core->gui.GetWindowPTR(SEE_KEY_TARGETS_WINDOW_NAME)->Show = true;
+    }
     ImGui::Separator();
     if (ImGui::Button("Reload Cmake File")) {
         std::string command =
