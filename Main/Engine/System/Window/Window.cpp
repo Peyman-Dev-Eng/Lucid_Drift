@@ -9,7 +9,7 @@ LDDrift::Window::Window() : renderer(nullptr) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
     settings.title = "NONE";
@@ -55,7 +55,7 @@ void LDDrift::Window::CreateFullscreenWindow() {
         GLFW_WAYLAND_APP_ID,
         "lucid-drift"
     );
-    screen = glfwCreateWindow(mode->width, mode->height - 300, settings.title.c_str(), monitor, nullptr);
+    screen = glfwCreateWindow(mode->width - 300, mode->height - 300, settings.title.c_str(), nullptr, nullptr);
     if (screen == nullptr) {
         const char* description = nullptr;
         const int code = glfwGetError(&description);
@@ -115,6 +115,8 @@ void LDDrift::Window::CreateFullscreenWindow() {
 
         stbi_image_free(pixels);
     }
+
+    glfwSetWindowSizeLimits(screen, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
 
 #ifdef __WIN32
     glfwSetScrollCallback(screen, LDDrift::input::Mouse::ScrollCallback);
