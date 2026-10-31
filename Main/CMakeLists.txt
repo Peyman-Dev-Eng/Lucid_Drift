@@ -373,6 +373,8 @@ add_library(Engine SHARED
         # cmera - system
         Engine/System/Camera/Camera.cpp
         Engine/System/Camera/Camera.h
+        Engine/SubSystems/image_reader/ImageReader.cpp
+        Engine/SubSystems/image_reader/ImageReader.h
 )
 
 target_include_directories(Engine PUBLIC
