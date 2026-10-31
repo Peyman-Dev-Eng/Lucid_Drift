@@ -216,7 +216,7 @@ target_include_directories(WRSS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecColor
 )
 
-target_link_libraries(WRSS PUBLIC PWT ANGLE SHAPE_DATA )
+target_link_libraries(WRSS PUBLIC PWT ANGLE SHAPE_DATA)
 
 # ============================================================================
 # Code Pathfinder system
@@ -266,6 +266,8 @@ target_include_directories(IMAGE_READER PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/image_reader
 )
 
+target_link_libraries(IMAGE_READER PUBLIC stb_image)
+
 # ============================================================================
 # END
 # ============================================================================
@@ -307,6 +309,7 @@ if (WIN32)
         FetchContent_MakeAvailable(nlohmann_json)
     endif ()
 else ()
+    find_package(glm CONFIG REQUIRED)
     find_package(glfw3 REQUIRED)
     find_package(fmt REQUIRED)
     find_package(nlohmann_json CONFIG REQUIRED)
@@ -434,6 +437,9 @@ target_sources(GUI PRIVATE
 target_link_libraries(GUI PRIVATE
         nlohmann_json::nlohmann_json
 )
+
+target_link_libraries(Engine PRIVATE glm::glm)
+
 target_link_libraries(Engine
         PRIVATE
         nlohmann_json::nlohmann_json

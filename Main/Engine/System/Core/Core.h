@@ -15,7 +15,7 @@
 #include <Actors/Shapes/Polygon/Polygon.h>
 #include <CodePathfinder.h>
 #include <GUI.h>
-#include <Renderer/Renderer.h>
+#include <Renderer/ShapeRender/ShapeRender.h>
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 #include <SubSystems/ProjectExplorer/ProjectWatchTower.h>
 #include <System/Camera/Camera.h>

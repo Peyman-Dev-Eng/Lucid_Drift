@@ -1,7 +1,7 @@
 #ifndef LUCID_DRIFT_SCENE_SYSTEM_H
 #define LUCID_DRIFT_SCENE_SYSTEM_H
 #include <vector>
-#include <Renderer/Renderer.h>
+#include <Renderer/ShapeRender/ShapeRender.h>
 #include <thread>
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0x000002
@@ -42,7 +42,7 @@ namespace LDDrift
     public:
         bool sendDataToGPU = false;
         LDDrift::Core* core = nullptr;
-        LDDrift::Renderer* renderer = nullptr;
+        LDDrift::ShapeRender* renderer = nullptr;
         std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
         std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
         std::vector<LINE_ACTOR_INFORMATION> lines;
@@ -51,7 +51,7 @@ namespace LDDrift
         Scene();
         void SetCorePTR(LDDrift::Core* corePtr);
         void MarkSendDataToGPU();
-        void SetRendererPTR(LDDrift::Renderer* rendererPTR);
+        void SetRendererPTR(LDDrift::ShapeRender* rendererPTR);
         void ReSendShapesToRender();
         // circle
         [[nodiscard]] bool FindCircleWithName(const std::string& name) const;

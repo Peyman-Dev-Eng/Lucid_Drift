@@ -9,7 +9,7 @@ namespace LDDrift
 {
     class ImageReader final
     {
-    private:
+    public:
         struct Image
         {
             unsigned char* pixels = nullptr;
@@ -17,10 +17,12 @@ namespace LDDrift
             int channels = 0;
             const int desiredChannels = 4;
         };
+    private:
         Image image;
     public:
         ImageReader();
         explicit ImageReader(const std::filesystem::path& imagePath);
+        void LoadImage(const std::filesystem::path& imagePath);
         [[nodiscard]] const Image& GetImage() const;
         ~ImageReader();
     };

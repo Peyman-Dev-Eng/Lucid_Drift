@@ -33,7 +33,7 @@ void LDDrift::Main_GraphicalWindow::Initialize() {
     const LDDrift::VecPos2D windowSize = core->window.GetWindowSize();
 
     name = MAIN_WINDOW_NAME;
-    position = {0, 35};
+    position = {0, 0};
     size = {350, windowSize.Y / 2};
     Show = true;
     canMoveWindow = false;
@@ -45,7 +45,7 @@ void LDDrift::Main_GraphicalWindow::Initialize() {
 void LDDrift::Main_GraphicalWindow::Resize() {
     const LDDrift::VecPos2D windowSize = core->window.GetWindowSize();
 
-    position = {0, 35};
+    position = {0, 0};
     size = {350, (windowSize.Y / 2) - 35};
 }
 
