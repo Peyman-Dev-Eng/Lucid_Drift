@@ -255,6 +255,18 @@ target_include_directories(stb_image INTERFACE
 )
 
 # ============================================================================
+# image reader sub system
+# ============================================================================
+
+add_library(IMAGE_READER STATIC
+        Engine/SubSystems/image_reader/ImageReader.cpp
+)
+
+target_include_directories(IMAGE_READER PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/image_reader
+)
+
+# ============================================================================
 # END
 # ============================================================================
 
@@ -373,8 +385,10 @@ add_library(Engine SHARED
         # cmera - system
         Engine/System/Camera/Camera.cpp
         Engine/System/Camera/Camera.h
-        Engine/SubSystems/image_reader/ImageReader.cpp
-        Engine/SubSystems/image_reader/ImageReader.h
+
+        # Texture - system
+        Engine/System/Texture/Texture.cpp
+        Engine/System/Texture/Texture.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -402,6 +416,7 @@ target_link_libraries(Engine PUBLIC
         CODE_PATHFINDER
         __GUIWH__
         WRSS
+        IMAGE_READER
 )
 
 if (WIN32)
