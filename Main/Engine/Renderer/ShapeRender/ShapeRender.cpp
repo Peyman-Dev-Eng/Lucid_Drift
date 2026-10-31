@@ -1,10 +1,10 @@
-#include "Renderer.h"
+#include "ShapeRender.h"
 #include "System/Core/Core.h"
 #include "Actors/Shapes/MainShape/Shape.h"
 #include "Actors/Line/Line.h"
 #include "SubSystems/Transform/Transform.h"
 
-void LDDrift::Renderer::SetVertexShaderSource() {
+void LDDrift::ShapeRender::SetVertexShaderSource() {
     VertexShaderSource = R"(
     #version 460 core
     layout (location = 0) in vec3 aPos;
@@ -21,7 +21,7 @@ void LDDrift::Renderer::SetVertexShaderSource() {
 )";
 }
 
-void LDDrift::Renderer::SetFragmentShaderSource() {
+void LDDrift::ShapeRender::SetFragmentShaderSource() {
     FragmentShaderSource = R"(
     #version 460 core
     in vec4 outColor;
@@ -32,29 +32,29 @@ void LDDrift::Renderer::SetFragmentShaderSource() {
 )";
 }
 
-GLuint LDDrift::Renderer::Compile(const GLenum type, const char* source) {
+GLuint LDDrift::ShapeRender::Compile(const GLenum type, const char* source) {
     const GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &source, nullptr);
     glCompileShader(shader);
     return shader;
 }
 
-LDDrift::Renderer::Renderer(const int& widthScreen, const int& heightScreen) :
+LDDrift::ShapeRender::ShapeRender(const int& widthScreen, const int& heightScreen) :
     core(nullptr), WidthScreen(widthScreen), HeightScreen(heightScreen), indexOfFirstVertexInVertexArray(0) {}
 
-GLuint LDDrift::Renderer::GetProgram() const {
+GLuint LDDrift::ShapeRender::GetProgram() const {
     return program;
 }
 
-void LDDrift::Renderer::SetWidthScreen(const int WS) {
+void LDDrift::ShapeRender::SetWidthScreen(const int WS) {
     WidthScreen = WS;
 }
 
-void LDDrift::Renderer::SetHeightScreen(const int HS) {
+void LDDrift::ShapeRender::SetHeightScreen(const int HS) {
     HeightScreen = HS;
 }
 
-void LDDrift::Renderer::Initialize() {
+void LDDrift::ShapeRender::Initialize() {
     this->SetVertexShaderSource();
     this->SetFragmentShaderSource();
     VertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
@@ -81,7 +81,7 @@ void LDDrift::Renderer::Initialize() {
     glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 }
 
-void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
+void LDDrift::ShapeRender::AddShapeToRender(LDDrift::Actors::Shape* shape) {
     if (shapePTRs.contains(shape)) {
         return;
     }
@@ -128,7 +128,7 @@ void LDDrift::Renderer::AddShapeToRender(LDDrift::Actors::Shape* shape) {
     indexOfFirstVertexInVertexArray += vertexCount;
 }
 
-void LDDrift::Renderer::SendDataToGPU() const {
+void LDDrift::ShapeRender::SendDataToGPU() const {
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
@@ -141,7 +141,7 @@ void LDDrift::Renderer::SendDataToGPU() const {
     glEnableVertexAttribArray(1);
 }
 
-void LDDrift::Renderer::UpdateShapeData() {
+void LDDrift::ShapeRender::UpdateShapeData() {
     vertices.clear();
     howToReadShapeData.clear();
     indexOfFirstVertexInVertexArray = 0;
@@ -238,7 +238,7 @@ void LDDrift::Renderer::UpdateShapeData() {
     }
 }
 
-void LDDrift::Renderer::render() const {
+void LDDrift::ShapeRender::render() const {
     const std::size_t howToReadShapeData_SIZE = howToReadShapeData.size();
     if (howToReadShapeData_SIZE == 0) {
         return;
@@ -252,7 +252,7 @@ void LDDrift::Renderer::render() const {
     }
 }
 
-void LDDrift::Renderer::AddLineToRender(LDDrift::Actors::Line* line) {
+void LDDrift::ShapeRender::AddLineToRender(LDDrift::Actors::Line* line) {
     linePTRs.insert(line);
     const LDDrift::VecCol& lineColor = line->GetColor();
     const std::vector<LDDrift::Actors::Line::PNT>& points =
@@ -316,7 +316,7 @@ void LDDrift::Renderer::AddLineToRender(LDDrift::Actors::Line* line) {
     indexOfFirstVertexInVertexArray += vertexCount;
 }
 
-void LDDrift::Renderer::RebuildShapes() {
+void LDDrift::ShapeRender::RebuildShapes() {
     for (LDDrift::Actors::Shape* shape : shapePTRs) {
         shape->Rebuild(WidthScreen, HeightScreen);
     }
@@ -324,19 +324,19 @@ void LDDrift::Renderer::RebuildShapes() {
     this->SendDataToGPU();
 }
 
-void LDDrift::Renderer::RemoveLineFromRender(LDDrift::Actors::Line* line) {
+void LDDrift::ShapeRender::RemoveLineFromRender(LDDrift::Actors::Line* line) {
     linePTRs.erase(line);
 }
 
-void LDDrift::Renderer::RemoveShapeFromRender(LDDrift::Actors::Shape* shape) {
+void LDDrift::ShapeRender::RemoveShapeFromRender(LDDrift::Actors::Shape* shape) {
     shapePTRs.erase(shape);
 }
 
-void LDDrift::Renderer::SetCorePTR(LDDrift::Core* corePTR) {
+void LDDrift::ShapeRender::SetCorePTR(LDDrift::Core* corePTR) {
     core = corePTR;
 }
 
-void LDDrift::Renderer::UpdateViewMatrix() const {
+void LDDrift::ShapeRender::UpdateViewMatrix() const {
     const LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
     glUseProgram(program);
     const GLint viewProjectionLocation = glGetUniformLocation(program, "uViewProjection");

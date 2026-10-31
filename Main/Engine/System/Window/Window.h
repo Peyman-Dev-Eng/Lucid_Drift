@@ -33,7 +33,7 @@ namespace LDDrift
      *
      * @see LDDrift::VecCol
      */
-    class Renderer;
+    class ShapeRender;
 
     class Window
     {
@@ -52,7 +52,7 @@ namespace LDDrift
 
     private:
         LDDrift::Core* core = nullptr;
-        LDDrift::Renderer* renderer;
+        LDDrift::ShapeRender* renderer;
         GLFWwindow* screen{nullptr};
         GLFWmonitor* monitor{nullptr};
         const GLFWvidmode* mode{nullptr};
@@ -61,7 +61,7 @@ namespace LDDrift
     public:
         Window();
         void SetCorePTR(LDDrift::Core* core_ptr);
-        void SetRendererPTR(LDDrift::Renderer*);
+        void SetRendererPTR(LDDrift::ShapeRender*);
         void CreateWindow();
         void CreateFullscreenWindow();
         void DestroyWindow() const;

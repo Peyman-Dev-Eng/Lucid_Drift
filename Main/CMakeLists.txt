@@ -342,8 +342,8 @@ add_library(Engine SHARED
         Engine/System/Window/Window.h
 
         # Renderer
-        Engine/Renderer/Renderer.cpp
-        Engine/Renderer/Renderer.h
+        Engine/Renderer/ShapeRender/ShapeRender.cpp
+        Engine/Renderer/ShapeRender/ShapeRender.h
 
         # Triangulation
         Engine/System/Triangulation/Triangulation.cpp

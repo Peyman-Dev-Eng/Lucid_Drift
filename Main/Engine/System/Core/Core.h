@@ -46,7 +46,7 @@ namespace LDDrift
         // data
         LDDrift::Camera camera;
         LDDrift::Window window;
-        LDDrift::Renderer render;
+        LDDrift::ShapeRender render;
         LDDrift::ProjectWatchTower projectWatchTower;
         LDDrift::PointHitTesting pointHitTesting;
         LDDrift::GUI gui;

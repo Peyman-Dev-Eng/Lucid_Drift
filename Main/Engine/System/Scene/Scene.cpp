@@ -23,7 +23,7 @@ void LDDrift::Scene::SetCorePTR(LDDrift::Core* corePtr) {
     core = corePtr;
 }
 
-void LDDrift::Scene::SetRendererPTR(LDDrift::Renderer* rendererPTR) {
+void LDDrift::Scene::SetRendererPTR(LDDrift::ShapeRender* rendererPTR) {
     NPV_assert(rendererPTR);
     renderer = rendererPTR;
 }

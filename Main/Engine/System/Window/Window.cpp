@@ -150,7 +150,7 @@ void LDDrift::Window::SetFillScreenColor(const LDDrift::VecCol& color) {
     settings.FillColorScreen = color;
 }
 
-void LDDrift::Window::SetRendererPTR(LDDrift::Renderer* rendererPTR) {
+void LDDrift::Window::SetRendererPTR(LDDrift::ShapeRender* rendererPTR) {
     renderer = rendererPTR;
 }
 

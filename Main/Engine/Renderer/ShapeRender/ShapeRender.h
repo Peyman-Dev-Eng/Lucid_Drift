@@ -19,7 +19,7 @@ namespace LDDrift
     class Transform;
     class Core;
 
-    class Renderer final
+    class ShapeRender final
     {
     private:
         struct ReadShapeVertices
@@ -51,7 +51,7 @@ namespace LDDrift
         static GLuint Compile(GLenum type, const char* source);
 
     public:
-        explicit Renderer(const int& widthScreen = 500 /* Width screen */,
+        explicit ShapeRender(const int& widthScreen = 500 /* Width screen */,
                           const int& heightScreen = 500 /* height screen */);
         void Initialize();
         void SetCorePTR(LDDrift::Core* corePTR);
