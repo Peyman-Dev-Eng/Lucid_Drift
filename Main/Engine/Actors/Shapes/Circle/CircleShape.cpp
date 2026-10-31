@@ -77,7 +77,7 @@ const LDDrift::VecPos2D& LDDrift::Actors::Circle::GetCirclePosition() const {
 }
 
 void LDDrift::Actors::Circle::Rebuild(const int width, const int height) {
-    this->SetScreenSize({static_cast<float>(width), static_cast<float>(height)});
+    this->SetScreenSize(LDDrift::VecPos2D{static_cast<float>(width), static_cast<float>(height)});
     this->SetRadius(this->radius);
     const uint VectexAngle = 360 / this->GetPointCount();
     uint PointIndex = 0;

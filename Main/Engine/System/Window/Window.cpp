@@ -11,6 +11,7 @@ LDDrift::Window::Window() : renderer(nullptr) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
 
     settings.title = "NONE";
     settings.width = 500;
@@ -206,6 +207,7 @@ void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int widt
     LDDrift::Transform::halfWidthScreen = (currentWindow->settings.viewPortWidth / 2);
     LDDrift::Transform::halfHeightScreen = (currentWindow->settings.viewPortHeight / 2);
     glViewport(350, 180, width - 350, height - 180);
+    currentWindow->renderer->UpdateViewMatrix();
 }
 
 LDDrift::VecCol LDDrift::Window::GetFillScreenColor() const {

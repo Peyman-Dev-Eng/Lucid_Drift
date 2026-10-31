@@ -73,6 +73,7 @@ namespace LDDrift
         void Resize();
         void Render() const;
     };
+    // create window title bar
 } // LDDrift
 
 #endif
