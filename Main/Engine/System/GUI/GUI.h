@@ -51,6 +51,14 @@ namespace LDDrift
      */
     class GUI final
     {
+    private: // window title bar
+        struct WindowTitleBar_STRUCT
+        {
+            std::string title;
+            
+        };
+    private:
+        std::vector<std::string> options; // options for save key targets
     public:
         std::thread reloadCmakeFileThread;
 
@@ -130,13 +138,14 @@ namespace LDDrift
         ~GUI();
 
     private:
-        static void SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window);
+        void WindowTitleBar();
+        void SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window);
         void SeeObjectsWindowHandler(const DefaultWindowsData* window) const;
         void GameSettingWindowHandler(DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window);
         void PolygonConfigureWindowHandler(DefaultWindowsData* window) const;
         void LineConfigureWindowHandler(DefaultWindowsData* window) const;
-        void SetKeyTargetWindowHandler(DefaultWindowsData* window) const;
+        void SetKeyTargetWindowHandler(DefaultWindowsData* window);
         static bool SearchableCombo(char* buffer, const std::vector<std::string>& options);
     };
 }

@@ -33,7 +33,7 @@ void LDDrift::Main_GraphicalWindow::Initialize() {
     const LDDrift::VecPos2D windowSize = core->window.GetWindowSize();
 
     name = MAIN_WINDOW_NAME;
-    position = {0, 0};
+    position = {0, 35};
     size = {350, windowSize.Y / 2};
     Show = true;
     canMoveWindow = false;
@@ -45,8 +45,8 @@ void LDDrift::Main_GraphicalWindow::Initialize() {
 void LDDrift::Main_GraphicalWindow::Resize() {
     const LDDrift::VecPos2D windowSize = core->window.GetWindowSize();
 
-    position = {0, 0};
-    size = {350, windowSize.Y / 2};
+    position = {0, 35};
+    size = {350, (windowSize.Y / 2) - 35};
 }
 
 void LDDrift::Main_GraphicalWindow::Render() const {
@@ -291,6 +291,7 @@ void LDDrift::Console_GraphicalWindow::Resize() {
     const LDDrift::VecPos2D windowSize = core->window.GetWindowSize();
 
     position = {350, windowSize.Y - 180};
+    size = {windowSize.X - 350, 180};
 }
 
 void LDDrift::Console_GraphicalWindow::SetText(const std::string& text) {

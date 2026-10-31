@@ -11,12 +11,11 @@ LDDrift::Window::Window() : renderer(nullptr) {
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
     glfwWindowHint(GLFW_SAMPLES, 4);
-    glfwWindowHint(GLFW_DECORATED, GL_FALSE);
 
     settings.title = "NONE";
     settings.width = 500;
     settings.height = 500;
-    settings.CanResize = false;
+    settings.CanResize = true;
     settings.FillColorScreen = {0.0f, 0.0f, 0.0f, 1.0f};
     this->monitor = glfwGetPrimaryMonitor();
     mode = glfwGetVideoMode(monitor);
@@ -73,11 +72,11 @@ void LDDrift::Window::CreateFullscreenWindow() {
     glfwMakeContextCurrent(screen);
     GLB_assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     glfwSetWindowUserPointer(screen, this);
-    glViewport(350, 180, mode->width - 350, mode->height - 180);
-    settings.width = mode->width;
-    settings.height = mode->height;
-    settings.viewPortWidth = mode->width - 350;
-    settings.viewPortHeight = mode->height - 180;
+    glViewport(350, 180, mode->width - 350 - 300, mode->height - 180 - 300);
+    settings.width = mode->width - 300;
+    settings.height = mode->height - 300;
+    settings.viewPortWidth = mode->width - 350 - 300;
+    settings.viewPortHeight = mode->height - 180 - 300;
     glfwSetFramebufferSizeCallback(screen, LDDrift::Window::FrameBufferSizeCallback);
     LDDrift::Transform::widthScreen = settings.viewPortWidth;
     LDDrift::Transform::heightScreen = settings.viewPortHeight;
@@ -191,7 +190,7 @@ void LDDrift::Window::Update() {
 }
 
 void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int width, const int height) {
-    auto* currentWindow = static_cast<LDDrift::Window*>(glfwGetWindowUserPointer(window));
+    Window* currentWindow = static_cast<LDDrift::Window*>(glfwGetWindowUserPointer(window));
     currentWindow->settings.width = width;
     currentWindow->settings.height = height;
     currentWindow->renderer->SetWidthScreen(width - 350);

@@ -145,7 +145,6 @@ void LDDrift::Core::RunGameFrame() {
 }
 
 void LDDrift::Core::EngineHandler() {
-    using namespace std::chrono_literals;
     projectWatchTower.SetPaths();
     while (window.ScreenIsOpen() && engineRun) {
         RunEngineFrame();

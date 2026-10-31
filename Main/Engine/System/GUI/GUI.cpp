@@ -1504,7 +1504,7 @@ bool LDDrift::GUI::SearchableCombo(char* buffer, const std::vector<std::string>&
     return selected;
 }
 
-void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
+void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) {
     if (window->name != SET_KEY_TARGET_WINDOW_NAME) {
         return;
     }
@@ -1513,6 +1513,7 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) const {
     ImGui::Separator();
     if (ImGui::Button("Set")) {
         LDDrift::input::Keyboard::SetKeyTarget(std::string(window->searchBuffer));
+        options.emplace_back(window->searchBuffer);
         window->Show = false;
         std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
     }
@@ -1974,9 +1975,13 @@ void LDDrift::GUI::SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* wind
     if (window->name != SEE_KEY_TARGETS_WINDOW_NAME) {
         return;
     }
-    std::vector<std::string> options;
-    for (const LDDrift::Event::Keyboard::LinuxKeyboardKeyCode& key : LDDrift::TargetKeys) {
-        options.push_back(LDDrift::input::ConvertKeyEnumToString(key));
+    if (options.empty()) {
+        ImGui::TextUnformatted("nothing to show");
+        ImGui::Separator();
+        if (ImGui::Button("Close")) {
+            window->Show = false;
+        }
+        return;
     }
     std::size_t counter = 0;
     for (const std::string& option : options) {
