@@ -1,7 +1,15 @@
-//
-// Created by Develepment on 10/31/26.
-//
-
 #include "ImageReader.h"
 
-namespace LDDrift {} // LDDrift
+LDDrift::ImageReader::ImageReader() = default;
+
+LDDrift::ImageReader::ImageReader(const std::filesystem::path& imagePath) {
+    image.pixels = stbi_load(imagePath.c_str(), &image.width, &image.height,
+                             &image.channels, image.desiredChannels);
+    if (!image.pixels) {
+        throw std::runtime_error("Failed to load image");
+    }
+}
+
+const LDDrift::ImageReader::Image& LDDrift::ImageReader::GetImage() const { return image; }
+
+LDDrift::ImageReader::~ImageReader() = default;
