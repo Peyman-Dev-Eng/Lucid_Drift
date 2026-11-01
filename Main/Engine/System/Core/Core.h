@@ -24,6 +24,8 @@
 #include <System/Triangulation/Triangulation.h>
 #include <System/Window/Window.h>
 #include <sstream>
+#include <System/Texture/Texture.h>
+#include <Renderer/TextureRender/TextureRender.h>
 #include <streambuf>
 
 namespace LDDrift
@@ -41,6 +43,9 @@ namespace LDDrift
         std::stringstream consoleBuffer;
         std::streambuf* oldC_outBuf = nullptr;
         bool engineRun = true;
+
+        LDDrift::Texture texture;
+        LDDrift::TextureRender textureRender;
 
     public:
         // data

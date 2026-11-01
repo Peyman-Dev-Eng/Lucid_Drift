@@ -38,7 +38,7 @@ target_include_directories(VECPOS2D PUBLIC
 )
 
 target_link_libraries(VECPOS2D PUBLIC
-        ASSERT VecColor ANGLE SHAPE_DATA PWT TRM COMP
+        ASSERT VecColor ANGLE SHAPE_DATA PWT TRM COMP IMAGE_READER
 )
 
 

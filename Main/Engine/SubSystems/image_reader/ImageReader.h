@@ -1,7 +1,5 @@
-#ifndef LUCID_DRIFT_IMAGEREADER_H
-#define LUCID_DRIFT_IMAGEREADER_H
-#define STB_IMAGE_STATIC
-#define STB_IMAGE_IMPLEMENTATION
+#ifndef LUCID_DRIFT_IMAGE_READER_H
+#define LUCID_DRIFT_IMAGE_READER_H
 #include <stb_image.h>
 #include <filesystem>
 
@@ -15,7 +13,7 @@ namespace LDDrift
             unsigned char* pixels = nullptr;
             int width = 0, height = 0;
             int channels = 0;
-            const int desiredChannels = 4;
+            const int desiredChannels = 3;
         };
     private:
         Image image;

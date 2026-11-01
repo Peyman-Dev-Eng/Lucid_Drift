@@ -67,6 +67,7 @@ namespace LDDrift
         void UpdateShapeData();
         void UpdateViewMatrix() const;
         void render() const;
+        ~ShapeRender();
     };
 }
 

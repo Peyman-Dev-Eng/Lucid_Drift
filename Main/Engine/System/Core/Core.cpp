@@ -49,6 +49,7 @@ void LDDrift::Core::InitCore() {
     Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);
     Write_Read_UserProjectSetting.CreateSettingFolder();
     Write_Read_UserProjectSetting.ReadSettingsOfUserProject();
+    textureRender.Initialize();
 }
 
 void LDDrift::Core::Begin() {
@@ -89,13 +90,15 @@ void LDDrift::Core::CameraController() {
     if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
         LDDrift::input::Mouse::IsRightMouseButtonHeld() &&
         LDDrift::input::Mouse::ScrollDown()) {
-        camera.SubZoomCamera(0.1f);
+        //camera.SubZoomCamera(0.1f);
+        camera.SubZoomCamera(1);
         render.UpdateViewMatrix();
     }
     if (LDDrift::input::Keyboard::IsKeyHeld(LDDrift::Event::Keyboard::LinuxKeyboardKeyCode::Key_LCONTROL) &&
         LDDrift::input::Mouse::IsRightMouseButtonHeld() &&
         LDDrift::input::Mouse::ScrollUp()) {
-        camera.AddZoomCamera(0.1f);
+        //camera.AddZoomCamera(0.1f);
+        camera.AddZoomCamera(1);
         render.UpdateViewMatrix();
     }
 }
@@ -108,6 +111,7 @@ void LDDrift::Core::RunEngineFrame() {
     LDDrift::Core::CameraController();
     window.ClearBuffer();
     render.render();
+    textureRender.Render();
     gui.consoleWindow.SetText(consoleBuffer.str());
     gui.UpdateWindow("Project Watch Tower");
     for (const auto& path : projectWatchTower.GetPaths()) {

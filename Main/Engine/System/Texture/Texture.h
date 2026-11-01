@@ -1,5 +1,6 @@
 #ifndef LUCID_DRIFT_TEXTURE_H
 #define LUCID_DRIFT_TEXTURE_H
+#include <vector>
 #include <ImageReader.h>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -13,12 +14,18 @@ namespace LDDrift
 
     public: // variables
         LDDrift::ImageReader image_reader;
+        std::vector<float> textureData;
 
     public: // functions
         Texture();
         ~Texture();
+        bool operator!=(const Texture& tex) const;
+        bool operator==(const Texture& tex) const;
+        void SetTextureCoordinates(const std::vector<float>& _textureCoordinates);
+        [[nodiscard]] const std::vector<float>& GetTextureCoordinates() const;
         void GenerateTexture();
-        void LoadTexture();
+        void LoadTexture() const;
+        void FreeTexture() const;
         [[nodiscard]] GLuint GetTextureID() const;
     };
 }

@@ -1,3 +1,4 @@
+#define STB_IMAGE_IMPLEMENTATION
 #include "ImageReader.h"
 
 LDDrift::ImageReader::ImageReader() = default;

@@ -101,10 +101,10 @@ void LDDrift::ShapeRender::AddShapeToRender(LDDrift::Actors::Shape* shape) {
         }
     } else {
         if (shape->ShapeIsConvex()) {
-            const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
+            const LDDrift::Triangulation_S<LDDrift::ActorType::convex> triangulation(shape);
             VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
         } else {
-            const LDDrift::Triangulation<LDDrift::ActorType::concave> triangulation(shape);
+            const LDDrift::Triangulation_S<LDDrift::ActorType::concave> triangulation(shape);
             VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
         }
     }
@@ -149,10 +149,10 @@ void LDDrift::ShapeRender::UpdateShapeData() {
         const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
         std::vector<float> VTC = {};
         if (shape->ShapeIsConvex()) {
-            const LDDrift::Triangulation<LDDrift::ActorType::convex> triangulation(shape);
+            const LDDrift::Triangulation_S<LDDrift::ActorType::convex> triangulation(shape);
             VTC = triangulation.CreateTriangles();
         } else {
-            const LDDrift::Triangulation<LDDrift::ActorType::concave> triangulation(shape);
+            const LDDrift::Triangulation_S<LDDrift::ActorType::concave> triangulation(shape);
             VTC = triangulation.CreateTriangles();
         }
         const std::size_t vertexCount = VTC.size() / 3;
@@ -344,3 +344,5 @@ void LDDrift::ShapeRender::UpdateViewMatrix() const {
         core->camera.GetViewMatrix();
     glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 }
+
+LDDrift::ShapeRender::~ShapeRender() = default;

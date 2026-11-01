@@ -1,5 +1,4 @@
 #include "VecPos.h"
-#include "../Engine/System/Triangulation/Triangulation.h"
 
 LDDrift::VecPos2D::VecPos2D() = default;
 

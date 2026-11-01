@@ -9,14 +9,17 @@
 #include <numbers>
 #include <cmath>
 #include <typeinfo>
+#include <oneapi/tbb/info.h>
+
 #include "Actors/Shapes/MainShape/Shape.h"
 #include "Actors/Line/Line.h"
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
+#include <System/Texture/Texture.h>
 
 namespace LDDrift
 {
     template <typename ShapeType>
-    class Triangulation final
+    class Triangulation_S final
     {
     private:
         [[nodiscard]] static LDDrift::VecPos2D LineIntersection(
@@ -321,7 +324,7 @@ namespace LDDrift
             if (pointCountOfShape < 3) {
                 throw std::runtime_error("this shape is not available");
             }
-            for (std::size_t pointINdex = 0; pointINdex < pointCountOfShape; ++pointINdex) {
+            for (std::size_t pointIndex = 0; pointIndex < pointCountOfShape; ++pointIndex) {
                 if (points.size() == 3) {
                     vertices.push_back(points[0].X);
                     vertices.push_back(points[0].Y);
@@ -334,9 +337,9 @@ namespace LDDrift
                     vertices.push_back(0.0f);
                     break;
                 }
-                const std::size_t point_A_number = pointINdex == 0 ? pointCountOfShape - 1 : pointINdex - 1;
-                const std::size_t point_B_number = pointINdex;
-                const std::size_t point_C_number = (pointINdex + 1) % pointCountOfShape;
+                const std::size_t point_A_number = pointIndex == 0 ? pointCountOfShape - 1 : pointIndex - 1;
+                const std::size_t point_B_number = pointIndex;
+                const std::size_t point_C_number = (pointIndex + 1) % pointCountOfShape;
 
                 const LDDrift::VecPos2D& point_A = points[point_A_number];
                 const LDDrift::VecPos2D& point_B = points[point_B_number];
@@ -368,9 +371,9 @@ namespace LDDrift
                     vertices.push_back(point_C.X);
                     vertices.push_back(point_C.Y);
                     vertices.push_back(0.0f);
-                    points.erase(points.begin() + static_cast<long int>(pointINdex));
+                    points.erase(points.begin() + static_cast<long int>(pointIndex));
                     --pointCountOfShape;
-                    --pointINdex;
+                    --pointIndex;
                 }
             }
         }
@@ -400,11 +403,11 @@ namespace LDDrift
         }
 
     public:
-        Triangulation() {
+        Triangulation_S() {
             shape = nullptr;
         }
 
-        explicit Triangulation(LDDrift::Actors::Shape* shapePTR = nullptr) : shape(nullptr) {
+        explicit Triangulation_S(LDDrift::Actors::Shape* shapePTR = nullptr) : shape(nullptr) {
             this->SetShapeTarget(shapePTR);
         }
 
@@ -458,7 +461,7 @@ namespace LDDrift
             }
         }
 
-        ~Triangulation() = default;
+        ~Triangulation_S() = default;
     };
 }
 
