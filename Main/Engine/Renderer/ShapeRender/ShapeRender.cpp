@@ -243,9 +243,9 @@ void LDDrift::ShapeRender::render() const {
     if (howToReadShapeData_SIZE == 0) {
         return;
     }
+    glUseProgram(program);
+    glBindVertexArray(VAO);
     for (std::size_t shape = 0; shape < howToReadShapeData_SIZE; ++shape) {
-        glUseProgram(program);
-        glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES,
                      static_cast<int>(howToReadShapeData[shape].startIndex),
                      static_cast<int>(howToReadShapeData[shape].count));
@@ -336,13 +336,9 @@ void LDDrift::ShapeRender::SetCorePTR(LDDrift::Core* corePTR) {
     core = corePTR;
 }
 
-void LDDrift::ShapeRender::UpdateViewMatrix() const {
-    const LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
+void LDDrift::ShapeRender::SetViewMatrix(const glm::mat4& view_projection) const {
     glUseProgram(program);
-    const GLint viewProjectionLocation = glGetUniformLocation(program, "uViewProjection");
-    const glm::mat4 viewProjection = core->camera.GetProjectionMatrix(viewPortSize.X, viewPortSize.Y) *
-        core->camera.GetViewMatrix();
-    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
+    glUniformMatrix4fv(glGetUniformLocation(program, "uViewProjection"), 1, GL_FALSE, value_ptr(view_projection));
 }
 
 LDDrift::ShapeRender::~ShapeRender() = default;

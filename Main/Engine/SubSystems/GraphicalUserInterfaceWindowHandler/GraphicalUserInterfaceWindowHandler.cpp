@@ -38,7 +38,7 @@ void LDDrift::Main_GraphicalWindow::Initialize() {
     Show = true;
     canMoveWindow = false;
     canResizeWindow = false;
-    std::memset(searchBuffer, '\0', sizeof(searchBuffer));
+    std::memset(Buffer, '\0', sizeof(Buffer));
     SetTextPrintInWindow("");
 }
 
@@ -192,7 +192,7 @@ void LDDrift::ProjectWatchTower_GraphicalWindow::Initialize() {
     Show = true;
     canMoveWindow = false;
     canResizeWindow = false;
-    std::memset(searchBuffer, '\0', sizeof(searchBuffer));
+    std::memset(Buffer, '\0', sizeof(Buffer));
     SetTextPrintInWindow("");
 }
 
@@ -283,7 +283,7 @@ void LDDrift::Console_GraphicalWindow::Initialize() {
     Show = true;
     canMoveWindow = false;
     canResizeWindow = false;
-    std::memset(searchBuffer, '\0', sizeof(searchBuffer));
+    std::memset(Buffer, '\0', sizeof(Buffer));
     SetTextPrintInWindow("");
 }
 

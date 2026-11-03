@@ -114,7 +114,7 @@ LDDrift::VecPos2D LDDrift::WR_SettingSystem::Convert_Vector_To_Point(const std::
 }
 
 void LDDrift::WR_SettingSystem::saveCircleActor(json& j) const {
-    for (const auto& [circleName, circle] : core->userProjectSetting.circles) {
+    for (const auto& [circleName, circle,Render] : core->userProjectSetting.circles) {
         j[ACTOR][CIRCLE][circleName]["radius"] = circle->GetRadius();
         j[ACTOR][CIRCLE][circleName]["point_count"] = circle->GetPointCount();
         j[ACTOR][CIRCLE][circleName]["point_positions"] = ConvertPointsToFloats(circle->GetGlobalPoints());
@@ -132,7 +132,7 @@ std::vector<float> LDDrift::WR_SettingSystem::ConvertColorToVector(const LDDrift
 }
 
 void LDDrift::WR_SettingSystem::savePolygonActor(json& j) const {
-    for (const auto& [polyName, polygon] : core->userProjectSetting.polygons) {
+    for (const auto& [polyName, polygon,Render] : core->userProjectSetting.polygons) {
         j[ACTOR][POLYGON][polyName]["thickness"] = polygon->GetThickness();
         j[ACTOR][POLYGON][polyName]["join_line_type"] = ConvertLineJoiningAlgorithmToString(
             polygon->GetJoinLineAlgorithm().value());
@@ -147,7 +147,7 @@ void LDDrift::WR_SettingSystem::savePolygonActor(json& j) const {
 }
 
 void LDDrift::WR_SettingSystem::saveLinesActor(json& j) const {
-    for (const auto& [lineName, line] : core->userProjectSetting.lines) {
+    for (const auto& [lineName, line, Render] : core->userProjectSetting.lines) {
         j[ACTOR][LINE][lineName]["thickness"] = line->GetThickness();
         j[ACTOR][LINE][lineName]["start_pos"] = Convert_Point_ToVector(line->GetFirstPoint());
         j[ACTOR][LINE][lineName]["end_pos"] = Convert_Point_ToVector(line->GetSecondPoint());

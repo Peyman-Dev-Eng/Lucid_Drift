@@ -7,13 +7,13 @@
 LDDrift::Scene::Scene() = default;
 
 LDDrift::Scene::~Scene() {
-    for (auto& [circleName, circle] : circleShapes) {
+    for (auto& [circleName, circle,Render] : circleShapes) {
         delete circle;
     }
-    for (auto& [polygonName, polygon] : polygonShapes) {
+    for (auto& [polygonName, polygon,Render] : polygonShapes) {
         delete polygon;
     }
-    for (auto& [lineName, line] : lines) {
+    for (auto& [lineName, line,Render] : lines) {
         delete line;
     }
 }
@@ -35,14 +35,14 @@ void LDDrift::Scene::ReSendShapesToRender() {
 
     NPV_assert(renderer)
 
-    for (auto& [circleName, circle] : circleShapes) {
-        renderer->AddShapeToRender(circle);
+    for (auto& [circleName, circle,Render] : circleShapes) {
+        if (Render) renderer->AddShapeToRender(circle);
     }
-    for (auto& [polygonName, polygon] : polygonShapes) {
-        renderer->AddShapeToRender(polygon);
+    for (auto& [polygonName, polygon,Render] : polygonShapes) {
+        if (Render) renderer->AddShapeToRender(polygon);
     }
-    for (auto& [lineName, line] : lines) {
-        renderer->AddLineToRender(line);
+    for (auto& [lineName, line,Render] : lines) {
+        if (Render) renderer->AddLineToRender(line);
     }
     renderer->UpdateShapeData();
     renderer->SendDataToGPU();
@@ -50,7 +50,7 @@ void LDDrift::Scene::ReSendShapesToRender() {
 }
 
 LDDrift::Actors::Circle* LDDrift::Scene::GetCircle(const std::string& name) const {
-    for (const auto& [circleName, circle] : circleShapes) {
+    for (const auto& [circleName, circle,Render] : circleShapes) {
         if (circleName == name) {
             return circle;
         }
@@ -83,7 +83,7 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
 }
 
 LDDrift::Actors::Polygon* LDDrift::Scene::GetPolygon(const std::string& name) const {
-    for (const auto& [polygonName, polygon] : polygonShapes) {
+    for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         if (polygonName == name) {
             return polygon;
         }
@@ -146,7 +146,7 @@ void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickne
 }
 
 LDDrift::Actors::Line* LDDrift::Scene::GetLine(const std::string& name) const {
-    for (const auto& [lineName, line] : lines) {
+    for (const auto& [lineName, line,Render] : lines) {
         if (lineName == name) {
             return line;
         }
@@ -155,7 +155,7 @@ LDDrift::Actors::Line* LDDrift::Scene::GetLine(const std::string& name) const {
 }
 
 bool LDDrift::Scene::FindCircleWithName(const std::string& name) const {
-    for (const auto& [lineName, line] : circleShapes) {
+    for (const auto& [lineName, line,Render] : circleShapes) {
         if (lineName == name) {
             return true;
         }
@@ -164,7 +164,7 @@ bool LDDrift::Scene::FindCircleWithName(const std::string& name) const {
 }
 
 bool LDDrift::Scene::FindPolygonWithName(const std::string& name) const {
-    for (const auto& [polygonName, polygon] : polygonShapes) {
+    for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         if (polygonName == name) {
             return true;
         }
@@ -173,7 +173,7 @@ bool LDDrift::Scene::FindPolygonWithName(const std::string& name) const {
 }
 
 bool LDDrift::Scene::FindLineWithName(const std::string& name) const {
-    for (const auto& [lineName, line] : lines) {
+    for (const auto& [lineName, line,Render] : lines) {
         if (lineName == name) {
             return true;
         }
@@ -227,11 +227,11 @@ void LDDrift::Scene::MarkSendDataToGPU() {
 
 bool LDDrift::Scene::DeletePolygonShape(const std::string& name) {
     long int pos = 0;
-    for (const auto& [polygonName, polygon] : polygonShapes) {
+    for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         if (polygonName == name) {
             polygonShapes.erase(polygonShapes.begin() + pos);
-            core->render.RemoveShapeFromRender(polygon);
-            core->render.UpdateShapeData();
+            core->shape_render.RemoveShapeFromRender(polygon);
+            core->shape_render.UpdateShapeData();
             return true;
         }
         ++pos;
@@ -241,11 +241,11 @@ bool LDDrift::Scene::DeletePolygonShape(const std::string& name) {
 
 bool LDDrift::Scene::DeleteLineShape(const std::string& name) {
     long int pos = 0;
-    for (const auto& [lineName, line] : lines) {
+    for (const auto& [lineName, line,Render] : lines) {
         if (lineName == name) {
             lines.erase(lines.begin() + pos);
-            core->render.RemoveLineFromRender(line);
-            core->render.UpdateShapeData();
+            core->shape_render.RemoveLineFromRender(line);
+            core->shape_render.UpdateShapeData();
             return true;
         }
         ++pos;
@@ -255,11 +255,11 @@ bool LDDrift::Scene::DeleteLineShape(const std::string& name) {
 
 bool LDDrift::Scene::DeleteCircleShape(const std::string& name) {
     long int pos = 0;
-    for (const auto& [circleName, circle] : circleShapes) {
+    for (const auto& [circleName, circle,Render] : circleShapes) {
         if (circleName == name) {
             circleShapes.erase(circleShapes.begin() + pos);
-            core->render.RemoveShapeFromRender(circle);
-            core->render.UpdateShapeData();
+            core->shape_render.RemoveShapeFromRender(circle);
+            core->shape_render.UpdateShapeData();
             return true;
         }
         ++pos;
@@ -269,7 +269,7 @@ bool LDDrift::Scene::DeleteCircleShape(const std::string& name) {
 
 std::vector<std::string> LDDrift::Scene::GetCircleNames() const {
     std::vector<std::string> circleNames;
-    for (const auto& [circleName, circle] : circleShapes) {
+    for (const auto& [circleName, circle,Render] : circleShapes) {
         circleNames.push_back(circleName);
     }
     return circleNames;
@@ -277,7 +277,7 @@ std::vector<std::string> LDDrift::Scene::GetCircleNames() const {
 
 std::vector<std::string> LDDrift::Scene::GetPolygonNames() const {
     std::vector<std::string> polygonNames;
-    for (const auto& [polygonName, polygon] : polygonShapes) {
+    for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         polygonNames.push_back(polygonName);
     }
     return polygonNames;
@@ -285,7 +285,7 @@ std::vector<std::string> LDDrift::Scene::GetPolygonNames() const {
 
 std::vector<std::string> LDDrift::Scene::GetLineNames() const {
     std::vector<std::string> lineNames;
-    for (const auto& [lineName, line] : lines) {
+    for (const auto& [lineName, line,Render] : lines) {
         lineNames.push_back(lineName);
     }
     return lineNames;
@@ -293,7 +293,7 @@ std::vector<std::string> LDDrift::Scene::GetLineNames() const {
 
 std::vector<LDDrift::Actors::Circle*> LDDrift::Scene::GetCircles_ptr() const {
     std::vector<LDDrift::Actors::Circle*> circles;
-    for (const auto& [circleName, circle] : circleShapes) {
+    for (const auto& [circleName, circle,Render] : circleShapes) {
         circles.push_back(circle);
     }
     return circles;
@@ -301,7 +301,7 @@ std::vector<LDDrift::Actors::Circle*> LDDrift::Scene::GetCircles_ptr() const {
 
 std::vector<LDDrift::Actors::Polygon*> LDDrift::Scene::GetPolygons_ptr() const {
     std::vector<LDDrift::Actors::Polygon*> polygons;
-    for (const auto& [polygonName, polygon] : polygonShapes) {
+    for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         polygons.push_back(polygon);
     }
     return polygons;
@@ -309,8 +309,61 @@ std::vector<LDDrift::Actors::Polygon*> LDDrift::Scene::GetPolygons_ptr() const {
 
 std::vector<LDDrift::Actors::Line*> LDDrift::Scene::GetLines_ptr() const {
     std::vector<LDDrift::Actors::Line*> Lines;
-    for (const auto& [lineName, line] : lines) {
+    for (const auto& [lineName, line,Render] : lines) {
         Lines.push_back(line);
     }
     return Lines;
+}
+
+std::vector<LDDrift::Texture*> LDDrift::Scene::GetTextures_Ptr() const {
+    std::vector<LDDrift::Texture*> r; // result
+    for (const auto& [textureName, texture,Render] : textures) {
+        r.push_back(texture);
+    }
+    return r;
+}
+
+std::vector<std::string> LDDrift::Scene::GetTextureNames() const {
+    std::vector<std::string> r; // result
+    for (const auto& [textureName, texture,Render] : textures) {
+        r.push_back(textureName);
+    }
+    return r;
+}
+
+int LDDrift::Scene::FindTextureWithName(const std::string& name) const {
+    int counter = 0;
+    for (const auto& [textureName, texture, Render] : textures) {
+        if (textureName == name) {
+            return counter;
+        }
+        ++counter;
+    }
+    return -1;
+}
+
+LDDrift::Texture* LDDrift::Scene::GetTexture(const std::string& name) const {
+    for (const auto& [textureName, texture, Render] : textures) {
+        if (textureName == name) {
+            return texture;
+        }
+    }
+    return nullptr;
+}
+
+void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesystem::path& TexturePath,
+                                   const unsigned short int desired_chan, const std::vector<float>& vertices) {
+    const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Texture()};
+    newTexture.texture->image_reader.LoadImage(TexturePath);
+    newTexture.texture->SetTextureCoordinates(vertices);
+    core->textureRender.AddTexture(newTexture.texture);
+    core->textureRender.SendToGPU();
+    textures.push_back(newTexture);
+}
+
+void LDDrift::Scene::DeleteTexture(const std::string& name) {
+    if (const int find = FindTextureWithName(name);
+        CheckFindStatus(find)) {
+        textures.erase(textures.begin() + find);
+    }
 }

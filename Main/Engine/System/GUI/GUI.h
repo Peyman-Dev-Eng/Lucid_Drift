@@ -31,10 +31,19 @@
 #define GAME_SETTING_WINDOW_NAME "Game Setting"
 #define SEE_OBJECTS_WINDOW_NAME "See Objects"
 #define SEE_KEY_TARGETS_WINDOW_NAME "See Key Targets"
+#define TEXTURE_MANAGER_WINDOW_NAME "Texture Manager"
+#define InitializeFloatVector LDDrift::init_std_vector
 
 namespace LDDrift
 {
     class Core;
+
+    inline void init_std_vector(std::vector<float>& vector, const std::size_t size) {
+        if (size * 4 == vector.size()) return;
+        vector.clear();
+        vector.assign(size * 4, 0);
+        std::cerr << "Hello" << std::endl;
+    }
 }
 
 namespace LDDrift
@@ -55,8 +64,8 @@ namespace LDDrift
         struct WindowTitleBar_STRUCT
         {
             std::string title;
-            
         };
+
     private:
         std::vector<std::string> options; // options for save key targets
     public:
@@ -138,8 +147,8 @@ namespace LDDrift
         ~GUI();
 
     private:
-        void WindowTitleBar();
-        void SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window);
+        void TextureManagerWindowHandler(DefaultWindowsData* window);
+        void SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window) const;
         void SeeObjectsWindowHandler(const DefaultWindowsData* window) const;
         void GameSettingWindowHandler(DefaultWindowsData* window);
         void CircleConfigureWindowHandler(DefaultWindowsData* window);

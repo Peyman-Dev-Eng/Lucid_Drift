@@ -4,7 +4,7 @@
 #include "System/Input/input.h"
 #include "SubSystems/Transform/Transform.h"
 
-LDDrift::Window::Window() : renderer(nullptr) {
+LDDrift::Window::Window() : s_renderer(nullptr) {
     GLB_assert(glfwInit())
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
@@ -151,7 +151,7 @@ void LDDrift::Window::SetFillScreenColor(const LDDrift::VecCol& color) {
 }
 
 void LDDrift::Window::SetRendererPTR(LDDrift::ShapeRender* rendererPTR) {
-    renderer = rendererPTR;
+    s_renderer = rendererPTR;
 }
 
 void LDDrift::Window::ClearBuffer() const {
@@ -190,12 +190,12 @@ void LDDrift::Window::Update() {
 }
 
 void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int width, const int height) {
-    Window* currentWindow = static_cast<LDDrift::Window*>(glfwGetWindowUserPointer(window));
+    LDDrift::Window* currentWindow = static_cast<LDDrift::Window*>(glfwGetWindowUserPointer(window));
     currentWindow->settings.width = width;
     currentWindow->settings.height = height;
-    currentWindow->renderer->SetWidthScreen(width - 350);
-    currentWindow->renderer->SetHeightScreen(height - 180);
-    currentWindow->renderer->RebuildShapes();
+    currentWindow->s_renderer->SetWidthScreen(width - 350);
+    currentWindow->s_renderer->SetHeightScreen(height - 180);
+    currentWindow->s_renderer->RebuildShapes();
     currentWindow->core->gui.mainWindow.Resize();
     currentWindow->core->gui.consoleWindow.Resize();
     currentWindow->core->gui.projectWatchTowerWindow.Resize();
@@ -206,7 +206,9 @@ void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int widt
     LDDrift::Transform::halfWidthScreen = (currentWindow->settings.viewPortWidth / 2);
     LDDrift::Transform::halfHeightScreen = (currentWindow->settings.viewPortHeight / 2);
     glViewport(350, 180, width - 350, height - 180);
-    currentWindow->renderer->UpdateViewMatrix();
+    const auto viewProjection = currentWindow->core->mainRenderer.UpdateViewMatrix();
+    currentWindow->s_renderer->SetViewMatrix(viewProjection);
+    currentWindow->core->textureRender.SetViewMatrix(viewProjection);
 }
 
 LDDrift::VecCol LDDrift::Window::GetFillScreenColor() const {

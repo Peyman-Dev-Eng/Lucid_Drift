@@ -1,5 +1,5 @@
-#ifndef LUCID_DRIFT_RENDERER_H
-#define LUCID_DRIFT_RENDERER_H
+#ifndef LUCID_DRIFT_SHAPE_RENDERER_H
+#define LUCID_DRIFT_SHAPE_RENDERER_H
 #include "glad/glad.h"
 #include <vector>
 #include <ShapeData.h>
@@ -65,7 +65,7 @@ namespace LDDrift
         void RemoveLineFromRender(LDDrift::Actors::Line*);
         void RemoveShapeFromRender(LDDrift::Actors::Shape*);
         void UpdateShapeData();
-        void UpdateViewMatrix() const;
+        void SetViewMatrix(const glm::mat4& view_projection) const;
         void render() const;
         ~ShapeRender();
     };

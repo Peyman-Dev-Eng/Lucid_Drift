@@ -1,4 +1,7 @@
 #include "TextureRender.h"
+#include <System/Core/Core.h>
+
+#include "Transform.h"
 
 LDDrift::TextureRender::TextureRender() = default;
 
@@ -17,8 +20,9 @@ void LDDrift::TextureRender::SetVertexShaderSource() {
         "layout (location = 0) in vec2 position;\n"
         "layout (location = 1) in vec2 texCoord;\n"
         "out vec2 outColor;\n"
+        "uniform mat4 U_VIEW_PROJECTION;\n"
         "void main() {\n"
-        "    gl_Position = vec4(position, 0.0, 1.0);\n"
+        "    gl_Position = U_VIEW_PROJECTION * vec4(position, 0.0, 1.0);\n"
         "    outColor = texCoord;\n"
         "}";
 }
@@ -45,17 +49,27 @@ void LDDrift::TextureRender::Initialize() {
     glAttachShader(program, FragmentShader);
     glLinkProgram(program);
 
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
     glGenBuffers(1, &VBO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
+    const LDDrift::VecPos2D viewPortSize = core->window.GetViewportSize();
+    glUseProgram(program);
+    const GLint viewProjectionLocation = glGetUniformLocation(program, "U_VIEW_PROJECTION");
+    const glm::mat4 viewProjection = core->camera.GetProjectionMatrix(viewPortSize.X, viewPortSize.Y) *
+        core->camera.GetViewMatrix();
+    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 }
 
 void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture) {
-    if (!textures.contains(texture)) {
-        textures.insert(texture);
+    if (std::ranges::find(textures, texture) == textures.end()) {
+        textures.push_back(texture);
         texture->GenerateTexture();
+        const std::size_t textureDataSize = texture->GetTextureCoordinates().size() / 4;
+        howToReadDataFromGPU.push_back(readDataFrom_GPU{.start = lastIndexForStart, .count = textureDataSize});
+        lastIndexForStart += textureDataSize;
     }
 }
 
@@ -78,17 +92,30 @@ void LDDrift::TextureRender::SendToGPU() const {
 }
 
 void LDDrift::TextureRender::RemoveTexture(LDDrift::Texture* texture) {
-    if (textures.contains(texture)) {
-        textures.erase(texture);
+    if (const auto it = std::ranges::find(textures, texture);
+        it != textures.end()) {
+        textures.erase(it);
     }
 }
 
 void LDDrift::TextureRender::Render() const {
-    for (const LDDrift::Texture* tex : textures) {
+    const std::size_t howToReadDataFromGPU_SIZE = howToReadDataFromGPU.size();
+    for (std::size_t texture = 0; texture < howToReadDataFromGPU_SIZE; ++texture) {
         glUseProgram(program);
-        tex->LoadTexture();
+        textures[texture]->LoadTexture();
         glUniform1i(glGetUniformLocation(program, "texture_S"), 0);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLE_FAN,
+                     static_cast<int>(howToReadDataFromGPU[texture].start),
+                     static_cast<int>(howToReadDataFromGPU[texture].count));
     }
+}
+
+void LDDrift::TextureRender::SetCorePTR(LDDrift::Core* core_ptr) {
+    core = core_ptr;
+}
+
+void LDDrift::TextureRender::SetViewMatrix(const glm::mat4& u_viewProjectionMatrix) const {
+    glUseProgram(program);
+    glUniformMatrix4fv(glGetUniformLocation(program, "U_VIEW_PROJECTION"), 1, GL_FALSE, value_ptr(u_viewProjectionMatrix));
 }

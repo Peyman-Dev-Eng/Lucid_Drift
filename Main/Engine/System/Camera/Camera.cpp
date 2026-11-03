@@ -3,22 +3,30 @@
 
 void LDDrift::Camera::MoveUp() {
     position.Y += (speed * LDDrift::func::GetDeltaTime());
-    core->render.UpdateViewMatrix();
+    const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+    core->shape_render.SetViewMatrix(viewProjection);
+    core->textureRender.SetViewMatrix(viewProjection);
 }
 
 void LDDrift::Camera::MoveDown() {
     position.Y -= (speed * LDDrift::func::GetDeltaTime());
-    core->render.UpdateViewMatrix();
+    const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+    core->shape_render.SetViewMatrix(viewProjection);
+    core->textureRender.SetViewMatrix(viewProjection);
 }
 
 void LDDrift::Camera::MoveLeft() {
     position.X -= (speed * LDDrift::func::GetDeltaTime());
-    core->render.UpdateViewMatrix();
+    const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+    core->shape_render.SetViewMatrix(viewProjection);
+    core->textureRender.SetViewMatrix(viewProjection);
 }
 
 void LDDrift::Camera::MoveRight() {
     position.X += (speed * LDDrift::func::GetDeltaTime());
-    core->render.UpdateViewMatrix();
+    const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+    core->shape_render.SetViewMatrix(viewProjection);
+    core->textureRender.SetViewMatrix(viewProjection);
 }
 
 LDDrift::Camera::Camera() = default;
@@ -144,6 +152,8 @@ void LDDrift::Camera::FallowTargetShape() {
         position.Y == targetPosition.Y;
 
     if (position.X != oldX || position.Y != oldY) {
-        core->render.UpdateViewMatrix();
+        const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+        core->shape_render.SetViewMatrix(viewProjection);
+        core->textureRender.SetViewMatrix(viewProjection);
     }
 }

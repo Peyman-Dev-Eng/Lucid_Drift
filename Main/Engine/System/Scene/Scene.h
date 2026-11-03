@@ -6,7 +6,13 @@
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0x000002
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L 0x000003
-
+#define CheckFindStatus IsFound
+namespace
+{
+    bool IsFound(const int r) {
+        return r != -1;
+    }
+}
 namespace LDDrift
 {
     namespace Actors
@@ -16,6 +22,7 @@ namespace LDDrift
         class Line;
         class Circle;
     }
+
     class Core;
 
     class Scene final
@@ -25,18 +32,28 @@ namespace LDDrift
         {
             std::string circleName;
             LDDrift::Actors::Circle* circle;
+            bool render;
         };
 
         struct POLYGON_SHAPE_INFORMATION
         {
             std::string polygonName;
             LDDrift::Actors::Polygon* polygon;
+            bool render;
         };
 
         struct LINE_ACTOR_INFORMATION
         {
             std::string lineName;
             LDDrift::Actors::Line* line;
+            bool render;
+        };
+
+        struct TEXTURE_INFORMATION
+        {
+            std::string textureName;
+            LDDrift::Texture* texture;
+            bool render;
         };
 
     public:
@@ -46,6 +63,7 @@ namespace LDDrift
         std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
         std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
         std::vector<LINE_ACTOR_INFORMATION> lines;
+        std::vector<TEXTURE_INFORMATION> textures;
 
     public:
         Scene();
@@ -97,6 +115,16 @@ namespace LDDrift
         bool DeleteLineShape(const std::string& name);
         [[nodiscard]] std::vector<std::string> GetLineNames() const;
         [[nodiscard]] std::vector<LDDrift::Actors::Line*> GetLines_ptr() const;
+        // texture
+        [[nodiscard]] int FindTextureWithName(const std::string& name) const;
+        [[nodiscard]] LDDrift::Texture* GetTexture(const std::string& name) const;
+        void CreateTexture(const std::string& name,
+                           const std::filesystem::path& TexturePath,
+                           const unsigned short int desired_chan,
+                           const std::vector<float>& vertices);
+        void DeleteTexture(const std::string& name);
+        [[nodiscard]] std::vector<LDDrift::Texture*> GetTextures_Ptr() const;
+        [[nodiscard]] std::vector<std::string> GetTextureNames() const;
         ~Scene();
     };
 }

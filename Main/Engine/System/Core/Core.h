@@ -19,6 +19,7 @@
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 #include <SubSystems/ProjectExplorer/ProjectWatchTower.h>
 #include <System/Camera/Camera.h>
+#include <Renderer/Communicator/MainRenderer.h>
 #include <System/Input/input.h>
 #include <System/Scene/Scene.h>
 #include <System/Triangulation/Triangulation.h>
@@ -44,14 +45,11 @@ namespace LDDrift
         std::streambuf* oldC_outBuf = nullptr;
         bool engineRun = true;
 
-        LDDrift::Texture texture;
-        LDDrift::TextureRender textureRender;
-
     public:
         // data
         LDDrift::Camera camera;
         LDDrift::Window window;
-        LDDrift::ShapeRender render;
+        LDDrift::ShapeRender shape_render;
         LDDrift::ProjectWatchTower projectWatchTower;
         LDDrift::PointHitTesting pointHitTesting;
         LDDrift::GUI gui;
@@ -60,13 +58,15 @@ namespace LDDrift
         LDDrift::CodePathfinder codePathfinder;
         LDDrift::UserProjectSetting userProjectSetting;
         LDDrift::WR_SettingSystem Write_Read_UserProjectSetting;
+        LDDrift::TextureRender textureRender;
+        LDDrift::MainRenderer mainRenderer;
 
         // functions
         explicit Core();
         void Begin();
         void EngineHandler();
         ~Core();
-    };
+    }; // class Core
 
     namespace func
     {

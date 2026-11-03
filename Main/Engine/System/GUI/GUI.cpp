@@ -327,6 +327,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(SEE_KEY_TARGETS_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(TEXTURE_MANAGER_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -437,8 +439,8 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         ImGui::TextUnformatted("window: Create New Circle");
         ImGui::Separator();
         ImGui::SetNextItemWidth(400);
-        ImGui::InputTextWithHint("##Circle Shape Name", "Enter Circle Name: ", window->searchBuffer,
-                                 sizeof(window->searchBuffer));
+        ImGui::InputTextWithHint("##Circle Shape Name", "Enter Circle Name: ", window->Buffer,
+                                 sizeof(window->Buffer));
         ImGui::Separator();
         ImGui::TextUnformatted("Circle Point Count: ");
         ImGui::SameLine();
@@ -537,36 +539,36 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         ImGui::Separator();
         if (ImGui::Button("Create")) {
             if (useThickForCircleShape == 0)
-                core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius,
+                core->scene.CreateCircleShape(std::string(window->Buffer), circlePointCount, circleRadius,
                                               circleSpeed,
                                               {static_cast<float>(xPos), static_cast<float>(yPos)},
                                               {redValueColor, greenValueColor, blueValueColor, alphaValueColor}, -1);
             else if (useThickForCircleShape == 1)
-                core->scene.CreateCircleShape(std::string(window->searchBuffer), circlePointCount, circleRadius,
+                core->scene.CreateCircleShape(std::string(window->Buffer), circlePointCount, circleRadius,
                                               circleSpeed,
                                               {static_cast<float>(xPos), static_cast<float>(yPos)},
                                               {redValueColor, greenValueColor, blueValueColor, alphaValueColor},
                                               static_cast<float>(thick));
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
     } else if (CheckBoxIsOn == 1) {
         static std::optional<bool> inThisBrace;
         ImGui::TextUnformatted("window: Circle Configuration");
         static std::optional<LDDrift::Actors::Circle*> circle;
-        if ((ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->searchBuffer,
-                                      sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) &&
+        if ((ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->Buffer,
+                                      sizeof(window->Buffer), ImGuiInputTextFlags_EnterReturnsTrue)) &&
             !(circle.has_value())) {
-            circle = core->scene.GetCircle(std::string(window->searchBuffer));
+            circle = core->scene.GetCircle(std::string(window->Buffer));
             if (circle.value() == nullptr) {
                 this->SetTextForWindow(
                     CIRCLE_CONFIGURE_WINDOW_NAME,
-                    std::string("not available circle actor with this name -> ") + window->searchBuffer, true);
+                    std::string("not available circle actor with this name -> ") + window->Buffer, true);
                 return;
             }
         }
@@ -690,40 +692,40 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 this->core->scene.ReSendShapesToRender();
                 window->Show = false;
                 inThisBrace = false;
-                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+                std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             }
             ImGui::SameLine();
             if (ImGui::Button("Close")) {
                 window->Show = false;
                 inThisBrace = false;
-                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+                std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             }
         } else {
             if (ImGui::Button("Close")) {
                 window->Show = false;
-                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+                std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             }
         }
     } else if (CheckBoxIsOn == 2) {
         ImGui::Separator();
         ImGui::TextUnformatted("window: Delete Circle");
-        ImGui::InputTextWithHint("##Circle name", "Enter Circle name: ", window->searchBuffer,
-                                 sizeof(window->searchBuffer));
+        ImGui::InputTextWithHint("##Circle name", "Enter Circle name: ", window->Buffer,
+                                 sizeof(window->Buffer));
         static std::optional<bool> foundCircle;
         if (ImGui::Button("Delete")) {
-            foundCircle = core->scene.FindCircleWithName(std::string(window->searchBuffer));
+            foundCircle = core->scene.FindCircleWithName(std::string(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
         if (foundCircle.has_value() && foundCircle.value() == false) {
-            ImGui::TextUnformatted(("Can not find circle with name -> " + std::string(window->searchBuffer)).c_str());
+            ImGui::TextUnformatted(("Can not find circle with name -> " + std::string(window->Buffer)).c_str());
         } else if (foundCircle.has_value() && foundCircle.value() == true) {
-            core->scene.DeleteCircleShape(std::string(window->searchBuffer));
+            core->scene.DeleteCircleShape(std::string(window->Buffer));
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
     }
 }
@@ -746,7 +748,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         ImGui::TextUnformatted("Window: Create New Line");
         ImGui::Separator();
         ImGui::SetNextItemWidth(400);
-        ImGui::InputTextWithHint("##Line Name", "Enter Line name:", window->searchBuffer, sizeof(window->searchBuffer));
+        ImGui::InputTextWithHint("##Line Name", "Enter Line name:", window->Buffer, sizeof(window->Buffer));
         ImGui::Separator();
         ImGui::TextUnformatted("Start Pos");
         ImGui::TextUnformatted("X pos: ");
@@ -824,15 +826,15 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         }
         ImGui::Separator();
         if (ImGui::Button("Create")) {
-            core->scene.CreateLineActor(std::string(window->searchBuffer), thickness, startPos, endPos,
+            core->scene.CreateLineActor(std::string(window->Buffer), thickness, startPos, endPos,
                                         {color[0], color[1], color[2], color[3]});
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
     } else if (radioButton == 1) {
         static std::optional<LDDrift::Actors::Line*> line = std::nullopt;
@@ -840,14 +842,14 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         static std::optional<bool> findLineWithName = std::nullopt;
         ImGui::TextUnformatted("Window: configure line");
         if ((findLineWithName.has_value() && findLineWithName.value() == true) || ImGui::InputTextWithHint(
-            "##Line Configuration", "Enter Line Name: ", window->searchBuffer,
-            sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            "##Line Configuration", "Enter Line Name: ", window->Buffer,
+            sizeof(window->Buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
             if ((findLineWithName.has_value() && findLineWithName.value() == true) || core->scene.FindLineWithName(
-                std::string(window->searchBuffer))) {
+                std::string(window->Buffer))) {
                 findLineWithName = true;
                 if (initialized.has_value() && initialized.value() == false) {
                     initialized = true;
-                    line = core->scene.GetLine(std::string(window->searchBuffer));
+                    line = core->scene.GetLine(std::string(window->Buffer));
                     startPos[0] = static_cast<int>(line.value()->GetFirstPoint().X);
                     startPos[1] = static_cast<int>(line.value()->GetFirstPoint().Y);
                     endPos[0] = static_cast<int>(line.value()->GetSecondPoint().X);
@@ -860,8 +862,8 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
                 }
                 ImGui::Separator();
                 ImGui::SetNextItemWidth(400);
-                ImGui::InputTextWithHint("##Line Name", "Enter Line name:", window->searchBuffer,
-                                         sizeof(window->searchBuffer));
+                ImGui::InputTextWithHint("##Line Name", "Enter Line name:", window->Buffer,
+                                         sizeof(window->Buffer));
                 ImGui::Separator();
                 ImGui::TextUnformatted("Start Pos");
                 ImGui::TextUnformatted("X pos: ");
@@ -948,11 +950,11 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
                     core->scene.MarkSendDataToGPU();
                     core->scene.ReSendShapesToRender();
                     window->Show = false;
-                    std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+                    std::memset(window->Buffer, '\0', sizeof(window->Buffer));
                 }
                 if (ImGui::Button("Close")) {
                     window->Show = false;
-                    std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+                    std::memset(window->Buffer, '\0', sizeof(window->Buffer));
                 }
             } else {
                 findLineWithName = false;
@@ -964,29 +966,29 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
             }
         }
         if (findLineWithName.has_value() && findLineWithName.value() == false) {
-            ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->searchBuffer)).c_str());
+            ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->Buffer)).c_str());
         }
     } else if (radioButton == 2) {
         ImGui::Separator();
         ImGui::TextUnformatted("window: Delete Line");
-        ImGui::InputTextWithHint("##Line Name", "Enter Line name: ", window->searchBuffer,
-                                 sizeof(window->searchBuffer));
+        ImGui::InputTextWithHint("##Line Name", "Enter Line name: ", window->Buffer,
+                                 sizeof(window->Buffer));
         static std::optional<bool> foundLine;
         if (ImGui::Button("Delete")) {
-            foundLine = core->scene.FindLineWithName(std::string(window->searchBuffer));
+            foundLine = core->scene.FindLineWithName(std::string(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             foundLine = std::nullopt;
         }
         if (foundLine.has_value() && foundLine.value() == false) {
-            ImGui::TextUnformatted(("can not find line with name -> " + std::string(window->searchBuffer)).c_str());
+            ImGui::TextUnformatted(("can not find line with name -> " + std::string(window->Buffer)).c_str());
         } else if (foundLine.has_value() && foundLine.value() == true) {
-            core->scene.DeleteLineShape(std::string(window->searchBuffer));
+            core->scene.DeleteLineShape(std::string(window->Buffer));
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             foundLine = std::nullopt;
         }
     }
@@ -1036,8 +1038,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     if (radioButton == 0) {
         ImGui::TextUnformatted("window: create new polygon");
         ImGui::SetNextItemWidth(300);
-        ImGui::InputTextWithHint("##Polygone Name (00)", "Enter Polygon Actor Name:", window->searchBuffer,
-                                 sizeof(window->searchBuffer));
+        ImGui::InputTextWithHint("##Polygone Name (00)", "Enter Polygon Actor Name:", window->Buffer,
+                                 sizeof(window->Buffer));
         ImGui::TextUnformatted("Polygon Point Count: "); // START --- point count of Polygon
         ImGui::SameLine();
         ImGui::SetNextItemWidth(145);
@@ -1204,7 +1206,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         if (ImGui::Button("Create")) {
             if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
                 if (if_withThick == 0) {
-                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), {
                                                        polygonActorRedColor, polygonActorGreenColor,
@@ -1212,7 +1214,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                        polygonActorAlpha
                                                    }, -1, -1);
                 } else if (if_withThick == 1) {
-                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), {
                                                        polygonActorRedColor, polygonActorGreenColor,
@@ -1221,26 +1223,26 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                    }, static_cast<float>(thickness), drawThicknessRadioButton);
                 }
                 window->Show = false;
-                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+                std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             } else if (fillColorWithOneColorOrEachVertexHaveAColor == 1) {
                 if (if_withThick == 0) {
-                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), pointColors, -1, -1);
                 } else if (if_withThick == 1) {
-                    core->scene.CreatePolygonShape(std::string(window->searchBuffer), polygonActorPointCount,
+                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), pointColors, static_cast<float>(thickness),
                                                    drawThicknessRadioButton);
                 }
                 window->Show = false;
-                std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+                std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             }
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
     } else if (radioButton == 1) {
         static std::optional<LDDrift::Actors::Polygon*> polygonActor = std::nullopt;
@@ -1249,10 +1251,10 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         static std::vector<int> pointPositions;
         ImGui::TextUnformatted("window: polygon configuration");
         if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || ImGui::InputTextWithHint(
-            "##Polygon Name", "Enter Polygon Name: ", window->searchBuffer,
-            sizeof(window->searchBuffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            "##Polygon Name", "Enter Polygon Name: ", window->Buffer,
+            sizeof(window->Buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
             if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || core->scene.
-                FindPolygonWithName(std::string(window->searchBuffer))) {
+                FindPolygonWithName(std::string(window->Buffer))) {
                 findShapeWithName.operator=(true);
                 if (variablesInitialized.has_value() && variablesInitialized.value() == false) {
                     variablesInitialized = true;
@@ -1260,7 +1262,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
 
                     pointColors.assign(static_cast<std::size_t>(polygonActorPointCount),
                                        LDDrift::VecCol(0.0f, 0.0f, 0.0f, 1.0f));
-                    polygonActor = core->scene.GetPolygon(std::string(window->searchBuffer));
+                    polygonActor = core->scene.GetPolygon(std::string(window->Buffer));
                     polygonActorPointCount = static_cast<int>(polygonActor.value()->GetPointCount());
                     polygonActorRedColor = polygonActor.value()->GetPointColor(0).R;
                     polygonActorGreenColor = polygonActor.value()->GetPointColor(0).G;
@@ -1278,8 +1280,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                     fillColorWithOneColorOrEachVertexHaveAColor = 0;
                 }
                 ImGui::SetNextItemWidth(300);
-                ImGui::InputTextWithHint("##Polygone Name", "Enter Polygon Actor Name:", window->searchBuffer,
-                                         sizeof(window->searchBuffer));
+                ImGui::InputTextWithHint("##Polygone Name", "Enter Polygon Actor Name:", window->Buffer,
+                                         sizeof(window->Buffer));
                 ImGui::TextUnformatted("Polygon Point Count: "); // START --- point count of Polygon
                 ImGui::SameLine();
                 ImGui::SetNextItemWidth(145);
@@ -1455,29 +1457,29 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
             }
         }
         if (findShapeWithName.has_value() && findShapeWithName.value() == false) {
-            ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->searchBuffer)).c_str());
+            ImGui::TextUnformatted(("Can not find polygon wit name -> " + std::string(window->Buffer)).c_str());
         }
     } else if (radioButton == 2) {
         ImGui::Separator();
         ImGui::TextUnformatted("window: Delete Polygon");
-        ImGui::InputTextWithHint("##polygon name", "Enter polygon Name: ", window->searchBuffer,
-                                 sizeof(window->searchBuffer));
+        ImGui::InputTextWithHint("##polygon name", "Enter polygon Name: ", window->Buffer,
+                                 sizeof(window->Buffer));
         static std::optional<bool> foundPolygon;
         if (ImGui::Button("Delete")) {
-            foundPolygon = core->scene.FindPolygonWithName(std::string(window->searchBuffer));
+            foundPolygon = core->scene.FindPolygonWithName(std::string(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             foundPolygon = std::nullopt;
         }
         if (foundPolygon.has_value() && foundPolygon.value() == false) {
-            ImGui::TextUnformatted(("can not find polygon with name -> " + std::string(window->searchBuffer)).c_str());
+            ImGui::TextUnformatted(("can not find polygon with name -> " + std::string(window->Buffer)).c_str());
         } else if (foundPolygon.has_value() && foundPolygon.value() == true) {
-            core->scene.DeletePolygonShape(std::string(window->searchBuffer));
+            core->scene.DeletePolygonShape(std::string(window->Buffer));
             window->Show = false;
-            std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             foundPolygon = std::nullopt;
         }
     }
@@ -1508,23 +1510,23 @@ void LDDrift::GUI::SetKeyTargetWindowHandler(DefaultWindowsData* window) {
     if (window->name != SET_KEY_TARGET_WINDOW_NAME) {
         return;
     }
-    this->SearchableCombo(window->searchBuffer,
+    this->SearchableCombo(window->Buffer,
                           LDDrift::KeyBoardKeyName);
     ImGui::Separator();
     if (ImGui::Button("Set")) {
-        LDDrift::input::Keyboard::SetKeyTarget(std::string(window->searchBuffer));
-        options.emplace_back(window->searchBuffer);
+        LDDrift::input::Keyboard::SetKeyTarget(std::string(window->Buffer));
+        options.emplace_back(window->Buffer);
         window->Show = false;
-        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+        std::memset(window->Buffer, '\0', sizeof(window->Buffer));
     }
     ImGui::SameLine();
     if (ImGui::Button("Clear")) {
-        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+        std::memset(window->Buffer, '\0', sizeof(window->Buffer));
     }
     ImGui::SameLine();
     if (ImGui::Button("Close")) {
         window->Show = false;
-        std::memset(window->searchBuffer, '\0', sizeof(window->searchBuffer));
+        std::memset(window->Buffer, '\0', sizeof(window->Buffer));
     }
 }
 
@@ -1607,7 +1609,8 @@ void LDDrift::GUI::EndRenderGUI() {
         if ((window.name != CIRCLE_CONFIGURE_WINDOW_NAME) && (window.name != POLYGON_CONFIGURE_WINDOW_NAME) &&
             (window.name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME) &&
             (window.name != EXIT_WARNING_WINDOW_NAME) && (window.name != GAME_SETTING_WINDOW_NAME) &&
-            (window.name != SEE_OBJECTS_WINDOW_NAME) && (window.name != SEE_KEY_TARGETS_WINDOW_NAME)) {
+            (window.name != SEE_OBJECTS_WINDOW_NAME) && (window.name != SEE_KEY_TARGETS_WINDOW_NAME) &&
+            (window.name != TEXTURE_MANAGER_WINDOW_NAME)) {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }
@@ -1627,6 +1630,8 @@ void LDDrift::GUI::EndRenderGUI() {
         this->SeeObjectsWindowHandler(&window);
         // مدیریت صفحه به نمایش گذاشتن کلید های انتخاب شده
         this->SeeKeyTargetsOfKeyboardWindowHandler(&window);
+
+        this->TextureManagerWindowHandler(&window);
         if (!window.textPrintInWindow.empty())
             for (const std::string& text : window.textPrintInWindow) {
                 ImGui::TextUnformatted(text.c_str());
@@ -1788,6 +1793,12 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
         NPV_assert(lineWindow)
         lineWindow->Show = true;
     }
+    ImGui::SameLine();
+    if (ImGui::Button("Texture")) {
+        DefaultWindowsData* textureWindow = GetWindowPTR(TEXTURE_MANAGER_WINDOW_NAME);
+        NPV_assert(textureWindow)
+        textureWindow->Show = true;
+    }
     ImGui::Separator();
     ImGui::TextUnformatted("Camera");
 
@@ -1808,17 +1819,20 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
     ImGui::SameLine();
     if (ImGui::Button("-##Sub Zoom")) {
         core->camera.SubZoomCamera(1.0f);
-        core->render.UpdateViewMatrix();
+        const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+        core->shape_render.SetViewMatrix(viewProjection);
     }
     ImGui::SameLine();
     if (ImGui::Button("+##Add Zoom")) {
         core->camera.AddZoomCamera(1.0f);
-        core->render.UpdateViewMatrix();
+        const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+        core->shape_render.SetViewMatrix(viewProjection);
     }
     ImGui::SameLine();
     if (ImGui::Button("Reset##Reset Zoom Camera Value")) {
         core->camera.SetZoomCamera(1);
-        core->render.UpdateViewMatrix();
+        const auto viewProjection = core->mainRenderer.UpdateViewMatrix();
+        core->shape_render.SetViewMatrix(viewProjection);
     }
     ImGui::Separator();
     ImGui::Checkbox("See Objects## se objects window", &checkbox);
@@ -1971,7 +1985,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
     }
 }
 
-void LDDrift::GUI::SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window) const {
     if (window->name != SEE_KEY_TARGETS_WINDOW_NAME) {
         return;
     }
@@ -2003,5 +2017,91 @@ void LDDrift::GUI::SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* wind
 LDDrift::GUI::~GUI() {
     if (reloadCmakeFileThread.joinable()) {
         reloadCmakeFileThread.join();
+    }
+}
+
+void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) {
+    if (window->name != TEXTURE_MANAGER_WINDOW_NAME) {
+        return;
+    }
+    ImGui::InputTextWithHint("##texture name", "enter texture name: ", window->Buffer,
+                             sizeof(window->Buffer));
+    ImGui::Separator();
+    static char texture_path[1024] = "\0";
+    ImGui::InputTextWithHint("##texture path", "enter texture path: ", texture_path, sizeof(texture_path));
+    ImGui::Separator();
+    static int des_channels = 1;
+    static int aux_channels = 1;
+    ImGui::TextUnformatted("desired channels: ");
+    ImGui::SameLine();
+    ImGui::Text("%i", des_channels);
+    ImGui::SameLine();
+    if (ImGui::Button("+")) {
+        ++aux_channels;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("-")) {
+        --aux_channels;
+    }
+    if (aux_channels < 1) {
+        des_channels = 1;
+        aux_channels = 1;
+    } else if (aux_channels == 2) {
+        des_channels = 3;
+    } else if (aux_channels == 3) {
+        des_channels = 4;
+    } else if (aux_channels > 3) {
+        aux_channels = 3;
+        des_channels = 4;
+    }
+
+    static int point_count = 3;
+    static std::vector<float> vert; // vertices
+    ImGui::TextUnformatted("point count: ");
+    ImGui::SameLine();
+    ImGui::InputInt("##point count", &point_count, 1, 1);
+    if (point_count < 3) {
+        point_count = 3;
+    }
+    InitializeFloatVector(vert, point_count);
+    ImGui::Separator();
+    ImGui::TextUnformatted("position on display");
+    ImGui::Separator();
+    for (std::size_t inputPositionNumber = 0; inputPositionNumber < point_count; ++inputPositionNumber) {
+        ImGui::PushID(static_cast<int>(inputPositionNumber));
+        ImGui::TextUnformatted("X: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##set value (x)", &vert[inputPositionNumber * 4 + 0], 1, 1);
+        ImGui::SameLine();
+        ImGui::TextUnformatted("Y: ");
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##set value (y)", &vert[inputPositionNumber * 4 + 1], 1, 1);
+        ImGui::PopID();
+    }
+    ImGui::Separator();
+    ImGui::TextUnformatted("set points on display");
+    ImGui::Separator();
+    for (std::size_t inputPositionNumber = 0; inputPositionNumber < point_count; ++inputPositionNumber) {
+        ImGui::PushID(static_cast<int>(inputPositionNumber));
+        ImGui::Text("point %zu: ", inputPositionNumber);
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##point (x)", &vert[inputPositionNumber * 4 + 2], 1, 1);
+        ImGui::SameLine();
+        ImGui::Text("point %zu: ", inputPositionNumber);
+        ImGui::SameLine();
+        ImGui::SetNextItemWidth(120);
+        ImGui::InputFloat("##point (y)", &vert[inputPositionNumber * 4 + 3], 1, 1);
+        ImGui::PopID();
+    }
+    if (ImGui::Button("Create")) {
+        core->scene.CreateTexture(std::string(window->Buffer) /* texture name save in this buffer */,
+                                  std::filesystem::path(texture_path), des_channels, vert);
+        window->Show = false;
+    }
+    if (ImGui::Button("Close")) {
+        window->Show = false;
     }
 }

@@ -396,6 +396,8 @@ add_library(Engine SHARED
         # Texture render - system
         Engine/Renderer/TextureRender/TextureRender.cpp
         Engine/Renderer/TextureRender/TextureRender.h
+        Engine/Renderer/Communicator/MainRenderer.cpp
+        Engine/Renderer/Communicator/MainRenderer.h
 )
 
 target_include_directories(Engine PUBLIC

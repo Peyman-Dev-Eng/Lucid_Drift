@@ -50,7 +50,7 @@ namespace LDDrift
 
     private:
         LDDrift::Core* core = nullptr;
-        LDDrift::ShapeRender* renderer;
+        LDDrift::ShapeRender* s_renderer;
         GLFWwindow* screen{nullptr};
         GLFWmonitor* monitor{nullptr};
         const GLFWvidmode* mode{nullptr};
