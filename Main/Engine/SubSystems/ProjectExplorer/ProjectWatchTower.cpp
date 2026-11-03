@@ -12,8 +12,9 @@ void LDDrift::ProjectWatchTower::CreateNewProject(const std::string& _projectNam
     projectName = _projectName;
     projectPath = std::filesystem::path(LDDrift::func::GetHostName()) / _projectName;
     create_directories(projectPath);
-    this->CreateBuildFolder();
-    this->CreateCmakeListsTxtFile();
+    CreateCmakeListsTxtFile();
+    CreateBuildFolder();
+    CreateCompileLogFile();
 }
 
 void LDDrift::ProjectWatchTower::CreateCompileLogFile() {
@@ -54,14 +55,14 @@ void LDDrift::ProjectWatchTower::CreateCmakeListsTxtFile() const {
     std::string cmakeTemplate = R"(cmake_minimum_required(VERSION 4.3)
 project({} CXX C)
 
-set(CMAKE_CXX_STANDARD 26)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_subdirectory(")" + executablePath.string() + R"(" "${CMAKE_BINARY_DIR}/LucidDriftEngine")
 
 add_library({} SHARED main.cpp)
 
-target_compile_definitions(TestProject PRIVATE LD_PLUGIN_BUILD)
+target_compile_definitions({} PRIVATE LD_PLUGIN_BUILD)
 
 target_link_libraries({} PUBLIC Engine)
 )";

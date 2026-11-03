@@ -46,7 +46,7 @@ void LDDrift::Main_GraphicalWindow::Resize() {
     const LDDrift::VecPos2D windowSize = core->window.GetWindowSize();
 
     position = {0, 0};
-    size = {350, (windowSize.Y / 2) - 35};
+    size = {350, windowSize.Y / 2};
 }
 
 void LDDrift::Main_GraphicalWindow::Render() const {

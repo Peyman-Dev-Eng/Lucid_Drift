@@ -22,8 +22,7 @@ namespace
             result.output += buffer.data();
         }
 
-        const int status = pclose(pipe);
-        if (WIFEXITED(status)) {
+        if (const int status = pclose(pipe); WIFEXITED(status)) {
             result.exitCode = WEXITSTATUS(status);
         } else {
             result.exitCode = status;
@@ -95,28 +94,28 @@ bool LDDrift::Compile::BuildProject() {
     compileProjectThread = std::thread(
         [this, configureCommand, buildCommand]()
         {
-            CommandResult result = RunCommand(configureCommand);
+            auto [output, exitCode] = RunCommand(configureCommand);
 
 
-            if (result.exitCode == 0) {
+            if (exitCode == 0) {
                 CommandResult buildResult = RunCommand(buildCommand);
 
-                if (!result.output.empty() && !buildResult.output.empty()) {
-                    result.output += '\n';
+                if (!output.empty() && !buildResult.output.empty()) {
+                    output += '\n';
                 }
 
-                result.output += buildResult.output;
-                result.exitCode = buildResult.exitCode;
+                output += buildResult.output;
+                exitCode = buildResult.exitCode;
             }
 
             {
-                auto errors = ParseErrors(result.output);
+                auto errors = ParseErrors(output);
                 std::lock_guard<std::mutex> lock(errorMutex);
-                errorLog = result.output;
+                errorLog = output;
                 compileErrors = std::move(errors);
             }
 
-            if (result.exitCode == 0) {
+            if (exitCode == 0) {
                 buildStatus.store(
                     CompileBuildStatus::Succeeded,
                     std::memory_order_release

@@ -145,7 +145,7 @@ void LDDrift::Core::RunGameFrame() {
         window.ClearBuffer();
         EngineAPI::tick(LDDrift::func::GetDeltaTime());
         shape_render.render();
-        gui.SetTextForWindow(CONSOLE_WINDOW_NAME, consoleBuffer.str(), true);
+        gui.consoleWindow.SetText(consoleBuffer.str());
         gui.UpdateWindow("Project Watch Tower");
         gui.EndRenderGUI();
         window.Update();

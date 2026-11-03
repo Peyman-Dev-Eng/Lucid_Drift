@@ -251,7 +251,7 @@ target_link_libraries(__GUIWH__ PUBLIC GUI)
 add_library(stb_image INTERFACE)
 
 target_include_directories(stb_image INTERFACE
-        ${CMAKE_SOURCE_DIR}/ThirdParty/stb
+        ${LUCID_DRIFT_ROOT}/ThirdParty/stb
 )
 
 # ============================================================================
@@ -398,6 +398,8 @@ add_library(Engine SHARED
         Engine/Renderer/TextureRender/TextureRender.h
         Engine/Renderer/Communicator/MainRenderer.cpp
         Engine/Renderer/Communicator/MainRenderer.h
+        Engine/System/SceneManager/SceneManager.cpp
+        Engine/System/SceneManager/SceneManager.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -406,7 +408,6 @@ target_include_directories(Engine PUBLIC
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
         ${CMAKE_CURRENT_LIST_DIR}/Engine
         ${CMAKE_CURRENT_LIST_DIR}/Engine/API
-        ${CMAKE_SOURCE_DIR}/ThirdParty/stb
 )
 
 target_link_libraries(Engine PUBLIC
@@ -426,6 +427,7 @@ target_link_libraries(Engine PUBLIC
         __GUIWH__
         WRSS
         IMAGE_READER
+        stb_image
 )
 
 if (WIN32)
