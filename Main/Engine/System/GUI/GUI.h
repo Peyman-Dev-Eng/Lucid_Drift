@@ -42,7 +42,6 @@ namespace LDDrift
         if (size * 4 == vector.size()) return;
         vector.clear();
         vector.assign(size * 4, 0);
-        std::cerr << "Hello" << std::endl;
     }
 }
 
