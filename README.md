@@ -20,7 +20,7 @@
 [![C++](https://img.shields.io/badge/C%2B%2B-23%2F26-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
 [![OpenGL](https://img.shields.io/badge/OpenGL-4.6-5586A4?style=for-the-badge&logo=opengl&logoColor=white)](https://www.opengl.org/)
 [![CMake](https://img.shields.io/badge/CMake-4.3%2B-064F8C?style=for-the-badge&logo=cmake&logoColor=white)](https://cmake.org/)
-[![License](https://img.shields.io/badge/license-MIT-green?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/license-Apache-green?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/status-experimental-orange?style=for-the-badge)]()
 [![Focus](https://img.shields.io/badge/focus-2D%20engine-7B61FF?style=for-the-badge)]()
 
