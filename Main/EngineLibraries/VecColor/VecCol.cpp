@@ -4,8 +4,9 @@
 
 LDDrift::VecCol::VecCol() = default;
 
-LDDrift::VecCol::VecCol(const float red, const float green, const float blue, const float alpha) :
-    R(red), G(green), B(blue), A(alpha) {}
+LDDrift::VecCol::VecCol(const float red, const float green, const float blue, const float alpha) {
+    SetColor(red, green, blue, alpha);
+}
 
 void LDDrift::VecCol::Red() {
     R = 1.0f;
@@ -64,22 +65,37 @@ void LDDrift::VecCol::Purple() {
 }
 
 void LDDrift::VecCol::SetColor(const float& red, const float& green, const float& blue, const float& alpha) {
-    R = red;
-    G = green;
-    B = blue;
-    A = alpha;
+    R = std::clamp(red, 0.0f, 1.0f);
+    G = std::clamp(green, 0.0f, 1.0f);
+    B = std::clamp(blue, 0.0f, 1.0f);
+    A = std::clamp(alpha, 0.0f, 1.0f);
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator-(const float& color) const {
-    return VecCol{R - color, G - color, B - color, A - color};
+    return VecCol{
+        std::clamp(R - color, 0.0f, 1.0f),
+        std::clamp(G - color, 0.0f, 1.0f),
+        std::clamp(B - color, 0.0f, 1.0f),
+        std::clamp(A - color, 0.0f, 1.0f)
+    };
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator+(const float& color) const {
-    return VecCol{R + color, G + color, B + color, A + color};
+    return VecCol{
+        std::clamp(R + color, 0.0f, 1.0f),
+        std::clamp(G + color, 0.0f, 1.0f),
+        std::clamp(B + color, 0.0f, 1.0f),
+        std::clamp(A + color, 0.0f, 1.0f)
+    };
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator*(const float& color) const {
-    return VecCol{R * color, G * color, B * color, A * color};
+    return VecCol{
+        std::clamp(R * color, 0.0f, 1.0f),
+        std::clamp(G * color, 0.0f, 1.0f),
+        std::clamp(B * color, 0.0f, 1.0f),
+        std::clamp(A * color, 0.0f, 1.0f)
+    };
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator/(const float& color) const {
@@ -87,82 +103,102 @@ LDDrift::VecCol LDDrift::VecCol::operator/(const float& color) const {
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator-=(const float& color) {
-    this->R -= color;
-    this->G -= color;
-    this->B -= color;
-    this->A -= color;
+    this->R = std::clamp(R - color, 0.0f, 1.0f);
+    this->G = std::clamp(G - color, 0.0f, 1.0f);
+    this->B = std::clamp(B - color, 0.0f, 1.0f);
+    this->A = std::clamp(A - color, 0.0f, 1.0f);
     return *this;
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator+=(const float& color) {
-    this->R += color;
-    this->G += color;
-    this->B += color;
-    this->A += color;
+    this->R = std::clamp(R + color, 0.0f, 1.0f);
+    this->G = std::clamp(G + color, 0.0f, 1.0f);
+    this->B = std::clamp(B + color, 0.0f, 1.0f);
+    this->A = std::clamp(A + color, 0.0f, 1.0f);
     return *this;
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator*=(const float& color) {
-    this->R *= color;
-    this->G *= color;
-    this->B *= color;
-    this->A *= color;
+    this->R = std::clamp(R * color, 0.0f, 1.0f);
+    this->G = std::clamp(G * color, 0.0f, 1.0f);
+    this->B = std::clamp(B * color, 0.0f, 1.0f);
+    this->A = std::clamp(A * color, 0.0f, 1.0f);
     return *this;
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator/=(const float& color) {
-    this->R /= color;
-    this->G /= color;
-    this->B /= color;
-    this->A /= color;
+    this->R = std::clamp(R / color, 0.0f, 1.0f);
+    this->G = std::clamp(G / color, 0.0f, 1.0f);
+    this->B = std::clamp(B / color, 0.0f, 1.0f);
+    this->A = std::clamp(A / color, 0.0f, 1.0f);
     return *this;
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator-(const VecCol& vec) const {
-    return VecCol{R - vec.R, G - vec.G, B - vec.B, A - vec.A};
+    return VecCol{
+        std::clamp(R - vec.R, 0.0f, 1.0f),
+        std::clamp(G - vec.G, 0.0f, 1.0f),
+        std::clamp(B - vec.B, 0.0f, 1.0f),
+        std::clamp(A - vec.A, 0.0f, 1.0f)
+    };
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator+(const VecCol& vec) const {
-    return VecCol{R + vec.R, G + vec.G, B + vec.B, A + vec.A};
+    return VecCol{
+        std::clamp(R + vec.R, 0.0f, 1.0f),
+        std::clamp(G + vec.G, 0.0f, 1.0f),
+        std::clamp(B + vec.B, 0.0f, 1.0f),
+        std::clamp(A + vec.A, 0.0f, 1.0f)
+    };
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator*(const VecCol& vec) const {
-    return VecCol{R * vec.R, G * vec.G, B * vec.B, A * vec.A};
+    return VecCol{
+        std::clamp(R * vec.R, 0.0f, 1.0f),
+        std::clamp(G * vec.G, 0.0f, 1.0f),
+        std::clamp(B * vec.B, 0.0f, 1.0f),
+        std::clamp(A * vec.A, 0.0f, 1.0f)
+    };
 }
 
 LDDrift::VecCol LDDrift::VecCol::operator/(const VecCol& vec) const {
-    return VecCol{R / vec.R, G / vec.G, B / vec.B, A / vec.A};
+    return VecCol{
+        std::clamp(R / vec.R, 0.0f, 1.0f),
+        std::clamp(G / vec.G, 0.0f, 1.0f),
+        std::clamp(B / vec.B, 0.0f, 1.0f),
+        std::clamp(A / vec.A, 0.0f, 1.0f)
+    };
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator-=(const VecCol& vec) {
-    this->R -= vec.R;
-    this->G -= vec.G;
-    this->B -= vec.B;
-    this->A -= vec.A;
+    this->R = std::clamp(R + vec.R, 0.0f, 1.0f);
+    this->G = std::clamp(G + vec.G, 0.0f, 1.0f);
+    this->B = std::clamp(B + vec.B, 0.0f, 1.0f);
+    this->A = std::clamp(A + vec.A, 0.0f, 1.0f);
     return *this;
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator+=(const VecCol& vec) {
-    this->R += vec.R;
-    this->G += vec.G;
-    this->B += vec.B;
-    this->A += vec.A;
+    this->R = std::clamp(R + vec.R, 0.0f, 1.0f);
+    this->G = std::clamp(G + vec.G, 0.0f, 1.0f);
+    this->B = std::clamp(B + vec.B, 0.0f, 1.0f);
+    this->A = std::clamp(A + vec.B, 0.0f, 1.0f);
     return *this;
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator*=(const VecCol& vec) {
-    this->R *= vec.R;
-    this->G *= vec.G;
-    this->B *= vec.B;
-    this->A *= vec.A;
+    this->R = std::clamp(R + vec.R, 0.0f, 1.0f);
+    this->G = std::clamp(G + vec.G, 0.0f, 1.0f);
+    this->B = std::clamp(B + vec.B, 0.0f, 1.0f);
+    this->A = std::clamp(A + vec.A, 0.0f, 1.0f);
     return *this;
 }
 
 LDDrift::VecCol& LDDrift::VecCol::operator/=(const VecCol& vec) {
-    this->R /= vec.R;
-    this->G /= vec.G;
-    this->B /= vec.B;
-    this->A /= vec.A;
+    this->R = std::clamp(R + vec.R, 0.0f, 1.0f);
+    this->G = std::clamp(G + vec.G, 0.0f, 1.0f);
+    this->B = std::clamp(B + vec.B, 0.0f, 1.0f);
+    this->A = std::clamp(A + vec.A, 0.0f, 1.0f);
     return *this;
 }
 
@@ -171,11 +207,7 @@ bool LDDrift::VecCol::operator==(const VecCol& vec) const {
 }
 
 bool LDDrift::VecCol::operator!=(const VecCol& vec) const {
-    if (this == &vec) {
-        return false;
-    } else {
-        return R != vec.R || G != vec.G || B != vec.B || A != vec.A;
-    }
+    return !(*this == vec);
 }
 
 LDDrift::VecCol::~VecCol() = default;

@@ -1,5 +1,6 @@
-#ifndef LUCID_DRIFT_VECCOL_H
-#define LUCID_DRIFT_VECCOL_H
+#ifndef LUCID_DRIFT_VECTOR_COL_H
+#define LUCID_DRIFT_VECTOR_COL_H
+#include <algorithm>
 
 
 namespace LDDrift
