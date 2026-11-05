@@ -2021,7 +2021,7 @@ LDDrift::GUI::~GUI() {
     }
 }
 
-void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const {
     if (window->name != TEXTURE_MANAGER_WINDOW_NAME) {
         return;
     }

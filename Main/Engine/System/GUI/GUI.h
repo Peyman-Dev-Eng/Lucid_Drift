@@ -146,7 +146,7 @@ namespace LDDrift
         ~GUI();
 
     private:
-        void TextureManagerWindowHandler(DefaultWindowsData* window);
+        void TextureManagerWindowHandler(DefaultWindowsData* window) const;
         void SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window) const;
         void SeeObjectsWindowHandler(const DefaultWindowsData* window) const;
         void GameSettingWindowHandler(DefaultWindowsData* window);
