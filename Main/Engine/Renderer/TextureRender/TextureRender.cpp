@@ -33,8 +33,10 @@ void LDDrift::TextureRender::SetFragmentShaderSource() {
         "in vec2 outColor;\n"
         "uniform sampler2D texture_S;\n"
         "out vec4 fragColor;\n"
+        "uniform float colorMultiplier;\n"
         "void main() {\n"
-        "    fragColor = texture(texture_S, outColor);\n"
+        "    vec4 texColor = texture(texture_S, outColor);\n"
+        "    fragColor = vec4(texColor.rgb * colorMultiplier, texColor.a);\n"
         "}";
 }
 
@@ -103,6 +105,7 @@ void LDDrift::TextureRender::Render() const {
     for (std::size_t texture = 0; texture < howToReadDataFromGPU_SIZE; ++texture) {
         glUseProgram(program);
         textures[texture]->LoadTexture();
+        SetColorMultiplier(textures[texture]->GetColorMultiplierOfTexture());
         glUniform1i(glGetUniformLocation(program, "texture_S"), 0);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLE_FAN,
@@ -117,5 +120,11 @@ void LDDrift::TextureRender::SetCorePTR(LDDrift::Core* core_ptr) {
 
 void LDDrift::TextureRender::SetViewMatrix(const glm::mat4& u_viewProjectionMatrix) const {
     glUseProgram(program);
-    glUniformMatrix4fv(glGetUniformLocation(program, "U_VIEW_PROJECTION"), 1, GL_FALSE, value_ptr(u_viewProjectionMatrix));
+    glUniformMatrix4fv(glGetUniformLocation(program, "U_VIEW_PROJECTION"), 1, GL_FALSE,
+                       value_ptr(u_viewProjectionMatrix));
+}
+
+void LDDrift::TextureRender::SetColorMultiplier(const float colorMultiplier) const {
+    glUseProgram(program);
+    glUniform1f(glGetUniformLocation(program, "colorMultiplier"), std::clamp(colorMultiplier, 0.0f, 1.0f));
 }

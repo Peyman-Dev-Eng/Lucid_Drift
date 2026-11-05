@@ -10,7 +10,7 @@
 namespace LDDrift
 {
     class Core;
-    class TextureRender
+    class TextureRender final
     {
     private: // functions
         void SetVertexShaderSource();
@@ -41,6 +41,7 @@ namespace LDDrift
     public:
         TextureRender();
         ~TextureRender();
+        void SetColorMultiplier(float colorMultiplier) const;
         void SetCorePTR(LDDrift::Core* core_ptr);
         void Initialize();
         void RemoveTexture(LDDrift::Texture* texture);

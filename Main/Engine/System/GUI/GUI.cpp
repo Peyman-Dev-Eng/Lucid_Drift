@@ -726,6 +726,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
             core->scene.DeleteCircleShape(std::string(window->Buffer));
             window->Show = false;
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));
+            foundCircle = std::nullopt;
         }
     }
 }

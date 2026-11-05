@@ -15,10 +15,13 @@ namespace LDDrift
     public: // variables
         LDDrift::ImageReader image_reader;
         std::vector<float> textureData;
+        float colorMulti = 1.0f;
 
     public: // functions
         Texture();
         ~Texture();
+        void SetColorMultiplierForTexture(float _colorMultiplier);
+        [[nodiscard]] float GetColorMultiplierOfTexture() const;
         bool operator!=(const Texture& tex) const;
         bool operator==(const Texture& tex) const;
         void SetTextureCoordinates(const std::vector<float>& _textureCoordinates);

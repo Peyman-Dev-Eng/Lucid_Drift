@@ -25,7 +25,7 @@ void LDDrift::Scene::SetCorePTR(LDDrift::Core* corePtr) {
 
 void LDDrift::Scene::SetRendererPTR(LDDrift::ShapeRender* rendererPTR) {
     NPV_assert(rendererPTR);
-    renderer = rendererPTR;
+    shape_render = rendererPTR;
 }
 
 void LDDrift::Scene::ReSendShapesToRender() {
@@ -33,19 +33,19 @@ void LDDrift::Scene::ReSendShapesToRender() {
         return;
     }
 
-    NPV_assert(renderer)
+    NPV_assert(shape_render)
 
     for (auto& [circleName, circle,Render] : circleShapes) {
-        if (Render) renderer->AddShapeToRender(circle);
+        if (Render) shape_render->AddShapeToRender(circle);
     }
     for (auto& [polygonName, polygon,Render] : polygonShapes) {
-        if (Render) renderer->AddShapeToRender(polygon);
+        if (Render) shape_render->AddShapeToRender(polygon);
     }
     for (auto& [lineName, line,Render] : lines) {
-        if (Render) renderer->AddLineToRender(line);
+        if (Render) shape_render->AddLineToRender(line);
     }
-    renderer->UpdateShapeData();
-    renderer->SendDataToGPU();
+    shape_render->UpdateShapeData();
+    shape_render->SendDataToGPU();
     sendDataToGPU = false;
 }
 
@@ -77,9 +77,9 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
     newCircle.circle->Rebuild();
     newCircle.circle->SetOriginalPositionToCenter();
     circleShapes.push_back({.circleName = newCircle.circleName, .circle = newCircle.circle});
-    renderer->AddShapeToRender(newCircle.circle);
-    renderer->UpdateShapeData();
-    renderer->SendDataToGPU();
+    shape_render->AddShapeToRender(newCircle.circle);
+    shape_render->UpdateShapeData();
+    shape_render->SendDataToGPU();
 }
 
 LDDrift::Actors::Polygon* LDDrift::Scene::GetPolygon(const std::string& name) const {
@@ -122,9 +122,9 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     }
     newPolygon.polygon->SetOriginalPositionToCenter();
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
-    renderer->AddShapeToRender(newPolygon.polygon);
-    renderer->UpdateShapeData();
-    renderer->SendDataToGPU();
+    shape_render->AddShapeToRender(newPolygon.polygon);
+    shape_render->UpdateShapeData();
+    shape_render->SendDataToGPU();
 }
 
 void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickness, const int* startPos,
@@ -140,9 +140,9 @@ void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickne
     newLine.line->SetLineColor(color);
     newLine.line->CreateTriangles();
     lines.push_back({.lineName = newLine.lineName, .line = newLine.line});
-    renderer->AddLineToRender(newLine.line);
-    renderer->UpdateShapeData();
-    renderer->SendDataToGPU();
+    shape_render->AddLineToRender(newLine.line);
+    shape_render->UpdateShapeData();
+    shape_render->SendDataToGPU();
 }
 
 LDDrift::Actors::Line* LDDrift::Scene::GetLine(const std::string& name) const {
@@ -216,9 +216,9 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     }
     newPolygon.polygon->SetOriginalPositionToCenter();
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
-    renderer->AddShapeToRender(newPolygon.polygon);
-    renderer->UpdateShapeData();
-    renderer->SendDataToGPU();
+    shape_render->AddShapeToRender(newPolygon.polygon);
+    shape_render->UpdateShapeData();
+    shape_render->SendDataToGPU();
 }
 
 void LDDrift::Scene::MarkSendDataToGPU() {
@@ -356,8 +356,8 @@ void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesyste
     const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Texture()};
     newTexture.texture->image_reader.LoadImage(TexturePath);
     newTexture.texture->SetTextureCoordinates(vertices);
-    core->textureRender.AddTexture(newTexture.texture);
-    core->textureRender.SendToGPU();
+    texture_render->AddTexture(newTexture.texture);
+    texture_render->SendToGPU();
     textures.push_back(newTexture);
 }
 
@@ -366,4 +366,155 @@ void LDDrift::Scene::DeleteTexture(const std::string& name) {
         CheckFindStatus(find)) {
         textures.erase(textures.begin() + find);
     }
+}
+
+void LDDrift::Scene::SetTextureRendererPTR(LDDrift::TextureRender* texturePTR) {
+    texture_render = texturePTR;
+}
+
+void LDDrift::Scene::SetChangeColorFunction(const GetAnimationProgressFunction function) {
+    func = function;
+}
+
+void LDDrift::Scene::freeThreadsOfA_Group() {
+    if (A_CC_Circle_TB.joinable()) {
+        A_CC_Circle_TB.join();
+    }
+    if (A_CC_Line_TB.joinable()) {
+        A_CC_Line_TB.join();
+    }
+    if (A_CC_Polygon_TB.joinable()) {
+        A_CC_Polygon_TB.join();
+    }
+    if (A_CC_Texture_TB.joinable()) {
+        A_CC_Texture_TB.join();
+    }
+}
+
+void LDDrift::Scene::freeThreadsOfB_Group() {
+    if (B_CC_Circle_FB_TMC.joinable()) {
+        B_CC_Circle_FB_TMC.join();
+    }
+    if (B_CC_Line_FB_TMC.joinable()) {
+        B_CC_Line_FB_TMC.join();
+    }
+    if (B_CC_Polygon_FB_TMC.joinable()) {
+        B_CC_Polygon_FB_TMC.join();
+    }
+    if (B_CC_Texture_FB_TMC.joinable()) {
+        B_CC_Texture_FB_TMC.join();
+    }
+}
+
+void LDDrift::Scene::freeThreads() {
+    freeThreadsOfA_Group();
+    freeThreadsOfB_Group();
+}
+
+void LDDrift::Scene::ChangeColorCirclesToBlack() const {
+    const std::size_t circleCount = circleShapes.size();
+    for (std::size_t circle = 0; circle < circleCount; ++circle) {
+        LDDrift::Actors::Circle* circlePtr = circleShapes[circle].circle;
+        const std::size_t pointCountOfCircle = circlePtr->GetPointCount();
+        for (std::size_t pointNumber = 0; pointNumber < pointCountOfCircle; ++pointNumber) {
+            const LDDrift::VecCol newColor = circlePtr->GetPointColor(pointNumber) * (static_cast<float>(1 - func()));
+            circlePtr->SetPointColor(pointNumber, newColor);
+        }
+    }
+}
+
+void LDDrift::Scene::ChangeColorPolygonsToBlack() const {
+    const std::size_t polygonCount = polygonShapes.size();
+    for (std::size_t polygon = 0; polygon < polygonCount; ++polygon) {
+        LDDrift::Actors::Polygon* polygonPtr = polygonShapes[polygon].polygon;
+        const std::size_t pointCountOfPolygon = polygonPtr->GetPointCount();
+        for (std::size_t pointNumber = 0; pointNumber < pointCountOfPolygon; ++pointNumber) {
+            polygonPtr->SetPointColor(pointNumber,
+                                      (polygonPtr->GetPointColor(pointNumber) * (static_cast<float>(1 - func()))));
+        }
+    }
+}
+
+void LDDrift::Scene::ChangeColorLinesToBlack() const {
+    const std::size_t lineCount = lines.size();
+    for (std::size_t lineNumber = 0; lineNumber < lineCount; ++lineNumber) {
+        LDDrift::Actors::Line* linePtr = lines[lineNumber].line;
+        linePtr->SetLineColor(linePtr->GetColor() * (static_cast<float>(1 - func())));
+    }
+}
+
+void LDDrift::Scene::ChangeColorTexturesToBlack() const {
+    const std::size_t textureCount = textures.size();
+    for (std::size_t textureNumber = 0; textureNumber < textureCount; ++textureNumber) {
+        LDDrift::Texture* texturePtr = textures[textureNumber].texture;
+        texturePtr->SetColorMultiplierForTexture(static_cast<float>(1.0f - func()));
+    }
+}
+
+void LDDrift::Scene::ChangeColorShapesToBlack() {
+    if (func == nullptr) {
+        return;
+    }
+    A_CC_Circle_TB = std::thread([this]() { ChangeColorCirclesToBlack(); });
+
+    A_CC_Polygon_TB = std::thread([this]() { ChangeColorPolygonsToBlack(); });
+
+    A_CC_Line_TB = std::thread([this]() { ChangeColorLinesToBlack(); });
+
+    A_CC_Texture_TB = std::thread([this]() { ChangeColorTexturesToBlack(); });
+
+    freeThreadsOfA_Group();
+}
+
+void LDDrift::Scene::ChangeColorCirclesToMainColor() const {
+    const std::size_t circleCount = circleShapes.size();
+    for (std::size_t circle = 0; circle < circleCount; ++circle) {
+        LDDrift::Actors::Circle* circlePtr = circleShapes[circle].circle;
+        const std::size_t pointCountOfCircle = circlePtr->GetPointCount();
+        for (std::size_t pointNumber = 0; pointNumber < pointCountOfCircle; ++pointNumber) {
+            circlePtr->SetPointColor(pointNumber, circlePtr->GetPointColor(pointNumber) * static_cast<float>(func()));
+        }
+    }
+}
+
+void LDDrift::Scene::ChangeColorPolygonsToMainColor() const {
+    const std::size_t polygonCount = polygonShapes.size();
+    for (std::size_t polygon = 0; polygon < polygonCount; ++polygon) {
+        LDDrift::Actors::Polygon* polygonPtr = polygonShapes[polygon].polygon;
+        const std::size_t pointCountOfPolygon = polygonPtr->GetPointCount();
+        for (std::size_t pointNumber = 0; pointNumber < pointCountOfPolygon; ++pointNumber) {
+            polygonPtr->SetPointColor(pointNumber, polygonPtr->GetPointColor(pointNumber) * static_cast<float>(func()));
+        }
+    }
+}
+
+void LDDrift::Scene::ChangeColorLinesToMainColor() const {
+    const std::size_t lineCount = lines.size();
+    for (std::size_t line = 0; line < lineCount; ++line) {
+        LDDrift::Actors::Line* linePtr = lines[line].line;
+        linePtr->SetLineColor(linePtr->GetColor() * static_cast<float>(func()));
+    }
+}
+
+void LDDrift::Scene::ChangeColorTexturesToMainColor() const {
+    const std::size_t textureCount = textures.size();
+    for (std::size_t textureNumber = 0; textureNumber < textureCount; ++textureNumber) {
+        LDDrift::Texture* texturePtr = textures[textureNumber].texture;
+        texturePtr->SetColorMultiplierForTexture(static_cast<float>(func()));
+    }
+}
+
+void LDDrift::Scene::ChangeColorShapesFromBlackToMainColor() {
+    if (func == nullptr) {
+        return;
+    }
+    B_CC_Circle_FB_TMC = std::thread([this]() { ChangeColorCirclesToMainColor(); });
+
+    B_CC_Polygon_FB_TMC = std::thread([this]() { ChangeColorPolygonsToMainColor(); });
+
+    B_CC_Line_FB_TMC = std::thread([this]() { ChangeColorLinesToMainColor(); });
+
+    B_CC_Texture_FB_TMC = std::thread([this]() { ChangeColorTexturesToMainColor(); });
+
+    freeThreadsOfB_Group();
 }

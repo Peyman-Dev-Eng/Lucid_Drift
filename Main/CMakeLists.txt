@@ -398,8 +398,10 @@ add_library(Engine SHARED
         Engine/Renderer/TextureRender/TextureRender.h
         Engine/Renderer/Communicator/MainRenderer.cpp
         Engine/Renderer/Communicator/MainRenderer.h
-        Engine/System/SceneManager/SceneManager.cpp
-        Engine/System/SceneManager/SceneManager.h
+        Engine/System/SceneManager/MainSceneManager/SceneManager.cpp
+        Engine/System/SceneManager/MainSceneManager/SceneManager.h
+        Engine/System/SceneManager/SceneChangeAnimation/SceneAnimation.cpp
+        Engine/System/SceneManager/SceneChangeAnimation/SceneAnimation.h
 )
 
 target_include_directories(Engine PUBLIC

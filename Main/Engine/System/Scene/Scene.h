@@ -3,16 +3,20 @@
 #include <vector>
 #include <Renderer/ShapeRender/ShapeRender.h>
 #include <thread>
+#include "Renderer/TextureRender/TextureRender.h"
+
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0x000002
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L 0x000003
 #define CheckFindStatus IsFound
+
 namespace
 {
     bool IsFound(const int r) {
         return r != -1;
     }
 }
+
 namespace LDDrift
 {
     namespace Actors
@@ -28,6 +32,8 @@ namespace LDDrift
     class Scene final
     {
     public:
+        using GetAnimationProgressFunction = double(*)();
+
         struct CIRCLE_SHAPE_INFORMATION
         {
             std::string circleName;
@@ -56,21 +62,60 @@ namespace LDDrift
             bool render;
         };
 
-    public:
+    private:
         bool sendDataToGPU = false;
         LDDrift::Core* core = nullptr;
-        LDDrift::ShapeRender* renderer = nullptr;
+        LDDrift::ShapeRender* shape_render = nullptr;
+        LDDrift::TextureRender* texture_render = nullptr;
+        GetAnimationProgressFunction func = nullptr;
+
+    public:
         std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
         std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
         std::vector<LINE_ACTOR_INFORMATION> lines;
         std::vector<TEXTURE_INFORMATION> textures;
+
+    private:
+        // CC = Change Color | TB = To Black
+        std::thread A_CC_Circle_TB;
+        std::thread A_CC_Polygon_TB;
+        std::thread A_CC_Line_TB;
+        std::thread A_CC_Texture_TB;
+        // threads of A group
+
+        // CC = Change Color | FB = From Black | TMC = to main color
+        std::thread B_CC_Circle_FB_TMC;
+        std::thread B_CC_Polygon_FB_TMC;
+        std::thread B_CC_Line_FB_TMC;
+        std::thread B_CC_Texture_FB_TMC;
+        // threads of B group
+        void freeThreadsOfA_Group();
+        void freeThreadsOfB_Group();
+        void freeThreads();
+
+    private:
+        // group A
+        void ChangeColorCirclesToBlack() const;
+        void ChangeColorLinesToBlack() const;
+        void ChangeColorPolygonsToBlack() const;
+        void ChangeColorTexturesToBlack() const;
+
+        // group B
+        void ChangeColorCirclesToMainColor() const;
+        void ChangeColorLinesToMainColor() const;
+        void ChangeColorPolygonsToMainColor() const;
+        void ChangeColorTexturesToMainColor() const;
 
     public:
         Scene();
         void SetCorePTR(LDDrift::Core* corePtr);
         void MarkSendDataToGPU();
         void SetRendererPTR(LDDrift::ShapeRender* rendererPTR);
+        void SetTextureRendererPTR(LDDrift::TextureRender* texturePTR);
         void ReSendShapesToRender();
+        void SetChangeColorFunction(GetAnimationProgressFunction function);
+        void ChangeColorShapesToBlack();
+        void ChangeColorShapesFromBlackToMainColor();
         // circle
         [[nodiscard]] bool FindCircleWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Circle* GetCircle(const std::string& name) const;

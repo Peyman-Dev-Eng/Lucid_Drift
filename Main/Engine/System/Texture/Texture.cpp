@@ -70,3 +70,11 @@ void LDDrift::Texture::SetTextureCoordinates(const std::vector<float>& _textureC
 const std::vector<float>& LDDrift::Texture::GetTextureCoordinates() const {
     return textureData;
 }
+
+void LDDrift::Texture::SetColorMultiplierForTexture(const float _colorMultiplier) {
+    colorMulti = _colorMultiplier;
+}
+
+float LDDrift::Texture::GetColorMultiplierOfTexture() const {
+    return colorMulti;
+}

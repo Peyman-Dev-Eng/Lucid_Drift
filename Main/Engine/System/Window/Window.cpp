@@ -42,6 +42,8 @@ void LDDrift::Window::CreateWindow() {
     settings.IsOpen = true;
     glfwMakeContextCurrent(screen);
     glEnable(GL_MULTISAMPLE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     GLB_assert(gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress)))
     glfwSetWindowUserPointer(screen, this);
 }
@@ -117,6 +119,10 @@ void LDDrift::Window::CreateFullscreenWindow() {
     }
 
     glfwSetWindowSizeLimits(screen, 800, 600, GLFW_DONT_CARE, GLFW_DONT_CARE);
+
+    glEnable(GL_MULTISAMPLE);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 #ifdef __WIN32
     glfwSetScrollCallback(screen, LDDrift::input::Mouse::ScrollCallback);
