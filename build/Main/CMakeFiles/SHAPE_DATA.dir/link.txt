@@ -1,0 +1,2 @@
+/usr/bin/ar qc libSHAPE_DATA.a CMakeFiles/SHAPE_DATA.dir/EngineLibraries/ShapeData/ShapeData.cpp.o
+/usr/bin/ranlib libSHAPE_DATA.a

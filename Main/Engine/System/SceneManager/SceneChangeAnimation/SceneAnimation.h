@@ -3,7 +3,6 @@
 #include <optional>
 #include <chrono>
 #include <VecCol.h>
-#include <System/Scene/Scene.h>
 #define ANIMATION_IN_DEFAULT_MODE 0
 
 namespace
@@ -13,14 +12,15 @@ namespace
 
 namespace LDDrift
 {
+    class Scene;
     enum class ChangeSceneMode : unsigned int
     {
-        Smooth = 0,
-        Suddenly = 1,
-        WindFromLeftToRight = 2,
-        WindFromRightToLeft = 3,
-        WindFromTopToBottom = 4,
-        WindFromBottomToTop = 5
+        Smooth = 0b10,
+        Suddenly = 0b101,
+        WindFromLeftToRight = 0b1010,
+        WindFromRightToLeft = 0b10101,
+        WindFromTopToBottom = 0b101010,
+        WindFromBottomToTop = 0b1010101,
     };
 
     class SceneAnimation final
@@ -63,11 +63,11 @@ namespace LDDrift
         ~SceneAnimation();
         [[nodiscard]] double GetAnimationProcess() const;
         void SmoothAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
-        void SuddenlyAlgorithm();
-        void WindFromLeftToRightAlgorithm();
-        void WindFromRightToLeftAlgorithm();
-        void WindFromTopToBottomAlgorithm();
-        void WindFromBottomToTopAlgorithm();
+        void SuddenlyAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
+        void WindFromLeftToRightAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
+        void WindFromRightToLeftAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
+        void WindFromTopToBottomAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
+        void WindFromBottomToTopAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
     };
 }
 

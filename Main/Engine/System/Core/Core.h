@@ -55,26 +55,20 @@ namespace LDDrift
         LDDrift::PointHitTesting pointHitTesting;
         LDDrift::GUI gui;
         LDDrift::Compile compile;
-        LDDrift::Scene scene;
         LDDrift::CodePathfinder codePathfinder;
         LDDrift::UserProjectSetting userProjectSetting;
         LDDrift::WR_SettingSystem Write_Read_UserProjectSetting;
         LDDrift::TextureRender textureRender;
         LDDrift::MainRenderer mainRenderer;
+        LDDrift::SceneManager sceneManager;
 
         // functions
         explicit Core();
         void Begin();
         void EngineHandler();
+        void End();
         ~Core();
     }; // class Core
-
-    namespace func
-    {
-        LDDrift::Scene* GetSceneObjectPointer();
-        LDDrift::Camera* GetCameraObjectPointer();
-        double GetAnimationProgress();
-    } // namespace func
 } // namespace LDDrift
 
 #endif

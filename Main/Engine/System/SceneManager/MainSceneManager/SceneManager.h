@@ -10,6 +10,7 @@ namespace LDDrift
     {
     private: // private functions
         void CreateDefaultScene();
+        std::size_t updateIndexOfScene();
 
     private: // private variables for management
         LDDrift::Scene defaultScene;
@@ -25,10 +26,11 @@ namespace LDDrift
         SceneManager();
         ~SceneManager();
         void Initialize();
+        [[nodiscard]] LDDrift::Scene* GetCurrentScene() const;
         void SetCorePTR(LDDrift::Core* core_ptr);
         void CreateNewScene();
         void ChangeScene(const LDDrift::ChangeSceneMode& mode);
-        const LDDrift::Scene& GetDefaultScene();
+        LDDrift::Scene& GetDefaultScene();
     };
 }
 

@@ -4,6 +4,8 @@
 #include <Renderer/ShapeRender/ShapeRender.h>
 #include <thread>
 #include "Renderer/TextureRender/TextureRender.h"
+#include <functional>
+#include <System/SceneManager/SceneChangeAnimation/SceneAnimation.h>
 
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001
 #define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0x000002
@@ -32,7 +34,7 @@ namespace LDDrift
     class Scene final
     {
     public:
-        using GetAnimationProgressFunction = double(*)();
+        using GetAnimationProgressFunction = std::function<double()>;
 
         struct CIRCLE_SHAPE_INFORMATION
         {

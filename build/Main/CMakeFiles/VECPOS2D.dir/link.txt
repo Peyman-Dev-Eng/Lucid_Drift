@@ -1,0 +1,2 @@
+/usr/bin/ar qc libVECPOS2D.a CMakeFiles/VECPOS2D.dir/EngineLibraries/VecPosition/VecPos.cpp.o
+/usr/bin/ranlib libVECPOS2D.a

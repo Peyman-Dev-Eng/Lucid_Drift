@@ -539,12 +539,12 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         ImGui::Separator();
         if (ImGui::Button("Create")) {
             if (useThickForCircleShape == 0)
-                core->scene.CreateCircleShape(std::string(window->Buffer), circlePointCount, circleRadius,
+                core->sceneManager.GetCurrentScene()->CreateCircleShape(std::string(window->Buffer), circlePointCount, circleRadius,
                                               circleSpeed,
                                               {static_cast<float>(xPos), static_cast<float>(yPos)},
                                               {redValueColor, greenValueColor, blueValueColor, alphaValueColor}, -1);
             else if (useThickForCircleShape == 1)
-                core->scene.CreateCircleShape(std::string(window->Buffer), circlePointCount, circleRadius,
+                core->sceneManager.GetCurrentScene()->CreateCircleShape(std::string(window->Buffer), circlePointCount, circleRadius,
                                               circleSpeed,
                                               {static_cast<float>(xPos), static_cast<float>(yPos)},
                                               {redValueColor, greenValueColor, blueValueColor, alphaValueColor},
@@ -564,7 +564,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         if ((ImGui::InputTextWithHint("##Configure circle", "Enter Circle Name: ", window->Buffer,
                                       sizeof(window->Buffer), ImGuiInputTextFlags_EnterReturnsTrue)) &&
             !(circle.has_value())) {
-            circle = core->scene.GetCircle(std::string(window->Buffer));
+            circle = core->sceneManager.GetCurrentScene()->GetCircle(std::string(window->Buffer));
             if (circle.value() == nullptr) {
                 this->SetTextForWindow(
                     CIRCLE_CONFIGURE_WINDOW_NAME,
@@ -688,8 +688,8 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                 circle.value()->SetAllPointsColor({redValueColor, greenValueColor, blueValueColor, alphaValueColor});
                 circle.value()->Rebuild();
                 circle.value()->SetOriginalPositionToCenter();
-                core->scene.MarkSendDataToGPU();
-                this->core->scene.ReSendShapesToRender();
+                core->sceneManager.GetCurrentScene()->MarkSendDataToGPU();
+                this->core->sceneManager.GetCurrentScene()->ReSendShapesToRender();
                 window->Show = false;
                 inThisBrace = false;
                 std::memset(window->Buffer, '\0', sizeof(window->Buffer));
@@ -713,7 +713,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
                                  sizeof(window->Buffer));
         static std::optional<bool> foundCircle;
         if (ImGui::Button("Delete")) {
-            foundCircle = core->scene.FindCircleWithName(std::string(window->Buffer));
+            foundCircle = core->sceneManager.GetCurrentScene()->FindCircleWithName(std::string(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
@@ -723,7 +723,7 @@ void LDDrift::GUI::CircleConfigureWindowHandler(DefaultWindowsData* window) {
         if (foundCircle.has_value() && foundCircle.value() == false) {
             ImGui::TextUnformatted(("Can not find circle with name -> " + std::string(window->Buffer)).c_str());
         } else if (foundCircle.has_value() && foundCircle.value() == true) {
-            core->scene.DeleteCircleShape(std::string(window->Buffer));
+            core->sceneManager.GetCurrentScene()->DeleteCircleShape(std::string(window->Buffer));
             window->Show = false;
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             foundCircle = std::nullopt;
@@ -827,7 +827,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         }
         ImGui::Separator();
         if (ImGui::Button("Create")) {
-            core->scene.CreateLineActor(std::string(window->Buffer), thickness, startPos, endPos,
+            core->sceneManager.GetCurrentScene()->CreateLineActor(std::string(window->Buffer), thickness, startPos, endPos,
                                         {color[0], color[1], color[2], color[3]});
             window->Show = false;
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));
@@ -845,12 +845,12 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         if ((findLineWithName.has_value() && findLineWithName.value() == true) || ImGui::InputTextWithHint(
             "##Line Configuration", "Enter Line Name: ", window->Buffer,
             sizeof(window->Buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-            if ((findLineWithName.has_value() && findLineWithName.value() == true) || core->scene.FindLineWithName(
+            if ((findLineWithName.has_value() && findLineWithName.value() == true) || core->sceneManager.GetCurrentScene()->FindLineWithName(
                 std::string(window->Buffer))) {
                 findLineWithName = true;
                 if (initialized.has_value() && initialized.value() == false) {
                     initialized = true;
-                    line = core->scene.GetLine(std::string(window->Buffer));
+                    line = core->sceneManager.GetCurrentScene()->GetLine(std::string(window->Buffer));
                     startPos[0] = static_cast<int>(line.value()->GetFirstPoint().X);
                     startPos[1] = static_cast<int>(line.value()->GetFirstPoint().Y);
                     endPos[0] = static_cast<int>(line.value()->GetSecondPoint().X);
@@ -948,8 +948,8 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
                     line.value()->SetThickness(static_cast<float>(thickness));
                     line.value()->SetLineColor({color[0], color[1], color[2], color[3]});
                     line.value()->CreateTriangles();
-                    core->scene.MarkSendDataToGPU();
-                    core->scene.ReSendShapesToRender();
+                    core->sceneManager.GetCurrentScene()->MarkSendDataToGPU();
+                    core->sceneManager.GetCurrentScene()->ReSendShapesToRender();
                     window->Show = false;
                     std::memset(window->Buffer, '\0', sizeof(window->Buffer));
                 }
@@ -976,7 +976,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
                                  sizeof(window->Buffer));
         static std::optional<bool> foundLine;
         if (ImGui::Button("Delete")) {
-            foundLine = core->scene.FindLineWithName(std::string(window->Buffer));
+            foundLine = core->sceneManager.GetCurrentScene()->FindLineWithName(std::string(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
@@ -987,7 +987,7 @@ void LDDrift::GUI::LineConfigureWindowHandler(DefaultWindowsData* window) const 
         if (foundLine.has_value() && foundLine.value() == false) {
             ImGui::TextUnformatted(("can not find line with name -> " + std::string(window->Buffer)).c_str());
         } else if (foundLine.has_value() && foundLine.value() == true) {
-            core->scene.DeleteLineShape(std::string(window->Buffer));
+            core->sceneManager.GetCurrentScene()->DeleteLineShape(std::string(window->Buffer));
             window->Show = false;
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             foundLine = std::nullopt;
@@ -1039,7 +1039,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     if (radioButton == 0) {
         ImGui::TextUnformatted("window: create new polygon");
         ImGui::SetNextItemWidth(300);
-        ImGui::InputTextWithHint("##Polygone Name (00)", "Enter Polygon Actor Name:", window->Buffer,
+        ImGui::InputTextWithHint("##Polygon Name (00)", "Enter Polygon Actor Name:", window->Buffer,
                                  sizeof(window->Buffer));
         ImGui::TextUnformatted("Polygon Point Count: "); // START --- point count of Polygon
         ImGui::SameLine();
@@ -1207,7 +1207,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         if (ImGui::Button("Create")) {
             if (fillColorWithOneColorOrEachVertexHaveAColor == 0) {
                 if (if_withThick == 0) {
-                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
+                    core->sceneManager.GetCurrentScene()->CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), {
                                                        polygonActorRedColor, polygonActorGreenColor,
@@ -1215,7 +1215,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                        polygonActorAlpha
                                                    }, -1, -1);
                 } else if (if_withThick == 1) {
-                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
+                    core->sceneManager.GetCurrentScene()->CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), {
                                                        polygonActorRedColor, polygonActorGreenColor,
@@ -1227,11 +1227,11 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                 std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             } else if (fillColorWithOneColorOrEachVertexHaveAColor == 1) {
                 if (if_withThick == 0) {
-                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
+                    core->sceneManager.GetCurrentScene()->CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), pointColors, -1, -1);
                 } else if (if_withThick == 1) {
-                    core->scene.CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
+                    core->sceneManager.GetCurrentScene()->CreatePolygonShape(std::string(window->Buffer), polygonActorPointCount,
                                                    polygonActorSpeed,
                                                    pointPositions.data(), pointColors, static_cast<float>(thickness),
                                                    drawThicknessRadioButton);
@@ -1254,7 +1254,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || ImGui::InputTextWithHint(
             "##Polygon Name", "Enter Polygon Name: ", window->Buffer,
             sizeof(window->Buffer), ImGuiInputTextFlags_EnterReturnsTrue)) {
-            if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || core->scene.
+            if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || core->sceneManager.GetCurrentScene()->
                 FindPolygonWithName(std::string(window->Buffer))) {
                 findShapeWithName.operator=(true);
                 if (variablesInitialized.has_value() && variablesInitialized.value() == false) {
@@ -1263,7 +1263,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
 
                     pointColors.assign(static_cast<std::size_t>(polygonActorPointCount),
                                        LDDrift::VecCol(0.0f, 0.0f, 0.0f, 1.0f));
-                    polygonActor = core->scene.GetPolygon(std::string(window->Buffer));
+                    polygonActor = core->sceneManager.GetCurrentScene()->GetPolygon(std::string(window->Buffer));
                     polygonActorPointCount = static_cast<int>(polygonActor.value()->GetPointCount());
                     polygonActorRedColor = polygonActor.value()->GetPointColor(0).R;
                     polygonActorGreenColor = polygonActor.value()->GetPointColor(0).G;
@@ -1281,7 +1281,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                     fillColorWithOneColorOrEachVertexHaveAColor = 0;
                 }
                 ImGui::SetNextItemWidth(300);
-                ImGui::InputTextWithHint("##Polygone Name", "Enter Polygon Actor Name:", window->Buffer,
+                ImGui::InputTextWithHint("##Polygon Name", "Enter Polygon Actor Name:", window->Buffer,
                                          sizeof(window->Buffer));
                 ImGui::TextUnformatted("Polygon Point Count: "); // START --- point count of Polygon
                 ImGui::SameLine();
@@ -1441,8 +1441,8 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                                            static_cast<float>(pointPositions[pointIndex * 2 + 1])
                                                        });
                     }
-                    core->scene.MarkSendDataToGPU();
-                    core->scene.ReSendShapesToRender();
+                    core->sceneManager.GetCurrentScene()->MarkSendDataToGPU();
+                    core->sceneManager.GetCurrentScene()->ReSendShapesToRender();
                     window->Show = false;
                 }
                 if (ImGui::Button("Close")) {
@@ -1467,7 +1467,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
                                  sizeof(window->Buffer));
         static std::optional<bool> foundPolygon;
         if (ImGui::Button("Delete")) {
-            foundPolygon = core->scene.FindPolygonWithName(std::string(window->Buffer));
+            foundPolygon = core->sceneManager.GetCurrentScene()->FindPolygonWithName(std::string(window->Buffer));
         }
         ImGui::SameLine();
         if (ImGui::Button("Close")) {
@@ -1478,7 +1478,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         if (foundPolygon.has_value() && foundPolygon.value() == false) {
             ImGui::TextUnformatted(("can not find polygon with name -> " + std::string(window->Buffer)).c_str());
         } else if (foundPolygon.has_value() && foundPolygon.value() == true) {
-            core->scene.DeletePolygonShape(std::string(window->Buffer));
+            core->sceneManager.GetCurrentScene()->DeletePolygonShape(std::string(window->Buffer));
             window->Show = false;
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));
             foundPolygon = std::nullopt;
@@ -1806,15 +1806,15 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
     ImGui::Text("Camera Speed: %s", std::to_string(core->camera.GetSpeed()).c_str());
     ImGui::SameLine();
     if (ImGui::Button("-##Sub Speed")) {
-        core->camera.SubSpeedCamera(5);
+        core->camera.SubSpeedCamera(50);
     }
     ImGui::SameLine();
     if (ImGui::Button("+##Add Speed")) {
-        core->camera.AddSpeedCamera(5);
+        core->camera.AddSpeedCamera(50);
     }
     ImGui::SameLine();
     if (ImGui::Button("Reset##Reset Speed Camera Value")) {
-        core->camera.SetSpeedCamera(1);
+        core->camera.SetSpeedCamera(50);
     }
     ImGui::Text("Camera Zoom: %s", std::to_string(core->camera.GetZoom()).c_str());
     ImGui::SameLine();
@@ -1878,20 +1878,20 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
         }
     };
     // start - circle
-    const std::vector<std::string> circles_name = core->scene.GetCircleNames();
-    const std::vector<LDDrift::Actors::Circle*> circles = core->scene.GetCircles_ptr();
+    const std::vector<std::string> circles_name = core->sceneManager.GetCurrentScene()->GetCircleNames();
+    const std::vector<LDDrift::Actors::Circle*> circles = core->sceneManager.GetCurrentScene()->GetCircles_ptr();
     static std::vector<bool> checkBoxState_circle;
     // end - circle
     //-------------//
     // start - line
-    const std::vector<std::string> polygons_name = core->scene.GetPolygonNames();
-    const std::vector<LDDrift::Actors::Line*> lines = core->scene.GetLines_ptr();
+    const std::vector<std::string> polygons_name = core->sceneManager.GetCurrentScene()->GetPolygonNames();
+    const std::vector<LDDrift::Actors::Line*> lines = core->sceneManager.GetCurrentScene()->GetLines_ptr();
     static std::vector<bool> checkBoxState_line;
     // end - line
     //-------------//
     // start - polygon
-    const std::vector<std::string> lines_name = core->scene.GetLineNames();
-    const std::vector<LDDrift::Actors::Polygon*> polygons = core->scene.GetPolygons_ptr();
+    const std::vector<std::string> lines_name = core->sceneManager.GetCurrentScene()->GetLineNames();
+    const std::vector<LDDrift::Actors::Polygon*> polygons = core->sceneManager.GetCurrentScene()->GetPolygons_ptr();
     static std::vector<bool> checkBoxState_polygon;
     // end - polygon
 
@@ -1902,7 +1902,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
         ImGui::PushID(static_cast<int>(circleNumber));
         const LDDrift::Actors::Circle* c_ptr = circles[circleNumber];
         bool state = checkBoxState_circle[circleNumber];
-        ImGui::Checkbox("##showc", &state);
+        ImGui::Checkbox("##show_c", &state);
         ImGui::SameLine();
         ImGui::TextUnformatted(circles_name[circleNumber].c_str());
         checkBoxState_circle[circleNumber] = state;
@@ -1928,7 +1928,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
     for (std::size_t lineNumber = 0; lineNumber < lineCount; ++lineNumber) {
         ImGui::PushID(static_cast<int>(lineNumber));
         bool state = checkBoxState_line[lineNumber];
-        ImGui::Checkbox("##showl", &state);
+        ImGui::Checkbox("##show_l", &state);
         ImGui::SameLine();
         ImGui::TextUnformatted(lines_name[lineNumber].c_str());
         checkBoxState_line[lineNumber] = state;
@@ -1952,7 +1952,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
     for (std::size_t polygonNumber = 0; polygonNumber < polygonCount; ++polygonNumber) {
         ImGui::PushID(static_cast<int>(polygonNumber));
         bool state = checkBoxState_polygon[polygonNumber];
-        ImGui::Checkbox("##showp", &state);
+        ImGui::Checkbox("##show_p", &state);
         ImGui::SameLine();
         ImGui::TextUnformatted(polygons_name[polygonNumber].c_str());
         checkBoxState_polygon[polygonNumber] = state;
@@ -2098,7 +2098,7 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
         ImGui::PopID();
     }
     if (ImGui::Button("Create")) {
-        core->scene.CreateTexture(std::string(window->Buffer) /* texture name save in this buffer */,
+        core->sceneManager.GetCurrentScene()->CreateTexture(std::string(window->Buffer) /* texture name save in this buffer */,
                                   std::filesystem::path(texture_path), des_channels, vert);
         window->Show = false;
     }

@@ -1,5 +1,5 @@
 #include "SceneAnimation.h"
-
+#include <System/Scene/Scene.h>
 LDDrift::SceneAnimation::SceneAnimation() = default;
 
 LDDrift::SceneAnimation::~SceneAnimation() = default;
@@ -68,15 +68,19 @@ void LDDrift::SceneAnimation::SmoothAlgorithm(LDDrift::Scene* currentScene, LDDr
     nextScene->ChangeColorShapesFromBlackToMainColor();
 }
 
-void LDDrift::SceneAnimation::SuddenlyAlgorithm() {}
+void LDDrift::SceneAnimation::SuddenlyAlgorithm(LDDrift::Scene* cs , LDDrift::Scene* ns) {
+    changeSceneMode = LDDrift::ChangeSceneMode::Suddenly;
+    cs->ChangeColorShapesToBlack();
+    ns->ChangeColorShapesFromBlackToMainColor();
+}
 
-void LDDrift::SceneAnimation::WindFromBottomToTopAlgorithm() {}
+void LDDrift::SceneAnimation::WindFromBottomToTopAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
 
-void LDDrift::SceneAnimation::WindFromLeftToRightAlgorithm() {}
+void LDDrift::SceneAnimation::WindFromLeftToRightAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
 
-void LDDrift::SceneAnimation::WindFromTopToBottomAlgorithm() {}
+void LDDrift::SceneAnimation::WindFromTopToBottomAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
 
-void LDDrift::SceneAnimation::WindFromRightToLeftAlgorithm() {}
+void LDDrift::SceneAnimation::WindFromRightToLeftAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
 
 double LDDrift::SceneAnimation::GetAnimationProcess() const {
     if (checkDefaultSetting()) {

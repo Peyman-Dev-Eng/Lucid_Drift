@@ -1,11 +1,5 @@
 #include "Core.h"
 
-namespace
-{
-    LDDrift::Scene* currentScene = nullptr;
-    LDDrift::Camera* currentCamera = nullptr;
-}
-
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
@@ -40,10 +34,10 @@ void LDDrift::Core::InitCore() {
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
     gui.SetCompilePTR(&compile);
     compile.init(&projectWatchTower);
-    scene.SetRendererPTR(&shape_render);
-    scene.SetCorePTR(this);
-    currentScene = &scene;
-    currentCamera = &camera;
+    sceneManager.SetCorePTR(this);
+    sceneManager.GetCurrentScene()->SetRendererPTR(&shape_render);
+    sceneManager.GetCurrentScene()->SetCorePTR(this);
+    sceneManager.Initialize();
     codePathfinder.initializeCodePathfinder();
     Write_Read_UserProjectSetting.SetCore_PTR(this);
     Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);
@@ -165,22 +159,13 @@ void LDDrift::Core::EngineHandler() {
     userProjectSetting.SetSettings(this);
 }
 
-LDDrift::Core::~Core() {
+void LDDrift::Core::End() {
     Write_Read_UserProjectSetting.WriteSettingsOfUserProject();
     std::cout.rdbuf(oldC_outBuf);
     LDDrift::input::Keyboard::Destroy();
     LDDrift::input::Mouse::Destroy();
     LDDrift::EngineAPI::DestroyEngineAPI();
     window.DestroyWindow();
-    if (currentScene == &scene) {
-        currentScene = nullptr;
-    }
 }
 
-LDDrift::Scene* LDDrift::func::GetSceneObjectPointer() {
-    return currentScene;
-}
-
-LDDrift::Camera* LDDrift::func::GetCameraObjectPointer() {
-    return currentCamera;
-}
+LDDrift::Core::~Core() = default;

@@ -1,0 +1,2 @@
+/usr/bin/ar qc libPWT.a CMakeFiles/PWT.dir/Engine/SubSystems/ProjectExplorer/ProjectWatchTower.cpp.o
+/usr/bin/ranlib libPWT.a

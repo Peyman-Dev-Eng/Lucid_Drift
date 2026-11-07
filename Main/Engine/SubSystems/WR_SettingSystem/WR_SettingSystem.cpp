@@ -10,9 +10,9 @@ LDDrift::UserProjectSetting::UserProjectSetting() = default;
 LDDrift::UserProjectSetting::~UserProjectSetting() = default;
 
 void LDDrift::UserProjectSetting::SetSettings(const LDDrift::Core* core) {
-    circles = core->scene.circleShapes;
-    polygons = core->scene.polygonShapes;
-    lines = core->scene.lines;
+    circles = core->sceneManager.GetCurrentScene()->circleShapes;
+    polygons = core->sceneManager.GetCurrentScene()->polygonShapes;
+    lines = core->sceneManager.GetCurrentScene()->lines;
     for (const LDDrift::Event::Keyboard::LinuxKeyboardKeyCode& key : LDDrift::TargetKeys) {
         if (const std::string keyName = LDDrift::input::ConvertKeyEnumToString(key);
             keyName != NULL_STRING)
@@ -206,7 +206,7 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
             const LDDrift::VecCol col = ConvertFloatColorsToVectors(value["color"])[0];
             const float thick = value["thickness"];
             // end
-            core->scene.CreateCircleShape(name, pointCount, radius, speed, pos, col, thick == 0 ? -1 : thick);
+            core->sceneManager.GetCurrentScene()->CreateCircleShape(name, pointCount, radius, speed, pos, col, thick == 0 ? -1 : thick);
         }
 
         for (const auto& lines : lines_json.items()) {
@@ -223,7 +223,7 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
             const int st[2] = {static_cast<int>(st_pnt.X), static_cast<int>(st_pnt.Y)};
             const int ed[2] = {static_cast<int>(ed_pnt.X), static_cast<int>(ed_pnt.Y)};
             // end
-            core->scene.CreateLineActor(name, thick, st, ed, col);
+            core->sceneManager.GetCurrentScene()->CreateLineActor(name, thick, st, ed, col);
         }
         for (const auto& polygon : polygons_json.items()) {
             // extract data
@@ -239,7 +239,7 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
                 ConvertStringToLineJoiningAlgorithm(value["join_line_type"]);
             const int speed = value["speed"];
             // end
-            core->scene.CreatePolygonShape(name, pointCount, speed, points.data(), colors, thick,
+            core->sceneManager.GetCurrentScene()->CreatePolygonShape(name, pointCount, speed, points.data(), colors, thick,
                                            Convert_JLT_ToInteger(jlt));
         }
         for (const std::string& key : key_targets) {
