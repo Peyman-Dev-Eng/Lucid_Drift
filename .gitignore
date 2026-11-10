@@ -10,3 +10,10 @@
 /dataSources.local.xml.idea/
 /.idea/
 /cmake-build-debug/
+/build/
+
+# Compiled files
+*.o
+*.a
+*.so
+*.out
