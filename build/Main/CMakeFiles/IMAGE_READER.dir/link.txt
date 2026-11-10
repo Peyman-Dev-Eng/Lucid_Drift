@@ -1,2 +1,0 @@
-/usr/bin/ar qc libIMAGE_READER.a CMakeFiles/IMAGE_READER.dir/Engine/SubSystems/image_reader/ImageReader.cpp.o
-/usr/bin/ranlib libIMAGE_READER.a

@@ -1,8 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/home/Develepment/CLionProjects/Lucid_Drift/build/cmake_install.cmake",
-		"/home/Develepment/CLionProjects/Lucid_Drift/build/Main/cmake_install.cmake"
-	],
-	"Parallel" : false
-}

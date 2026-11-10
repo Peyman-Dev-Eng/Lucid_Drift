@@ -1,2 +1,0 @@
-/usr/bin/ar qc libENG_API.a CMakeFiles/ENG_API.dir/Engine/API/EngineAPI.cpp.o
-/usr/bin/ranlib libENG_API.a
