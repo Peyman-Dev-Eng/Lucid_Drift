@@ -1,6 +1,11 @@
 #include "SceneAnimation.h"
 #include <System/Scene/Scene.h>
-LDDrift::SceneAnimation::SceneAnimation() = default;
+#include <Actors/Shapes/MainShape/Shape.h>
+#include <System/Texture/Texture.h>
+
+LDDrift::SceneAnimation::SceneAnimation() {
+    windPosition = {0.0f, 0.0f};
+}
 
 LDDrift::SceneAnimation::~SceneAnimation() = default;
 
@@ -55,7 +60,7 @@ void LDDrift::SceneAnimation::SmoothAlgorithm(LDDrift::Scene* currentScene, LDDr
     changeSceneMode = LDDrift::ChangeSceneMode::Smooth;
     initPlayAnimation();
     animation.elapsedTime = chd_double(chs::now() - animation.startAnimationTime).count();
-    animation.animationProcess = animation.elapsedTime / animation.duration;
+    ation.animationProcess = animation.elapsedTime / animation.duration;
     if (animation.elapsedTime >= animation.duration) {
         animation.canFree = true;
     }
@@ -68,19 +73,14 @@ void LDDrift::SceneAnimation::SmoothAlgorithm(LDDrift::Scene* currentScene, LDDr
     nextScene->ChangeColorShapesFromBlackToMainColor();
 }
 
-void LDDrift::SceneAnimation::SuddenlyAlgorithm(LDDrift::Scene* cs , LDDrift::Scene* ns) {
+void LDDrift::SceneAnimation::SuddenlyAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {
     changeSceneMode = LDDrift::ChangeSceneMode::Suddenly;
+    initPlayAnimation();
     cs->ChangeColorShapesToBlack();
     ns->ChangeColorShapesFromBlackToMainColor();
+    canFree = true;
+    freePlayAnimation();
 }
-
-void LDDrift::SceneAnimation::WindFromBottomToTopAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
-
-void LDDrift::SceneAnimation::WindFromLeftToRightAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
-
-void LDDrift::SceneAnimation::WindFromTopToBottomAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
-
-void LDDrift::SceneAnimation::WindFromRightToLeftAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {}
 
 double LDDrift::SceneAnimation::GetAnimationProcess() const {
     if (checkDefaultSetting()) {

@@ -115,7 +115,7 @@ namespace LDDrift
         void SetRendererPTR(LDDrift::ShapeRender* rendererPTR);
         void SetTextureRendererPTR(LDDrift::TextureRender* texturePTR);
         void ReSendShapesToRender();
-        void SetChangeColorFunction(GetAnimationProgressFunction function);
+        void SetChangeColorFunction(const GetAnimationProgressFunction& function);
         void ChangeColorShapesToBlack();
         void ChangeColorShapesFromBlackToMainColor();
         // circle

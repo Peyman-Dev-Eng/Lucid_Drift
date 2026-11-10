@@ -1,0 +1,2 @@
+/usr/bin/ar qc libTRM.a CMakeFiles/TRM.dir/Engine/SubSystems/Transform/Transform.cpp.o
+/usr/bin/ranlib libTRM.a

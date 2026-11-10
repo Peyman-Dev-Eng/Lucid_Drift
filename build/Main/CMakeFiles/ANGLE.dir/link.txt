@@ -1,0 +1,2 @@
+/usr/bin/ar qc libANGLE.a CMakeFiles/ANGLE.dir/EngineLibraries/Angle/Angle.cpp.o
+/usr/bin/ranlib libANGLE.a

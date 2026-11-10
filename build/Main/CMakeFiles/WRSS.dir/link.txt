@@ -1,0 +1,2 @@
+/usr/bin/ar qc libWRSS.a CMakeFiles/WRSS.dir/Engine/SubSystems/WR_SettingSystem/WR_SettingSystem.cpp.o
+/usr/bin/ranlib libWRSS.a

@@ -372,7 +372,7 @@ void LDDrift::Scene::SetTextureRendererPTR(LDDrift::TextureRender* texturePTR) {
     texture_render = texturePTR;
 }
 
-void LDDrift::Scene::SetChangeColorFunction(const GetAnimationProgressFunction function) {
+void LDDrift::Scene::SetChangeColorFunction(const GetAnimationProgressFunction& function) {
     func = function;
 }
 

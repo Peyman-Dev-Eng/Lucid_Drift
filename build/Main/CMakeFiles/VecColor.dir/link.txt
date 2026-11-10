@@ -1,0 +1,2 @@
+/usr/bin/ar qc libVecColor.a CMakeFiles/VecColor.dir/EngineLibraries/VecColor/VecCol.cpp.o
+/usr/bin/ranlib libVecColor.a

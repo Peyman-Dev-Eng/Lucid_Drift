@@ -3,6 +3,7 @@
 #include <optional>
 #include <chrono>
 #include <VecCol.h>
+#include <VecPos.h>
 #define ANIMATION_IN_DEFAULT_MODE 0
 
 namespace
@@ -12,6 +13,12 @@ namespace
 
 namespace LDDrift
 {
+    class Texture;
+    namespace Actors {
+        class Shape;
+        class Line;
+    }
+
     class Scene;
     enum class ChangeSceneMode : unsigned int
     {
@@ -41,7 +48,17 @@ namespace LDDrift
             double elapsedTime; // Time elapsed since the animation started
         };
 
+        LDDrift::VecPos2D windPosition;
+
         AnimationState animation;
+
+        struct WindAnimation
+        {
+            int xPos;
+            int yPos;
+        };
+
+        WindAnimation windAnimation;
 
     private:
         void initPlayAnimation();
@@ -62,12 +79,10 @@ namespace LDDrift
         SceneAnimation();
         ~SceneAnimation();
         [[nodiscard]] double GetAnimationProcess() const;
+        // smooth algorithm functions
         void SmoothAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
+        // suddenly algoritm functions
         void SuddenlyAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
-        void WindFromLeftToRightAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
-        void WindFromRightToLeftAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
-        void WindFromTopToBottomAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
-        void WindFromBottomToTopAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns);
     };
 }
 

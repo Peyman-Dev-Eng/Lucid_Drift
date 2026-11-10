@@ -1,0 +1,2 @@
+/usr/bin/ar qc libASSERT.a CMakeFiles/ASSERT.dir/Assertion/Assertions.cpp.o
+/usr/bin/ranlib libASSERT.a

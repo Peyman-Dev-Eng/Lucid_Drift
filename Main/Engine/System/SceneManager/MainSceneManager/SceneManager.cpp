@@ -16,6 +16,7 @@ void LDDrift::SceneManager::CreateDefaultScene() {
     defaultScene.SetCorePTR(core);
     defaultScene.SetRendererPTR(&core->shape_render);
     defaultScene.SetTextureRendererPTR(&core->textureRender);
+    defaultScene.SetChangeColorFunction(static_cast<Scene::GetAnimationProgressFunction>([this]() -> double { return sceneAnimation.GetAnimationProcess(); }));
     currentScene = &defaultScene;
 }
 
@@ -65,7 +66,7 @@ std::size_t LDDrift::SceneManager::updateIndexOfScene() {
             throw std::runtime_error("zero division error");
         }
         indexOfScene = (indexOfScene + 1) % scenes.size();
-    } catch(const std::runtime_error& e) {
+    } catch (const std::runtime_error& e) {
         std::cout << "scenes is empty | We were attempting to divide a number by 0. log: " << e.what() << std::endl;
     } catch (const std::exception& e) {
         std::cout << "Error: " << e.what() << std::endl;

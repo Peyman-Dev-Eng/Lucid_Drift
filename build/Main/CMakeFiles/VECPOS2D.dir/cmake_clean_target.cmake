@@ -1,0 +1,3 @@
+file(REMOVE_RECURSE
+  "libVECPOS2D.a"
+)
