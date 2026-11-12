@@ -329,6 +329,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
                           "", {10, 10}, {100, 100}, false);
     this->CreateNewWindow(TEXTURE_MANAGER_WINDOW_NAME, true, true,
                           "", {10, 10}, {100, 100}, false);
+    this->CreateNewWindow(SCENE_MANAGEMENT_WINDOW_NAME, true, true,
+                          "", {10, 10}, {100, 100}, false);
     ImGui::StyleColorsDark();
     ImGuiStyle& style = ImGui::GetStyle();
     style.Colors[ImGuiCol_WindowBg] = ImVec4(0.0f, 0.0f, 0.0f, 1.0f);
@@ -1611,7 +1613,7 @@ void LDDrift::GUI::EndRenderGUI() {
             (window.name != LINE_CONFIGURE_WINDOW_NAME) && (window.name != SET_KEY_TARGET_WINDOW_NAME) &&
             (window.name != EXIT_WARNING_WINDOW_NAME) && (window.name != GAME_SETTING_WINDOW_NAME) &&
             (window.name != SEE_OBJECTS_WINDOW_NAME) && (window.name != SEE_KEY_TARGETS_WINDOW_NAME) &&
-            (window.name != TEXTURE_MANAGER_WINDOW_NAME)) {
+            (window.name != TEXTURE_MANAGER_WINDOW_NAME) && (window.name != SCENE_MANAGEMENT_WINDOW_NAME)) {
             ImGui::SetNextWindowSize(ImVec2(window.size.X, window.size.Y));
             ImGui::SetNextWindowPos(ImVec2(window.position.X, window.position.Y));
         }
@@ -1631,8 +1633,10 @@ void LDDrift::GUI::EndRenderGUI() {
         this->SeeObjectsWindowHandler(&window);
         // مدیریت صفحه به نمایش گذاشتن کلید های انتخاب شده
         this->SeeKeyTargetsOfKeyboardWindowHandler(&window);
-
+        // مدیریت صفحه ساخت بافت ها
         this->TextureManagerWindowHandler(&window);
+        // مدیریت صفحه ساخت صحنه ها
+        this->SceneManagementWindowHandler(&window);
         if (!window.textPrintInWindow.empty())
             for (const std::string& text : window.textPrintInWindow) {
                 ImGui::TextUnformatted(text.c_str());
@@ -1799,6 +1803,10 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
         DefaultWindowsData* textureWindow = GetWindowPTR(TEXTURE_MANAGER_WINDOW_NAME);
         NPV_assert(textureWindow)
         textureWindow->Show = true;
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("scene")) {
+        GetWindowPTR(SCENE_MANAGEMENT_WINDOW_NAME)->Show = true;
     }
     ImGui::Separator();
     ImGui::TextUnformatted("Camera");
@@ -2104,5 +2112,56 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
     }
     if (ImGui::Button("Close")) {
         window->Show = false;
+    }
+}
+
+void LDDrift::GUI::SceneManagementWindowHandler(DefaultWindowsData* window) {
+    if (window->name != SCENE_MANAGEMENT_WINDOW_NAME) {
+        return;
+    }
+
+    // create new scene button
+    // delete scene button
+    // change scene button
+    
+
+    static int windowState = 0;
+
+    ImGui::RadioButton("create new scene## create new scene radio button", &windowState, 0);
+    ImGui::RadioButton("Delete Scene## delete scene with name", &windowState, 1);
+    ImGui::RadioButton("Change Current Scene To## change scene window", &windowState, 2);
+
+    if (windowState == 0) {
+        ImGui::InputTextWithHint("##scene name", "enter name of scene: ", window->Buffer, sizeof(window->Buffer));
+        if (ImGui::Button("create")) {
+            core->sceneManager.CreateNewScene(window->Buffer);
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
+            window->Show = false;
+        }
+        if (ImGui::Button("close")) {
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
+            window->Show = false;
+        }
+    }
+    else if (windowState == 1) {
+        ImGui::InputTextWithHint("##scene name", "enter scene name: ", window->Buffer, sizeof(window->Buffer));
+        bool delete_button = ImGui::Button("delete");
+        if (delete_button && core->sceneManager.FindScene(window->Buffer)) {
+            core->sceneManager.DeleteScene(window->Buffer);
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
+        } else if (delete_button && !(core->sceneManager.FindScene(window->Buffer))) {
+            ImGui::Text("can not scene with this name -> %s", std::string(window->Buffer).c_str());
+        }
+    } else if (windowState == 2) {
+        ImGui::InputTextWithHint("##the name of the scene", "enter the name of the scene: ", window->Buffer, sizeof(window->Buffer));
+        if (ImGui::Button("change")) {
+            core->sceneManager.ChangeScene(window->Buffer);
+            window->Show = false;
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
+        }
+        if (ImGui::Button("close")) {
+            window->Show = false;
+            std::memset(window->Buffer, '\0', sizeof(window->Buffer));
+        }
     }
 }

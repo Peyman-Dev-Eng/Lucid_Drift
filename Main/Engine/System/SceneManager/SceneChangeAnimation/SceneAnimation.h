@@ -68,10 +68,7 @@ namespace LDDrift
         static double CalculateAnimationProcess(const chs::time_point& startTime);
 
         const float SmoothAnimationDurationTime = 3;
-        const float WindFromLeftToRightTime = 1.52f;
-        const float WindFromRightToLeftTime = 1.52f;
-        const float WindFromTopToBottomTime = 1.52f * 2;
-        const float WindFromBottomToTopTime = 1.52f * 2;
+        const float SuddenlyAnimationDurationTime = 0.1;
 
         std::optional<ChangeSceneMode> changeSceneMode;
 
@@ -83,7 +80,7 @@ namespace LDDrift
         void SmoothAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
         // suddenly algoritm functions
         void SuddenlyAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
-    };
+  };
 }
 
 #endif

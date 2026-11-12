@@ -29,15 +29,7 @@ void LDDrift::SceneAnimation::initPlayAnimation() {
     if (CheckAnimation(LDDrift::ChangeSceneMode::Smooth)) {
         animation.duration = SmoothAnimationDurationTime;
     } else if (CheckAnimation(LDDrift::ChangeSceneMode::Suddenly)) {
-        return;
-    } else if (CheckAnimation(LDDrift::ChangeSceneMode::WindFromLeftToRight)) {
-        animation.duration = WindFromLeftToRightTime;
-    } else if (CheckAnimation(LDDrift::ChangeSceneMode::WindFromRightToLeft)) {
-        animation.duration = WindFromRightToLeftTime;
-    } else if (CheckAnimation(LDDrift::ChangeSceneMode::WindFromTopToBottom)) {
-        animation.duration = WindFromTopToBottomTime;
-    } else if (CheckAnimation(LDDrift::ChangeSceneMode::WindFromBottomToTop)) {
-        animation.duration = WindFromBottomToTopTime;
+        animation.duration = SuddenlyAnimationDurationTime; 
     }
 }
 
@@ -60,7 +52,7 @@ void LDDrift::SceneAnimation::SmoothAlgorithm(LDDrift::Scene* currentScene, LDDr
     changeSceneMode = LDDrift::ChangeSceneMode::Smooth;
     initPlayAnimation();
     animation.elapsedTime = chd_double(chs::now() - animation.startAnimationTime).count();
-    ation.animationProcess = animation.elapsedTime / animation.duration;
+    animation.animationProcess = animation.elapsedTime / animation.duration;
     if (animation.elapsedTime >= animation.duration) {
         animation.canFree = true;
     }
@@ -78,7 +70,7 @@ void LDDrift::SceneAnimation::SuddenlyAlgorithm(LDDrift::Scene* cs, LDDrift::Sce
     initPlayAnimation();
     cs->ChangeColorShapesToBlack();
     ns->ChangeColorShapesFromBlackToMainColor();
-    canFree = true;
+    animation.canFree = true;
     freePlayAnimation();
 }
 

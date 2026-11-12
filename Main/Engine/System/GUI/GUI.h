@@ -33,6 +33,7 @@
 #define SEE_KEY_TARGETS_WINDOW_NAME "See Key Targets"
 #define TEXTURE_MANAGER_WINDOW_NAME "Texture Manager"
 #define InitializeFloatVector LDDrift::init_std_vector
+#define SCENE_MANAGEMENT_WINDOW_NAME "scene manager"
 
 namespace LDDrift
 {
@@ -146,6 +147,7 @@ namespace LDDrift
         ~GUI();
 
     private:
+        void SceneManagementWindowHandler(DefaultWindowsData* window);
         void TextureManagerWindowHandler(DefaultWindowsData* window) const;
         void SeeKeyTargetsOfKeyboardWindowHandler(DefaultWindowsData* window) const;
         void SeeObjectsWindowHandler(const DefaultWindowsData* window) const;

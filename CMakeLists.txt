@@ -6,6 +6,8 @@ endif()
 
 project(Lucid_Drift CXX C)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 if(WIN32)
     set(CMAKE_CXX_STANDARD 23)
     set(CMAKE_CXX_STANDARD_REQUIRED ON)

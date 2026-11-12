@@ -22,17 +22,9 @@ void LDDrift::SceneManager::CreateDefaultScene() {
 
 void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
     if (mode == LDDrift::ChangeSceneMode::Suddenly) {
-        sceneAnimation.SuddenlyAlgorithm(scenes[indexOfScene], scenes[updateIndexOfScene()]);
+        sceneAnimation.SuddenlyAlgorithm(scenes[indexOfScene].scene, scenes[updateIndexOfScene()].scene);
     } else if (mode == LDDrift::ChangeSceneMode::Smooth) {
-        sceneAnimation.SmoothAlgorithm(scenes[indexOfScene], scenes[updateIndexOfScene()]);
-    } else if (mode == LDDrift::ChangeSceneMode::WindFromLeftToRight) {
-        sceneAnimation.WindFromLeftToRightAlgorithm(scenes[indexOfScene], scenes[updateIndexOfScene()]);
-    } else if (mode == LDDrift::ChangeSceneMode::WindFromRightToLeft) {
-        sceneAnimation.WindFromRightToLeftAlgorithm(scenes[indexOfScene], scenes[updateIndexOfScene()]);
-    } else if (mode == LDDrift::ChangeSceneMode::WindFromTopToBottom) {
-        sceneAnimation.WindFromTopToBottomAlgorithm(scenes[indexOfScene], scenes[updateIndexOfScene()]);
-    } else if (mode == LDDrift::ChangeSceneMode::WindFromBottomToTop) {
-        sceneAnimation.WindFromBottomToTopAlgorithm(scenes[indexOfScene], scenes[updateIndexOfScene()]);
+        sceneAnimation.SmoothAlgorithm(scenes[indexOfScene].scene, scenes[updateIndexOfScene()].scene);
     }
 }
 
@@ -40,7 +32,7 @@ LDDrift::Scene* LDDrift::SceneManager::GetCurrentScene() const {
     return currentScene;
 }
 
-void LDDrift::SceneManager::CreateNewScene() {
+void LDDrift::SceneManager::CreateNewScene(const std::string& name) {
     LDDrift::Scene* newScene = new LDDrift::Scene();
     newScene->SetCorePTR(core);
     newScene->SetRendererPTR(&core->shape_render);
@@ -49,7 +41,7 @@ void LDDrift::SceneManager::CreateNewScene() {
     {
         return sceneAnimation.GetAnimationProcess();
     }));
-    scenes.push_back(new LDDrift::Scene());
+    scenes.push_back({name, newScene});
 }
 
 void LDDrift::SceneManager::SetCorePTR(LDDrift::Core* core_ptr) {
@@ -72,4 +64,45 @@ std::size_t LDDrift::SceneManager::updateIndexOfScene() {
         std::cout << "Error: " << e.what() << std::endl;
     }
     return indexOfScene;
+}
+
+void LDDrift::SceneManager::DeleteScene(const std::string& name) {
+    int counter = 0;
+    for (const auto& scene : scenes) {
+        if (scene.name == name) {
+            scenes.erase(scenes.begin() + counter);
+            break;
+        }
+        ++counter;
+    }
+}
+
+bool LDDrift::SceneManager::FindScene(const std::string& name) {
+    if (name == "") {
+        std::cout << "name scene entered is not available";
+        return false;
+    }
+    for (const auto& scene : scenes) {
+        if (scene.name == name) {
+            return true;
+        }
+    }
+    return false;
+}
+
+int LDDrift::SceneManager::GetSceneIndex(const std::string& name) {
+    int counter = 0;
+    for (const auto& scene : scenes) {
+        if (scene.name == name) {
+            return counter;
+        }
+        ++counter;
+    }
+    return -1;
+}
+
+void LDDrift::SceneManager::ChangeScene(const std::string& name) {
+    if (int indexOfScene = GetSceneIndex(name); indexOfScene != -1 ) {
+        currentScene = scenes[indexOfScene].scene;
+    }
 }
