@@ -1,2 +1,0 @@
-/usr/bin/ar qc lib__GUIWH__.a CMakeFiles/__GUIWH__.dir/Engine/SubSystems/GraphicalUserInterfaceWindowHandler/GraphicalUserInterfaceWindowHandler.cpp.o
-/usr/bin/ranlib lib__GUIWH__.a

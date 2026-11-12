@@ -1,2 +1,0 @@
-/usr/bin/ar qc libGUI.a CMakeFiles/GUI.dir/Engine/System/GUI/GUI.cpp.o CMakeFiles/GUI.dir/__/ThirdParty/ImGuiColorTextEdit/TextEditor.cpp.o
-/usr/bin/ranlib libGUI.a

@@ -1,3 +1,0 @@
-file(REMOVE_RECURSE
-  "libSHAPE_DATA.a"
-)

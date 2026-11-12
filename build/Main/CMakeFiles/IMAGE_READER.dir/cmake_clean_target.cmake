@@ -1,3 +1,0 @@
-file(REMOVE_RECURSE
-  "libIMAGE_READER.a"
-)
