@@ -19,6 +19,7 @@ namespace LDDrift
     private: // private variables for management
         LDDrift::Scene defaultScene;
         LDDrift::Scene* currentScene;
+        std::string currentSceneName;
         std::size_t indexOfScene;
 
     private: // global variables
@@ -48,7 +49,8 @@ namespace LDDrift
         void DeleteScene(const std::string& name);
         void ChangeScene(const std::string& name);
         void ChangeScene(const LDDrift::ChangeSceneMode& mode);
-        LDDrift::Scene& GetDefaultScene();
+        LDDrift::Scene* GetDefaultScene();
+        [[nodiscard]] std::string GetCurrentSceneName() const;
     };
 }
 

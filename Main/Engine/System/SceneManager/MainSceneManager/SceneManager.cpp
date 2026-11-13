@@ -20,6 +20,7 @@ void LDDrift::SceneManager::CreateDefaultScene() {
         return sceneAnimation.GetAnimationProcess();
     }));
     currentScene = &defaultScene;
+    currentSceneName = "default";
 }
 
 void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
@@ -62,8 +63,8 @@ void LDDrift::SceneManager::SetCorePTR(LDDrift::Core* _core_ptr) {
     core_ptr = _core_ptr;
 }
 
-LDDrift::Scene& LDDrift::SceneManager::GetDefaultScene() {
-    return defaultScene;
+LDDrift::Scene* LDDrift::SceneManager::GetDefaultScene() {
+    return &defaultScene;
 }
 
 std::size_t LDDrift::SceneManager::updateIndexOfScene() {
@@ -118,6 +119,7 @@ void LDDrift::SceneManager::ChangeScene(const std::string& name) {
     for (const auto& [sceneName, scene] : scenes) {
         if (sceneName == name) {
             currentScene = scene;
+            currentSceneName = name;
         }
     }
 }
@@ -128,4 +130,14 @@ void LDDrift::SceneManager::SetTextureRendererPTR(LDDrift::TextureRender* textur
 
 void LDDrift::SceneManager::SetShapeRenderPTR(LDDrift::ShapeRender* shape_render_ptr) {
     shapeRender_ptr = shape_render_ptr;
+}
+
+std::string LDDrift::SceneManager::GetCurrentSceneName() const {
+    if (currentScene == nullptr) {
+        return NULL_STRING;
+    }
+    if (currentScene == &defaultScene) {
+        return "default";
+    }
+    return currentSceneName;
 }

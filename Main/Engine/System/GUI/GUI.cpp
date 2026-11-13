@@ -1805,6 +1805,7 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
         textureWindow->Show = true;
     }
     ImGui::SameLine();
+    std::string buttonName = "scene " + core->sceneManager
     if (ImGui::Button("scene")) {
         GetWindowPTR(SCENE_MANAGEMENT_WINDOW_NAME)->Show = true;
     }
