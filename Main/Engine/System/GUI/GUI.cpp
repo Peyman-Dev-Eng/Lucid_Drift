@@ -2115,7 +2115,7 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
     }
 }
 
-void LDDrift::GUI::SceneManagementWindowHandler(DefaultWindowsData* window) {
+void LDDrift::GUI::SceneManagementWindowHandler(DefaultWindowsData* window) const {
     if (window->name != SCENE_MANAGEMENT_WINDOW_NAME) {
         return;
     }
@@ -2145,12 +2145,19 @@ void LDDrift::GUI::SceneManagementWindowHandler(DefaultWindowsData* window) {
     }
     else if (windowState == 1) {
         ImGui::InputTextWithHint("##scene name", "enter scene name: ", window->Buffer, sizeof(window->Buffer));
-        bool delete_button = ImGui::Button("delete");
-        if (delete_button && core->sceneManager.FindScene(window->Buffer)) {
-            core->sceneManager.DeleteScene(window->Buffer);
+        if (ImGui::Button("delete")) {
+            if (core->sceneManager.FindScene(window->Buffer)) {
+                core->sceneManager.DeleteScene(window->Buffer);
+                std::memset(window->Buffer, '\0', sizeof(window->Buffer));
+                window->Show = false;
+            } else {
+                std::cout << "can not find scene with this name -> " << window->Buffer << std::endl;
+            }
+        }
+        ImGui::SameLine();
+        if (ImGui::Button("close")) {
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));
-        } else if (delete_button && !(core->sceneManager.FindScene(window->Buffer))) {
-            ImGui::Text("can not scene with this name -> %s", std::string(window->Buffer).c_str());
+            window->Show = false;
         }
     } else if (windowState == 2) {
         ImGui::InputTextWithHint("##the name of the scene", "enter the name of the scene: ", window->Buffer, sizeof(window->Buffer));
@@ -2159,6 +2166,7 @@ void LDDrift::GUI::SceneManagementWindowHandler(DefaultWindowsData* window) {
             window->Show = false;
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));
         }
+        ImGui::SameLine();
         if (ImGui::Button("close")) {
             window->Show = false;
             std::memset(window->Buffer, '\0', sizeof(window->Buffer));

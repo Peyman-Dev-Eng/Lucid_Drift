@@ -3,18 +3,23 @@
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
+    // save default C_OUT buffer
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
+    // create default project
     projectWatchTower.CreateNewProject("TestProject");
+    // window initialization
     window.SetCorePTR(this);
     window.CreateFullscreenWindow();
     window.SetTitle("TEST");
     window.SetFillScreenColor({0, 0, 0, 1});
     camera.InitializeCameraSystem(this);
+    // shape render system initialization
     shape_render.SetCorePTR(this);
     shape_render.Initialize();
     shape_render.SetWidthScreen(window.GetWidth());
     shape_render.SetHeightScreen(window.GetHeight());
     window.SetRendererPTR(&shape_render);
+    // gui system initialization
     gui.Initialize(window.GetWindow());
     gui.SetProjectWatchTower_PTR(&projectWatchTower);
     LDDrift::input::Keyboard::Init();
@@ -31,21 +36,23 @@ void LDDrift::Core::InitCore() {
     });
     gui.SetCorePTR(this);
     LDDrift::func::InitDeltaTime();
-    LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
     gui.SetCompilePTR(&compile);
     compile.init(&projectWatchTower);
+    // scene manager system initialization
     sceneManager.SetCorePTR(this);
-    sceneManager.GetCurrentScene()->SetRendererPTR(&shape_render);
-    sceneManager.GetCurrentScene()->SetCorePTR(this);
-    sceneManager.Initialize();
+    sceneManager.SetShapeRenderPTR(&shape_render);
+    sceneManager.SetTextureRendererPTR(&textureRender);
     codePathfinder.initializeCodePathfinder();
-    Write_Read_UserProjectSetting.SetCore_PTR(this);
-    Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);
-    Write_Read_UserProjectSetting.CreateSettingFolder();
-    Write_Read_UserProjectSetting.ReadSettingsOfUserProject();
+    //Write_Read_UserProjectSetting.SetCore_PTR(this);
+    //Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);
+    //Write_Read_UserProjectSetting.CreateSettingFolder();
+    //Write_Read_UserProjectSetting.ReadSettingsOfUserProject();
     textureRender.SetCorePTR(this);
     textureRender.Initialize();
     mainRenderer.SetCorePTR(this);
+    // api initialization
+    LDDrift::EngineAPI::SetCorePTR(this);
+    LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
 }
 
 void LDDrift::Core::Begin() {
@@ -156,11 +163,11 @@ void LDDrift::Core::EngineHandler() {
         RunEngineFrame();
         RunGameFrame();
     }
-    userProjectSetting.SetSettings(this);
+    //userProjectSetting.SetSettings(this);
 }
 
-void LDDrift::Core::End() {
-    Write_Read_UserProjectSetting.WriteSettingsOfUserProject();
+void LDDrift::Core::End() const {
+    //Write_Read_UserProjectSetting.WriteSettingsOfUserProject();
     std::cout.rdbuf(oldC_outBuf);
     LDDrift::input::Keyboard::Destroy();
     LDDrift::input::Mouse::Destroy();

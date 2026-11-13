@@ -39,6 +39,7 @@ namespace LDDrift::EngineAPI
 #endif
     void AfterCompileProject();
     void SetProjectWatchTowerPTR(LDDrift::ProjectWatchTower* PWT_PTR);
+    void SetCorePTR(LDDrift::Core* core_ptr);
 
     extern "C" {
     LD_PLUGIN_API void BeginPlay();
@@ -46,6 +47,7 @@ namespace LDDrift::EngineAPI
     LD_PLUGIN_API void EndPlay();
     }
 
+    void ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode);
 
     void DestroyEngineAPI();
 }

@@ -1,5 +1,9 @@
 #include "EngineAPI.h"
 
+namespace {
+    LDDrift::Core* core;
+}
+
 void LDDrift::EngineAPI::AfterCompileProject() {
     std::string extension;
 #ifdef __linux__
@@ -37,4 +41,12 @@ void LDDrift::EngineAPI::DestroyEngineAPI() {
 #elifdef _WIN32
     FreeLibrary(hModule);
 #endif
+}
+
+void LDDrift::EngineAPI::SetCorePTR(LDDrift::Core* core_ptr) {
+    core = core_ptr;
+}
+
+void LDDrift::EngineAPI::ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode) {
+    core->sceneManager.ChangeScene(mode);
 }

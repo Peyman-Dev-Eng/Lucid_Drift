@@ -14,7 +14,7 @@ namespace LDDrift
     private: // private functions
         void CreateDefaultScene();
         std::size_t updateIndexOfScene();
-        int GetSceneIndex(const std::string& name);
+        [[nodiscard]] int GetSceneIndex(const std::string& name) const;
 
     private: // private variables for management
         LDDrift::Scene defaultScene;
@@ -22,7 +22,9 @@ namespace LDDrift
         std::size_t indexOfScene;
 
     private: // global variables
-        LDDrift::Core* core;
+        LDDrift::Core* core_ptr;
+        LDDrift::ShapeRender* shapeRender_ptr;
+        LDDrift::TextureRender* textureRender_ptr;
         LDDrift::SceneAnimation sceneAnimation;
 
     public:
@@ -30,7 +32,7 @@ namespace LDDrift
             std::string name;
             LDDrift::Scene* scene;
         };
-
+    private:
         std::vector<SCENE_DATA> scenes;
 
     public:
@@ -38,8 +40,10 @@ namespace LDDrift
         ~SceneManager();
         void Initialize();
         [[nodiscard]] LDDrift::Scene* GetCurrentScene() const;
-        void SetCorePTR(LDDrift::Core* core_ptr);
-        bool FindScene(const std::string& name);
+        void SetCorePTR(LDDrift::Core* _core_ptr);
+        void SetTextureRendererPTR(LDDrift::TextureRender* texture_render_ptr);
+        void SetShapeRenderPTR(LDDrift::ShapeRender* shape_render_ptr);
+        [[nodiscard]] bool FindScene(const std::string& name) const;
         void CreateNewScene(const std::string& name);
         void DeleteScene(const std::string& name);
         void ChangeScene(const std::string& name);

@@ -16,7 +16,7 @@ namespace LDDrift
         VecPos2D position;
         VecPos2D size;
         bool Show;
-        char Buffer[256];
+        char Buffer[256]{};
 
         void SetTextPrintInWindow(const std::string& text);
     };

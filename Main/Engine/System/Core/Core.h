@@ -66,7 +66,7 @@ namespace LDDrift
         explicit Core();
         void Begin();
         void EngineHandler();
-        void End();
+        void End() const;
         ~Core();
     }; // class Core
 } // namespace LDDrift
