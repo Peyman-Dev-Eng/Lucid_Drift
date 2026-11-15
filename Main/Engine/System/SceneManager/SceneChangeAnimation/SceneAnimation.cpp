@@ -15,8 +15,9 @@ bool LDDrift::SceneAnimation::CheckAnimation(const LDDrift::ChangeSceneMode& mod
     return false;
 }
 
-double LDDrift::SceneAnimation::CalculateAnimationProcess(const ch::time_point<ch::steady_clock>& startTime) {
-    return chd_double(startTime - chs::now()).count();
+double LDDrift::SceneAnimation::CalculateAnimationProcess(const ch::time_point<ch::steady_clock>& startTime,
+    const double& Duration) {
+    return chd_double(chs::now() - startTime).count() / Duration;
 }
 
 void LDDrift::SceneAnimation::initPlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns) {

@@ -75,8 +75,11 @@ namespace LDDrift
         void freePlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns);
         [[nodiscard]] bool checkDefaultSetting() const;
         [[nodiscard]] bool CheckAnimation(const LDDrift::ChangeSceneMode& mode) const;
-        static double CalculateAnimationProcess(const chs::time_point& startTime);
 
+    public:
+        static double CalculateAnimationProcess(const chs::time_point& startTime, const double& Duration);
+
+    private:
         const float SmoothAnimationDurationTime = 3;
         const float SuddenlyAnimationDurationTime = 0.1;
 
