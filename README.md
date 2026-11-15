@@ -342,7 +342,7 @@ When opening an issue, please include:
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Apache License** — see the [LICENSE](LICENSE) file for details.
 
 Third-party components (Dear ImGui, ImGuiColorTextEdit, stb, GLFW, GLM, etc.) retain their own licenses.
 
