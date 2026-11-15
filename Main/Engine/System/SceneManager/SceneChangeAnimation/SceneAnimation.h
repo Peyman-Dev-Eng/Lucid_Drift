@@ -2,6 +2,8 @@
 #define LUCID_DRIFT_SCENE_ANIMATION_H
 #include <optional>
 #include <chrono>
+#include <Actors/Shapes/Circle/CircleShape.h>
+#include <Actors/Shapes/Polygon/Polygon.h>
 #include <VecCol.h>
 #include <VecPos.h>
 #define ANIMATION_IN_DEFAULT_MODE 0
@@ -14,12 +16,15 @@ namespace
 namespace LDDrift
 {
     class Texture;
-    namespace Actors {
+
+    namespace Actors
+    {
         class Shape;
         class Line;
     }
 
     class Scene;
+
     enum class ChangeSceneMode : unsigned int
     {
         Smooth = 0b10,
@@ -27,7 +32,14 @@ namespace LDDrift
         WindFromLeftToRight = 0b1010,
         WindFromRightToLeft = 0b10101,
         WindFromTopToBottom = 0b101010,
-        WindFromBottomToTop = 0b1010101,
+        WindFromBottomToTop = 0b1010101
+    };
+
+    class EndAnimation final
+    {
+    public:
+        EndAnimation();
+        ~EndAnimation();
     };
 
     class SceneAnimation final
@@ -48,21 +60,19 @@ namespace LDDrift
             double elapsedTime; // Time elapsed since the animation started
         };
 
-        LDDrift::VecPos2D windPosition;
-
         AnimationState animation;
 
-        struct WindAnimation
-        {
-            int xPos;
-            int yPos;
-        };
-
-        WindAnimation windAnimation;
+        // char = in current scene or next scene | this comment for std::pair<char, LDDrift::Actors ...
+        // c = current scene | n = next scene
+        // vector  |  actor  |  char -> scene_state |  actor pointer       |        base color of actor
+        std::vector<std::pair<std::pair<char, LDDrift::Actors::Circle*>, std::vector<LDDrift::VecCol>>> circleColors;
+        std::vector<std::pair<std::pair<char, LDDrift::Actors::Polygon*>, std::vector<LDDrift::VecCol>>> polygonColors;
+        std::vector<std::pair<std::pair<char, LDDrift::Actors::Line*>, LDDrift::VecCol>> lineColors;
+        std::vector<std::pair<std::pair<char, LDDrift::Texture*>, float>> textureMulti;
 
     private:
-        void initPlayAnimation();
-        void freePlayAnimation();
+        void initPlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns);
+        void freePlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns);
         [[nodiscard]] bool checkDefaultSetting() const;
         [[nodiscard]] bool CheckAnimation(const LDDrift::ChangeSceneMode& mode) const;
         static double CalculateAnimationProcess(const chs::time_point& startTime);
@@ -77,10 +87,10 @@ namespace LDDrift
         ~SceneAnimation();
         [[nodiscard]] double GetAnimationProcess() const;
         // smooth algorithm functions
-        void SmoothAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
-        // suddenly algoritm functions
-        void SuddenlyAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
-  };
+        void SmoothAlgorithm(const LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
+        // suddenly algorithm functions
+        void SuddenlyAlgorithm(const LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
+    };
 }
 
 #endif

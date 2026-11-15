@@ -26,7 +26,28 @@ void LDDrift::SceneManager::CreateDefaultScene() {
 void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
     if (mode == LDDrift::ChangeSceneMode::Suddenly) {
         try {
-            sceneAnimation.SuddenlyAlgorithm(scenes[indexOfScene].scene, scenes[updateIndexOfScene()].scene);
+            textureRender_ptr->DeleteTextures();
+            shapeRender_ptr->DeleteActors();
+            sceneAnimation.SuddenlyAlgorithm(scenes[indexOfScene].scene,
+                                             scenes[(indexOfScene + 1) % scenes.size()].scene);
+        } catch (const LDDrift::EndAnimation& e) {
+            updateIndexOfScene();
+            // append textures to render system
+            for (const auto& texture : scenes[indexOfScene].scene->textures) {
+                if (texture.render) textureRender_ptr->AddTexture(texture.texture);
+            }
+            // append circles to render system
+            for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
+                if (circle.render) shapeRender_ptr->AddShapeToRender(circle.circle);
+            }
+            // append polygons to render system
+            for (const auto& polygon : scenes[indexOfScene].scene->polygonShapes) {
+                if (polygon.render) shapeRender_ptr->AddShapeToRender(polygon.polygon);
+            }
+            // append lines actor to render system
+            for (const auto& line : scenes[indexOfScene].scene->lines) {
+                if (line.render) shapeRender_ptr->AddLineToRender(line.line);
+            }
         } catch (const std::runtime_error& e) {
             std::cout << "scenes size: " << scenes.size() << "    ---    " << e.what() << std::endl;
         } catch (const std::exception& e) {
@@ -34,7 +55,48 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
         }
     } else if (mode == LDDrift::ChangeSceneMode::Smooth) {
         try {
-            sceneAnimation.SmoothAlgorithm(scenes[indexOfScene].scene, scenes[updateIndexOfScene()].scene);
+            textureRender_ptr->DeleteTextures();
+            shapeRender_ptr->DeleteActors();
+            sceneAnimation.SmoothAlgorithm(scenes[indexOfScene].scene,
+                                           scenes[(indexOfScene + 1) % scenes.size()].scene);
+            std::vector<LDDrift::Actors::Shape*> shapes;
+            for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
+                if (circle.render) shapes.push_back(circle.circle);
+            }
+            for (const auto& polygon : scenes[indexOfScene].scene->polygonShapes) {
+                if (polygon.render) shapes.push_back(polygon.polygon);
+            }
+            for (const auto& circle : scenes[(indexOfScene + 1) % scenes.size()].scene->circleShapes) {
+                if (circle.render) shapes.push_back(circle.circle);
+            }
+            for (const auto& polygon : scenes[(indexOfScene + 1) % scenes.size()].scene->polygonShapes) {
+                if (polygon.render) shapes.push_back(polygon.polygon);
+            }
+            std::vector<LDDrift::Actors::Line*> lines;
+            for (const auto& line : scenes[indexOfScene].scene->lines) {
+                if (line.render) lines.push_back(line.line);
+            }
+            for (const auto& line : scenes[(indexOfScene + 1) % scenes.size()].scene->lines) {
+                if (line.render) lines.push_back(line.line);
+            }
+            LDDrift::MainRenderer::StaticDrawer(core_ptr, shapes, lines);
+        } catch (const EndAnimation& e) { // append actors to renderer systems
+            updateIndexOfScene();
+            for (const auto& texture : scenes[indexOfScene].scene->textures) {
+                if (texture.render) textureRender_ptr->AddTexture(texture.texture);
+            }
+
+            for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
+                if (circle.render) shapeRender_ptr->AddShapeToRender(circle.circle);
+            }
+
+            for (const auto& polygon : scenes[indexOfScene].scene->polygonShapes) {
+                if (polygon.render) shapeRender_ptr->AddShapeToRender(polygon.polygon);
+            }
+
+            for (const auto& line : scenes[indexOfScene].scene->lines) {
+                if (line.render) shapeRender_ptr->AddLineToRender(line.line);
+            }
         } catch (const std::runtime_error& e) {
             std::cout << "scene size: " << scenes.size() << "    ---    " << e.what() << std::endl;
         } catch (const std::exception& e) {
@@ -48,6 +110,10 @@ LDDrift::Scene* LDDrift::SceneManager::GetCurrentScene() const {
 }
 
 void LDDrift::SceneManager::CreateNewScene(const std::string& name) {
+    if (FindScene(name)) {
+        std::cout << "scene already exists (name: " << name << ")" << std::endl;
+        return;
+    }
     LDDrift::Scene* newScene = new LDDrift::Scene();
     newScene->SetCorePTR(core_ptr);
     newScene->SetRendererPTR(shapeRender_ptr);
@@ -116,10 +182,27 @@ int LDDrift::SceneManager::GetSceneIndex(const std::string& name) const {
 }
 
 void LDDrift::SceneManager::ChangeScene(const std::string& name) {
-    for (const auto& [sceneName, scene] : scenes) {
+    for (auto& [sceneName, scene] : scenes) {
         if (sceneName == name) {
+            textureRender_ptr->DeleteTextures();
+            shapeRender_ptr->DeleteActors();
+            for (const auto& circle : scene->circleShapes) {
+                shapeRender_ptr->AddShapeToRender(circle.circle);
+            }
+            for (const auto& polygon : scene->polygonShapes) {
+                shapeRender_ptr->AddShapeToRender(polygon.polygon);
+            }
+            for (const auto& line : scene->lines) {
+                shapeRender_ptr->AddLineToRender(line.line);
+            }
+            for (const auto& texture : scene->textures) {
+                textureRender_ptr->AddTexture(texture.texture);
+            }
+            scene->MarkSendDataToGPU();
+            scene->ReSendShapesToRender();
             currentScene = scene;
             currentSceneName = name;
+            break;
         }
     }
 }

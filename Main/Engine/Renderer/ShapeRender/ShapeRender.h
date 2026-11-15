@@ -16,6 +16,7 @@ namespace LDDrift
         class Shape;
         class Line;
     }
+
     class Transform;
     class Core;
 
@@ -52,7 +53,7 @@ namespace LDDrift
 
     public:
         explicit ShapeRender(const int& widthScreen = 500 /* Width screen */,
-                          const int& heightScreen = 500 /* height screen */);
+                             const int& heightScreen = 500 /* height screen */);
         void Initialize();
         void SetCorePTR(LDDrift::Core* corePTR);
         void RebuildShapes();
@@ -60,6 +61,7 @@ namespace LDDrift
         void SetHeightScreen(int HS);
         [[nodiscard]] GLuint GetProgram() const;
         void SendDataToGPU() const;
+        void Add(const std::vector<LDDrift::Actors::Shape*>&, const std::vector<LDDrift::Actors::Line*>&);
         void AddShapeToRender(LDDrift::Actors::Shape*);
         void AddLineToRender(LDDrift::Actors::Line*);
         void RemoveLineFromRender(LDDrift::Actors::Line*);
@@ -67,6 +69,7 @@ namespace LDDrift
         void UpdateShapeData();
         void SetViewMatrix(const glm::mat4& view_projection) const;
         void render() const;
+        void DeleteActors();
         ~ShapeRender();
     };
 }

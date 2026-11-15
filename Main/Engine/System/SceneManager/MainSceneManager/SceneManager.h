@@ -18,8 +18,8 @@ namespace LDDrift
 
     private: // private variables for management
         LDDrift::Scene defaultScene;
-        LDDrift::Scene* currentScene;
-        std::string currentSceneName;
+        LDDrift::Scene* currentScene{};
+        std::string currentSceneName{};
         std::size_t indexOfScene;
 
     private: // global variables

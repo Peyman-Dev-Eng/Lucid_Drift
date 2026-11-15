@@ -41,6 +41,7 @@ namespace LDDrift
     public:
         TextureRender();
         ~TextureRender();
+        void DeleteTextures();
         void SetColorMultiplier(float colorMultiplier) const;
         void SetCorePTR(LDDrift::Core* core_ptr);
         void Initialize();

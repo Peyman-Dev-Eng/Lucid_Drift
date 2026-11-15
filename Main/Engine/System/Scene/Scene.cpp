@@ -451,19 +451,14 @@ void LDDrift::Scene::ChangeColorTexturesToBlack() const {
     }
 }
 
-void LDDrift::Scene::ChangeColorShapesToBlack() {
+void LDDrift::Scene::ChangeColorShapesToBlack() const {
     if (func == nullptr) {
         return;
     }
-    A_CC_Circle_TB = std::thread([this]() { ChangeColorCirclesToBlack(); });
-
-    A_CC_Polygon_TB = std::thread([this]() { ChangeColorPolygonsToBlack(); });
-
-    A_CC_Line_TB = std::thread([this]() { ChangeColorLinesToBlack(); });
-
-    A_CC_Texture_TB = std::thread([this]() { ChangeColorTexturesToBlack(); });
-
-    freeThreadsOfA_Group();
+    ChangeColorCirclesToBlack();
+    ChangeColorPolygonsToBlack();
+    ChangeColorLinesToBlack();
+    ChangeColorTexturesToBlack();
 }
 
 void LDDrift::Scene::ChangeColorCirclesToMainColor() const {

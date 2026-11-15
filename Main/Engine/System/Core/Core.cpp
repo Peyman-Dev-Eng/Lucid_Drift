@@ -42,6 +42,7 @@ void LDDrift::Core::InitCore() {
     sceneManager.SetCorePTR(this);
     sceneManager.SetShapeRenderPTR(&shape_render);
     sceneManager.SetTextureRendererPTR(&textureRender);
+    sceneManager.Initialize();
     codePathfinder.initializeCodePathfinder();
     //Write_Read_UserProjectSetting.SetCore_PTR(this);
     //Write_Read_UserProjectSetting.SetProjectWatchTowerPTR(&this->projectWatchTower);

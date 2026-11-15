@@ -341,4 +341,22 @@ void LDDrift::ShapeRender::SetViewMatrix(const glm::mat4& view_projection) const
     glUniformMatrix4fv(glGetUniformLocation(program, "uViewProjection"), 1, GL_FALSE, value_ptr(view_projection));
 }
 
+void LDDrift::ShapeRender::DeleteActors() {
+    shapePTRs.clear();
+    linePTRs.clear();
+    UpdateShapeData();
+    SendDataToGPU();
+}
+
+void LDDrift::ShapeRender::Add(const std::vector<LDDrift::Actors::Shape*>& shapes, const std::vector<LDDrift::Actors::Line*>& lines) {
+    for (LDDrift::Actors::Line* line : lines) {
+        AddLineToRender(line);
+    }
+    for (LDDrift::Actors::Shape* shape : shapes) {
+        AddShapeToRender(shape);
+    }
+    UpdateShapeData();
+    SendDataToGPU();
+}
+
 LDDrift::ShapeRender::~ShapeRender() = default;

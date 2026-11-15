@@ -85,15 +85,16 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
             triangles = triangulation.CreateTriangles();
         }
         const std::size_t vertexCount = triangles.size() / 3;
+        const std::vector<LDDrift::VecCol>& Colors = shape->GetColorOfPoints();
         for (std::size_t vertex = 0; vertex < vertexCount; ++vertex) {
             vertices.push_back(triangles[vertex * 3 + 0]);
             vertices.push_back(triangles[vertex * 3 + 1]);
             vertices.push_back(triangles[vertex * 3 + 2]);
 
-            vertices.push_back(shape->GetPointColor(vertex).R);
-            vertices.push_back(shape->GetPointColor(vertex).G);
-            vertices.push_back(shape->GetPointColor(vertex).B);
-            vertices.push_back(shape->GetPointColor(vertex).A);
+            vertices.push_back(Colors[vertex % Colors.size()].R);
+            vertices.push_back(Colors[vertex % Colors.size()].G);
+            vertices.push_back(Colors[vertex % Colors.size()].B);
+            vertices.push_back(Colors[vertex % Colors.size()].A);
         }
 
         readDataFromGpu.push_back({lastIndex, vertexCount});

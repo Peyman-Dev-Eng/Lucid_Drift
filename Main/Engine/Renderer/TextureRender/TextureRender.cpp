@@ -128,3 +128,8 @@ void LDDrift::TextureRender::SetColorMultiplier(const float colorMultiplier) con
     glUseProgram(program);
     glUniform1f(glGetUniformLocation(program, "colorMultiplier"), std::clamp(colorMultiplier, 0.0f, 1.0f));
 }
+
+void LDDrift::TextureRender::DeleteTextures() {
+    textures.clear();
+    SendToGPU();
+}
