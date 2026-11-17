@@ -62,14 +62,6 @@ namespace LDDrift
 
         AnimationState animation;
 
-        // char = in current scene or next scene | this comment for std::pair<char, LDDrift::Actors ...
-        // c = current scene | n = next scene
-        // vector  |  actor  |  char -> scene_state |  actor pointer       |        base color of actor
-        std::vector<std::pair<std::pair<char, LDDrift::Actors::Circle*>, std::vector<LDDrift::VecCol>>> circleColors;
-        std::vector<std::pair<std::pair<char, LDDrift::Actors::Polygon*>, std::vector<LDDrift::VecCol>>> polygonColors;
-        std::vector<std::pair<std::pair<char, LDDrift::Actors::Line*>, LDDrift::VecCol>> lineColors;
-        std::vector<std::pair<std::pair<char, LDDrift::Texture*>, float>> textureMulti;
-
     private:
         void initPlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns);
         void freePlayAnimation(LDDrift::Scene* cs, LDDrift::Scene* ns);

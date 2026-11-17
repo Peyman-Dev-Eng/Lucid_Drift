@@ -22,35 +22,6 @@ double LDDrift::SceneAnimation::CalculateAnimationProcess(const ch::time_point<c
 
 void LDDrift::SceneAnimation::initPlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns) {
     if (animation.nowPlaying == true) return;
-
-    // save current scene
-    for (const auto& circle : cs->circleShapes) {
-        circleColors.push_back({{'c', circle.circle}, circle.circle->GetColorOfPoints()});
-    }
-    for (const auto& line : cs->lines) {
-        lineColors.push_back({{'c', line.line}, line.line->GetColor()});
-    }
-    for (const auto& polygon : cs->polygonShapes) {
-        polygonColors.push_back({{'c', polygon.polygon}, polygon.polygon->GetColorOfPoints()});
-    }
-    for (const auto& texture : cs->textures) {
-        textureMulti.push_back({{'c', texture.texture}, texture.texture->GetColorMultiplierOfTexture()});
-    }
-
-    // save next scene
-    for (const auto& circle : ns->circleShapes) {
-        circleColors.push_back({{'n', circle.circle}, circle.circle->GetColorOfPoints()});
-    }
-    for (const auto& line : ns->lines) {
-        lineColors.push_back({{'n', line.line}, line.line->GetColor()});
-    }
-    for (const auto& polygon : ns->polygonShapes) {
-        polygonColors.push_back({{'n', polygon.polygon}, polygon.polygon->GetColorOfPoints()});
-    }
-    for (const auto& texture : ns->textures) {
-        textureMulti.push_back({{'n', texture.texture}, texture.texture->GetColorMultiplierOfTexture()});
-    }
-
     animation.nowPlaying = true;
     animation.canFree = false;
     animation.startAnimationTime = chs::now();
@@ -71,92 +42,6 @@ void LDDrift::SceneAnimation::freePlayAnimation(LDDrift::Scene* cs, LDDrift::Sce
     changeSceneMode = std::nullopt;
     cs->freeSavedData();
     ns->freeSavedData();
-
-    // circle
-    for (const auto& [key, value] : circleColors) {
-        if (key.first == 'c') {
-            for (const auto& c_pointer : cs->circleShapes) {
-                if (c_pointer.circle == key.second) {
-                    for (std::size_t i = 0; i < value.size(); ++i) {
-                        c_pointer.circle->SetPointColor(i, value[i]);
-                    }
-                    break;
-                }
-            }
-        } else if (key.first == 'n') {
-            for (const auto& c_pointer : ns->circleShapes) {
-                if (c_pointer.circle == key.second) {
-                    for (std::size_t i = 0; i < value.size(); ++i) {
-                        c_pointer.circle->SetPointColor(i, value[i]);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-
-    // polygon
-    for (const auto& [key, value] : polygonColors) {
-        if (key.first == 'c') {
-            for (const auto& p_pointer : cs->polygonShapes) {
-                if (p_pointer.polygon == key.second) {
-                    for (std::size_t i = 0; i < value.size(); ++i) {
-                        p_pointer.polygon->SetPointColor(i, value[i]);
-                    }
-                    break;
-                }
-            }
-        } else if (key.first == 'n') {
-            for (const auto& p_pointer : ns->polygonShapes) {
-                if (p_pointer.polygon == key.second) {
-                    for (std::size_t i = 0; i < value.size(); ++i) {
-                        p_pointer.polygon->SetPointColor(i, value[i]);
-                    }
-                    break;
-                }
-            }
-        }
-    }
-    // line
-    for (const auto& [key, value] : lineColors) {
-        if (key.first == 'c') {
-            for (const auto& l_pointer : cs->lines) {
-                if (l_pointer.line == key.second) {
-                    l_pointer.line->SetLineColor(value);
-                    break;
-                }
-            }
-        } else if (key.first == 'n') {
-            for (const auto& l_pointer : ns->lines) {
-                if (l_pointer.line == key.second) {
-                    l_pointer.line->SetLineColor(value);
-                    break;
-                }
-            }
-        }
-    }
-    // texture
-    for (const auto& [key, value] : textureMulti) {
-        if (key.first == 'c') {
-            for (const auto& t_pointer : cs->textures) {
-                if (t_pointer.texture == key.second) {
-                    t_pointer.texture->SetColorMultiplierForTexture(value);
-                    break;
-                }
-            }
-        } else if (key.first == 'n') {
-            for (const auto& t_pointer : ns->textures) {
-                if (t_pointer.texture == key.second) {
-                    t_pointer.texture->SetColorMultiplierForTexture(value);
-                    break;
-                }
-            }
-        }
-    }
-    circleColors.clear();
-    polygonColors.clear();
-    lineColors.clear();
-    textureMulti.clear();
 }
 
 bool LDDrift::SceneAnimation::checkDefaultSetting() const {

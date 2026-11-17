@@ -170,6 +170,22 @@ bool LDDrift::Scene::FindCircleWithName(const std::string& name) const {
 
 void LDDrift::Scene::freeSavedData() {
     hasData = false;
+    for (const auto& [circlePTR, color] : circle_colors) {
+        for (std::size_t i = 0; i < circlePTR->GetPointCount(); ++i) {
+            circlePTR->SetPointColor(i, color[i]);
+        }
+    }
+    for (const auto& [polygonPTR, color] : polygon_colors) {
+        for (std::size_t i = 0; i < polygonPTR->GetPointCount(); ++i) {
+            polygonPTR->SetPointColor(i, color[i]);
+        }
+    }
+    for (const auto& [linePTR, color] : line_colors) {
+        linePTR->SetLineColor(color);
+    }
+    for (const auto& [texturePTR, texture_MULTI] : texture_multipliers) {
+        texturePTR->SetColorMultiplierForTexture(texture_MULTI);
+    }
     circle_colors.clear();
     polygon_colors.clear();
     line_colors.clear();
