@@ -181,3 +181,94 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
     glDeleteBuffers(1, &VBO);
     glDeleteProgram(program);
 }
+
+void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core, const std::vector<LDDrift::Texture*>& textures) {
+    const char* const vertShaderSrc =
+        "#version 460 core\n"
+        "layout (location = 0) in vec2 position;\n"
+        "layout (location = 1) in vec2 texCoord;\n"
+        "out vec2 outColor;\n"
+        "uniform mat4 U_VIEW_PROJECTION;\n"
+        "void main() {\n"
+        "    gl_Position = U_VIEW_PROJECTION * vec4(position, 0.0, 1.0);\n"
+        "    outColor = texCoord;\n"
+        "}";
+    const char* const fragShaderSrc =
+        "#version 460 core\n"
+        "in vec2 outColor;\n"
+        "uniform sampler2D texture_S;\n"
+        "out vec4 fragColor;\n"
+        "uniform float colorMultiplier;\n"
+        "void main() {\n"
+        "    vec4 texColor = texture(texture_S, outColor);\n"
+        "    fragColor = vec4(texColor.rgb * colorMultiplier, texColor.a);\n"
+        "}";
+    const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertShaderSrc, nullptr);
+    glCompileShader(vertexShader);
+
+    const GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glAttachShader(fragmentShader, vertexShader);
+    glShaderSource(fragmentShader, 1, &fragShaderSrc, nullptr);
+
+    GLuint VAO = 0, VBO = 0;
+    GLuint program = glCreateProgram();
+    glAttachShader(program, vertexShader);
+    glAttachShader(program, fragmentShader);
+    glLinkProgram(program);
+    glDeleteShader(vertexShader);
+    glDeleteShader(fragmentShader);
+
+    glUseProgram(program);
+
+    glGenVertexArrays(1, &VAO);
+    glBindVertexArray(VAO);
+
+    glGenBuffers(1, &VBO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    const LDDrift::VecPos2D viewPortSize = _core->window.GetViewportSize();
+    const GLint viewProjectionLocation = glGetUniformLocation(program, "U_VIEW_PROJECTION");
+    const glm::mat4 viewProjection = _core->camera.GetProjectionMatrix(viewPortSize.X, viewPortSize.Y) *
+        _core->camera.GetViewMatrix();
+    glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
+
+    std::vector<std::pair<std::size_t, std::size_t>> readDataFromGpu;
+
+    std::size_t counter = 0;
+    for (const LDDrift::Texture* texture : textures) {
+        std::size_t textureSize = texture->GetTextureCoordinates().size() / 4;
+        readDataFromGpu.push_back({counter, textureSize});
+        counter += textureSize;
+    }
+    std::vector<float> vertices;
+    for (const LDDrift::Texture* tex : textures) {
+        vertices.insert(vertices.end(), tex->GetTextureCoordinates().begin(), tex->GetTextureCoordinates().end());
+    }
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizei>(vertices.size() * sizeof(float)), vertices.data(),
+                 GL_DYNAMIC_DRAW);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), static_cast<void*>(nullptr));
+    glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), reinterpret_cast<void*>(2 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+
+    const std::size_t SIZE = readDataFromGpu.size();
+    for (std::size_t texture = 0; texture < SIZE; ++texture) {
+        glUseProgram(program);
+        textures[texture]->LoadTexture();
+        glUniform1f(glGetUniformLocation(program, "colorMultiplier"),
+                    std::clamp(textures[texture]->GetColorMultiplierOfTexture(), 0.0f, 1.0f));
+        glUniform1i(glGetUniformLocation(program, "texture_S"), 0);
+        glDrawArrays(GL_TRIANGLE_FAN,
+                     static_cast<int>(readDataFromGpu[texture].first),
+                     static_cast<int>(readDataFromGpu[texture].second));
+    }
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &VBO);
+    glDeleteProgram(program);
+}

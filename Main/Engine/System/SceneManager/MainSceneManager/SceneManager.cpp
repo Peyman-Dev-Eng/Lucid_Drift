@@ -83,7 +83,15 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             for (const auto& line : scenes[(indexOfScene + 1) % scenes.size()].scene->lines) {
                 lines.push_back(line.line);
             }
+            std::vector<LDDrift::Texture*> textures;
+            for (const auto& texture : scenes[indexOfScene].scene->textures) {
+                textures.push_back(texture.texture);
+            }
+            for (const auto& texture : scenes[(indexOfScene + 1) % scenes.size()].scene->textures) {
+                textures.push_back(texture.texture);
+            }
             LDDrift::MainRenderer::StaticDrawer(core_ptr, shapes, lines);
+            LDDrift::MainRenderer::StaticDrawer(core_ptr, textures);
         } catch (const EndAnimation& e) { // append actors to renderer systems
             updateIndexOfScene();
             for (const auto& texture : scenes[indexOfScene].scene->textures) {
@@ -191,8 +199,10 @@ int LDDrift::SceneManager::GetSceneIndex(const std::string& name) const {
 }
 
 void LDDrift::SceneManager::ChangeScene(const std::string& name) {
+    std::size_t counter = 0;
     for (auto& [sceneName, scene] : scenes) {
         if (sceneName == name) {
+            indexOfScene = counter;
             textureRender_ptr->DeleteTextures();
             shapeRender_ptr->DeleteActors();
             for (const auto& circle : scene->circleShapes) {
@@ -213,6 +223,7 @@ void LDDrift::SceneManager::ChangeScene(const std::string& name) {
             currentSceneName = name;
             break;
         }
+        ++counter;
     }
 }
 

@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 #include <Actors/Shapes/MainShape/Shape.h>
 #include <Actors/Line/Line.h>
+#include "System/Texture/Texture.h"
 
 namespace LDDrift
 {
@@ -21,6 +22,7 @@ namespace LDDrift
         static void StaticDrawer(const LDDrift::Core* _core,
                                  const std::vector<LDDrift::Actors::Shape*>& shapes,
                                  const std::vector<LDDrift::Actors::Line*>& lines);
+        static void StaticDrawer(const LDDrift::Core* _core, const std::vector<LDDrift::Texture*>& textures);
         void SetCorePTR(LDDrift::Core* core_ptr);
         [[nodiscard]] glm::mat4 UpdateViewMatrix() const;
     };

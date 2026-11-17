@@ -48,7 +48,7 @@ namespace LDDrift
         void RemoveTexture(LDDrift::Texture* texture);
         void Render() const;
         void AddTexture(LDDrift::Texture* texture);
-        void SendToGPU() const;
+        void SendToGPU();
         void SetViewMatrix(const glm::mat4& u_viewProjectionMatrix) const;
     };
 }

@@ -217,6 +217,7 @@ void LDDrift::ProjectWatchTower_GraphicalWindow::Render() {
     }
     ImGui::Separator();
     ImGui::InputTextWithHint("##Open File Section", "Enter File Name: ", openFileBuffer, sizeof(openFileBuffer));
+    ImGui::SameLine();
     if (ImGui::Button("Open")) {
         for (const std::filesystem::path& path : core->projectWatchTower.GetPaths()) {
             if (is_directory(path)) {

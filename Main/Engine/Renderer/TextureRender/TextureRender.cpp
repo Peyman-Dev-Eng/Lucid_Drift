@@ -50,6 +50,8 @@ void LDDrift::TextureRender::Initialize() {
     glAttachShader(program, VertexShader);
     glAttachShader(program, FragmentShader);
     glLinkProgram(program);
+    glDeleteShader(VertexShader);
+    glDeleteShader(FragmentShader);
 
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
@@ -75,9 +77,14 @@ void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture) {
     }
 }
 
-void LDDrift::TextureRender::SendToGPU() const {
+void LDDrift::TextureRender::SendToGPU() {
+    lastIndexForStart = 0;
+    howToReadDataFromGPU.clear();
     std::vector<float> vertices;
     for (const LDDrift::Texture* tex : textures) {
+        const std::size_t textureSize = tex->GetTextureCoordinates().size() / 4;
+        howToReadDataFromGPU.push_back({.start = lastIndexForStart, .count = textureSize});
+        lastIndexForStart += textureSize;
         vertices.insert(vertices.end(), tex->GetTextureCoordinates().begin(), tex->GetTextureCoordinates().end());
     }
     glBindVertexArray(VAO);
@@ -131,5 +138,7 @@ void LDDrift::TextureRender::SetColorMultiplier(const float colorMultiplier) con
 
 void LDDrift::TextureRender::DeleteTextures() {
     textures.clear();
+    howToReadDataFromGPU.clear();
+    lastIndexForStart = 0;
     SendToGPU();
 }
