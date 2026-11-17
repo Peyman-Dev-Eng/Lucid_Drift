@@ -5,8 +5,11 @@
 #include <string>
 #include <vector>
 
+#include "WR_SettingSystem.h"
+
 namespace LDDrift
 {
+    class UserProjectSetting;
     class Scene;
 
     class SceneManager final
@@ -34,6 +37,7 @@ namespace LDDrift
             LDDrift::Scene* scene;
         };
     private:
+        friend void LDDrift::UserProjectSetting::SetSettings(const LDDrift::Core* _core_ptr);
         std::vector<SCENE_DATA> scenes;
 
     public:
@@ -49,6 +53,7 @@ namespace LDDrift
         void DeleteScene(const std::string& name);
         void ChangeScene(const std::string& name);
         void ChangeScene(const LDDrift::ChangeSceneMode& mode);
+        bool HasPlayingAnimation() const;
         LDDrift::Scene* GetDefaultScene();
         [[nodiscard]] std::string GetCurrentSceneName() const;
     };

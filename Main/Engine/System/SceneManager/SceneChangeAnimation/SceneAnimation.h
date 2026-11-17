@@ -72,7 +72,7 @@ namespace LDDrift
 
     private:
         void initPlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns);
-        void freePlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns);
+        void freePlayAnimation(LDDrift::Scene* cs, LDDrift::Scene* ns);
         [[nodiscard]] bool checkDefaultSetting() const;
         [[nodiscard]] bool CheckAnimation(const LDDrift::ChangeSceneMode& mode) const;
 
@@ -90,9 +90,9 @@ namespace LDDrift
         ~SceneAnimation();
         [[nodiscard]] double GetAnimationProcess() const;
         // smooth algorithm functions
-        void SmoothAlgorithm(const LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
+        void SmoothAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
         // suddenly algorithm functions
-        void SuddenlyAlgorithm(const LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
+        void SuddenlyAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene);
     };
 }
 

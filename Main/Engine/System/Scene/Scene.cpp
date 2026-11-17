@@ -62,7 +62,9 @@ LDDrift::Actors::Circle* LDDrift::Scene::GetCircle(const std::string& name) cons
 void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _pointCount, const int _radius,
                                        const int _speed, const LDDrift::VecPos2D& pos, const LDDrift::VecCol& color,
                                        const float thickness) {
-    const CIRCLE_SHAPE_INFORMATION newCircle{.circleName = name, .circle = new LDDrift::Actors::Circle()};
+    const CIRCLE_SHAPE_INFORMATION newCircle{
+        .circleName = name, .circle = new LDDrift::Actors::Circle(), .render = true
+    };
     newCircle.circle->SetType<LDDrift::ActorType::convex>();
     if (thickness != -1) {
         newCircle.circle->SetJoinLineAlgorithm(LDDrift::JoinLineType::Bevel);
@@ -94,7 +96,9 @@ LDDrift::Actors::Polygon* LDDrift::Scene::GetPolygon(const std::string& name) co
 void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _pointCount, const int _speed,
                                         const int* pos,
                                         const LDDrift::VecCol& color, const float thickness, const int joinLine_A) {
-    const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
+    const POLYGON_SHAPE_INFORMATION newPolygon{
+        .polygonName = name, .polygon = new LDDrift::Actors::Polygon(), .render = true
+    };
     if (thickness != -1) {
         if (joinLine_A == MITER) {
             newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Miter);
@@ -133,7 +137,8 @@ void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickne
     const LINE_ACTOR_INFORMATION newLine{
         .lineName = name, .line = new LDDrift::Actors::Line(
             {static_cast<float>(startPos[0]), static_cast<float>(startPos[1])},
-            {static_cast<float>(endPos[0]), static_cast<float>(endPos[1])})
+            {static_cast<float>(endPos[0]), static_cast<float>(endPos[1])}),
+        .render = true
     };
     newLine.line->SetScreenSize(core->window.GetViewportSize());
     newLine.line->SetThickness(static_cast<float>(_thickness));
@@ -163,6 +168,14 @@ bool LDDrift::Scene::FindCircleWithName(const std::string& name) const {
     return false;
 }
 
+void LDDrift::Scene::freeSavedData() {
+    hasData = false;
+    circle_colors.clear();
+    polygon_colors.clear();
+    line_colors.clear();
+    texture_multipliers.clear();
+}
+
 bool LDDrift::Scene::FindPolygonWithName(const std::string& name) const {
     for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         if (polygonName == name) {
@@ -185,7 +198,9 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
                                         const int* pos,
                                         const std::vector<LDDrift::VecCol>& colors, const float thickness,
                                         const int joinLine_A) {
-    const POLYGON_SHAPE_INFORMATION newPolygon{.polygonName = name, .polygon = new LDDrift::Actors::Polygon()};
+    const POLYGON_SHAPE_INFORMATION newPolygon{
+        .polygonName = name, .polygon = new LDDrift::Actors::Polygon(), .render = true
+    };
     if (thickness != 0.0f) {
         if (joinLine_A == MITER) {
             newPolygon.polygon->SetJoinLineAlgorithm(LDDrift::JoinLineType::Miter);
@@ -353,7 +368,7 @@ LDDrift::Texture* LDDrift::Scene::GetTexture(const std::string& name) const {
 
 void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesystem::path& TexturePath,
                                    const unsigned short int desired_chan, const std::vector<float>& vertices) {
-    const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Texture()};
+    const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Texture(), .render = true};
     newTexture.texture->image_reader.LoadImage(TexturePath);
     newTexture.texture->SetTextureCoordinates(vertices);
     texture_render->AddTexture(newTexture.texture);
@@ -376,84 +391,65 @@ void LDDrift::Scene::SetChangeColorFunction(const GetAnimationProgressFunction& 
     func = function;
 }
 
-void LDDrift::Scene::freeThreadsOfA_Group() {
-    if (A_CC_Circle_TB.joinable()) {
-        A_CC_Circle_TB.join();
-    }
-    if (A_CC_Line_TB.joinable()) {
-        A_CC_Line_TB.join();
-    }
-    if (A_CC_Polygon_TB.joinable()) {
-        A_CC_Polygon_TB.join();
-    }
-    if (A_CC_Texture_TB.joinable()) {
-        A_CC_Texture_TB.join();
-    }
-}
-
-void LDDrift::Scene::freeThreadsOfB_Group() {
-    if (B_CC_Circle_FB_TMC.joinable()) {
-        B_CC_Circle_FB_TMC.join();
-    }
-    if (B_CC_Line_FB_TMC.joinable()) {
-        B_CC_Line_FB_TMC.join();
-    }
-    if (B_CC_Polygon_FB_TMC.joinable()) {
-        B_CC_Polygon_FB_TMC.join();
-    }
-    if (B_CC_Texture_FB_TMC.joinable()) {
-        B_CC_Texture_FB_TMC.join();
-    }
-}
-
-void LDDrift::Scene::freeThreads() {
-    freeThreadsOfA_Group();
-    freeThreadsOfB_Group();
-}
-
 void LDDrift::Scene::ChangeColorCirclesToBlack() const {
-    const std::size_t circleCount = circleShapes.size();
+    const std::size_t circleCount = circle_colors.size();
     for (std::size_t circle = 0; circle < circleCount; ++circle) {
-        LDDrift::Actors::Circle* circlePtr = circleShapes[circle].circle;
+        LDDrift::Actors::Circle* circlePtr = circle_colors[circle].first;
         const std::size_t pointCountOfCircle = circlePtr->GetPointCount();
         for (std::size_t pointNumber = 0; pointNumber < pointCountOfCircle; ++pointNumber) {
-            const LDDrift::VecCol newColor = circlePtr->GetPointColor(pointNumber) * (static_cast<float>(1 - func()));
+            const LDDrift::VecCol newColor = circle_colors[circle].second[pointNumber] * (static_cast<float>(1 -
+                func()));
             circlePtr->SetPointColor(pointNumber, newColor);
         }
     }
 }
 
 void LDDrift::Scene::ChangeColorPolygonsToBlack() const {
-    const std::size_t polygonCount = polygonShapes.size();
+    const std::size_t polygonCount = polygon_colors.size();
     for (std::size_t polygon = 0; polygon < polygonCount; ++polygon) {
-        LDDrift::Actors::Polygon* polygonPtr = polygonShapes[polygon].polygon;
+        LDDrift::Actors::Polygon* polygonPtr = polygon_colors[polygon].first;
         const std::size_t pointCountOfPolygon = polygonPtr->GetPointCount();
         for (std::size_t pointNumber = 0; pointNumber < pointCountOfPolygon; ++pointNumber) {
             polygonPtr->SetPointColor(pointNumber,
-                                      (polygonPtr->GetPointColor(pointNumber) * (static_cast<float>(1 - func()))));
+                                      (polygon_colors[polygon].second[pointNumber] * (static_cast<float>(1 - func()))));
         }
     }
 }
 
 void LDDrift::Scene::ChangeColorLinesToBlack() const {
-    const std::size_t lineCount = lines.size();
+    const std::size_t lineCount = line_colors.size();
     for (std::size_t lineNumber = 0; lineNumber < lineCount; ++lineNumber) {
-        LDDrift::Actors::Line* linePtr = lines[lineNumber].line;
-        linePtr->SetLineColor(linePtr->GetColor() * (static_cast<float>(1 - func())));
+        LDDrift::Actors::Line* linePtr = line_colors[lineNumber].first;
+        linePtr->SetLineColor(line_colors[lineNumber].second * (static_cast<float>(1 - func())));
     }
 }
 
 void LDDrift::Scene::ChangeColorTexturesToBlack() const {
-    const std::size_t textureCount = textures.size();
+    const std::size_t textureCount = texture_multipliers.size();
     for (std::size_t textureNumber = 0; textureNumber < textureCount; ++textureNumber) {
-        LDDrift::Texture* texturePtr = textures[textureNumber].texture;
+        LDDrift::Texture* texturePtr = texture_multipliers[textureNumber].first;
         texturePtr->SetColorMultiplierForTexture(static_cast<float>(1.0f - func()));
     }
 }
 
-void LDDrift::Scene::ChangeColorShapesToBlack() const {
+void LDDrift::Scene::ChangeColorShapesToBlack() {
     if (func == nullptr) {
         return;
+    }
+    if (!hasData) {
+        hasData = true;
+        for (const auto& circle : circleShapes) {
+            circle_colors.emplace_back(circle.circle, circle.circle->GetColorOfPoints());
+        }
+        for (const auto& polygon : polygonShapes) {
+            polygon_colors.emplace_back(polygon.polygon, polygon.polygon->GetColorOfPoints());
+        }
+        for (const auto& line : lines) {
+            line_colors.emplace_back(line.line, line.line->GetColor());
+        }
+        for (const auto& text : textures) {
+            texture_multipliers.emplace_back(text.texture, text.texture->GetColorMultiplierOfTexture());
+        }
     }
     ChangeColorCirclesToBlack();
     ChangeColorPolygonsToBlack();
@@ -462,39 +458,41 @@ void LDDrift::Scene::ChangeColorShapesToBlack() const {
 }
 
 void LDDrift::Scene::ChangeColorCirclesToMainColor() const {
-    const std::size_t circleCount = circleShapes.size();
-    for (std::size_t circle = 0; circle < circleCount; ++circle) {
-        LDDrift::Actors::Circle* circlePtr = circleShapes[circle].circle;
+    const std::size_t circleCount = circle_colors.size();
+    for (std::size_t _circle = 0; _circle < circleCount; ++_circle) {
+        LDDrift::Actors::Circle* circlePtr = circle_colors[_circle].first;
         const std::size_t pointCountOfCircle = circlePtr->GetPointCount();
         for (std::size_t pointNumber = 0; pointNumber < pointCountOfCircle; ++pointNumber) {
-            circlePtr->SetPointColor(pointNumber, circlePtr->GetPointColor(pointNumber) * static_cast<float>(func()));
+            circlePtr->SetPointColor(pointNumber,
+                                     circle_colors[_circle].second[pointNumber] * static_cast<float>(func()));
         }
     }
 }
 
 void LDDrift::Scene::ChangeColorPolygonsToMainColor() const {
-    const std::size_t polygonCount = polygonShapes.size();
-    for (std::size_t polygon = 0; polygon < polygonCount; ++polygon) {
-        LDDrift::Actors::Polygon* polygonPtr = polygonShapes[polygon].polygon;
+    const std::size_t polygonCount = polygon_colors.size();
+    for (std::size_t _polygon = 0; _polygon < polygonCount; ++_polygon) {
+        LDDrift::Actors::Polygon* polygonPtr = polygon_colors[_polygon].first;
         const std::size_t pointCountOfPolygon = polygonPtr->GetPointCount();
         for (std::size_t pointNumber = 0; pointNumber < pointCountOfPolygon; ++pointNumber) {
-            polygonPtr->SetPointColor(pointNumber, polygonPtr->GetPointColor(pointNumber) * static_cast<float>(func()));
+            polygonPtr->SetPointColor(pointNumber,
+                                      polygon_colors[_polygon].second[pointNumber] * static_cast<float>(func()));
         }
     }
 }
 
 void LDDrift::Scene::ChangeColorLinesToMainColor() const {
-    const std::size_t lineCount = lines.size();
-    for (std::size_t line = 0; line < lineCount; ++line) {
-        LDDrift::Actors::Line* linePtr = lines[line].line;
-        linePtr->SetLineColor(linePtr->GetColor() * static_cast<float>(func()));
+    const std::size_t lineCount = line_colors.size();
+    for (std::size_t _line = 0; _line < lineCount; ++_line) {
+        LDDrift::Actors::Line* linePtr = line_colors[_line].first;
+        linePtr->SetLineColor(line_colors[_line].second * static_cast<float>(func()));
     }
 }
 
 void LDDrift::Scene::ChangeColorTexturesToMainColor() const {
-    const std::size_t textureCount = textures.size();
+    const std::size_t textureCount = texture_multipliers.size();
     for (std::size_t textureNumber = 0; textureNumber < textureCount; ++textureNumber) {
-        LDDrift::Texture* texturePtr = textures[textureNumber].texture;
+        LDDrift::Texture* texturePtr = texture_multipliers[textureNumber].first;
         texturePtr->SetColorMultiplierForTexture(static_cast<float>(func()));
     }
 }
@@ -503,13 +501,24 @@ void LDDrift::Scene::ChangeColorShapesFromBlackToMainColor() {
     if (func == nullptr) {
         return;
     }
-    B_CC_Circle_FB_TMC = std::thread([this]() { ChangeColorCirclesToMainColor(); });
+    if (!hasData) {
+        hasData = true;
+        for (const auto& circle : circleShapes) {
+            circle_colors.emplace_back(circle.circle, circle.circle->GetColorOfPoints());
+        }
+        for (const auto& polygon : polygonShapes) {
+            polygon_colors.emplace_back(polygon.polygon, polygon.polygon->GetColorOfPoints());
+        }
+        for (const auto& line : lines) {
+            line_colors.emplace_back(line.line, line.line->GetColor());
+        }
+        for (const auto& texture : textures) {
+            texture_multipliers.emplace_back(texture.texture, texture.texture->GetColorMultiplierOfTexture());
+        }
+    }
 
-    B_CC_Polygon_FB_TMC = std::thread([this]() { ChangeColorPolygonsToMainColor(); });
-
-    B_CC_Line_FB_TMC = std::thread([this]() { ChangeColorLinesToMainColor(); });
-
-    B_CC_Texture_FB_TMC = std::thread([this]() { ChangeColorTexturesToMainColor(); });
-
-    freeThreadsOfB_Group();
+    ChangeColorCirclesToMainColor();
+    ChangeColorPolygonsToMainColor();
+    ChangeColorLinesToMainColor();
+    ChangeColorTexturesToMainColor();
 }

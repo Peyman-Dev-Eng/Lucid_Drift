@@ -40,28 +40,28 @@ namespace LDDrift
         {
             std::string circleName;
             LDDrift::Actors::Circle* circle;
-            bool render;
+            bool render = true;
         };
 
         struct POLYGON_SHAPE_INFORMATION
         {
             std::string polygonName;
             LDDrift::Actors::Polygon* polygon;
-            bool render;
+            bool render = true;
         };
 
         struct LINE_ACTOR_INFORMATION
         {
             std::string lineName;
             LDDrift::Actors::Line* line;
-            bool render;
+            bool render = true;
         };
 
         struct TEXTURE_INFORMATION
         {
             std::string textureName;
             LDDrift::Texture* texture;
-            bool render;
+            bool render = true;
         };
 
     private:
@@ -72,29 +72,17 @@ namespace LDDrift
         GetAnimationProgressFunction func = nullptr;
 
     public:
+        // defaults
+        bool hasData = false;
+        std::vector<std::pair<LDDrift::Actors::Circle*, std::vector<LDDrift::VecCol>>> circle_colors;
+        std::vector<std::pair<LDDrift::Actors::Polygon*, std::vector<LDDrift::VecCol>>> polygon_colors;
+        std::vector<std::pair<LDDrift::Actors::Line*, LDDrift::VecCol>> line_colors;
+        std::vector<std::pair<LDDrift::Texture*, float>> texture_multipliers;
+        // main
         std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
         std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
         std::vector<LINE_ACTOR_INFORMATION> lines;
         std::vector<TEXTURE_INFORMATION> textures;
-
-    private:
-        // CC = Change Color | TB = To Black
-        std::thread A_CC_Circle_TB;
-        std::thread A_CC_Polygon_TB;
-        std::thread A_CC_Line_TB;
-        std::thread A_CC_Texture_TB;
-        // threads of A group
-
-        // CC = Change Color | FB = From Black | TMC = to main color
-        std::thread B_CC_Circle_FB_TMC;
-        std::thread B_CC_Polygon_FB_TMC;
-        std::thread B_CC_Line_FB_TMC;
-        std::thread B_CC_Texture_FB_TMC;
-        // threads of B group
-        void freeThreadsOfA_Group();
-        void freeThreadsOfB_Group();
-        void freeThreads();
-
     private:
         // group A
         void ChangeColorCirclesToBlack() const;
@@ -116,8 +104,9 @@ namespace LDDrift
         void SetTextureRendererPTR(LDDrift::TextureRender* texturePTR);
         void ReSendShapesToRender();
         void SetChangeColorFunction(const GetAnimationProgressFunction& function);
-        void ChangeColorShapesToBlack() const;
+        void ChangeColorShapesToBlack();
         void ChangeColorShapesFromBlackToMainColor();
+        void freeSavedData();
         // circle
         [[nodiscard]] bool FindCircleWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Circle* GetCircle(const std::string& name) const;

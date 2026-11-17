@@ -169,9 +169,9 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), reinterpret_cast<void*>(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
-
     if (const std::size_t readDataSize = readDataFromGpu.size();
         readDataSize != 0) {
+        glUseProgram(program);
         for (std::size_t vertex = 0; vertex < readDataSize; ++vertex) {
             glDrawArrays(GL_TRIANGLES, readDataFromGpu[vertex].first, readDataFromGpu[vertex].second);
         }

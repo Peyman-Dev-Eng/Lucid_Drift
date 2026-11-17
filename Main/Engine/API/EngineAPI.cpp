@@ -50,3 +50,7 @@ void LDDrift::EngineAPI::SetCorePTR(LDDrift::Core* core_ptr) {
 void LDDrift::EngineAPI::ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode) {
     core->sceneManager.ChangeScene(mode);
 }
+
+bool LDDrift::EngineAPI::AnimationIsPlayingFunction() {
+    return core->sceneManager.HasPlayingAnimation();
+}

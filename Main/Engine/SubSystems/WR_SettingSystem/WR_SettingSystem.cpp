@@ -10,9 +10,10 @@ LDDrift::UserProjectSetting::UserProjectSetting() = default;
 LDDrift::UserProjectSetting::~UserProjectSetting() = default;
 
 void LDDrift::UserProjectSetting::SetSettings(const LDDrift::Core* core) {
-    circles = core->sceneManager.GetCurrentScene()->circleShapes;
-    polygons = core->sceneManager.GetCurrentScene()->polygonShapes;
-    lines = core->sceneManager.GetCurrentScene()->lines;
+    for (const auto& [NAME, SCENE] : core->sceneManager.scenes) {
+        Scenes.push_back({NAME, SCENE});
+    }
+
     for (const LDDrift::Event::Keyboard::LinuxKeyboardKeyCode& key : LDDrift::TargetKeys) {
         if (const std::string keyName = LDDrift::input::ConvertKeyEnumToString(key);
             keyName != NULL_STRING)
@@ -113,57 +114,30 @@ LDDrift::VecPos2D LDDrift::WR_SettingSystem::Convert_Vector_To_Point(const std::
     return LDDrift::VecPos2D{vector[0], vector[1]};
 }
 
-void LDDrift::WR_SettingSystem::saveCircleActor(json& j) const {
-    for (const auto& [circleName, circle,Render] : core->userProjectSetting.circles) {
-        j[ACTOR][CIRCLE][circleName]["radius"] = circle->GetRadius();
-        j[ACTOR][CIRCLE][circleName]["point_count"] = circle->GetPointCount();
-        j[ACTOR][CIRCLE][circleName]["point_positions"] = ConvertPointsToFloats(circle->GetGlobalPoints());
-        j[ACTOR][CIRCLE][circleName]["color"] = ConvertPointColorsToFloats(circle->GetColorOfPoints());
-        j[ACTOR][CIRCLE][circleName]["original_point_position"] =
-            Convert_Point_ToVector(circle->GetOriginalPosition_global());
-        j[ACTOR][CIRCLE][circleName]["speed"] = circle->GetSpeed();
-        j[ACTOR][CIRCLE][circleName]["center_pos"] = Convert_Point_ToVector(circle->GetCirclePosition());
-        j[ACTOR][CIRCLE][circleName]["thickness"] = circle->GetThickness();
-    }
-}
-
 std::vector<float> LDDrift::WR_SettingSystem::ConvertColorToVector(const LDDrift::VecCol& color) {
     return std::vector<float>{color.R, color.G, color.B, color.A};
 }
 
-void LDDrift::WR_SettingSystem::savePolygonActor(json& j) const {
-    for (const auto& [polyName, polygon,Render] : core->userProjectSetting.polygons) {
-        j[ACTOR][POLYGON][polyName]["thickness"] = polygon->GetThickness();
-        j[ACTOR][POLYGON][polyName]["join_line_type"] = ConvertLineJoiningAlgorithmToString(
-            polygon->GetJoinLineAlgorithm().value());
-        j[ACTOR][POLYGON][polyName]["point_count"] = polygon->GetPointCount();
-        j[ACTOR][POLYGON][polyName]["point_positions"] = ConvertPointsToFloats(polygon->GetGlobalPoints());
-        j[ACTOR][POLYGON][polyName]["point_colors"] = ConvertPointColorsToFloats(polygon->GetColorOfPoints());
-        j[ACTOR][POLYGON][polyName]["original_point_position"] = Convert_Point_ToVector(
-            polygon->GetOriginalPosition_global());
-        j[ACTOR][POLYGON][polyName]["speed"] = polygon->GetSpeed();
-        j[ACTOR][POLYGON][polyName]["shape_type"] = polygon->ShapeIsConcave() ? "concave" : "convex";
-    }
-}
-
-void LDDrift::WR_SettingSystem::saveLinesActor(json& j) const {
-    for (const auto& [lineName, line, Render] : core->userProjectSetting.lines) {
-        j[ACTOR][LINE][lineName]["thickness"] = line->GetThickness();
-        j[ACTOR][LINE][lineName]["start_pos"] = Convert_Point_ToVector(line->GetFirstPoint());
-        j[ACTOR][LINE][lineName]["end_pos"] = Convert_Point_ToVector(line->GetSecondPoint());
-        j[ACTOR][LINE][lineName]["color"] = ConvertColorToVector(line->GetColor());
-    }
-}
 
 void LDDrift::WR_SettingSystem::saveKeyTargetsOfKeyboard(json& j) const {
     j[KEY_TARGETS] = core->userProjectSetting.key_targets;
 }
 
+void LDDrift::WR_SettingSystem::saveScenes(json& j) {
+    for (const auto& scene : core->userProjectSetting.Scenes) {
+        for (const auto& circle : scene.second->circleShapes) {
+            j[scene.first][ACTOR][CIRCLE][circle.circleName]["radius"] = circle.circle->GetRadius();
+            j[scene.first][ACTOR][CIRCLE][circle.circleName]["speed"] = circle.circle->GetSpeed();
+            j[scene.first][ACTOR][CIRCLE][circle.circleName]["center_pos"] = Convert_Point_ToVector(circle.circle->GetCirclePosition());
+            j[scene.first][ACTOR][CIRCLE][circle.circleName]["color"] = ConvertColorToVector(circle.circle->GetPointColor(0));
+            j[scene.first][ACTOR][CIRCLE][circle.circleName]["thickness"] = circle.circle->GetThickness();
+
+        }
+    }
+}
+
 void LDDrift::WR_SettingSystem::WriteSettingsOfUserProject() const {
     json _json;
-    saveCircleActor(_json);
-    savePolygonActor(_json);
-    saveLinesActor(_json);
     saveKeyTargetsOfKeyboard(_json);
 
     std::ofstream out((settingFolderPath / settingFilename).string(), std::ios::out);
@@ -206,7 +180,8 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
             const LDDrift::VecCol col = ConvertFloatColorsToVectors(value["color"])[0];
             const float thick = value["thickness"];
             // end
-            core->sceneManager.GetCurrentScene()->CreateCircleShape(name, pointCount, radius, speed, pos, col, thick == 0 ? -1 : thick);
+            core->sceneManager.GetCurrentScene()->CreateCircleShape(name, pointCount, radius, speed, pos, col,
+                                                                    thick == 0 ? -1 : thick);
         }
 
         for (const auto& lines : lines_json.items()) {
@@ -239,8 +214,9 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
                 ConvertStringToLineJoiningAlgorithm(value["join_line_type"]);
             const int speed = value["speed"];
             // end
-            core->sceneManager.GetCurrentScene()->CreatePolygonShape(name, pointCount, speed, points.data(), colors, thick,
-                                           Convert_JLT_ToInteger(jlt));
+            core->sceneManager.GetCurrentScene()->CreatePolygonShape(name, pointCount, speed, points.data(), colors,
+                                                                     thick,
+                                                                     Convert_JLT_ToInteger(jlt));
         }
         for (const std::string& key : key_targets) {
             LDDrift::input::Keyboard::SetKeyTarget(key);

@@ -16,7 +16,7 @@ bool LDDrift::SceneAnimation::CheckAnimation(const LDDrift::ChangeSceneMode& mod
 }
 
 double LDDrift::SceneAnimation::CalculateAnimationProcess(const ch::time_point<ch::steady_clock>& startTime,
-    const double& Duration) {
+                                                          const double& Duration) {
     return chd_double(chs::now() - startTime).count() / Duration;
 }
 
@@ -61,7 +61,7 @@ void LDDrift::SceneAnimation::initPlayAnimation(const LDDrift::Scene* cs, const 
     }
 }
 
-void LDDrift::SceneAnimation::freePlayAnimation(const LDDrift::Scene* cs, const LDDrift::Scene* ns) {
+void LDDrift::SceneAnimation::freePlayAnimation(LDDrift::Scene* cs, LDDrift::Scene* ns) {
     animation.nowPlaying = false;
     animation.duration = 0.0f;
     animation.animationProcess = 0.0f;
@@ -69,6 +69,8 @@ void LDDrift::SceneAnimation::freePlayAnimation(const LDDrift::Scene* cs, const 
     animation.elapsedTime = 0.0f;
     animation.canFree = false;
     changeSceneMode = std::nullopt;
+    cs->freeSavedData();
+    ns->freeSavedData();
 
     // circle
     for (const auto& [key, value] : circleColors) {
@@ -151,6 +153,10 @@ void LDDrift::SceneAnimation::freePlayAnimation(const LDDrift::Scene* cs, const 
             }
         }
     }
+    circleColors.clear();
+    polygonColors.clear();
+    lineColors.clear();
+    textureMulti.clear();
 }
 
 bool LDDrift::SceneAnimation::checkDefaultSetting() const {
@@ -158,7 +164,7 @@ bool LDDrift::SceneAnimation::checkDefaultSetting() const {
         animation.startAnimationTime == chs::time_point::min() && animation.elapsedTime == 0.0f;
 }
 
-void LDDrift::SceneAnimation::SmoothAlgorithm(const LDDrift::Scene* currentScene, LDDrift::Scene* nextScene) {
+void LDDrift::SceneAnimation::SmoothAlgorithm(LDDrift::Scene* currentScene, LDDrift::Scene* nextScene) {
     changeSceneMode = LDDrift::ChangeSceneMode::Smooth;
     initPlayAnimation(currentScene, nextScene);
     animation.elapsedTime = chd_double(chs::now() - animation.startAnimationTime).count();
@@ -175,7 +181,7 @@ void LDDrift::SceneAnimation::SmoothAlgorithm(const LDDrift::Scene* currentScene
     nextScene->ChangeColorShapesFromBlackToMainColor();
 }
 
-void LDDrift::SceneAnimation::SuddenlyAlgorithm(const LDDrift::Scene* cs, LDDrift::Scene* ns) {
+void LDDrift::SceneAnimation::SuddenlyAlgorithm(LDDrift::Scene* cs, LDDrift::Scene* ns) {
     changeSceneMode = LDDrift::ChangeSceneMode::Suddenly;
     initPlayAnimation(cs, ns);
     cs->ChangeColorShapesToBlack();
@@ -195,3 +201,4 @@ double LDDrift::SceneAnimation::GetAnimationProcess() const {
 LDDrift::EndAnimation::EndAnimation() = default;
 
 LDDrift::EndAnimation::~EndAnimation() = default;
+

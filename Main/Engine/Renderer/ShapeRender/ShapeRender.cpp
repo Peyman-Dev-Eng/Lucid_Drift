@@ -102,10 +102,10 @@ void LDDrift::ShapeRender::AddShapeToRender(LDDrift::Actors::Shape* shape) {
     } else {
         if (shape->ShapeIsConvex()) {
             const LDDrift::Triangulation_S<LDDrift::ActorType::convex> triangulation(shape);
-            VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
+            VTC = triangulation.CreateTriangles();
         } else {
             const LDDrift::Triangulation_S<LDDrift::ActorType::concave> triangulation(shape);
-            VTC = LDDrift::Transform::TransformToNDC_Position(triangulation.CreateTriangles());
+            VTC = triangulation.CreateTriangles();
         }
     }
     const std::size_t vertexCount = VTC.size() / 3;

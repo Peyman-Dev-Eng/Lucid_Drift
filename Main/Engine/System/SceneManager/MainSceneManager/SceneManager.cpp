@@ -1,5 +1,4 @@
 #include "SceneManager.h"
-
 #include "System/Core/Core.h"
 
 LDDrift::SceneManager::SceneManager() = default;
@@ -12,6 +11,9 @@ void LDDrift::SceneManager::Initialize() {
 }
 
 void LDDrift::SceneManager::CreateDefaultScene() {
+    if (!scenes.empty()) {
+        return;
+    }
     defaultScene.SetCorePTR(core_ptr);
     defaultScene.SetRendererPTR(shapeRender_ptr);
     defaultScene.SetTextureRendererPTR(textureRender_ptr);
@@ -48,6 +50,8 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             for (const auto& line : scenes[indexOfScene].scene->lines) {
                 if (line.render) shapeRender_ptr->AddLineToRender(line.line);
             }
+            currentScene = scenes[indexOfScene].scene;
+            currentSceneName = scenes[indexOfScene].name;
         } catch (const std::runtime_error& e) {
             std::cout << "scenes size: " << scenes.size() << "    ---    " << e.what() << std::endl;
         } catch (const std::exception& e) {
@@ -61,42 +65,47 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
                                            scenes[(indexOfScene + 1) % scenes.size()].scene);
             std::vector<LDDrift::Actors::Shape*> shapes;
             for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
-                if (circle.render) shapes.push_back(circle.circle);
+                shapes.push_back(circle.circle);
             }
             for (const auto& polygon : scenes[indexOfScene].scene->polygonShapes) {
-                if (polygon.render) shapes.push_back(polygon.polygon);
+                shapes.push_back(polygon.polygon);
             }
             for (const auto& circle : scenes[(indexOfScene + 1) % scenes.size()].scene->circleShapes) {
-                if (circle.render) shapes.push_back(circle.circle);
+                shapes.push_back(circle.circle);
             }
             for (const auto& polygon : scenes[(indexOfScene + 1) % scenes.size()].scene->polygonShapes) {
-                if (polygon.render) shapes.push_back(polygon.polygon);
+                shapes.push_back(polygon.polygon);
             }
             std::vector<LDDrift::Actors::Line*> lines;
             for (const auto& line : scenes[indexOfScene].scene->lines) {
-                if (line.render) lines.push_back(line.line);
+                lines.push_back(line.line);
             }
             for (const auto& line : scenes[(indexOfScene + 1) % scenes.size()].scene->lines) {
-                if (line.render) lines.push_back(line.line);
+                lines.push_back(line.line);
             }
             LDDrift::MainRenderer::StaticDrawer(core_ptr, shapes, lines);
         } catch (const EndAnimation& e) { // append actors to renderer systems
             updateIndexOfScene();
             for (const auto& texture : scenes[indexOfScene].scene->textures) {
-                if (texture.render) textureRender_ptr->AddTexture(texture.texture);
+                textureRender_ptr->AddTexture(texture.texture);
             }
 
             for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
-                if (circle.render) shapeRender_ptr->AddShapeToRender(circle.circle);
+                shapeRender_ptr->AddShapeToRender(circle.circle);
             }
 
             for (const auto& polygon : scenes[indexOfScene].scene->polygonShapes) {
-                if (polygon.render) shapeRender_ptr->AddShapeToRender(polygon.polygon);
+                shapeRender_ptr->AddShapeToRender(polygon.polygon);
             }
 
             for (const auto& line : scenes[indexOfScene].scene->lines) {
-                if (line.render) shapeRender_ptr->AddLineToRender(line.line);
+                shapeRender_ptr->AddLineToRender(line.line);
             }
+            currentScene = scenes[indexOfScene].scene;
+            currentSceneName = scenes[indexOfScene].name;
+            shapeRender_ptr->UpdateShapeData();
+            shapeRender_ptr->SendDataToGPU();
+            textureRender_ptr->SendToGPU();
         } catch (const std::runtime_error& e) {
             std::cout << "scene size: " << scenes.size() << "    ---    " << e.what() << std::endl;
         } catch (const std::exception& e) {
@@ -223,4 +232,8 @@ std::string LDDrift::SceneManager::GetCurrentSceneName() const {
         return "default";
     }
     return currentSceneName;
+}
+
+bool LDDrift::SceneManager::HasPlayingAnimation() const {
+    return sceneAnimation.animation.nowPlaying;
 }

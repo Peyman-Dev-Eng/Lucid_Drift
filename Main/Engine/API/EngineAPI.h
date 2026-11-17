@@ -46,10 +46,12 @@ namespace LDDrift::EngineAPI
     LD_PLUGIN_API void Tick(float deltaTime);
     LD_PLUGIN_API void EndPlay();
     }
-
-    void ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode);
-
     void DestroyEngineAPI();
+
+    // user functions
+    void ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode);
+    bool AnimationIsPlayingFunction();
+
 }
 
 #endif
