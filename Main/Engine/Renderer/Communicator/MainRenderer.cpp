@@ -203,16 +203,18 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core, const std::
         "    vec4 texColor = texture(texture_S, outColor);\n"
         "    fragColor = vec4(texColor.rgb * colorMultiplier, texColor.a);\n"
         "}";
+
+    GLuint VAO = 0, VBO = 0;
+    const GLuint program = glCreateProgram();
+
     const GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertShaderSrc, nullptr);
     glCompileShader(vertexShader);
 
     const GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glAttachShader(fragmentShader, vertexShader);
     glShaderSource(fragmentShader, 1, &fragShaderSrc, nullptr);
+    glCompileShader(fragmentShader);
 
-    GLuint VAO = 0, VBO = 0;
-    GLuint program = glCreateProgram();
     glAttachShader(program, vertexShader);
     glAttachShader(program, fragmentShader);
     glLinkProgram(program);
