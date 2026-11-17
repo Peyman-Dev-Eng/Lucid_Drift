@@ -93,7 +93,7 @@ Lucid_Drift/
 ├── main.cpp                       # Application entry point
 ├── glad.c                         # GLAD implementation
 ├── glad/                          # OpenGL loader headers
-├── LICENSE                        # MIT License
+├── LICENSE                        # Apache License
 │
 ├── Main/
 │   ├── CMakeLists.txt
