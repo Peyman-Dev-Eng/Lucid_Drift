@@ -7,6 +7,7 @@
 namespace LDDrift
 {
     class Core;
+
     struct DefaultWindowsData
     {
         std::string name;
@@ -73,6 +74,7 @@ namespace LDDrift
         void Resize();
         void Render() const;
     };
+
     // create window title bar
 } // LDDrift
 

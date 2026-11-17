@@ -134,7 +134,8 @@ void LDDrift::Camera::FallowTargetShape() {
     const float oldX = position.X;
     const float oldY = position.Y;
 
-    const auto moveToward = [step](float& current, const float target) {
+    const auto moveToward = [step](float& current, const float target)
+    {
         const float delta = target - current;
 
         if (const float distance = std::abs(delta); distance <= step) {

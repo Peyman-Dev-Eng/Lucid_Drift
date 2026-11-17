@@ -86,4 +86,3 @@ double LDDrift::SceneAnimation::GetAnimationProcess() const {
 LDDrift::EndAnimation::EndAnimation() = default;
 
 LDDrift::EndAnimation::~EndAnimation() = default;
-

@@ -83,6 +83,7 @@ namespace LDDrift
         std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
         std::vector<LINE_ACTOR_INFORMATION> lines;
         std::vector<TEXTURE_INFORMATION> textures;
+
     private:
         // group A
         void ChangeColorCirclesToBlack() const;

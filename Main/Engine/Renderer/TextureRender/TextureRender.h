@@ -10,6 +10,7 @@
 namespace LDDrift
 {
     class Core;
+
     class TextureRender final
     {
     private: // functions

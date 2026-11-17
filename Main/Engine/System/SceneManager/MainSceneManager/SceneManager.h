@@ -32,10 +32,12 @@ namespace LDDrift
         LDDrift::SceneAnimation sceneAnimation;
 
     public:
-        struct SCENE_DATA {
+        struct SCENE_DATA
+        {
             std::string name;
             LDDrift::Scene* scene;
         };
+
     private:
         friend void LDDrift::UserProjectSetting::SetSettings(const LDDrift::Core* _core_ptr);
         std::vector<SCENE_DATA> scenes;
