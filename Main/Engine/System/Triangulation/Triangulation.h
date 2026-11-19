@@ -14,7 +14,7 @@
 #include "Actors/Shapes/MainShape/Shape.h"
 #include "Actors/Line/Line.h"
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
-#include <System/Texture/Texture.h>
+#include <Actors/Texture/Texture.h>
 
 namespace LDDrift
 {

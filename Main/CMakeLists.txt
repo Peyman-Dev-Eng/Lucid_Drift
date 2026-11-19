@@ -390,8 +390,8 @@ add_library(Engine SHARED
         Engine/System/Camera/Camera.h
 
         # Texture - system
-        Engine/System/Texture/Texture.cpp
-        Engine/System/Texture/Texture.h
+        Engine/Actors/Texture/Texture.cpp
+        Engine/Actors/Texture/Texture.h
 
         # Texture render - system
         Engine/Renderer/TextureRender/TextureRender.cpp

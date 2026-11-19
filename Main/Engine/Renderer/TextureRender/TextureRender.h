@@ -1,6 +1,6 @@
 #ifndef LUCID_DRIFT_TEXTURE_RENDER_H
 #define LUCID_DRIFT_TEXTURE_RENDER_H
-#include <System/Texture/Texture.h>
+#include <Actors/Texture/Texture.h>
 #include <set>
 #include <algorithm>
 #include <VecPos.h>

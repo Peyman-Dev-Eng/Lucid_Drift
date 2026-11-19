@@ -1,7 +1,7 @@
 #include "SceneAnimation.h"
 #include <System/Scene/Scene.h>
 #include <Actors/Shapes/MainShape/Shape.h>
-#include <System/Texture/Texture.h>
+#include <Actors/Texture/Texture.h>
 
 LDDrift::SceneAnimation::SceneAnimation() :
     animation(false, false, 0.0, 0.0, chs::time_point::min(), 0.0) {}

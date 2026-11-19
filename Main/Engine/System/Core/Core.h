@@ -25,7 +25,7 @@
 #include <System/Triangulation/Triangulation.h>
 #include <System/Window/Window.h>
 #include <sstream>
-#include <System/Texture/Texture.h>
+#include <Actors/Texture/Texture.h>
 #include <Renderer/TextureRender/TextureRender.h>
 #include <streambuf>
 #include <System/SceneManager/MainSceneManager/SceneManager.h>
