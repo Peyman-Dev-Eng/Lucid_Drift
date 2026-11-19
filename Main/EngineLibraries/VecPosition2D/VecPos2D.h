@@ -8,8 +8,6 @@
 
 namespace LDDrift
 {
-    template <typename SHAPE_TYPE>
-    class Triangulation_S;
     /**
      * VecPos2D class represents a two-dimensional vector with positive x and y coordinates.
      *

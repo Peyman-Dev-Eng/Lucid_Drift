@@ -1,4 +1,4 @@
-#include "VecPos.h"
+#include "VecPos2D.h"
 
 LDDrift::VecPos2D::VecPos2D() = default;
 
@@ -41,9 +41,6 @@ LDDrift::VecPos2D LDDrift::VecPos2D::NormalLine(const LDDrift::VecPos2D& FirstVe
     }
     CTM_assert(false, "direction input for normalize line is invalid")
 }
-
-#include <cmath>
-#include <algorithm>
 
 float LDDrift::VecPos2D::AngleBetween(
     const VecPos2D& origin,
