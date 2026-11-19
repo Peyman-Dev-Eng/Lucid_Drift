@@ -1,7 +1,7 @@
 #ifndef LUCID_DRIFT_SHAPE_H
 #define LUCID_DRIFT_SHAPE_H
 #include <vector>
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <VecCol.h>
 #include <Angle.h>
 #include <codecvt>

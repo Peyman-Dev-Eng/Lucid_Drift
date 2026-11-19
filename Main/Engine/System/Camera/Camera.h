@@ -1,6 +1,6 @@
 #ifndef LUCID_DRIFT_CAMERA_H
 #define LUCID_DRIFT_CAMERA_H
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <Actors/Shapes/MainShape/Shape.h>

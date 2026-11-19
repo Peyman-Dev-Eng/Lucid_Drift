@@ -36,7 +36,7 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             updateIndexOfScene();
             // append textures to render system
             for (const auto& texture : scenes[indexOfScene].scene->textures) {
-                if (texture.render) textureRender_ptr->AddTexture(texture.texture);
+                if (texture.render) textureRender_ptr->AddTexture(texture.texture, 1);
             }
             // append circles to render system
             for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
@@ -95,7 +95,7 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
         } catch (const EndAnimation& e) { // append actors to renderer systems
             updateIndexOfScene();
             for (const auto& texture : scenes[indexOfScene].scene->textures) {
-                textureRender_ptr->AddTexture(texture.texture);
+                textureRender_ptr->AddTexture(texture.texture, 1);
             }
 
             for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
@@ -215,7 +215,7 @@ void LDDrift::SceneManager::ChangeScene(const std::string& name) {
                 shapeRender_ptr->AddLineToRender(line.line);
             }
             for (const auto& texture : scene->textures) {
-                textureRender_ptr->AddTexture(texture.texture);
+                textureRender_ptr->AddTexture(texture.texture, 1);
             }
             scene->MarkSendDataToGPU();
             scene->ReSendShapesToRender();

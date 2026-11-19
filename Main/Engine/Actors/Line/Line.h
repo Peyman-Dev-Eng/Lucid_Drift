@@ -1,6 +1,6 @@
 #ifndef LUCID_DRIFT_LINE_H
 #define LUCID_DRIFT_LINE_H
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <array>
 #include <vector>
 #include <VecCol.h>

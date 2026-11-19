@@ -160,6 +160,7 @@ void LDDrift::Core::RunGameFrame() {
 }
 
 void LDDrift::Core::EngineHandler() {
+    window.SetBackground("/home/Develepment/CLionProjects/Lucid_Drift/docs/images/lucid-drift-banner.png", 1);
     projectWatchTower.SetPaths();
     while (window.ScreenIsOpen() && engineRun) {
         RunEngineFrame();

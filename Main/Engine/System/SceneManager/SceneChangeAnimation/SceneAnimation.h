@@ -5,7 +5,7 @@
 #include <Actors/Shapes/Circle/CircleShape.h>
 #include <Actors/Shapes/Polygon/Polygon.h>
 #include <VecCol.h>
-#include <VecPos.h>
+#include <VecPos2D.h>
 #define ANIMATION_IN_DEFAULT_MODE 0
 
 namespace

@@ -9,7 +9,7 @@
 #include <vector>
 #include <ProjectWatchTower.h>
 #include <optional>
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <imgui_internal.h>
 #include <Compile.h>
 #include <cstdio>

@@ -1,6 +1,6 @@
 #ifndef LUCID_DRIFT_POINTHITTESTING_H
 #define LUCID_DRIFT_POINTHITTESTING_H
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <vector>
 
 namespace LDDrift

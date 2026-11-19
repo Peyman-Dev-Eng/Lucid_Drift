@@ -1,7 +1,7 @@
 #ifndef LUCID_DRIFT_TRANSFORM_H
 #define LUCID_DRIFT_TRANSFORM_H
 #include <vector>
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <System/Window/Window.h>
 #include <Actors/Line/Line.h>
 

@@ -2,7 +2,7 @@
 #define LUCID_DRIFT_SHAPEDATA_H
 #include <vector>
 #include <VecCol.h>
-#include <VecPos.h>
+#include <VecPos2D.h>
 
 namespace LDDrift
 {

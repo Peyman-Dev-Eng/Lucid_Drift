@@ -387,7 +387,7 @@ void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesyste
     const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Texture(), .render = true};
     newTexture.texture->image_reader.LoadImage(TexturePath);
     newTexture.texture->SetTextureCoordinates(vertices);
-    texture_render->AddTexture(newTexture.texture);
+    texture_render->AddTexture(newTexture.texture, 1);
     texture_render->SendToGPU();
     textures.push_back(newTexture);
 }
