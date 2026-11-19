@@ -402,6 +402,8 @@ add_library(Engine SHARED
         Engine/System/SceneManager/MainSceneManager/SceneManager.h
         Engine/System/SceneManager/SceneChangeAnimation/SceneAnimation.cpp
         Engine/System/SceneManager/SceneChangeAnimation/SceneAnimation.h
+        Engine/Actors/Model/Model.cpp
+        Engine/Actors/Model/Model.h
 )
 
 target_include_directories(Engine PUBLIC
