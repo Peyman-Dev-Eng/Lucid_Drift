@@ -8,6 +8,10 @@ set(IMGUI_COLOR_TEXT_EDITOR_DIR
         "${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/ImGuiColorTextEdit"
 )
 
+set(cglTF
+        "${CMAKE_CURRENT_LIST_DIR}/../ThirdParty/cgltf"
+)
+
 # ============================================================================
 # Assertion
 # ============================================================================
@@ -26,11 +30,11 @@ target_include_directories(ASSERT PUBLIC
 # ============================================================================
 
 add_library(VECPOS2D STATIC
-        EngineLibraries/VecPosition/VecPos.cpp
+        EngineLibraries/VecPosition2D/VecPos2D.cpp
 )
 
 target_include_directories(VECPOS2D PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition2D
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine
         ${LUCID_DRIFT_ROOT}/glad/include
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/System/GUI
@@ -212,7 +216,7 @@ add_library(WRSS STATIC
 target_include_directories(WRSS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/WR_SettingSystem
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine
-        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition2D
         ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecColor
 )
 
@@ -267,6 +271,20 @@ target_include_directories(IMAGE_READER PUBLIC
 )
 
 target_link_libraries(IMAGE_READER PUBLIC stb_image)
+
+# ============================================================================
+# END
+# ============================================================================
+
+add_library(VEC_POS_3D STATIC
+        EngineLibraries/VecPosition3D/VecPos3D.cpp
+)
+
+target_include_directories(VEC_POS_3D PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition3D
+)
+
+target_link_libraries(VEC_POS_3D PUBLIC ASSERT)
 
 # ============================================================================
 # END
@@ -404,6 +422,8 @@ add_library(Engine SHARED
         Engine/System/SceneManager/SceneChangeAnimation/SceneAnimation.h
         Engine/Actors/Model/Model.cpp
         Engine/Actors/Model/Model.h
+        EngineLibraries/VecPosition3D/VecPos3D.cpp
+        EngineLibraries/VecPosition3D/VecPos3D.h
 )
 
 target_include_directories(Engine PUBLIC
@@ -432,6 +452,7 @@ target_link_libraries(Engine PUBLIC
         WRSS
         IMAGE_READER
         stb_image
+        VEC_POS_3D
 )
 
 if (WIN32)
@@ -444,6 +465,14 @@ target_include_directories(GUI PUBLIC
 
 target_sources(GUI PRIVATE
         "${IMGUI_COLOR_TEXT_EDITOR_DIR}/TextEditor.cpp"
+)
+
+target_include_directories(Engine PUBLIC
+        "${cglTF}"
+)
+
+target_sources(Engine PRIVATE
+        "${cglTF}/loader.c"
 )
 
 target_link_libraries(GUI PRIVATE
