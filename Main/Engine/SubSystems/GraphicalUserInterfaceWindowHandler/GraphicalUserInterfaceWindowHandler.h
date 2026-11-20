@@ -1,8 +1,10 @@
 #ifndef LUCID_DRIFT_GRAPHICAL_USER_INTERFACE_WINDOW_HANDLER_H
 #define LUCID_DRIFT_GRAPHICAL_USER_INTERFACE_WINDOW_HANDLER_H
+#include <imgui.h>
 #include <string>
 #include <VecPos2D.h>
 #include <vector>
+#include <SubSystems/Logger/Logger.h>
 
 namespace LDDrift
 {
@@ -59,9 +61,17 @@ namespace LDDrift
     class Console_GraphicalWindow final : private DefaultWindowsData
     {
     private:
+        struct Text
+        {
+            std::string text;
+            ImVec4 color;
+        };
+    private:
         LDDrift::Core* core = nullptr;
-        std::vector<std::string> texts;
+        std::vector<Text> texts;
         std::string lastInputTextForSetTextFunction;
+    private:
+        static std::vector<Text> ExtractTextFromString(const std::string& text);
 
     public:
         Console_GraphicalWindow();

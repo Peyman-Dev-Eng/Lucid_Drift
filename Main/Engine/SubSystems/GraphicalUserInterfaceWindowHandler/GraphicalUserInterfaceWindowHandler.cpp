@@ -296,9 +296,9 @@ void LDDrift::Console_GraphicalWindow::Resize() {
 }
 
 void LDDrift::Console_GraphicalWindow::SetText(const std::string& text) {
-    if (text != lastInputTextForSetTextFunction || std::ranges::find(texts, text) == texts.end()) {
+    if (text != lastInputTextForSetTextFunction || std::ranges::find(texts, text, &Text::text) == texts.end()) {
         texts.clear();
-        texts.push_back(text);
+        texts = ExtractTextFromString(text);
         lastInputTextForSetTextFunction = text;
     }
 }
@@ -308,8 +308,10 @@ void LDDrift::Console_GraphicalWindow::Render() const {
         core->consoleBuffer.str("");
         core->consoleBuffer.clear();
     }
-    for (const std::string& text : texts) {
-        ImGui::TextUnformatted(text.c_str());
+    for (const auto& [_TEXT, _COLOR] : texts) {
+        ImGui::PushStyleColor(ImGuiCol_Text, _COLOR);
+        ImGui::TextUnformatted(_TEXT.c_str());
+        ImGui::PopStyleColor();
     }
 }
 
@@ -319,4 +321,29 @@ const LDDrift::VecPos2D& LDDrift::Console_GraphicalWindow::GetPosition() const {
 
 const LDDrift::VecPos2D& LDDrift::Console_GraphicalWindow::GetSize() const {
     return size;
+}
+
+std::vector<LDDrift::Console_GraphicalWindow::Text> LDDrift::Console_GraphicalWindow::ExtractTextFromString(
+    const std::string& text) {
+    std::vector<Text> result;
+    std::size_t begin = 0;
+    std::size_t end = 1;
+    while (begin < text.length()) {
+        while (end < text.length() && text[end] != '\n') {
+            ++end;
+        }
+        if (std::string extracted = text.substr(begin, end - begin);
+            extracted.find(INFO) != std::string::npos) {
+            result.push_back({.text = extracted, .color = {1, 1, 1, 1}});
+        } else if (extracted.find(WARNING) != std::string::npos) {
+            result.push_back({.text = extracted, .color = {1, 0.8, 0, 1}});
+        } else if (extracted.find(ERROR) != std::string::npos) {
+            result.push_back({.text = extracted, .color = {1, 0.2, 0.4, 1}});
+        } else if (extracted.find(DEBUG) != std::string::npos) {
+            result.push_back({.text = extracted, .color = {0, 1, 0, 1}});
+        }
+        begin = ++end;
+        ++end;
+    }
+    return result;
 }
