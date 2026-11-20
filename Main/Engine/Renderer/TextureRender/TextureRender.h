@@ -3,7 +3,7 @@
 #include <Actors/Texture/Texture.h>
 #include <set>
 #include <algorithm>
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
@@ -14,6 +14,7 @@ namespace LDDrift
     class TextureRender final
     {
     private: // functions
+        bool findTexture(const LDDrift::Texture* texture) const;
         void SetVertexShaderSource();
         void SetFragmentShaderSource();
         static GLuint Compile(GLenum type, const char* const shaderSource);
@@ -36,8 +37,14 @@ namespace LDDrift
         std::size_t lastIndexForStart = 0; // save last index for set next start index of texture
 
     private: // to render
+        struct TEXTURE
+        {
+            int use_U_VIEW_PROJECTION;
+            LDDrift::Texture* texture;
+        };
+
         LDDrift::Core* core = nullptr;
-        std::vector<LDDrift::Texture*> textures;
+        std::vector<TEXTURE> textures;
 
     public:
         TextureRender();
@@ -48,7 +55,7 @@ namespace LDDrift
         void Initialize();
         void RemoveTexture(LDDrift::Texture* texture);
         void Render() const;
-        void AddTexture(LDDrift::Texture* texture);
+        void AddTexture(LDDrift::Texture* texture, const int& use_UVP);
         void SendToGPU();
         void SetViewMatrix(const glm::mat4& u_viewProjectionMatrix) const;
     };

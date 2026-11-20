@@ -14,15 +14,29 @@ GLuint LDDrift::TextureRender::Compile(const GLenum type, const char* const shad
     return shader;
 }
 
+bool LDDrift::TextureRender::findTexture(const LDDrift::Texture* texture) const {
+    for (const auto [use_U_VIEW_PROJECTION, _texture] : textures) {
+        if (_texture == texture) {
+            return true;
+        }
+    }
+    return false;
+}
+
 void LDDrift::TextureRender::SetVertexShaderSource() {
     VertexShaderSource =
         "#version 460 core\n"
         "layout (location = 0) in vec2 position;\n"
         "layout (location = 1) in vec2 texCoord;\n"
         "out vec2 outColor;\n"
+        "uniform int use_VIEW_PROJECTION;\n" // 0 = false | 1 = true
         "uniform mat4 U_VIEW_PROJECTION;\n"
         "void main() {\n"
-        "    gl_Position = U_VIEW_PROJECTION * vec4(position, 0.0, 1.0);\n"
+        "    if (use_VIEW_PROJECTION == 1) {\n"
+        "        gl_Position = U_VIEW_PROJECTION * vec4(position, 0.0, 1.0);\n"
+        "    } else {\n"
+        "        gl_Position = vec4(position, 0.0, 1.0);\n"
+        "    }"
         "    outColor = texCoord;\n"
         "}";
 }
@@ -67,9 +81,9 @@ void LDDrift::TextureRender::Initialize() {
     glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 }
 
-void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture) {
-    if (std::ranges::find(textures, texture) == textures.end()) {
-        textures.push_back(texture);
+void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture, const int& use_UVP) {
+    if (!findTexture(texture)) {
+        textures.push_back({use_UVP, texture});
         texture->GenerateTexture();
         const std::size_t textureDataSize = texture->GetTextureCoordinates().size() / 4;
         howToReadDataFromGPU.push_back(readDataFrom_GPU{.start = lastIndexForStart, .count = textureDataSize});
@@ -81,11 +95,11 @@ void LDDrift::TextureRender::SendToGPU() {
     lastIndexForStart = 0;
     howToReadDataFromGPU.clear();
     std::vector<float> vertices;
-    for (const LDDrift::Texture* tex : textures) {
-        const std::size_t textureSize = tex->GetTextureCoordinates().size() / 4;
+    for (const TEXTURE tex : textures) {
+        const std::size_t textureSize = tex.texture->GetTextureCoordinates().size() / 4;
         howToReadDataFromGPU.push_back({.start = lastIndexForStart, .count = textureSize});
         lastIndexForStart += textureSize;
-        vertices.insert(vertices.end(), tex->GetTextureCoordinates().begin(), tex->GetTextureCoordinates().end());
+        vertices.insert(vertices.end(), tex.texture->GetTextureCoordinates().begin(), tex.texture->GetTextureCoordinates().end());
     }
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -101,7 +115,7 @@ void LDDrift::TextureRender::SendToGPU() {
 }
 
 void LDDrift::TextureRender::RemoveTexture(LDDrift::Texture* texture) {
-    if (const auto it = std::ranges::find(textures, texture);
+    if (const auto it = std::ranges::find(textures, texture, &TEXTURE::texture);
         it != textures.end()) {
         textures.erase(it);
     }
@@ -109,15 +123,16 @@ void LDDrift::TextureRender::RemoveTexture(LDDrift::Texture* texture) {
 
 void LDDrift::TextureRender::Render() const {
     const std::size_t howToReadDataFromGPU_SIZE = howToReadDataFromGPU.size();
-    for (std::size_t texture = 0; texture < howToReadDataFromGPU_SIZE; ++texture) {
+    for (std::size_t _texture = 0; _texture < howToReadDataFromGPU_SIZE; ++_texture) {
         glUseProgram(program);
-        textures[texture]->LoadTexture();
-        SetColorMultiplier(textures[texture]->GetColorMultiplierOfTexture());
+        textures[_texture].texture->LoadTexture();
+        SetColorMultiplier(textures[_texture].texture->GetColorMultiplierOfTexture());
         glUniform1i(glGetUniformLocation(program, "texture_S"), 0);
+        glUniform1i(glGetUniformLocation(program, "use_VIEW_PROJECTION"), textures[_texture].use_U_VIEW_PROJECTION);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLE_FAN,
-                     static_cast<int>(howToReadDataFromGPU[texture].start),
-                     static_cast<int>(howToReadDataFromGPU[texture].count));
+                     static_cast<int>(howToReadDataFromGPU[_texture].start),
+                     static_cast<int>(howToReadDataFromGPU[_texture].count));
     }
 }
 

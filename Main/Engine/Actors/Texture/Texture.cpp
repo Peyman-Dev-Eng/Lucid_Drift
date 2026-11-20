@@ -40,6 +40,8 @@ void LDDrift::Texture::GenerateTexture() {
     } else if (image.channels == 4) {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, image.width, image.height,
                      0, GL_RGBA, GL_UNSIGNED_BYTE, image.pixels);
+    } else {
+        throw std::runtime_error("Unsupported image channels");
     }
 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

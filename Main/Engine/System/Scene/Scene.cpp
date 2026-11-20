@@ -1,4 +1,7 @@
 #include "Scene.h"
+
+#include <typeinfo>
+
 #include "Actors/Shapes/Circle/CircleShape.h"
 #include "Actors/Shapes/Polygon/Polygon.h"
 #include "Actors/Line/Line.h"
@@ -15,6 +18,9 @@ LDDrift::Scene::~Scene() {
     }
     for (auto& [lineName, line,Render] : lines) {
         delete line;
+    }
+    for (auto& [textureName, texture,Render] : textures) {
+        delete texture;
     }
 }
 
@@ -34,18 +40,25 @@ void LDDrift::Scene::ReSendShapesToRender() {
     }
 
     NPV_assert(shape_render)
+    NPV_assert(texture_render);
 
-    for (auto& [circleName, circle,Render] : circleShapes) {
-        if (Render) shape_render->AddShapeToRender(circle);
+    texture_render->AddTexture(&backgroundTexture, 0);
+
+    for (const auto& [actorType, index] : managements) {
+        if (actorType == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C) {
+            shape_render->AddShapeToRender(circleShapes[index].circle);
+        } else if (actorType == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P) {
+            shape_render->AddShapeToRender(polygonShapes[index].polygon);
+        } else if (actorType == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L) {
+            shape_render->AddLineToRender(lines[index].line);
+        } else if (actorType == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_T) {
+            texture_render->AddTexture(textures[index].texture, 1);
+        }
     }
-    for (auto& [polygonName, polygon,Render] : polygonShapes) {
-        if (Render) shape_render->AddShapeToRender(polygon);
-    }
-    for (auto& [lineName, line,Render] : lines) {
-        if (Render) shape_render->AddLineToRender(line);
-    }
+
     shape_render->UpdateShapeData();
     shape_render->SendDataToGPU();
+    texture_render->SendToGPU();
     sendDataToGPU = false;
 }
 
@@ -79,6 +92,9 @@ void LDDrift::Scene::CreateCircleShape(const std::string& name, const int _point
     newCircle.circle->Rebuild();
     newCircle.circle->SetOriginalPositionToCenter();
     circleShapes.push_back({.circleName = newCircle.circleName, .circle = newCircle.circle});
+    managements.push_back(QueueManagement{
+        .searchInVector = LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C, .index = circleShapes.size() - 1
+    });
     shape_render->AddShapeToRender(newCircle.circle);
     shape_render->UpdateShapeData();
     shape_render->SendDataToGPU();
@@ -126,6 +142,9 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     }
     newPolygon.polygon->SetOriginalPositionToCenter();
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
+    managements.push_back(QueueManagement{
+        .searchInVector = LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P, .index = polygonShapes.size() - 1
+    });
     shape_render->AddShapeToRender(newPolygon.polygon);
     shape_render->UpdateShapeData();
     shape_render->SendDataToGPU();
@@ -145,6 +164,9 @@ void LDDrift::Scene::CreateLineActor(const std::string& name, const int _thickne
     newLine.line->SetLineColor(color);
     newLine.line->CreateTriangles();
     lines.push_back({.lineName = newLine.lineName, .line = newLine.line});
+    managements.push_back(QueueManagement{
+        .searchInVector = LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L, .index = lines.size() - 1
+    });
     shape_render->AddLineToRender(newLine.line);
     shape_render->UpdateShapeData();
     shape_render->SendDataToGPU();
@@ -247,6 +269,9 @@ void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _poin
     }
     newPolygon.polygon->SetOriginalPositionToCenter();
     polygonShapes.push_back({.polygonName = newPolygon.polygonName, .polygon = newPolygon.polygon});
+    managements.push_back(QueueManagement{
+        .searchInVector = LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P, .index = polygonShapes.size() - 1
+    });
     shape_render->AddShapeToRender(newPolygon.polygon);
     shape_render->UpdateShapeData();
     shape_render->SendDataToGPU();
@@ -263,6 +288,12 @@ bool LDDrift::Scene::DeletePolygonShape(const std::string& name) {
             polygonShapes.erase(polygonShapes.begin() + pos);
             core->shape_render.RemoveShapeFromRender(polygon);
             core->shape_render.UpdateShapeData();
+            DeleteWithIndexFromManagements(LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P, pos);
+            for (auto& [searchInVector, index] : managements) {
+                if (searchInVector == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P && index > pos) {
+                    --index;
+                }
+            }
             return true;
         }
         ++pos;
@@ -277,6 +308,12 @@ bool LDDrift::Scene::DeleteLineShape(const std::string& name) {
             lines.erase(lines.begin() + pos);
             core->shape_render.RemoveLineFromRender(line);
             core->shape_render.UpdateShapeData();
+            DeleteWithIndexFromManagements(LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L, pos);
+            for (auto& [type, index] : managements) {
+                if (type == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L && index > pos) {
+                    --index;
+                }
+            }
             return true;
         }
         ++pos;
@@ -291,6 +328,11 @@ bool LDDrift::Scene::DeleteCircleShape(const std::string& name) {
             circleShapes.erase(circleShapes.begin() + pos);
             core->shape_render.RemoveShapeFromRender(circle);
             core->shape_render.UpdateShapeData();
+            DeleteWithIndexFromManagements(LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C, pos);
+            for (auto& [searchInVector, index] : managements) {
+                if (searchInVector == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C &&
+                    index > pos) { --index; }
+            }
             return true;
         }
         ++pos;
@@ -390,12 +432,21 @@ void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesyste
     texture_render->AddTexture(newTexture.texture, 1);
     texture_render->SendToGPU();
     textures.push_back(newTexture);
+    managements.push_back(QueueManagement{
+        .searchInVector = LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_T, .index = textures.size() - 1
+    });
 }
 
 void LDDrift::Scene::DeleteTexture(const std::string& name) {
     if (const int find = FindTextureWithName(name);
         CheckFindStatus(find)) {
         textures.erase(textures.begin() + find);
+        DeleteWithIndexFromManagements(LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_T, find);
+        for (auto& [type, index] : managements) {
+            if (type == LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_T && index > find) {
+                --index;
+            }
+        }
     }
 }
 
@@ -537,4 +588,30 @@ void LDDrift::Scene::ChangeColorShapesFromBlackToMainColor() {
     ChangeColorPolygonsToMainColor();
     ChangeColorLinesToMainColor();
     ChangeColorTexturesToMainColor();
+}
+
+void LDDrift::Scene::SetSceneBackground(const std::filesystem::path& path) {
+    backgroundTexture.FreeTexture();
+    backgroundTexture.image_reader.LoadImage(path);
+    backgroundTexture.SetTextureCoordinates(std::vector<float>{
+        //position      tex coord
+        -1, 1, 0, 1,
+        1, 1, 1, 1,
+        1, -1, 1, 0,
+        -1, -1, 0, 0
+    });
+    backgroundTexture.SetColorMultiplierForTexture(1);
+    texture_render->AddTexture(&backgroundTexture, 0);
+    texture_render->SendToGPU();
+}
+
+void LDDrift::Scene::DeleteWithIndexFromManagements(const char type, const std::size_t index) {
+    const QueueManagement temp{.searchInVector = type, .index = index};
+    if (const auto it = std::ranges::find_if(managements, [temp](const auto& management)
+        {
+            return management.searchInVector == temp.searchInVector && management.index == temp.index;
+        });
+        it != managements.end()) {
+        managements.erase(it);
+    }
 }

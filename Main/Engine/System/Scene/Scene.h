@@ -7,9 +7,10 @@
 #include <functional>
 #include <System/SceneManager/SceneChangeAnimation/SceneAnimation.h>
 
-#define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0x000001
-#define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0x000002
-#define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L 0x000003
+#define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_C 0b01000011
+#define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_P 0b01010000
+#define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_L 0b01001100
+#define LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_T 0b01010100
 #define CheckFindStatus IsFound
 
 namespace
@@ -64,6 +65,12 @@ namespace LDDrift
             bool render = true;
         };
 
+        struct QueueManagement
+        {
+            char searchInVector;
+            unsigned long int index;
+        };
+
     private:
         bool sendDataToGPU = false;
         LDDrift::Core* core = nullptr;
@@ -85,6 +92,11 @@ namespace LDDrift
         std::vector<TEXTURE_INFORMATION> textures;
 
     private:
+        LDDrift::Texture backgroundTexture;
+        std::vector<QueueManagement> managements;
+        void DeleteWithIndexFromManagements(const char type, const std::size_t index);
+
+    private:
         // group A
         void ChangeColorCirclesToBlack() const;
         void ChangeColorLinesToBlack() const;
@@ -99,14 +111,19 @@ namespace LDDrift
 
     public:
         Scene();
+        // set ptr's
         void SetCorePTR(LDDrift::Core* corePtr);
-        void MarkSendDataToGPU();
         void SetRendererPTR(LDDrift::ShapeRender* rendererPTR);
         void SetTextureRendererPTR(LDDrift::TextureRender* texturePTR);
+        // rebase renderer systems
+        void MarkSendDataToGPU();
         void ReSendShapesToRender();
+        // set auxiliary function for change color of shapes
         void SetChangeColorFunction(const GetAnimationProgressFunction& function);
+        // change color functions
         void ChangeColorShapesToBlack();
         void ChangeColorShapesFromBlackToMainColor();
+        // free data saved for change color
         void freeSavedData();
         // circle
         [[nodiscard]] bool FindCircleWithName(const std::string& name) const;
@@ -162,6 +179,8 @@ namespace LDDrift
         void DeleteTexture(const std::string& name);
         [[nodiscard]] std::vector<LDDrift::Texture*> GetTextures_Ptr() const;
         [[nodiscard]] std::vector<std::string> GetTextureNames() const;
+        // scene background
+        void SetSceneBackground(const std::filesystem::path& path);
         ~Scene();
     };
 }

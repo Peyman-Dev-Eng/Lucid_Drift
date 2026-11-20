@@ -6,6 +6,7 @@
 #include <Actors/Shapes/MainShape/Shape.h>
 #include <Actors/Line/Line.h>
 #include "Actors/Texture/Texture.h"
+#include <vector>
 
 namespace LDDrift
 {

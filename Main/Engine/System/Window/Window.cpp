@@ -106,7 +106,7 @@ void LDDrift::Window::CreateFullscreenWindow() {
     }
 
     if (pixels) {
-        GLFWimage icon{};
+        GLFWimage icon;
         icon.width = width;
         icon.height = height;
         icon.pixels = pixels;

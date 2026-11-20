@@ -5,7 +5,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <VecCol.h>
-#include <VecPos.h>
+#include <VecPos2D.h>
 #include <GUI.h>
 #include <string>
 
@@ -45,6 +45,9 @@ namespace LDDrift
             std::string title;
             int FramerateLimit;
             LDDrift::VecCol FillColorScreen;
+            LDDrift::Texture background;
+            float moveBackground; // move
+            int direction; // 0 = left | 1 = right | 10 = up | 11 = down
             bool IsOpen;
         };
 
@@ -65,7 +68,7 @@ namespace LDDrift
         void DestroyWindow() const;
         void SetFillScreenColor(const LDDrift::VecCol& color);
         [[nodiscard]] LDDrift::VecCol GetFillScreenColor() const;
-        void LockWindow();
+        void LockWindow(); // freeze
         void ClearBuffer() const;
         void SetTitle(const char* title);
         [[nodiscard]] const char* GetTitle() const;
