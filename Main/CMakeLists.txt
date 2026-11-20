@@ -424,6 +424,8 @@ add_library(Engine SHARED
         Engine/Actors/Model/Model.h
         EngineLibraries/VecPosition3D/VecPos3D.cpp
         EngineLibraries/VecPosition3D/VecPos3D.h
+        Engine/SubSystems/Logger/Logger.cpp
+        Engine/SubSystems/Logger/Logger.h
 )
 
 target_include_directories(Engine PUBLIC
