@@ -10,7 +10,7 @@ void LDDrift::OpenFileKeyboardInputEvent(const std::vector<std::string>& files) 
             LDDrift::Logger::WarningLog("Engine", "Keyboard Input",
                                         Log(std::string(
                                                 "We can not open keyboard input event file. Failed to open file: ") +
-                                            file, Log::LogType::ReadKeyboardInputEventFailed));
+                                            file, LogType::ReadKeyboardInputEventFailed));
             continue;
         }
         fileKeyboardInputEvent_V.push_back(resultOpenFile);
@@ -34,7 +34,7 @@ void LDDrift::OpenFileMouseInputEvent(const std::vector<std::string>& files) {
         if (resultOpenFile == -1) {
             LDDrift::Logger::WarningLog("Engine", "Mouse Input",
                                         Log(std::string("We can not open mouse input event file. Failed to open file: ")
-                                            + file, Log::LogType::ReadMouseInputEventFailed));
+                                            + file, LogType::ReadMouseInputEventFailed));
             continue;
         }
         fileMouseInputEvent_V.push_back(resultOpenFile);

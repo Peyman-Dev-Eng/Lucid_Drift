@@ -32,7 +32,7 @@ void LDDrift::Logger::InfoLog(const std::string& fromProgram, const std::string&
 void LDDrift::Logger::DebugLog(const std::string& fromProgram, const std::string& systemEngineLog,
                                const Log& log) {
     const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    if (auto [log_type, message] = log.GetLog(); log_type == Log::LogType::Null)
+    if (auto [log_type, message] = log.GetLog(); log_type == LogType::Null)
         std::cout
             << "[" << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S")
             << "]" << " [" << fromProgram << "] [" << systemEngineLog << "] [" << DEBUG << "] " << message << '\n';
@@ -46,7 +46,7 @@ void LDDrift::Logger::DebugLog(const std::string& fromProgram, const std::string
 void LDDrift::Logger::ErrorLog(const std::string& fromProgram, const std::string& systemEngineLog,
                                const Log& log) {
     const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    if (auto [log_type, message] = log.GetLog(); log_type == Log::LogType::Null)
+    if (auto [log_type, message] = log.GetLog(); log_type == LogType::Null)
         std::cout
             << "[" << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S")
             << "]" << " [" << fromProgram << "] [" << systemEngineLog << "] [" << ERROR << "] " << message << '\n';
@@ -60,7 +60,7 @@ void LDDrift::Logger::ErrorLog(const std::string& fromProgram, const std::string
 void LDDrift::Logger::WarningLog(const std::string& fromProgram, const std::string& systemEngineLog,
                                  const Log& log) {
     const auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    if (auto [log_type, message] = log.GetLog(); log_type == Log::LogType::Null)
+    if (auto [log_type, message] = log.GetLog(); log_type == LogType::Null)
         std::cout
             << "[" << std::put_time(std::localtime(&now), "%Y-%m-%d %H:%M:%S")
             << "]" << " [" << fromProgram << "] [" << systemEngineLog << "] [" << WARNING << "] " << message << '\n';

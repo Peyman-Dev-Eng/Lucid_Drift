@@ -1,5 +1,7 @@
 #include "ProjectWatchTower.h"
 
+#include "../Logger/Logger.h"
+
 LDDrift::ProjectWatchTower::ProjectWatchTower() {
     projectPath = LDDrift::func::GetHostName();
 }
@@ -218,21 +220,25 @@ void LDDrift::ProjectWatchTower::WriteCodeToFile(const std::filesystem::path& fi
     std::ofstream out(fileName.string());
     out.seekp(std::ios::beg);
     out.write(text, static_cast<std::streamsize>(strlen(text)));
-    std::cout << "Successfully written project: " << projectPath / fileName.string() << std::endl;
+    LDDrift::Logger::InfoLog("Engine", "Project Watch Tower",
+                             Log(std::string("Successfully written project: ") + (projectPath / fileName.string()).
+                                 string(), LDDrift::LogType::Null));
     out.close();
 }
 
 void LDDrift::ProjectWatchTower::CreateNewFile(const std::filesystem::path& fileName) const {
     if (isFilePath(fileName)) {
         std::ofstream out(projectPath / fileName.string());
-        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() <<
-            std::endl;
+        LDDrift::Logger::InfoLog("Engine", "Project Watch Tower",
+                                 Log(std::string("File created successfully. You can now use the file. PATH: ") + (
+                                         projectPath / fileName.string()).string(), LDDrift::LogType::Null));
         return;
     } else {
         create_directories(projectPath / LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(fileName));
         std::ofstream out(projectPath / fileName.string());
-        std::cout << "File created successfully. You can now use the file. PATH: " << projectPath / fileName.string() <<
-            std::endl;
+        LDDrift::Logger::InfoLog("Engine", "Project Watch Tower",
+                                 Log(std::string("File created successfully. You can now use the file. PATH: ") + (
+                                         projectPath / fileName.string()).string(), LDDrift::LogType::Null));
         return;
     }
 }

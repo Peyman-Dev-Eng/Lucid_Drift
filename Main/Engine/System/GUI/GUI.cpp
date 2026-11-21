@@ -2181,7 +2181,7 @@ void LDDrift::GUI::SceneManagementWindowHandler(DefaultWindowsData* window) cons
                 std::memset(window->Buffer, '\0', sizeof(window->Buffer));
                 window->Show = false;
             } else {
-                std::cout << "can not find scene with this name -> " << window->Buffer << std::endl;
+                LDDrift::Logger::WarningLog("Engine", "Scene",  Log(std::string("can not find scene with this name -> ") + window->Buffer, LogType::FindActorFailed));
             }
         }
         ImGui::SameLine();

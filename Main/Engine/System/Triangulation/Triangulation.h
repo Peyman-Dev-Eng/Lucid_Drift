@@ -302,7 +302,9 @@ namespace LDDrift
         void TrianglesForThickShapes(std::vector<float>& vertices) const {
             const std::optional<LDDrift::JoinLineType> joinLineAlg = shape->GetJoinLineAlgorithm();
             if (!joinLineAlg.has_value()) {
-                std::cout << "Undefined Line Connection Algorithm" << std::endl;
+                LDDrift::Logger::ErrorLog("Engine", "Triangulation",
+                                          Log("Undefined Line Connection Algorithm",
+                                              LDDrift::LogType::FindLineJoiningAlgorithmFailed));
                 return;
             }
             if (joinLineAlg.value() == LDDrift::JoinLineType::Bevel) {
@@ -420,10 +422,9 @@ namespace LDDrift
         [[nodiscard]] std::vector<float> CreateTriangles() const {
             const std::size_t pointNumber = shape->GetPointCount();
             if (pointNumber < 3) {
-                std::cout <<
-                    R"( The shape you are attempting to convert into a triangle is either already a triangle,
-                        or its number of vertices is invalid.
-                        Therefore, be mindful of the valid data you extract from this function.)" << std::endl;
+                LDDrift::Logger::ErrorLog("Engine", "Triangulation", Log(
+                                              "The shape you are attempting to triangulate is either already a triangle or has an invalid number of vertices. Please ensure that the input data is valid before using the function's output.",
+                                              LDDrift::LogType::TriangulateFailed));
                 return std::vector<float>{0.0f};
             }
             if (pointNumber == 3 && !shape->IsHaveThickness()) {
@@ -450,14 +451,16 @@ namespace LDDrift
                     try {
                         this->TrianglesForConcaveShape(vertices);
                     } catch (const std::runtime_error& e) {
-                        std::cout << "Error: " << e.what() << std::endl;
+                        LDDrift::Logger::ErrorLog("Engine", "Triangulation", Log(
+                                                      "The shape you are attempting to triangulate is either already a triangle or has an invalid number of vertices. Please ensure that the input data is valid before using the function's output.",
+                                                      LDDrift::LogType::TriangulateFailed));
                     }
                     return vertices;
                 } else {
                     LDDrift::Logger::WarningLog("Engine", "Triangulation",
                                                 Log(
                                                     "An issue arose in identifying the shape (whether it is convex or concave).",
-                                                    Log::LogType::FindShapeTypeFailed));
+                                                    LogType::ShapeTypeDetectionFailed));
                     return std::vector<float>{0.0f};
                 }
             }

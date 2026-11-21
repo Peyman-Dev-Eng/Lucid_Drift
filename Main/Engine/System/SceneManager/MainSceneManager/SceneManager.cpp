@@ -53,9 +53,12 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             currentScene = scenes[indexOfScene].scene;
             currentSceneName = scenes[indexOfScene].name;
         } catch (const std::runtime_error& e) {
-            std::cout << "scenes size: " << scenes.size() << "    ---    " << e.what() << std::endl;
+            LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
+                                      Log(std::string("scenes size: ") + std::to_string(scenes.size()) + "    ---    " +
+                                          e.what(), LDDrift::LogType::ZeroDivideFailed));
         } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << std::endl;
+            LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
+                                      Log(std::string("Error: ") + e.what(), LDDrift::LogType::Null));
         }
     } else if (mode == LDDrift::ChangeSceneMode::Smooth) {
         try {
@@ -115,9 +118,12 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             shapeRender_ptr->SendDataToGPU();
             textureRender_ptr->SendToGPU();
         } catch (const std::runtime_error& e) {
-            std::cout << "scene size: " << scenes.size() << "    ---    " << e.what() << std::endl;
+            LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
+                                      Log(std::string("scenes size: ") + std::to_string(scenes.size()) + "    ---    " +
+                                          e.what(), LDDrift::LogType::ZeroDivideFailed));
         } catch (const std::exception& e) {
-            std::cout << "Error: " << e.what() << std::endl;
+            LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
+                                      Log(std::string("Error: ") + e.what(), LDDrift::LogType::Null));
         }
     }
 }
@@ -128,7 +134,9 @@ LDDrift::Scene* LDDrift::SceneManager::GetCurrentScene() const {
 
 void LDDrift::SceneManager::CreateNewScene(const std::string& name) {
     if (FindScene(name)) {
-        std::cout << "scene already exists (name: " << name << ")" << std::endl;
+        LDDrift::Logger::WarningLog("Engine", "Scene Manager",
+                                    Log(std::string("scene already exists - > ( ") + name + " )",
+                                        LDDrift::LogType::FoundSceneTargetSucceeded));
         return;
     }
     LDDrift::Scene* newScene = new LDDrift::Scene();
@@ -157,9 +165,13 @@ std::size_t LDDrift::SceneManager::updateIndexOfScene() {
         }
         indexOfScene = (indexOfScene + 1) % scenes.size();
     } catch (const std::runtime_error& e) {
-        std::cout << "scenes is empty | We were attempting to divide a number by 0. log: " << e.what() << std::endl;
+        LDDrift::Logger::WarningLog("Engine", "Scene Manager",
+                                    Log(std::string(
+                                            "scenes is empty | We were attempting to divide a number by 0. log: ") +
+                                        e.what()
+                                        , LDDrift::LogType::ZeroDivideFailed));
     } catch (const std::exception& e) {
-        std::cout << "Error: " << e.what() << std::endl;
+        LDDrift::Logger::ErrorLog("Engine", "Scene Manager", Log(std::string(e.what()), LDDrift::LogType::Null));
     }
     return indexOfScene;
 }

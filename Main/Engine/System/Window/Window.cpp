@@ -34,7 +34,7 @@ void LDDrift::Window::CreateWindow() {
         LDDrift::Logger::ErrorLog("Engine", "Window",
                                   Log(std::string("GLFW window creation failed! Error code: ") + std::to_string(code) +
                                       " Description: " + std::string(description),
-                                      Log::LogType::CreateWindowFromGLFW_ToFailed));
+                                      LogType::CreateWindowFromGLFW_ToFailed));
         return;
     }
     settings.IsOpen = true;
@@ -63,7 +63,7 @@ void LDDrift::Window::CreateFullscreenWindow() {
         LDDrift::Logger::ErrorLog("Engine", "Window",
                                   Log(std::string("GLFW window creation failed! Error code: ") + std::to_string(code) +
                                       " Description: " + std::string(description),
-                                      Log::LogType::CreateWindowFromGLFW_ToFailed));
+                                      LogType::CreateWindowFromGLFW_ToFailed));
 
         return;
     }
@@ -95,7 +95,7 @@ void LDDrift::Window::CreateFullscreenWindow() {
     );
 
     if (pixels == nullptr) {
-        LDDrift::Logger::ErrorLog("Engine", "Window", Log("can not load engine icon", Log::LogType::LoadImageFailed));
+        LDDrift::Logger::ErrorLog("Engine", "Window", Log("can not load engine icon", LogType::LoadImageFailed));
     } else {
         GLFWimage icon;
         icon.width = width;

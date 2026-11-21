@@ -116,7 +116,7 @@ void LDDrift::Main_GraphicalWindow::Render() const {
 
             if (pipe == nullptr) {
                 LDDrift::Logger::ErrorLog("Engine", "Cmake",
-                                          Log("Failed to start cmake", Log::LogType::InitCmakeFailed));
+                                          Log("Failed to start cmake", LogType::InitCmakeFailed));
                 return;
             }
 
@@ -125,7 +125,7 @@ void LDDrift::Main_GraphicalWindow::Render() const {
             while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
                 Stream << buffer;
             }
-            LDDrift::Logger::InfoLog("Engine", "GUI", Log(Stream.str(), LDDrift::Log::LogType::Null));
+            LDDrift::Logger::InfoLog("Engine", "GUI", Log(Stream.str(), LDDrift::LogType::Null));
 
             pclose(pipe);
         });
@@ -202,8 +202,10 @@ void LDDrift::ProjectWatchTower_GraphicalWindow::Render() {
                              sizeof(createFileBuffer));
     if (ImGui::Button("Create New File")) {
         if (core->gui.ProjectWatchTower_PTR->FindFile(std::filesystem::path(createFileBuffer))) {
-            std::cout << "Cannot create the file because a file with the same name already exists in the project." <<
-                std::endl;
+            LDDrift::Logger::WarningLog("Engine", "Project Watch Tower",
+                                        Log(
+                                            "Cannot create the file because a file with the same name already exists in the project.",
+                                            LDDrift::LogType::FileHasBeenDetected));
             return;
         }
         core->gui.ProjectWatchTower_PTR->CreateNewFile(std::filesystem::path(createFileBuffer));
@@ -221,7 +223,9 @@ void LDDrift::ProjectWatchTower_GraphicalWindow::Render() {
                 std::ifstream inputFile(path, std::ios::binary);
 
                 if (!inputFile.is_open()) {
-                    std::cout << "Failed to open file: " << path.string() << std::endl;
+                    LDDrift::Logger::ErrorLog("Engine", "Project Watch Tower",
+                                              Log("Failed to open file: " + path.string(),
+                                                  LDDrift::LogType::OpenFileFailed));
 
                     break;
                 }
