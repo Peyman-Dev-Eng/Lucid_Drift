@@ -92,15 +92,7 @@ void LDDrift::Main_GraphicalWindow::Render() const {
         ImGui::TextUnformatted("Idle");
     }
     if (showError.value() == 1) {
-        for (const auto& [file, line, column, severity, message] : core->gui.CompilePTR->GetErrorLog()) {
-            std::cout << "----------------------------" << std::endl;
-            std::cout << "Error: " << message << std::endl;
-            std::cout << "Line: " << line << " | ";
-            std::cout << "Column: " << column << " | ";
-            std::cout << "File: " << file << " | ";
-            std::cout << "Severity: " << severity << std::endl;
-            std::cout << "----------------------------" << std::endl;
-        }
+        for (const auto& [file, line, column, severity, message] : core->gui.CompilePTR->GetErrorLog()) {}
     }
 #ifdef __linux__
     ImGui::Separator();
@@ -123,15 +115,17 @@ void LDDrift::Main_GraphicalWindow::Render() const {
             FILE* pipe = popen(command.c_str(), "r");
 
             if (pipe == nullptr) {
-                std::cout << "[CMake] Failed to start CMake.\n";
+                LDDrift::Logger::ErrorLog("Engine", "Cmake",
+                                          Log("Failed to start cmake", Log::LogType::InitCmakeFailed));
                 return;
             }
 
             char buffer[4096 * 2];
-
+            std::stringstream Stream;
             while (fgets(buffer, sizeof(buffer), pipe) != nullptr) {
-                std::cout << buffer << std::flush;
+                Stream << buffer;
             }
+            LDDrift::Logger::InfoLog("Engine", "GUI", Log(Stream.str(), LDDrift::Log::LogType::Null));
 
             pclose(pipe);
         });
@@ -341,6 +335,8 @@ std::vector<LDDrift::Console_GraphicalWindow::Text> LDDrift::Console_GraphicalWi
             result.push_back({.text = extracted, .color = {1, 0.2, 0.4, 1}});
         } else if (extracted.find(DEBUG) != std::string::npos) {
             result.push_back({.text = extracted, .color = {0, 1, 0, 1}});
+        } else {
+            result.push_back({.text = extracted, .color = {1, 1, 1, 1}});
         }
         begin = ++end;
         ++end;

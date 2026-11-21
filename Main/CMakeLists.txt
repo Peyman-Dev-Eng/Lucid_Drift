@@ -202,7 +202,7 @@ target_include_directories(COMP PUBLIC
 )
 
 target_link_libraries(COMP PUBLIC
-        PWT GUI
+        PWT GUI logger
 )
 
 # ============================================================================
@@ -273,7 +273,7 @@ target_include_directories(IMAGE_READER PUBLIC
 target_link_libraries(IMAGE_READER PUBLIC stb_image)
 
 # ============================================================================
-# END
+# vec position 3d
 # ============================================================================
 
 add_library(VEC_POS_3D STATIC
@@ -285,6 +285,18 @@ target_include_directories(VEC_POS_3D PUBLIC
 )
 
 target_link_libraries(VEC_POS_3D PUBLIC ASSERT)
+
+# ============================================================================
+# END
+# ============================================================================
+
+add_library(logger STATIC
+        Engine/SubSystems/Logger/Logger.cpp
+)
+
+target_include_directories( logger PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/Logger
+)
 
 # ============================================================================
 # END
@@ -414,16 +426,28 @@ add_library(Engine SHARED
         # Texture render - system
         Engine/Renderer/TextureRender/TextureRender.cpp
         Engine/Renderer/TextureRender/TextureRender.h
+
+        # main renderer - system
         Engine/Renderer/Communicator/MainRenderer.cpp
         Engine/Renderer/Communicator/MainRenderer.h
+
+        # scene manager - system
         Engine/System/SceneManager/MainSceneManager/SceneManager.cpp
         Engine/System/SceneManager/MainSceneManager/SceneManager.h
+
+        # scene animation - system
         Engine/System/SceneManager/SceneChangeAnimation/SceneAnimation.cpp
         Engine/System/SceneManager/SceneChangeAnimation/SceneAnimation.h
+
+        # model - actor
         Engine/Actors/Model/Model.cpp
         Engine/Actors/Model/Model.h
+
+        # vec position 3d
         EngineLibraries/VecPosition3D/VecPos3D.cpp
         EngineLibraries/VecPosition3D/VecPos3D.h
+
+        # logger - sub system
         Engine/SubSystems/Logger/Logger.cpp
         Engine/SubSystems/Logger/Logger.h
 )
@@ -455,6 +479,7 @@ target_link_libraries(Engine PUBLIC
         IMAGE_READER
         stb_image
         VEC_POS_3D
+        logger
 )
 
 if (WIN32)

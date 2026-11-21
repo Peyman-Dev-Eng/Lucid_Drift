@@ -10,6 +10,7 @@
 #include <sstream>
 #include <regex>
 #include <sys/wait.h>
+#include <Logger.h>
 
 namespace LDDrift
 {

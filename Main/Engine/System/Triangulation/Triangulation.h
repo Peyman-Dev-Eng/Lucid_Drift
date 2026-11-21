@@ -15,6 +15,7 @@
 #include "Actors/Line/Line.h"
 #include <SubSystems/PointHitTesting/PointHitTesting.h>
 #include <Actors/Texture/Texture.h>
+#include "Logger.h"
 
 namespace LDDrift
 {
@@ -453,9 +454,10 @@ namespace LDDrift
                     }
                     return vertices;
                 } else {
-                    std::cout <<
-                        R"( You did not submit a valid type for constructing a triangle on the shape.
-                        You can choose between two categories of shapes: convex or concave.)";
+                    LDDrift::Logger::WarningLog("Engine", "Triangulation",
+                                                Log(
+                                                    "An issue arose in identifying the shape (whether it is convex or concave).",
+                                                    Log::LogType::FindShapeTypeFailed));
                     return std::vector<float>{0.0f};
                 }
             }

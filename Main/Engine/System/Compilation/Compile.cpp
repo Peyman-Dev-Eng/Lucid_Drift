@@ -66,7 +66,7 @@ void LDDrift::Compile::init(LDDrift::ProjectWatchTower* projectWatchTowerPTR) {
 
 bool LDDrift::Compile::BuildProject() {
     if (buildStatus.load() == CompileBuildStatus::Building) {
-        std::cout << "Build already in progress.\n";
+        LDDrift::Logger::WarningLog("Engine", "Compile", Log("Build already in progress.", Log::LogType::Null));
         return false;
     }
 

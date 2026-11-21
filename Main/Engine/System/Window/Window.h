@@ -8,6 +8,8 @@
 #include <VecPos2D.h>
 #include <GUI.h>
 #include <string>
+#include <format>
+#include <string_view>
 
 namespace LDDrift
 {

@@ -31,12 +31,10 @@ void LDDrift::Window::CreateWindow() {
         const char* description = nullptr;
         const int code = glfwGetError(&description);
 
-        std::cout << "GLFW window creation failed!\n";
-        std::cout << "Error code: " << code << '\n';
-        std::cout << "Description: "
-            << (description ? description : "Unknown")
-            << '\n';
-
+        LDDrift::Logger::ErrorLog("Engine", "Window",
+                                  Log(std::string("GLFW window creation failed! Error code: ") + std::to_string(code) +
+                                      " Description: " + std::string(description),
+                                      Log::LogType::CreateWindowFromGLFW_ToFailed));
         return;
     }
     settings.IsOpen = true;
@@ -62,11 +60,10 @@ void LDDrift::Window::CreateFullscreenWindow() {
         const char* description = nullptr;
         const int code = glfwGetError(&description);
 
-        std::cout << "GLFW window creation failed!\n";
-        std::cout << "Error code: " << code << '\n';
-        std::cout << "Description: "
-            << (description ? description : "Unknown")
-            << '\n';
+        LDDrift::Logger::ErrorLog("Engine", "Window",
+                                  Log(std::string("GLFW window creation failed! Error code: ") + std::to_string(code) +
+                                      " Description: " + std::string(description),
+                                      Log::LogType::CreateWindowFromGLFW_ToFailed));
 
         return;
     }
@@ -98,14 +95,8 @@ void LDDrift::Window::CreateFullscreenWindow() {
     );
 
     if (pixels == nullptr) {
-        std::cerr << "Failed to load window icon!\n";
-        std::cerr << "Working directory: "
-            << std::filesystem::current_path() << '\n';
-        std::cerr << "Reason: "
-            << stbi_failure_reason() << '\n';
-    }
-
-    if (pixels) {
+        LDDrift::Logger::ErrorLog("Engine", "Window", Log("can not load engine icon", Log::LogType::LoadImageFailed));
+    } else {
         GLFWimage icon;
         icon.width = width;
         icon.height = height;

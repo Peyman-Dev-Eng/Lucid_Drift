@@ -7,7 +7,10 @@ void LDDrift::OpenFileKeyboardInputEvent(const std::vector<std::string>& files) 
     for (const std::string& file : files) {
         int resultOpenFile = open(file.c_str(), O_RDONLY | O_NONBLOCK);
         if (resultOpenFile == -1) {
-            std::cout << "We can not open keyboard input event file. Failed to open file: " << file << std::endl;
+            LDDrift::Logger::WarningLog("Engine", "Keyboard Input",
+                                        Log(std::string(
+                                                "We can not open keyboard input event file. Failed to open file: ") +
+                                            file, Log::LogType::ReadKeyboardInputEventFailed));
             continue;
         }
         fileKeyboardInputEvent_V.push_back(resultOpenFile);
@@ -29,7 +32,9 @@ void LDDrift::OpenFileMouseInputEvent(const std::vector<std::string>& files) {
         int resultOpenFile = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse",
                                   O_RDONLY | O_NONBLOCK);
         if (resultOpenFile == -1) {
-            std::cout << "We can not open mouse input event file. Failed to open file: " << file << std::endl;
+            LDDrift::Logger::WarningLog("Engine", "Mouse Input",
+                                        Log(std::string("We can not open mouse input event file. Failed to open file: ")
+                                            + file, Log::LogType::ReadMouseInputEventFailed));
             continue;
         }
         fileMouseInputEvent_V.push_back(resultOpenFile);

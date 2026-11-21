@@ -11,6 +11,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <VecPos2D.h>
+#include <Logger.h>
 #define NULL_STRING "NULL_VALUE"
 
 using LD_uint = unsigned int;
