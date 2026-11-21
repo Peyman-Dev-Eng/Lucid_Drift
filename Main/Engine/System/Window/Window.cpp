@@ -34,7 +34,7 @@ void LDDrift::Window::CreateWindow() {
         LDDrift::Logger::ErrorLog("Engine", "Window",
                                   Log(std::string("GLFW window creation failed! Error code: ") + std::to_string(code) +
                                       " Description: " + std::string(description),
-                                      LogType::CreateWindowFromGLFW_ToFailed));
+                                      LogType::CreateWindowFromGLFWFailed));
         return;
     }
     settings.IsOpen = true;
@@ -63,7 +63,7 @@ void LDDrift::Window::CreateFullscreenWindow() {
         LDDrift::Logger::ErrorLog("Engine", "Window",
                                   Log(std::string("GLFW window creation failed! Error code: ") + std::to_string(code) +
                                       " Description: " + std::string(description),
-                                      LogType::CreateWindowFromGLFW_ToFailed));
+                                      LogType::CreateWindowFromGLFWFailed));
 
         return;
     }
