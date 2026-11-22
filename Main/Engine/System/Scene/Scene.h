@@ -174,7 +174,6 @@ namespace LDDrift
         [[nodiscard]] LDDrift::Texture* GetTexture(const std::string& name) const;
         void CreateTexture(const std::string& name,
                            const std::filesystem::path& TexturePath,
-                           const unsigned short int desired_chan,
                            const std::vector<float>& vertices);
         void DeleteTexture(const std::string& name);
         [[nodiscard]] std::vector<LDDrift::Texture*> GetTextures_Ptr() const;

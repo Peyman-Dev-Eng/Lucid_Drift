@@ -224,7 +224,7 @@ void LDDrift::TextureRender::ReloadHowToReadDataFromGPU() {
     howToReadDataFromGPU[firstIndex].start = 0;
     const std::size_t howToReadDataFromGPU_SIZE = howToReadDataFromGPU.size();
     for (std::size_t index = 1; index < howToReadDataFromGPU_SIZE; ++index) {
-        howToReadDataFromGPU[index].start = (howToReadDataFromGPU[index - 1].start + howToReadDataFromGPU[index - 1].
-            count);
+        howToReadDataFromGPU[index].start = (howToReadDataFromGPU[index - 1].start +
+            howToReadDataFromGPU[index - 1].count);
     }
 }

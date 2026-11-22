@@ -2069,30 +2069,6 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
     static char texture_path[1024] = "\0";
     ImGui::InputTextWithHint("##texture path", "enter texture path: ", texture_path, sizeof(texture_path));
     ImGui::Separator();
-    static int des_channels = 1;
-    static int aux_channels = 1;
-    ImGui::TextUnformatted("desired channels: ");
-    ImGui::SameLine();
-    ImGui::Text("%i", des_channels);
-    ImGui::SameLine();
-    if (ImGui::Button("+")) {
-        ++aux_channels;
-    }
-    ImGui::SameLine();
-    if (ImGui::Button("-")) {
-        --aux_channels;
-    }
-    if (aux_channels < 1) {
-        des_channels = 1;
-        aux_channels = 1;
-    } else if (aux_channels == 2) {
-        des_channels = 3;
-    } else if (aux_channels == 3) {
-        des_channels = 4;
-    } else if (aux_channels > 3) {
-        aux_channels = 3;
-        des_channels = 4;
-    }
 
     static int point_count = 3;
     static std::vector<float> vert; // vertices
@@ -2138,7 +2114,7 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
     if (ImGui::Button("Create")) {
         core->sceneManager.GetCurrentScene()->CreateTexture(
             std::string(window->Buffer) /* texture name save in this buffer */,
-            std::filesystem::path(texture_path), des_channels, vert);
+            std::filesystem::path(texture_path), vert);
         window->Show = false;
     }
     if (ImGui::Button("Close")) {

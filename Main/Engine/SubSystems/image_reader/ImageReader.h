@@ -17,11 +17,13 @@ namespace LDDrift
         };
     private:
         Image image;
+        bool CanFree = false;
     public:
         ImageReader();
-        explicit ImageReader(const std::filesystem::path& imagePath);
-        void LoadImage(const std::filesystem::path& imagePath);
+        explicit ImageReader(const std::filesystem::path& imagePath, const int& _desiredChannels = 0);
+        void LoadImage(const std::filesystem::path& imagePath, const int& _desiredChannels = 0);
         [[nodiscard]] const Image& GetImage() const;
+        void FreeImage() const;
         ~ImageReader();
     };
 }

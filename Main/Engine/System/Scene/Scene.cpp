@@ -424,7 +424,7 @@ LDDrift::Texture* LDDrift::Scene::GetTexture(const std::string& name) const {
 }
 
 void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesystem::path& TexturePath,
-                                   const unsigned short int desired_chan, const std::vector<float>& vertices) {
+                                   const std::vector<float>& vertices) {
     const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Texture(), .render = true};
     newTexture.texture->image_reader.LoadImage(TexturePath);
     newTexture.texture->SetTextureCoordinates(vertices);
