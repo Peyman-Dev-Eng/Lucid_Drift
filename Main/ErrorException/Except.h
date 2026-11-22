@@ -1,6 +1,7 @@
 #ifndef LUCID_DRIFT_EXCEPT_H
 #define LUCID_DRIFT_EXCEPT_H
 #include <string>
+#define NULL_STRING "NULL_VALUE"
 
 namespace LDDrift
 {
@@ -11,12 +12,13 @@ namespace LDDrift
         Except();
         Except(const Except&);
         Except& operator=(const Except&);
-        Except(const Except&&) noexcept;
+        Except& operator=(Except&&) noexcept;
+        Except(Except&&) noexcept;
         // default constructors : end
 
         // main constructors : start
-        Except(const std::string& program, const std::string& message);
-        Except(const std::string& program, const std::string& throwErrorFromLocation, const std::string& message);
+        Except(const std::string& _program, const std::string& _message);
+        Except(const std::string& _program, const std::string& _throwErrorFromLocation, const std::string& _message);
         // main constructors : end
         ~Except();
 
