@@ -13,6 +13,10 @@ set(cglTF
 )
 
 # ============================================================================
+# START
+# ============================================================================
+
+# ============================================================================
 # Assertion
 # ============================================================================
 
@@ -287,7 +291,7 @@ target_include_directories(VEC_POS_3D PUBLIC
 target_link_libraries(VEC_POS_3D PUBLIC ASSERT)
 
 # ============================================================================
-# END
+# Logger
 # ============================================================================
 
 add_library(logger STATIC
@@ -299,9 +303,20 @@ target_include_directories( logger PUBLIC
 )
 
 # ============================================================================
-# END
+# Exception
 # ============================================================================
 
+add_library(exc STATIC
+        ErrorException/Except.cpp
+)
+
+target_include_directories(exc PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/ErrorException
+)
+
+# ============================================================================
+# END
+# ============================================================================
 
 if (WIN32)
     include(FetchContent)
@@ -450,6 +465,14 @@ add_library(Engine SHARED
         # logger - sub system
         Engine/SubSystems/Logger/Logger.cpp
         Engine/SubSystems/Logger/Logger.h
+
+        # entity - system
+        Engine/System/ESC/EntityComponentSystem.cpp
+        Engine/System/ESC/EntityComponentSystem.h
+        Engine/System/Physics/Physics.cpp
+        Engine/System/Physics/Physics.h
+        Engine/SubSystems/NarrowPhase/NarrowPhase.cpp
+        Engine/SubSystems/NarrowPhase/NarrowPhase.h
 )
 
 target_include_directories(Engine PUBLIC
