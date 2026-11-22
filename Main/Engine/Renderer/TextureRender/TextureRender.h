@@ -6,6 +6,7 @@
 #include <VecPos2D.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <Except.h>
 
 namespace LDDrift
 {
@@ -18,6 +19,7 @@ namespace LDDrift
         void SetVertexShaderSource();
         void SetFragmentShaderSource();
         static GLuint Compile(GLenum type, const char* const shaderSource);
+        void ReloadHowToReadDataFromGPU();
 
     private: // OpenGL
         const char* VertexShaderSource = "";
@@ -49,11 +51,12 @@ namespace LDDrift
     public:
         TextureRender();
         ~TextureRender();
+        void ReloadFromTextures();
         void DeleteTextures();
         void SetColorMultiplier(float colorMultiplier) const;
         void SetCorePTR(LDDrift::Core* core_ptr);
         void Initialize();
-        void RemoveTexture(LDDrift::Texture* texture);
+        void RemoveTexture(const LDDrift::Texture* texture);
         void Render() const;
         void AddTexture(LDDrift::Texture* texture, const int& use_UVP);
         void SendToGPU();

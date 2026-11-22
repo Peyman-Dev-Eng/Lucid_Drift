@@ -13,7 +13,7 @@ set(cglTF
 )
 
 # ============================================================================
-# START
+# START : libraries
 # ============================================================================
 
 # ============================================================================
@@ -33,11 +33,11 @@ target_include_directories(ASSERT PUBLIC
 # Vector Position 2D
 # ============================================================================
 
-add_library(VECPOS2D STATIC
+add_library(VECTORS2D STATIC
         EngineLibraries/VecPosition2D/VecPos2D.cpp
 )
 
-target_include_directories(VECPOS2D PUBLIC
+target_include_directories(VECTORS2D PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecPosition2D
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine
         ${LUCID_DRIFT_ROOT}/glad/include
@@ -45,7 +45,7 @@ target_include_directories(VECPOS2D PUBLIC
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
 )
 
-target_link_libraries(VECPOS2D PUBLIC
+target_link_libraries(VECTORS2D PUBLIC
         ASSERT VecColor ANGLE SHAPE_DATA PWT TRM COMP IMAGE_READER
 )
 
@@ -89,7 +89,7 @@ target_include_directories(SHAPE_DATA PUBLIC
 )
 
 target_link_libraries(SHAPE_DATA PUBLIC
-        VecColor VECPOS2D
+        VecColor VECTORS2D
 )
 
 # ============================================================================
@@ -145,12 +145,13 @@ target_include_directories(GUI PUBLIC
 target_link_libraries(GUI PUBLIC
         ASSERT
         PWT
-        VECPOS2D
+        VECTORS2D
         VecColor
         ANGLE
         SHAPE_DATA
         COMP
         CODE_PATHFINDER
+        exc
 )
 # ============================================================================
 # Transform System
@@ -167,7 +168,7 @@ target_include_directories(TRM PUBLIC
 )
 
 target_link_libraries(TRM PUBLIC
-        VECPOS2D
+        VECTORS2D
         VecColor
         SHAPE_DATA
         ASSERT
@@ -224,7 +225,7 @@ target_include_directories(WRSS PUBLIC
         ${CMAKE_CURRENT_SOURCE_DIR}/EngineLibraries/VecColor
 )
 
-target_link_libraries(WRSS PUBLIC PWT ANGLE SHAPE_DATA)
+target_link_libraries(WRSS PUBLIC PWT ANGLE SHAPE_DATA exc)
 
 # ============================================================================
 # Code Pathfinder system
@@ -315,7 +316,7 @@ target_include_directories(exc PUBLIC
 )
 
 # ============================================================================
-# END
+# END : libraries
 # ============================================================================
 
 if (WIN32)
@@ -481,28 +482,17 @@ target_include_directories(Engine PUBLIC
         ${LUCID_DRIFT_ROOT}/ThirdParty/imgui/backends
         ${CMAKE_CURRENT_LIST_DIR}/Engine
         ${CMAKE_CURRENT_LIST_DIR}/Engine/API
+        ${CMAKE_CURRENT_SOURCE_DIR}/ErrorException
 )
 
 target_link_libraries(Engine PUBLIC
-        ASSERT
-        VECPOS2D
-        ANGLE
-        VecColor
-        glfw
-        SHAPE_DATA
-        PWT
-        FUNCTIONS
-        GUI
-        TRM
-        COMP
-        ENG_API
-        CODE_PATHFINDER
-        __GUIWH__
-        WRSS
-        IMAGE_READER
-        stb_image
-        VEC_POS_3D
-        logger
+        ASSERT VECTORS2D ANGLE
+        VecColor glfw SHAPE_DATA
+        PWT FUNCTIONS GUI
+        TRM COMP ENG_API
+        CODE_PATHFINDER __GUIWH__
+        WRSS IMAGE_READER stb_image
+        VEC_POS_3D logger exc
 )
 
 if (WIN32)

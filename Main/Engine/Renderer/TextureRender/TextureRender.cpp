@@ -11,6 +11,15 @@ GLuint LDDrift::TextureRender::Compile(const GLenum type, const char* const shad
     const GLuint shader = glCreateShader(type);
     glShaderSource(shader, 1, &shaderSource, nullptr);
     glCompileShader(shader);
+    GLint ShaderCompileStatus;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &ShaderCompileStatus);
+    if (ShaderCompileStatus == GL_FALSE) {
+        GLint InfoLogLength;
+        glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        char InfoLog[InfoLogLength];
+        glGetShaderInfoLog(shader, InfoLogLength, &InfoLogLength, InfoLog);
+        throw LDDrift::Except("OpenGL", "TextureRender", std::string(InfoLog));
+    }
     return shader;
 }
 
@@ -58,8 +67,39 @@ void LDDrift::TextureRender::Initialize() {
     SetVertexShaderSource();
     SetFragmentShaderSource();
 
-    FragmentShader = Compile(GL_FRAGMENT_SHADER, FragmentShaderSource);
-    VertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
+    try {
+        VertexShader = Compile(GL_VERTEX_SHADER, VertexShaderSource);
+    } catch (const LDDrift::Except& e) {
+        LDDrift::Logger::ErrorLog(e.program, e.ErrorFromLocation,
+                                  Log(e.message, LDDrift::LogType::CompileOpenGLShaderSourceFailed));
+        char yesOrNo = '.';
+        while (yesOrNo != 'y' && yesOrNo != 'Y' && yesOrNo != 'n' && yesOrNo != 'N') {
+            std::cerr <<
+                "Do you want to continue? (Under these conditions, the rendering system might not function correctly or as you intend.) (y/n): ";
+            std::cin >> yesOrNo;
+            if (yesOrNo == 'n' || yesOrNo == 'N') {
+                std::cerr << "we are sorry!" << std::endl;
+                exit(-1);
+            }
+        }
+    }
+
+    try {
+        FragmentShader = Compile(GL_FRAGMENT_SHADER, FragmentShaderSource);
+    } catch (const LDDrift::Except& e) {
+        LDDrift::Logger::ErrorLog(e.program, e.ErrorFromLocation,
+                                  Log(e.message, LDDrift::LogType::CompileOpenGLShaderSourceFailed));
+        char yesOrNo = '.';
+        while (yesOrNo != 'y' && yesOrNo != 'Y' && yesOrNo != 'n' && yesOrNo != 'N') {
+            std::cerr <<
+                "Do you want to continue? (Under these conditions, the rendering system might not function correctly or as you intend.) (y/n): ";
+            std::cin >> yesOrNo;
+            if (yesOrNo == 'n' || yesOrNo == 'N') {
+                std::cerr << "we are sorry!" << std::endl;
+                exit(-1);
+            }
+        }
+    }
     program = glCreateProgram();
     glAttachShader(program, VertexShader);
     glAttachShader(program, FragmentShader);
@@ -75,7 +115,7 @@ void LDDrift::TextureRender::Initialize() {
         glGetProgramiv(program, GL_INFO_LOG_LENGTH, &InfoLogLength);
         char InfoLog[InfoLogLength];
         glGetProgramInfoLog(program, InfoLogLength, &InfoLogLength, InfoLog);
-        throw std::runtime_error("link program failed: " + std::string(InfoLog));
+        throw LDDrift::Except("OpenGL", "TextureRender", std::string(InfoLog));
     }
 
 
@@ -95,8 +135,7 @@ void LDDrift::TextureRender::Initialize() {
 
 void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture, const int& use_UVP) {
     if (!findTexture(texture)) {
-        textures.push_back({use_UVP, texture});
-        texture->GenerateTexture();
+        textures.push_back({.use_U_VIEW_PROJECTION = use_UVP, .texture = texture});
         const std::size_t textureDataSize = texture->GetTextureCoordinates().size() / 4;
         howToReadDataFromGPU.push_back(readDataFrom_GPU{.start = lastIndexForStart, .count = textureDataSize});
         lastIndexForStart += textureDataSize;
@@ -104,14 +143,10 @@ void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture, const int& us
 }
 
 void LDDrift::TextureRender::SendToGPU() {
-    lastIndexForStart = 0;
-    howToReadDataFromGPU.clear();
     std::vector<float> vertices;
-    for (const TEXTURE tex : textures) {
-        const std::size_t textureSize = tex.texture->GetTextureCoordinates().size() / 4;
-        howToReadDataFromGPU.push_back({.start = lastIndexForStart, .count = textureSize});
-        lastIndexForStart += textureSize;
-        vertices.insert(vertices.end(), tex.texture->GetTextureCoordinates().begin(), tex.texture->GetTextureCoordinates().end());
+    for (const auto [use_U_VIEW_PROJECTION, texture] : textures) {
+        vertices.insert(vertices.end(), texture->GetTextureCoordinates().begin(),
+                        texture->GetTextureCoordinates().end());
     }
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -126,10 +161,14 @@ void LDDrift::TextureRender::SendToGPU() {
     glEnableVertexAttribArray(1);
 }
 
-void LDDrift::TextureRender::RemoveTexture(LDDrift::Texture* texture) {
-    if (const auto it = std::ranges::find(textures, texture, &TEXTURE::texture);
-        it != textures.end()) {
-        textures.erase(it);
+void LDDrift::TextureRender::RemoveTexture(const LDDrift::Texture* texture) {
+    for (std::size_t Index = 0; Index < textures.size(); ++Index) {
+        if (textures[Index].texture == texture) {
+            textures.erase(textures.begin() + Index);
+            howToReadDataFromGPU.erase(howToReadDataFromGPU.begin() + Index);
+            ReloadHowToReadDataFromGPU();
+            break;
+        }
     }
 }
 
@@ -168,4 +207,24 @@ void LDDrift::TextureRender::DeleteTextures() {
     howToReadDataFromGPU.clear();
     lastIndexForStart = 0;
     SendToGPU();
+}
+
+void LDDrift::TextureRender::ReloadFromTextures() {
+    lastIndexForStart = 0;
+    howToReadDataFromGPU.clear();
+    for (const auto& [useViewProjection, texture] : textures) {
+        const std::size_t textureSize = texture->GetTextureCoordinates().size() / 4;
+        howToReadDataFromGPU.push_back({.start = lastIndexForStart, .count = textureSize});
+        lastIndexForStart += textureSize;
+    }
+}
+
+void LDDrift::TextureRender::ReloadHowToReadDataFromGPU() {
+    constexpr int firstIndex = 0;
+    howToReadDataFromGPU[firstIndex].start = 0;
+    const std::size_t howToReadDataFromGPU_SIZE = howToReadDataFromGPU.size();
+    for (std::size_t index = 1; index < howToReadDataFromGPU_SIZE; ++index) {
+        howToReadDataFromGPU[index].start = (howToReadDataFromGPU[index - 1].start + howToReadDataFromGPU[index - 1].
+            count);
+    }
 }
