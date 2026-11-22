@@ -67,6 +67,18 @@ void LDDrift::TextureRender::Initialize() {
     glDeleteShader(VertexShader);
     glDeleteShader(FragmentShader);
 
+    GLint ProgramLinkStatus;
+    glGetProgramiv(program, GL_LINK_STATUS, &ProgramLinkStatus);
+
+    if (ProgramLinkStatus == GL_FALSE) {
+        GLint InfoLogLength;
+        glGetProgramiv(program, GL_INFO_LOG_LENGTH, &InfoLogLength);
+        char InfoLog[InfoLogLength];
+        glGetProgramInfoLog(program, InfoLogLength, &InfoLogLength, InfoLog);
+        throw std::runtime_error("link program failed: " + std::string(InfoLog));
+    }
+
+
     glGenVertexArrays(1, &VAO);
     glBindVertexArray(VAO);
 
