@@ -1,7 +1,5 @@
 #include "Scene.h"
-
 #include <typeinfo>
-
 #include "Actors/Shapes/Circle/CircleShape.h"
 #include "Actors/Shapes/Polygon/Polygon.h"
 #include "Actors/Line/Line.h"
@@ -20,6 +18,7 @@ LDDrift::Scene::~Scene() {
         delete line;
     }
     for (auto& [textureName, texture,Render] : textures) {
+        texture->FreeTexture();
         delete texture;
     }
 }
@@ -435,6 +434,7 @@ void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesyste
     managements.push_back(QueueManagement{
         .searchInVector = LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_T, .index = textures.size() - 1
     });
+    newTexture.texture->GenerateTexture();
 }
 
 void LDDrift::Scene::DeleteTexture(const std::string& name) {

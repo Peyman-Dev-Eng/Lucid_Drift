@@ -55,7 +55,12 @@ namespace LDDrift
         FindLineJoiningAlgorithmFailed = 0xE8C215A4,
         TriangulateFailed = 0x5A93D7B1,
         FoundSceneTargetFailed = 0xB6E14C82,
-        FoundSceneTargetSucceeded = 0x73D8A5F6
+        FoundSceneTargetSucceeded = 0x73D8A5F6,
+        CompileOpenGLShaderSourceFailed,
+        LinkOpenGLProgramFailed,
+        CompileOpenGLShaderSourceSucceeded,
+        LinkOpenGLProgramSucceeded,
+
     };
 
     class Log final
