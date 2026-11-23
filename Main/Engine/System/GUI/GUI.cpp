@@ -2070,14 +2070,8 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
     ImGui::InputTextWithHint("##texture path", "enter texture path: ", texture_path, sizeof(texture_path));
     ImGui::Separator();
 
-    static int point_count = 3;
+    constexpr int point_count = 4;
     static std::vector<float> vert; // vertices
-    ImGui::TextUnformatted("point count: ");
-    ImGui::SameLine();
-    ImGui::InputInt("##point count", &point_count, 1, 1);
-    if (point_count < 3) {
-        point_count = 3;
-    }
     InitializeFloatVector(vert, point_count);
     ImGui::Separator();
     ImGui::TextUnformatted("position on display");
@@ -2096,21 +2090,6 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
         ImGui::PopID();
     }
     ImGui::Separator();
-    ImGui::TextUnformatted("set points on display");
-    ImGui::Separator();
-    for (std::size_t inputPositionNumber = 0; inputPositionNumber < point_count; ++inputPositionNumber) {
-        ImGui::PushID(static_cast<int>(inputPositionNumber));
-        ImGui::Text("point %zu: ", inputPositionNumber);
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(120);
-        ImGui::InputFloat("##point (x)", &vert[inputPositionNumber * 4 + 2], 1, 1);
-        ImGui::SameLine();
-        ImGui::Text("point %zu: ", inputPositionNumber);
-        ImGui::SameLine();
-        ImGui::SetNextItemWidth(120);
-        ImGui::InputFloat("##point (y)", &vert[inputPositionNumber * 4 + 3], 1, 1);
-        ImGui::PopID();
-    }
     if (ImGui::Button("Create")) {
         core->sceneManager.GetCurrentScene()->CreateTexture(
             std::string(window->Buffer) /* texture name save in this buffer */,

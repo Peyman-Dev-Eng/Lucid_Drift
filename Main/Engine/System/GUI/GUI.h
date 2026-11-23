@@ -43,6 +43,14 @@ namespace LDDrift
         if (size * 4 == vector.size()) return;
         vector.clear();
         vector.assign(size * 4, 0);
+        vector[2] = 0;
+        vector[3] = 0;
+        vector[6] = 1;
+        vector[7] = 0;
+        vector[10] = 1;
+        vector[11] = 1;
+        vector[14] = 0;
+        vector[15] = 1;
     }
 }
 
@@ -97,7 +105,7 @@ namespace LDDrift
         void PopupCompletionLogic();
 
     private:
-        LDDrift::Core* core = nullptr;
+        Core* core = nullptr;
 
     public:
         static std::vector<std::string> ExtractTextFromString(const std::string& text);

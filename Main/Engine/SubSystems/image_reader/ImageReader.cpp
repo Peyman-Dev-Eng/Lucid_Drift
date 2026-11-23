@@ -5,7 +5,7 @@ LDDrift::ImageReader::ImageReader() = default;
 
 LDDrift::ImageReader::ImageReader(const std::filesystem::path& imagePath, const int& _desiredChannels) {
     image.pixels = stbi_load(imagePath.c_str(), &image.width, &image.height,
-                             &image.channels, 0);
+                             &image.channels, _desiredChannels);
     if (!image.pixels) {
         throw std::runtime_error(stbi_failure_reason());
     }
@@ -14,7 +14,7 @@ LDDrift::ImageReader::ImageReader(const std::filesystem::path& imagePath, const 
 
 void LDDrift::ImageReader::LoadImage(const std::filesystem::path& imagePath, const int& _desiredChannels) {
     image.pixels = stbi_load(imagePath.c_str(), &image.width, &image.height,
-                             &image.channels, 0);
+                             &image.channels, _desiredChannels);
     if (!image.pixels) {
         throw std::runtime_error(stbi_failure_reason());
     }
@@ -23,14 +23,16 @@ void LDDrift::ImageReader::LoadImage(const std::filesystem::path& imagePath, con
 
 const LDDrift::ImageReader::Image& LDDrift::ImageReader::GetImage() const { return image; }
 
-void LDDrift::ImageReader::FreeImage() const {
+void LDDrift::ImageReader::FreeImage() {
     if (CanFree) {
         stbi_image_free(image.pixels);
+        CanFree = false;
     }
 }
 
 LDDrift::ImageReader::~ImageReader() {
     if (CanFree) {
         stbi_image_free(image.pixels);
+        CanFree = false;
     }
 }

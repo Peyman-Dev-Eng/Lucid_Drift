@@ -435,6 +435,7 @@ void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesyste
         .searchInVector = LUCID_DRIFT_ACTOR_GEOMETRY_TYPE_T, .index = textures.size() - 1
     });
     newTexture.texture->GenerateTexture();
+    newTexture.texture->image_reader.FreeImage();
 }
 
 void LDDrift::Scene::DeleteTexture(const std::string& name) {
