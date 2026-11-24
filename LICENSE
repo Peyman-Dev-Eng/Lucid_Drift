@@ -1,4 +1,4 @@
-# Lucid Drift — Additional License Terms
+Lucid Drift — Additional License Terms
 
 Copyright 2026 Peyman
 Original Project: Lucid Drift
@@ -9,18 +9,17 @@ These Additional Terms supplement the GNU General Public License v3.0 (GPL-3.0) 
 
 These terms apply to the original Lucid Drift software and all derivative works based on it.
 
-## 1. Original Author Attribution
+1. Original Author Attribution
 
 Any redistribution of the original Lucid Drift software or a derivative work must preserve the original copyright notices and attribution to the original author.
 
 The original author must be credited as:
 
-**Peyman**
 https://github.com/Peyman-Dev-Eng
 
 This attribution must not be removed, obscured, or replaced with another person's name.
 
-## 2. Modified Version Identification
+2. Modified Version Identification
 
 Anyone who modifies Lucid Drift and redistributes the modified version must clearly identify it as a modified version.
 
@@ -28,7 +27,7 @@ The modified version must not be presented as the original, official, or unmodif
 
 The distributor must clearly indicate that the version has been modified and is not the official release maintained by the original author.
 
-## 3. Modified Version Attribution
+3. Modified Version Attribution
 
 Anyone redistributing a modified version must identify themselves as the person or organization responsible for the modifications and redistribution.
 
@@ -40,11 +39,11 @@ The modified version must include a notice containing:
 - The name of the person or organization responsible for the modifications.
 - A clear statement that the distributed version is modified and is not the official release.
 
-## 4. Required Redistribution Notice
+4. Required Redistribution Notice
 
 A modified version must include a notice substantially similar to the following:
 
-**MODIFIED VERSION — NOT AN OFFICIAL RELEASE**
+MODIFIED VERSION — NOT AN OFFICIAL RELEASE
 
 This software is a modified version of Lucid Drift.
 
@@ -58,13 +57,13 @@ This version has been modified independently and is not the original or official
 
 The modifications and additional contributions are the responsibility of their respective authors.
 
-## 5. No False Endorsement
+5. No False Endorsement
 
 Redistributors must not claim or imply that their modified versions are created, maintained, approved, or officially endorsed by the original author unless explicit written permission has been obtained.
 
 The name and identity of the original author must not be used to falsely represent the origin of a modified version.
 
-## 6. Placement of Notices
+6. Placement of Notices
 
 The required attribution and modified-version notices must be reasonably visible and accessible to recipients.
 
@@ -72,7 +71,7 @@ For source code distributions, these notices must be included in the project's d
 
 For binary distributions, the notices must be included in accompanying documentation or another reasonably accessible location.
 
-## 7. Relationship with GPL-3.0
+7. Relationship with GPL-3.0
 
 All provisions of the GNU General Public License version 3.0 remain applicable.
 
