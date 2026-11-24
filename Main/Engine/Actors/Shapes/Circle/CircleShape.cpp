@@ -1,3 +1,10 @@
+// Copyright 2026 Peyman
+// https://github.com/Peyman-Dev-Eng/Lucid_Drift
+//
+// This file is part of Lucid Drift.
+// Licensed under GNU GPL v3.0.
+// See LICENSE and ADDITIONAL-TERMS.md.
+
 #include "CircleShape.h"
 
 LDDrift::Actors::Circle::Circle() : radiusNDC_X(0), radiusNDC_Y(0), radius(0), CenterPos(0, 0) {}
