@@ -26,7 +26,7 @@ namespace LDDrift::ActorType
 
 namespace LDDrift
 {
-    class Transform;
+    class Transformer;
 }
 
 namespace LDDrift::Actors

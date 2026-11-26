@@ -24,7 +24,7 @@ namespace LDDrift
         class Line;
     }
 
-    class Transform;
+    class Transformer;
     class Core;
 
     class ShapeRender final

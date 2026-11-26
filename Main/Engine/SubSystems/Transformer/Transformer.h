@@ -1,5 +1,12 @@
-#ifndef LUCID_DRIFT_TRANSFORM_H
-#define LUCID_DRIFT_TRANSFORM_H
+// Copyright 2026 Peyman
+// https://github.com/Peyman-Dev-Eng/Lucid_Drift
+//
+// This file is part of Lucid Drift.
+// Licensed under GNU GPL v3.0.
+// See LICENSE and ADDITIONAL-TERMS.md.
+
+#ifndef LUCID_DRIFT_TRANSFORMER_H
+#define LUCID_DRIFT_TRANSFORMER_H
 #include <vector>
 #include <VecPos2D.h>
 #include <System/Window/Window.h>
@@ -12,7 +19,7 @@ namespace LDDrift
         class Shape;
     }
 
-    class Transform
+    class Transformer
     {
     public:
         static int widthScreen;

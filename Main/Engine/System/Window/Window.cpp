@@ -84,10 +84,10 @@ void LDDrift::Window::CreateFullscreenWindow() {
     settings.viewPortWidth = mode->width - 350 - 300;
     settings.viewPortHeight = mode->height - 180 - 300;
     glfwSetFramebufferSizeCallback(screen, LDDrift::Window::FrameBufferSizeCallback);
-    LDDrift::Transform::widthScreen = settings.viewPortWidth;
-    LDDrift::Transform::heightScreen = settings.viewPortHeight;
-    LDDrift::Transform::halfWidthScreen = settings.viewPortWidth / 2;
-    LDDrift::Transform::halfHeightScreen = settings.viewPortHeight / 2;
+    LDDrift::Transformer::widthScreen = settings.viewPortWidth;
+    LDDrift::Transformer::heightScreen = settings.viewPortHeight;
+    LDDrift::Transformer::halfWidthScreen = settings.viewPortWidth / 2;
+    LDDrift::Transformer::halfHeightScreen = settings.viewPortHeight / 2;
 
     int width = 0;
     int height = 0;
@@ -144,10 +144,10 @@ void LDDrift::Window::SetSize(const int width, const int height) {
     settings.viewPortWidth = width - 350;
     settings.viewPortHeight = height - 180;
     glViewport(350, 180, settings.viewPortWidth, settings.viewPortHeight);
-    LDDrift::Transform::widthScreen = settings.viewPortWidth;
-    LDDrift::Transform::heightScreen = settings.viewPortHeight;
-    LDDrift::Transform::halfWidthScreen = settings.viewPortWidth / 2;
-    LDDrift::Transform::halfHeightScreen = settings.viewPortHeight / 2;
+    LDDrift::Transformer::widthScreen = settings.viewPortWidth;
+    LDDrift::Transformer::heightScreen = settings.viewPortHeight;
+    LDDrift::Transformer::halfWidthScreen = settings.viewPortWidth / 2;
+    LDDrift::Transformer::halfHeightScreen = settings.viewPortHeight / 2;
 }
 
 void LDDrift::Window::SetFillScreenColor(const LDDrift::VecCol& color) {
@@ -205,10 +205,10 @@ void LDDrift::Window::FrameBufferSizeCallback(GLFWwindow* window, const int widt
     currentWindow->core->gui.projectWatchTowerWindow.Resize();
     currentWindow->settings.viewPortWidth = (width - 350);
     currentWindow->settings.viewPortHeight = (height - 180);
-    LDDrift::Transform::widthScreen = currentWindow->settings.viewPortWidth;
-    LDDrift::Transform::heightScreen = currentWindow->settings.viewPortHeight;
-    LDDrift::Transform::halfWidthScreen = (currentWindow->settings.viewPortWidth / 2);
-    LDDrift::Transform::halfHeightScreen = (currentWindow->settings.viewPortHeight / 2);
+    LDDrift::Transformer::widthScreen = currentWindow->settings.viewPortWidth;
+    LDDrift::Transformer::heightScreen = currentWindow->settings.viewPortHeight;
+    LDDrift::Transformer::halfWidthScreen = (currentWindow->settings.viewPortWidth / 2);
+    LDDrift::Transformer::halfHeightScreen = (currentWindow->settings.viewPortHeight / 2);
     glViewport(350, 180, width - 350, height - 180);
     const auto viewProjection = currentWindow->core->mainRenderer.UpdateViewMatrix();
     currentWindow->s_renderer->SetViewMatrix(viewProjection);

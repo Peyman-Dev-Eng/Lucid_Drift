@@ -159,7 +159,7 @@ void LDDrift::Actors::Shape::SetSpeed(const float spd) {
 }
 
 std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetNDC_Points() const {
-    return LDDrift::Transform::TransformToNDC_Position(Points);
+    return LDDrift::Transformer::TransformToNDC_Position(Points);
 }
 
 void LDDrift::Actors::Shape::SetPoint(const std::size_t point_index, const LDDrift::VecPos2D& pos) {
@@ -174,7 +174,7 @@ const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetGlobalPoint(const std::size_
 
 LDDrift::VecPos2D LDDrift::Actors::Shape::GetNDC_Point(const std::size_t point_index) const {
     OOR_assert(point_index >= 0 && point_index < Points.size());
-    return LDDrift::Transform::TransformToNDC_Position(Points[point_index]);
+    return LDDrift::Transformer::TransformToNDC_Position(Points[point_index]);
 }
 
 void LDDrift::Actors::Shape::SetPointColor(const uint point_index, const LDDrift::VecCol& color) {
@@ -270,7 +270,7 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::CalculateAveragePointPosition() const 
         averagePoint += point;
     }
     averagePoint /= static_cast<float>(this->GetPointCount());
-    return LDDrift::Transform::TransformToGlobalPosition(averagePoint);
+    return LDDrift::Transformer::TransformToGlobalPosition(averagePoint);
 }
 
 std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::TransformPoints() const {
@@ -319,7 +319,7 @@ void LDDrift::Actors::Shape::SetAllPointsColor(const LDDrift::VecCol& targetColo
 }
 
 LDDrift::VecPos2D LDDrift::Actors::Shape::GetOriginalPosition_NDC() const {
-    return LDDrift::Transform::TransformToNDC_Position(OriginalPosition);
+    return LDDrift::Transformer::TransformToNDC_Position(OriginalPosition);
 }
 
 bool LDDrift::Actors::Shape::ShapeIsConcave() {
