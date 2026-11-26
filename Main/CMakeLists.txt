@@ -158,11 +158,11 @@ target_link_libraries(GUI PUBLIC
 # ============================================================================
 
 add_library(TRM STATIC
-        Engine/SubSystems/Transform/Transform.cpp
+        Engine/SubSystems/Transformer/Transformer.cpp
 )
 
 target_include_directories(TRM PUBLIC
-        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/Transform
+        ${CMAKE_CURRENT_SOURCE_DIR}/Engine/SubSystems/Transformer
         ${CMAKE_CURRENT_SOURCE_DIR}/Engine
         ${LUCID_DRIFT_ROOT}/glad/include
 )
@@ -474,6 +474,10 @@ add_library(Engine SHARED
         Engine/System/Physics/Physics.h
         Engine/SubSystems/NarrowPhase/NarrowPhase.cpp
         Engine/SubSystems/NarrowPhase/NarrowPhase.h
+        Engine/SubSystems/Components/ColliderComponent/CMP_Collider.cpp
+        Engine/SubSystems/Components/ColliderComponent/CMP_Collider.h
+        Engine/SubSystems/Components/TransComponent/CMP_Transform.cpp
+        Engine/SubSystems/Components/TransComponent/CMP_Transform.h
 )
 
 target_include_directories(Engine PUBLIC
