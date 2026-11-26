@@ -472,8 +472,6 @@ add_library(Engine SHARED
         Engine/System/ESC/EntityComponentSystem.h
         Engine/System/Physics/Physics.cpp
         Engine/System/Physics/Physics.h
-        Engine/SubSystems/NarrowPhase/NarrowPhase.cpp
-        Engine/SubSystems/NarrowPhase/NarrowPhase.h
         Engine/SubSystems/Components/ColliderComponent/CMP_Collider.cpp
         Engine/SubSystems/Components/ColliderComponent/CMP_Collider.h
         Engine/SubSystems/Components/TransComponent/CMP_Transform.cpp
