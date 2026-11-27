@@ -1,18 +1,13 @@
-/*
- * Copyright (C) 2026 Peyman
- *
- * This file is part of Lucid Drift.
- *
- * Lucid Drift is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * This software is distributed without any warranty.
- *
- * See the LICENSE file for the full license text.
- * See ADDITIONAL-TERMS.md for additional terms under GPL-3.0 Section 7.
- */
+// Copyright (C) 2026 Peyman
+//
+// This file is part of Lucid Drift.
+// Lucid Drift is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+// This software is distributed without any warranty.
+// See the LICENSE file for the full license text.
+// See ADDITIONAL-TERMS.md for additional terms under GPL-3.0 Section 7.
 
 #include "GraphicalUserInterfaceWindowHandler.h"
 #include <System/Core/Core.h>
@@ -214,17 +209,22 @@ void LDDrift::ProjectWatchTower_GraphicalWindow::Resize() {
 }
 
 void LDDrift::ProjectWatchTower_GraphicalWindow::Render() {
-    ImGui::InputTextWithHint("##Create New File in User Project", "Enter File Name: ", createFileBuffer,
-                             sizeof(createFileBuffer));
+    ImGui::InputTextWithHint("##Create New File in User Project", "Enter File Name: ", FileBufferName,
+                             sizeof(FileBufferName));
     if (ImGui::Button("Create New File")) {
-        if (core->gui.ProjectWatchTower_PTR->FindFile(std::filesystem::path(createFileBuffer))) {
+        if (core->gui.ProjectWatchTower_PTR->FindFile(std::filesystem::path(FileBufferName))) {
             LDDrift::Logger::WarningLog("Engine", "Project Watch Tower",
                                         Log(
                                             "Cannot create the file because a file with the same name already exists in the project.",
                                             LDDrift::LogType::FileHasBeenDetected));
             return;
         }
-        core->gui.ProjectWatchTower_PTR->CreateNewFile(std::filesystem::path(createFileBuffer));
+        core->gui.ProjectWatchTower_PTR->CreateNewFile(std::filesystem::path(FileBufferName));
+        core->gui.ProjectWatchTower_PTR->SetPaths();
+    }
+    ImGui::SameLine();
+    if (ImGui::Button("Remove File")) {
+        core->gui.ProjectWatchTower_PTR->RemoveFile(FileBufferName);
         core->gui.ProjectWatchTower_PTR->SetPaths();
     }
     ImGui::Separator();

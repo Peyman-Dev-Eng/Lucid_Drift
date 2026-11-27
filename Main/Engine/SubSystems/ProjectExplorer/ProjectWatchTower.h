@@ -75,7 +75,7 @@ namespace LDDrift
         void WriteCodeToFile(const std::filesystem::path& fileName, const char* text) const;
         void CreateNewFile(const std::filesystem::path& fileName) const;
         void RemoveBuildFile() const;
-        void RemoveFile(const std::string& fileName);
+        void RemoveFile(const std::string& fileName) const;
         [[nodiscard]] const std::filesystem::path& GetBuildFolderPath() const;
         [[nodiscard]] const std::filesystem::path& GetProjectPath() const;
         [[nodiscard]] std::pmr::vector<std::string> GetProjectDetails() const;

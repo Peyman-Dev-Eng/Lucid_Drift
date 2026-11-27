@@ -59,7 +59,7 @@ namespace LDDrift
     {
     private:
         LDDrift::Core* core = nullptr;
-        char createFileBuffer[256]{};
+        char FileBufferName[256]{};
         char openFileBuffer[256]{};
 
     public:

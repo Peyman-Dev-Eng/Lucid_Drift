@@ -1,18 +1,13 @@
-/*
- * Copyright (C) 2026 Peyman
- *
- * This file is part of Lucid Drift.
- *
- * Lucid Drift is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * This software is distributed without any warranty.
- *
- * See the LICENSE file for the full license text.
- * See ADDITIONAL-TERMS.md for additional terms under GPL-3.0 Section 7.
- */
+// Copyright (C) 2026 Peyman
+//
+// This file is part of Lucid Drift.
+// Lucid Drift is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published
+// by the Free Software Foundation, either version 3 of the License,
+// or (at your option) any later version.
+// This software is distributed without any warranty.
+// See the LICENSE file for the full license text.
+// See ADDITIONAL-TERMS.md for additional terms under GPL-3.0 Section 7.
 
 #include "ProjectWatchTower.h"
 
@@ -315,6 +310,22 @@ void LDDrift::ProjectWatchTower::RemoveBuildFile() const {
         return;
     }
     std::filesystem::remove(buildFolderPath / objectFileName);
+}
+
+void LDDrift::ProjectWatchTower::RemoveFile(const std::string& fileName) const {
+    for (const std::filesystem::directory_entry& entry : std::filesystem::recursive_directory_iterator(projectPath)) {
+        if (Extract::GetLastFileName(entry.path().string()) == fileName) {
+            if (std::filesystem::remove(entry.path().string())) {
+                LDDrift::Logger::InfoLog("Engine", "Project Watch Tower",
+                                          LDDrift::Log("successfully remove file: " + fileName,
+                                                       LDDrift::LogType::RemoveFileSucceeded));
+            } else {
+                LDDrift::Logger::WarningLog("Engine", "Project Watch Tower",
+                                            LDDrift::Log("failed to remove file: " + fileName,
+                                                         LDDrift::LogType::RemoveFileFailed));
+            }
+        }
+    }
 }
 
 LDDrift::ProjectWatchTower::~ProjectWatchTower() = default;
