@@ -476,6 +476,8 @@ add_library(Engine SHARED
         Engine/SubSystems/Components/ColliderComponent/CMP_Collider.h
         Engine/SubSystems/Components/TransComponent/CMP_Transform.cpp
         Engine/SubSystems/Components/TransComponent/CMP_Transform.h
+        Engine/SubSystems/ID_Generator/IDGenerator.cpp
+        Engine/SubSystems/ID_Generator/IDGenerator.h
 )
 
 target_include_directories(Engine PUBLIC
