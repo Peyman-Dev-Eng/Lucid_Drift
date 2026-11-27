@@ -21,5 +21,14 @@ float LDDrift::Angle::GetAngleRadians(const float ANGLE) {
     return static_cast<float>(ANGLE * std::numbers::pi_v<float> / 180.0);
 }
 
-LDDrift::Angle::~Angle() = default;
+LDDrift::Angle& LDDrift::Angle::operator=(const float ANGLE) {
+    this->angle = ANGLE;
+    return *this;
+}
 
+LDDrift::Angle& LDDrift::Angle::operator=(const Angle& angle_) {
+    angle = angle_.angle;
+    return *this;
+}
+
+LDDrift::Angle::~Angle() = default;

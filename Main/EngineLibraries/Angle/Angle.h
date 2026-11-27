@@ -26,6 +26,8 @@ namespace LDDrift
         Angle(float ANGLE);
         [[nodiscard]] float GetAngleRadians() const;
         static float GetAngleRadians(float ANGLE);
+        Angle& operator= (float ANGLE);
+        Angle& operator= (const Angle& angle);
         ~Angle();
     };
 }
