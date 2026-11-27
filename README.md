@@ -88,54 +88,53 @@ The tree below highlights the main subsystems and how the code is organized. It 
 <summary><b>📁 Explore the codebase</b></summary>
 
 ```text
+
 Lucid_Drift/
-├── CMakeLists.txt                 # Root CMake configuration
-├── main.cpp                       # Application entry point
-├── glad.c                         # GLAD implementation
-├── glad/                          # OpenGL loader headers
-├── LICENSE                        # Apache License
-│
+├── CMakeLists.txt          # Root CMake configuration
+├── main.cpp                # Application entry point
+├── glad.c                  # GLAD implementation
+├── glad/                   # OpenGL loader headers
+├── LICENSE                 # Apache License
 ├── Main/
 │   ├── CMakeLists.txt
-│   ├── Assertion/                  # Assertion helpers
+│   ├── Assertion/          # Assertion helpers
 │   ├── EngineLibraries/
-│   │   ├── Angle/                  # Angle utilities
-│   │   ├── ShapeData/              # Shape-related data
-│   │   ├── VecColor/               # Color utilities
-│   │   └── VecPosition/            # 2D position/vector utilities
-│   │
+│   │   ├── Angle/          # Angle utilities
+│   │   ├── ShapeData/      # Shape-related data
+│   │   ├── VecColor/       # Color utilities
+│   │   └── VecPosition/    # 2D position/vector utilities
 │   └── Engine/
 │       ├── Actors/
-│       │   ├── Line/               # Line shape
-│       │   └── Shapes/
-│       │       ├── MainShape/      # Shared shape foundation (convex/concave helpers)
-│       │       ├── Circle/         # Circle shape
-│       │       └── Polygon/        # Polygon shape
-│       │
-│       ├── Renderer/               # OpenGL rendering
-│       ├── API/                    # Engine-facing game API
-│       ├── Functions/              # Shared engine functions
+│       │   ├── Line/       # Line shape
+│       │   ├── Model/      # Model actor
+│       │   ├── Shapes/
+│       │   │   ├── MainShape/   # Shared shape foundation (convex/concave helpers)
+│       │   │   ├── Circle/      # Circle shape
+│       │   │   └── Polygon/     # Polygon shape
+│       │   └── Texture/    # Texture actor
+│       ├── Renderer/       # OpenGL rendering
+│       │   └── TextureRender/   # Texture rendering
+│       ├── API/            # Engine-facing game API
+│       ├── Functions/      # Shared engine functions
 │       ├── SubSystems/
 │       │   ├── GraphicalUserInterfaceWindowHandler/  # GUI window handling logic
-│       │   ├── PointHitTesting/    # Point / shape hit testing
-│       │   ├── ProjectExplorer/    # Project Watch Tower / file browsing
-│       │   ├── Transform/          # Transform-related logic
-│       │   └── WR_SettingSystem/   # Window/render + user-project settings (read/write)
-│       │
+│       │   ├── PointHitTesting/   # Point / shape hit testing
+│       │   ├── ProjectExplorer/   # Project Watch Tower / file browsing
+│       │   ├── Transform/         # Transform-related logic
+│       │   └── WR_SettingSystem/  # Window/render + user-project settings (read/write)
 │       └── System/
-│           ├── Camera/             # Camera movement, zoom, view matrix
-│           ├── CodePathfinder/     # Code path / suggestion support
-│           ├── Compilation/        # User-project build and module loading
-│           ├── Core/               # Main engine coordination
-│           ├── GUI/                # Dear ImGui windows and editor UI
-│           ├── Input/              # Keyboard and mouse input
-│           ├── Scene/              # Scene-related functionality
-│           ├── Triangulation/      # Polygon triangulation
-│           └── Window/             # Window/context management
-│
+│           ├── Camera/          # Camera movement, zoom, view matrix
+│           ├── CodePathfinder/  # Code path / suggestion support
+│           ├── Compilation/     # User-project build and module loading
+│           ├── Core/            # Main engine coordination
+│           ├── GUI/             # Dear ImGui windows and editor UI
+│           ├── Input/           # Keyboard and mouse input
+│           ├── Scene/           # Scene-related functionality
+│           ├── Triangulation/   # Polygon triangulation
+│           └── Window/          # Window/context management
 └── ThirdParty/
-    ├── imgui/                      # Dear ImGui sources
-    └── ImGuiColorTextEdit/         # Embedded code-editor component
+    ├── imgui/               # Dear ImGui sources
+    └── ImGuiColorTextEdit/  # Embedded code-editor component
 ```
 
 </details>
