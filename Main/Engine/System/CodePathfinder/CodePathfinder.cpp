@@ -17,7 +17,7 @@ void LDDrift::CodePathfinder::initializeCodePathfinder() {
 
     // ==================== Sequence containers ====================
     std_keyWords.emplace_back("std::array");
-    std_keyWords.emplace_back("std::vector");
+    std_keyWords.emplace_back("std::pmr::vector");
     std_keyWords.emplace_back("std::deque");
     std_keyWords.emplace_back("std::list");
     std_keyWords.emplace_back("std::forward_list");
@@ -1643,8 +1643,8 @@ void LDDrift::CodePathfinder::initializeCodePathfinder() {
     LDDrift_keyWords.emplace_back("NULL_STRING");
 }
 
-std::vector<std::string> LDDrift::CodePathfinder::GetSuggestions(const std::string& inputLineText) {
-    std::vector<std::string> suggestions;
+std::pmr::vector<std::string> LDDrift::CodePathfinder::GetSuggestions(const std::string& inputLineText) {
+    std::pmr::vector<std::string> suggestions;
     if (inputLineText == lastLineInput) {
         return lastSuggestions;
     }

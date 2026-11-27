@@ -9,7 +9,7 @@
 #include "System/Core/Core.h"
 #include "Actors/Shapes/MainShape/Shape.h"
 #include "Actors/Line/Line.h"
-#include "SubSystems/Transform/Transform.h"
+#include "SubSystems/Transformer/Transformer.h"
 
 void LDDrift::ShapeRender::SetVertexShaderSource() {
     VertexShaderSource = R"(
@@ -93,8 +93,8 @@ void LDDrift::ShapeRender::AddShapeToRender(LDDrift::Actors::Shape* shape) {
         return;
     }
     shapePTRs.insert(shape);
-    const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
-    std::vector<float> VTC = {};
+    const std::pmr::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
+    std::pmr::vector<float> VTC = {};
 
     if (const bool isOutline = !shape->IsFillShape() || shape->IsHaveThickness(); isOutline == true) {
         const auto& points = shape->GetGlobalPoints();
@@ -153,8 +153,8 @@ void LDDrift::ShapeRender::UpdateShapeData() {
     howToReadShapeData.clear();
     indexOfFirstVertexInVertexArray = 0;
     for (LDDrift::Actors::Shape* shape : shapePTRs) {
-        const std::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
-        std::vector<float> VTC = {};
+        const std::pmr::vector<LDDrift::VecCol>& vertexColor = shape->GetColorOfPoints();
+        std::pmr::vector<float> VTC = {};
         if (shape->ShapeIsConvex()) {
             const LDDrift::Triangulation_S<LDDrift::ActorType::convex> triangulation(shape);
             VTC = triangulation.CreateTriangles();
@@ -183,7 +183,7 @@ void LDDrift::ShapeRender::UpdateShapeData() {
     }
     for (const auto& line : linePTRs) {
         const LDDrift::VecCol& lineColor = line->GetColor();
-        const std::vector<LDDrift::Actors::Line::PNT>& points =
+        const std::pmr::vector<LDDrift::Actors::Line::PNT>& points =
             line->GetPoints();
 
         constexpr int vertexCount = 6;
@@ -262,7 +262,7 @@ void LDDrift::ShapeRender::render() const {
 void LDDrift::ShapeRender::AddLineToRender(LDDrift::Actors::Line* line) {
     linePTRs.insert(line);
     const LDDrift::VecCol& lineColor = line->GetColor();
-    const std::vector<LDDrift::Actors::Line::PNT>& points =
+    const std::pmr::vector<LDDrift::Actors::Line::PNT>& points =
         line->GetPoints();
 
     constexpr int vertexCount = 6;
@@ -355,7 +355,7 @@ void LDDrift::ShapeRender::DeleteActors() {
     SendDataToGPU();
 }
 
-void LDDrift::ShapeRender::Add(const std::vector<LDDrift::Actors::Shape*>& shapes, const std::vector<LDDrift::Actors::Line*>& lines) {
+void LDDrift::ShapeRender::Add(const std::pmr::vector<LDDrift::Actors::Shape*>& shapes, const std::pmr::vector<LDDrift::Actors::Line*>& lines) {
     for (LDDrift::Actors::Line* line : lines) {
         AddLineToRender(line);
     }

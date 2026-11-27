@@ -9,16 +9,19 @@
 #define LUCID_DRIFT_CMP_COLLIDER_H
 #include <vector>
 #include <VecPos2D.h>
+#include <type_traits>
 
 namespace LDDrift
 {
     class CMP_Collider
     {
     private:
-        std::pmr::vector<LDDrift::VecPos2D> vertices; // vertices of rectangle
+        std::pmr::vector<LDDrift::VecPos2D> normals;
+        std::pmr::vector<LDDrift::VecPos2D> BoundingBox; // vertices of rectangle
 
     public:
         CMP_Collider();
+        void Initialize();
         ~CMP_Collider();
     };
 } // LDDrift

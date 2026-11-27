@@ -53,7 +53,7 @@ LDDrift::VecPos2D LDDrift::Actors::Line::GetSecondPoint() const {
     return SecondPoint;
 }
 
-const std::vector<LDDrift::Actors::Line::PNT>& LDDrift::Actors::Line::GetPoints() const {
+const std::pmr::vector<LDDrift::Actors::Line::PNT>& LDDrift::Actors::Line::GetPoints() const {
     return Points;
 }
 
@@ -70,10 +70,10 @@ const LDDrift::VecCol& LDDrift::Actors::Line::GetColor() const {
     return lineColor;
 }
 
-std::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::Translate() const {
+std::pmr::vector<LDDrift::Actors::Line::PNT> LDDrift::Actors::Line::Translate() const {
     const float HalfWidth = static_cast<float>(WidthScreen) / 2.0f;
     const float HalfHeight = static_cast<float>(HeightScreen) / 2.0f;
-    std::vector<LDDrift::Actors::Line::PNT> CopyPoints = Points;
+    std::pmr::vector<LDDrift::Actors::Line::PNT> CopyPoints = Points;
     CopyPoints[0].Point_1.X = (CopyPoints[0].Point_1.X - HalfWidth) / HalfWidth;
     CopyPoints[0].Point_1.Y = (CopyPoints[0].Point_1.Y - HalfHeight) / HalfHeight;
     CopyPoints[0].Point_2.X = (CopyPoints[0].Point_2.X - HalfWidth) / HalfWidth;

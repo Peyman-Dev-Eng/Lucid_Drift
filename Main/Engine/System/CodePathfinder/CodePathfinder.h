@@ -25,16 +25,16 @@ namespace LDDrift
     {
     private:
         std::string lastLineInput = NULL_STRING;
-        std::vector<std::string> lastSuggestions;
+        std::pmr::vector<std::string> lastSuggestions;
 
-        std::vector<std::string> LDDrift_keyWords;
-        std::vector<std::string> std_keyWords;
+        std::pmr::vector<std::string> LDDrift_keyWords;
+        std::pmr::vector<std::string> std_keyWords;
 
     public:
         CodePathfinder();
         ~CodePathfinder();
         void initializeCodePathfinder();
-        std::vector<std::string> GetSuggestions(const std::string& inputLineText);
+        std::pmr::vector<std::string> GetSuggestions(const std::string& inputLineText);
     };
 } // LDDrift
 

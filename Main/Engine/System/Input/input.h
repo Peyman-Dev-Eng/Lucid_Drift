@@ -32,7 +32,7 @@ struct IsKeyPressedInFrame
 };
 
 
-inline std::vector<LD_uint> ToUpdateValues;
+inline std::pmr::vector<LD_uint> ToUpdateValues;
 
 
 #ifdef _WIN32
@@ -259,28 +259,28 @@ namespace LDDrift
         };
     }
 
-    inline std::vector<int> fileKeyboardInputEvent_V;
-    inline std::vector<int> fileMouseInputEvent_V;
+    inline std::pmr::vector<int> fileKeyboardInputEvent_V;
+    inline std::pmr::vector<int> fileMouseInputEvent_V;
 
     // keyboard
     std::string GetFileKeyboardInputEvent();
-    void OpenFileKeyboardInputEvent(const std::vector<std::string>&);
-    // open file input event of linux and save result this up variable
-    inline void CloseFileKeyboardInputEvent(); // close file input event of linux
+    void OpenFileKeyboardInputEvent(const std::pmr::vector<std::string>&);
+    // open file input event of Linux and save result this up variable
+    inline void CloseFileKeyboardInputEvent(); // close file input event of Linux
 
     // mouse
     std::string GetFileMouseInputEvent();
-    void OpenFileMouseInputEvent(const std::vector<std::string>&);
+    void OpenFileMouseInputEvent(const std::pmr::vector<std::string>&);
     inline void CloseFileMouseInputEvent();
 
 
     // Keyboard
-    inline std::vector<IsKeyPressedInFrame> LinuxKeyboard;
+    inline std::pmr::vector<IsKeyPressedInFrame> LinuxKeyboard;
 
     // Mouse
-    inline std::vector<IsKeyPressedInFrame> LinuxMouse;
+    inline std::pmr::vector<IsKeyPressedInFrame> LinuxMouse;
 
-    inline std::vector<std::string> KeyBoardKeyName;
+    inline std::pmr::vector<std::string> KeyBoardKeyName;
 
     inline std::unordered_map<std::string, Event::Keyboard::LinuxKeyboardKeyCode> KeyStringName;
 
@@ -322,14 +322,14 @@ namespace LDDrift
         public:
             static void Init();
             static void SetKeyTarget(const std::string&);
-            static void SetKeyTarget(const std::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys);
+            static void SetKeyTarget(const std::pmr::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys);
             static void GetKeyInputEvent();
             static bool IsKeyPressed(Event::Keyboard::LinuxKeyboardKeyCode key);
             static bool IsKeyHeld(Event::Keyboard::LinuxKeyboardKeyCode key);
             static bool IsKeyReleased(Event::Keyboard::LinuxKeyboardKeyCode key);
-            static std::vector<Event::Keyboard::LinuxKeyboardKeyCode> GetKeyPressed();
-            static std::vector<Event::Keyboard::LinuxKeyboardKeyCode> GetKeyHeld();
-            static std::vector<Event::Keyboard::LinuxKeyboardKeyCode> GetKeyReleased();
+            static std::pmr::vector<Event::Keyboard::LinuxKeyboardKeyCode> GetKeyPressed();
+            static std::pmr::vector<Event::Keyboard::LinuxKeyboardKeyCode> GetKeyHeld();
+            static std::pmr::vector<Event::Keyboard::LinuxKeyboardKeyCode> GetKeyReleased();
             static void Update();
             static void Destroy();
         };

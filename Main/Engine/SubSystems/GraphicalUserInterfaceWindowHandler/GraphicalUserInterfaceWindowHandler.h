@@ -15,7 +15,7 @@ namespace LDDrift
         std::string name;
         bool canMoveWindow;
         bool canResizeWindow;
-        std::vector<std::string> textPrintInWindow;
+        std::pmr::vector<std::string> textPrintInWindow;
         VecPos2D position;
         VecPos2D size;
         bool Show;
@@ -68,10 +68,10 @@ namespace LDDrift
         };
     private:
         LDDrift::Core* core = nullptr;
-        std::vector<Text> texts;
+        std::pmr::vector<Text> texts;
         std::string lastInputTextForSetTextFunction;
     private:
-        static std::vector<Text> ExtractTextFromString(const std::string& text);
+        static std::pmr::vector<Text> ExtractTextFromString(const std::string& text);
 
     public:
         Console_GraphicalWindow();

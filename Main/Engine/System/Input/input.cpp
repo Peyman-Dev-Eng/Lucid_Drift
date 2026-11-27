@@ -9,7 +9,7 @@
 
 #include <filesystem>
 
-void LDDrift::OpenFileKeyboardInputEvent(const std::vector<std::string>& files) {
+void LDDrift::OpenFileKeyboardInputEvent(const std::pmr::vector<std::string>& files) {
 #ifdef __linux__
     for (const std::string& file : files) {
         int resultOpenFile = open(file.c_str(), O_RDONLY | O_NONBLOCK);
@@ -33,7 +33,7 @@ void LDDrift::CloseFileKeyboardInputEvent() {
 #endif
 }
 
-void LDDrift::OpenFileMouseInputEvent(const std::vector<std::string>& files) {
+void LDDrift::OpenFileMouseInputEvent(const std::pmr::vector<std::string>& files) {
 #ifdef __linux__
     for (const std::string& file : files) {
         int resultOpenFile = open("/dev/input/by-id/usb-INSTANT_USB_GAMING_MOUSE-event-mouse",
@@ -63,7 +63,7 @@ void LDDrift::input::Keyboard::Init() {
         WindowsKeyCodes[KeyCode] = {false, false};
     }
 #elifdef __linux__
-    std::vector<std::string> keyboardInputFiles;
+    std::pmr::vector<std::string> keyboardInputFiles;
     for (const std::filesystem::path iteratePath = "/dev/input/by-id/";
          const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(iteratePath)) {
         std::string stringPath = entry.path().string();
@@ -269,7 +269,7 @@ void LDDrift::input::Keyboard::Init() {
 #endif
 }
 
-void LDDrift::input::Keyboard::SetKeyTarget(const std::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys) {
+void LDDrift::input::Keyboard::SetKeyTarget(const std::pmr::vector<Event::Keyboard::LinuxKeyboardKeyCode>& keys) {
     for (const auto& key : keys) {
         TargetKeys.insert(key);
     }
@@ -357,9 +357,9 @@ bool LDDrift::input::Keyboard::IsKeyReleased(const Event::Keyboard::LinuxKeyboar
 #endif
 }
 
-std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyPressed() {
+std::pmr::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyPressed() {
 #ifdef __linux__
-    std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
+    std::pmr::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
     for (const auto& key : TargetKeys) {
         if (LinuxKeyboard[static_cast<LD_uint>(key)].Current == true && LinuxKeyboard[static_cast<LD_uint>(key)].
             Before
@@ -369,7 +369,7 @@ std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyb
     }
     return LKeyCodes;
 #elifdef _WIN32
-    std::vector<LD_lint> WKeyCodes; // windows key codes
+    std::pmr::vector<LD_lint> WKeyCodes; // windows key codes
     for (const LD_uint& key : TargetKeys) {
         if (WindowsKeyCodes[key].Before == false && WindowsKeyCodes[key].Current == true) {
             WKeyCodes.push_back(key);
@@ -383,9 +383,9 @@ void LDDrift::input::Keyboard::SetKeyTarget(const std::string& key) {
     TargetKeys.insert(KeyStringName[key]);
 }
 
-std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyHeld() {
+std::pmr::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyHeld() {
 #ifdef __linux__
-    std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
+    std::pmr::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
     for (const auto& key : TargetKeys) {
         if (LinuxKeyboard[static_cast<LD_uint>(key)].Current == true && LinuxKeyboard[static_cast<LD_uint>(key)].
             Before
@@ -395,7 +395,7 @@ std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyb
     }
     return LKeyCodes;
 #elifdef _WIN32
-    std::vector<LD_lint> WKeyCodes; // windows key codes
+    std::pmr::vector<LD_lint> WKeyCodes; // windows key codes
     for (const LD_uint& key : TargetKeys) {
         if (WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == true) {
             WKeyCodes.push_back(key);
@@ -405,9 +405,9 @@ std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyb
 #endif
 }
 
-std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyReleased() {
+std::pmr::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyboard::GetKeyReleased() {
 #ifdef __linux__
-    std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
+    std::pmr::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LKeyCodes; // linux key codes
     for (const auto& key : TargetKeys) {
         if (LinuxKeyboard[static_cast<LD_uint>(key)].Current == false && LinuxKeyboard[static_cast<LD_uint>(key)].
             Before
@@ -417,7 +417,7 @@ std::vector<LDDrift::Event::Keyboard::LinuxKeyboardKeyCode> LDDrift::input::Keyb
     }
     return LKeyCodes;
 #elifdef _WIN32
-    std::vector<LD_lint> WKeyCodes; // windows key codes
+    std::pmr::vector<LD_lint> WKeyCodes; // windows key codes
     for (const LD_uint& key : TargetKeys) {
         if (WindowsKeyCodes[key].Before == true && WindowsKeyCodes[key].Current == false) {
             WKeyCodes.push_back(key);
@@ -452,7 +452,7 @@ void LDDrift::input::Keyboard::Destroy() {
 
 void LDDrift::input::Mouse::Init() {
 #ifdef __linux__
-    std::vector<std::string> mouseFilesOfInputEvent;
+    std::pmr::vector<std::string> mouseFilesOfInputEvent;
     for (const std::filesystem::path FileMouseInputEventPath = "/dev/input/by-id/";
          const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(FileMouseInputEventPath)) {
         const std::string stringPath = entry.path().string();

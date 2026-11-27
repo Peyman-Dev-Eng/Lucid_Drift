@@ -9,7 +9,7 @@
 #include <System/Core/Core.h>
 
 void LDDrift::DefaultWindowsData::SetTextPrintInWindow(const std::string& text) {
-    std::vector<std::string> result;
+    std::pmr::vector<std::string> result;
     const std::size_t textSize = text.size();
     std::size_t startTextLine = 0;
     std::size_t endTextLine = 0;
@@ -328,9 +328,9 @@ const LDDrift::VecPos2D& LDDrift::Console_GraphicalWindow::GetSize() const {
     return size;
 }
 
-std::vector<LDDrift::Console_GraphicalWindow::Text> LDDrift::Console_GraphicalWindow::ExtractTextFromString(
+std::pmr::vector<LDDrift::Console_GraphicalWindow::Text> LDDrift::Console_GraphicalWindow::ExtractTextFromString(
     const std::string& text) {
-    std::vector<Text> result;
+    std::pmr::vector<Text> result;
     std::size_t begin = 0;
     std::size_t end = 1;
     while (begin < text.length()) {

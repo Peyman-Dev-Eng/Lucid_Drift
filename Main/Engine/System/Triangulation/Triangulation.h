@@ -41,7 +41,7 @@ namespace LDDrift
             return start1 + direction1 * t;
         }
 
-        static bool find(const std::vector<LDDrift::Actors::Line::PNT>& from, const LDDrift::VecPos2D& target) {
+        static bool find(const std::pmr::vector<LDDrift::Actors::Line::PNT>& from, const LDDrift::VecPos2D& target) {
             bool found = false;
             for (const auto& [Point_1, Point_2, Point_3] : from) {
                 if (Point_1 == target || Point_2 == target || Point_3 == target) {
@@ -56,10 +56,10 @@ namespace LDDrift
 
         /// bevel join lining
 
-        [[nodiscard]] std::vector<float> BevelAlgorithm() const {
-            std::vector<float> vertices;
+        [[nodiscard]] std::pmr::vector<float> BevelAlgorithm() const {
+            std::pmr::vector<float> vertices;
             const std::size_t pointCount = shape->GetPointCount();
-            const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+            const std::pmr::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
             const float halfThick = shape->GetThickness() / 2.0f;
 
             for (std::size_t point = 0; point < pointCount; ++point) {
@@ -77,7 +77,7 @@ namespace LDDrift
                 line.SetScreenSize(shape->GetScreenSize());
                 line.CreateTriangles();
 
-                const std::vector<LDDrift::Actors::Line::PNT>& pointsOfTriangleForLine = line.GetPoints();
+                const std::pmr::vector<LDDrift::Actors::Line::PNT>& pointsOfTriangleForLine = line.GetPoints();
 
                 for (std::size_t i = 0; i < 2; ++i) {
                     vertices.push_back(pointsOfTriangleForLine[i].Point_1.X);
@@ -127,10 +127,10 @@ namespace LDDrift
 
         /// round line joining
 
-        [[nodiscard]] std::vector<float> RoundAlgorithm() const {
-            std::vector<float> vertices;
+        [[nodiscard]] std::pmr::vector<float> RoundAlgorithm() const {
+            std::pmr::vector<float> vertices;
             const std::size_t pointCountOfShape = shape->GetPointCount();
-            const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+            const std::pmr::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
             const float thick = shape->GetThickness();
             const float halfThick = thick / 2;
             for (std::size_t point = 0; point < pointCountOfShape; ++point) {
@@ -147,7 +147,7 @@ namespace LDDrift
                 line.SetScreenSize(shape->GetScreenSize());
                 line.CreateTriangles();
 
-                const std::vector<LDDrift::Actors::Line::PNT>& pointOfTriangles = line.GetPoints();
+                const std::pmr::vector<LDDrift::Actors::Line::PNT>& pointOfTriangles = line.GetPoints();
 
                 for (std::size_t pointTriangleIndex = 0; pointTriangleIndex < 2; ++pointTriangleIndex) {
                     vertices.push_back(pointOfTriangles[pointTriangleIndex].Point_1.X);
@@ -189,10 +189,10 @@ namespace LDDrift
             return vertices;
         }
 
-        [[nodiscard]] std::vector<float> MiterAlgorithm() const {
-            std::vector<float> vertices;
+        [[nodiscard]] std::pmr::vector<float> MiterAlgorithm() const {
+            std::pmr::vector<float> vertices;
             const std::size_t pointCount = shape->GetPointCount();
-            const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+            const std::pmr::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
             const float thick = shape->GetThickness();
             const float halfThick = thick / 2;
             for (std::size_t point = 0; point < pointCount; ++point) {
@@ -209,7 +209,7 @@ namespace LDDrift
                 line.SetScreenSize(shape->GetScreenSize());
                 line.CreateTriangles();
 
-                const std::vector<LDDrift::Actors::Line::PNT>& pointOfTriangles = line.GetPoints();
+                const std::pmr::vector<LDDrift::Actors::Line::PNT>& pointOfTriangles = line.GetPoints();
 
                 for (std::size_t i = 0; i < 2; ++i) {
                     vertices.push_back(pointOfTriangles[i].Point_1.X);
@@ -292,7 +292,7 @@ namespace LDDrift
                 (b.Y - a.Y) * (c.X - a.X);
         }
 
-        static float SignedArea2(const std::vector<LDDrift::VecPos2D>& vertices) {
+        static float SignedArea2(const std::pmr::vector<LDDrift::VecPos2D>& vertices) {
             float area = 0.0f;
 
             for (std::size_t i = 0; i < vertices.size(); ++i) {
@@ -306,7 +306,7 @@ namespace LDDrift
         }
 
     private:
-        void TrianglesForThickShapes(std::vector<float>& vertices) const {
+        void TrianglesForThickShapes(std::pmr::vector<float>& vertices) const {
             const std::optional<LDDrift::JoinLineType> joinLineAlg = shape->GetJoinLineAlgorithm();
             if (!joinLineAlg.has_value()) {
                 LDDrift::Logger::ErrorLog("Engine", "Triangulation",
@@ -328,8 +328,8 @@ namespace LDDrift
             }
         }
 
-        void TrianglesForConcaveShape(std::vector<float>& vertices) const {
-            std::vector<LDDrift::VecPos2D> points = shape->GetGlobalPoints();
+        void TrianglesForConcaveShape(std::pmr::vector<float>& vertices) const {
+            std::pmr::vector<LDDrift::VecPos2D> points = shape->GetGlobalPoints();
             std::size_t pointCountOfShape = shape->GetPointCount();
             if (pointCountOfShape < 3) {
                 throw std::runtime_error("this shape is not available");
@@ -364,7 +364,7 @@ namespace LDDrift
                         continue;
                     }
                     if (LDDrift::PointHitTesting::pointHitTesting(points[point],
-                                                                  std::vector<LDDrift::VecPos2D>{
+                                                                  std::pmr::vector<LDDrift::VecPos2D>{
                                                                       point_A, point_B, point_C
                                                                   })) {
                         isEar = false;
@@ -388,7 +388,7 @@ namespace LDDrift
             }
         }
 
-        void TrianglesForConvexShape(std::vector<float>& vertices) const {
+        void TrianglesForConvexShape(std::pmr::vector<float>& vertices) const {
             // get center point position of shape
             LDDrift::VecPos2D CenterPos = {0, 0};
             const std::size_t shapePointNumber = shape->GetPointCount();
@@ -426,16 +426,16 @@ namespace LDDrift
             shape = shapePTR;
         }
 
-        [[nodiscard]] std::vector<float> CreateTriangles() const {
+        [[nodiscard]] std::pmr::vector<float> CreateTriangles() const {
             const std::size_t pointNumber = shape->GetPointCount();
             if (pointNumber < 3) {
                 LDDrift::Logger::ErrorLog("Engine", "Triangulation", Log(
                                               "The shape you are attempting to triangulate is either already a triangle or has an invalid number of vertices. Please ensure that the input data is valid before using the function's output.",
                                               LDDrift::LogType::TriangulateFailed));
-                return std::vector<float>{0.0f};
+                return std::pmr::vector<float>{0.0f};
             }
             if (pointNumber == 3 && !shape->IsHaveThickness()) {
-                std::vector<float> vertices;
+                std::pmr::vector<float> vertices;
                 for (std::size_t pointIndex = 0; pointIndex < 3; ++pointIndex) {
                     const LDDrift::VecPos2D& point = shape->GetGlobalPoint(pointIndex);
                     vertices.push_back(point.X);
@@ -445,16 +445,16 @@ namespace LDDrift
                 return vertices;
             }
             if (shape->IsHaveThickness() || !shape->IsFillShape()) {
-                std::vector<float> vertices;
+                std::pmr::vector<float> vertices;
                 this->TrianglesForThickShapes(vertices);
                 return vertices;
             } else {
                 if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::convex>) {
-                    std::vector<float> vertices;
+                    std::pmr::vector<float> vertices;
                     this->TrianglesForConvexShape(vertices);
                     return vertices;
                 } else if constexpr (std::is_same_v<ShapeType, LDDrift::ActorType::concave>) {
-                    std::vector<float> vertices;
+                    std::pmr::vector<float> vertices;
                     try {
                         this->TrianglesForConcaveShape(vertices);
                     } catch (const std::runtime_error& e) {
@@ -468,7 +468,7 @@ namespace LDDrift
                                                 Log(
                                                     "An issue arose in identifying the shape (whether it is convex or concave).",
                                                     LogType::ShapeTypeDetectionFailed));
-                    return std::vector<float>{0.0f};
+                    return std::pmr::vector<float>{0.0f};
                 }
             }
         }

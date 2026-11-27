@@ -72,7 +72,7 @@ static bool RemoveTextFromCurrentLine(
 
 bool LDDrift::GUI::DrawCodeSuggestionPopup(
     bool& shouldOpen,
-    const std::vector<std::string>& suggestions,
+    const std::pmr::vector<std::string>& suggestions,
     std::string& selectedSuggestion,
     const ImVec2 position
 ) {
@@ -347,8 +347,8 @@ void LDDrift::GUI::Initialize(GLFWwindow* glfwWindow) {
     style.Colors[ImGuiCol_Text] = ImVec4(1.0f, 1.0f, 1.0f, 1.0f);
 }
 
-std::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
-    std::vector<std::string> result;
+std::pmr::vector<std::string> LDDrift::GUI::ExtractTextFromString(const std::string& text) {
+    std::pmr::vector<std::string> result;
     const std::size_t textSize = text.size();
     std::size_t startTextLine = 0;
     std::size_t endTextLine = 0;
@@ -1044,7 +1044,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     static float polygonActorBlueColor = 0;
     static float polygonActorAlpha = 1;
     static int polygonActorSpeed = 1;
-    static std::vector<LDDrift::VecCol> pointColors;
+    static std::pmr::vector<LDDrift::VecCol> pointColors;
     const auto initPointColor = []()
     {
         if (pointColors.empty() || pointColors.size() != polygonActorPointCount) {
@@ -1211,7 +1211,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         }
         ImGui::Separator(); // END --- speed of polygon
         ImGui::TextUnformatted("Set Point Position");
-        static std::vector<int> pointPositions(polygonActorPointCount * 2);
+        static std::pmr::vector<int> pointPositions(polygonActorPointCount * 2);
         pointPositions.resize(polygonActorPointCount * 2);
         for (int pointIndex = 0; pointIndex < polygonActorPointCount; ++pointIndex) {
             ImGui::TextUnformatted("X Position: ");
@@ -1277,7 +1277,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
         static std::optional<LDDrift::Actors::Polygon*> polygonActor = std::nullopt;
         static std::optional<bool> variablesInitialized = false;
         static std::optional<bool> findShapeWithName = std::nullopt;
-        static std::vector<int> pointPositions;
+        static std::pmr::vector<int> pointPositions;
         ImGui::TextUnformatted("window: polygon configuration");
         if ((findShapeWithName.has_value() && findShapeWithName.value() == true) || ImGui::InputTextWithHint(
             "##Polygon Name", "Enter Polygon Name: ", window->Buffer,
@@ -1515,7 +1515,7 @@ void LDDrift::GUI::PolygonConfigureWindowHandler(DefaultWindowsData* window) con
     }
 }
 
-bool LDDrift::GUI::SearchableCombo(char* buffer, const std::vector<std::string>& options) {
+bool LDDrift::GUI::SearchableCombo(char* buffer, const std::pmr::vector<std::string>& options) {
     bool selected = false;
     ImGui::SetNextItemWidth(250.0f);
     ImGui::InputTextWithHint("##Set Keys of Target", "Search...", buffer, 256);
@@ -1595,7 +1595,7 @@ void LDDrift::GUI::PopupCompletionLogic() {
     const std::string text = line.substr(startPos, cursorPos.mColumn - startPos);
 
 
-    if (const std::vector<std::string> suggestions = core->codePathfinder.GetSuggestions(text);
+    if (const std::pmr::vector<std::string> suggestions = core->codePathfinder.GetSuggestions(text);
         DrawCodeSuggestionPopup(popupCompletionState.ShowPopup, suggestions,
                                 popupCompletionState.selectedSuggestion, {
                                     editor.GetCursorScreenPosition().x + 20,
@@ -1882,7 +1882,8 @@ void LDDrift::GUI::GameSettingWindowHandler(DefaultWindowsData* window) {
     }
     ImGui::Separator();
     ImGui::Checkbox("See Objects## se objects window", &checkbox);
-    if (checkbox) {
+    if (checkbox && (core->sceneManager.GetCurrentScene()->circleShapes.size() != 0 || core->sceneManager.
+        GetCurrentScene()->polygonShapes.size() != 0 || core->sceneManager.GetCurrentScene()->lines.size() != 0)) {
         GetWindowPTR(SEE_OBJECTS_WINDOW_NAME)->Show = true;
     } else {
         GetWindowPTR(SEE_OBJECTS_WINDOW_NAME)->Show = false;
@@ -1904,7 +1905,7 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
     if (window->name != SEE_OBJECTS_WINDOW_NAME) {
         return;
     }
-    const auto init = [](std::vector<bool>& arr, const std::size_t sz) -> void
+    const auto init = [](std::pmr::vector<bool>& arr, const std::size_t sz) -> void
     {
         for (std::size_t i = 0; i < sz; ++i) {
             arr.push_back(false);
@@ -1923,21 +1924,21 @@ void LDDrift::GUI::SeeObjectsWindowHandler(const DefaultWindowsData* window) con
         }
     };
     // start - circle
-    const std::vector<std::string> circles_name = core->sceneManager.GetCurrentScene()->GetCircleNames();
-    const std::vector<LDDrift::Actors::Circle*> circles = core->sceneManager.GetCurrentScene()->GetCircles_ptr();
-    static std::vector<bool> checkBoxState_circle;
+    const std::pmr::vector<std::string> circles_name = core->sceneManager.GetCurrentScene()->GetCircleNames();
+    const std::pmr::vector<LDDrift::Actors::Circle*> circles = core->sceneManager.GetCurrentScene()->GetCircles_ptr();
+    static std::pmr::vector<bool> checkBoxState_circle;
     // end - circle
     //-------------//
     // start - line
-    const std::vector<std::string> polygons_name = core->sceneManager.GetCurrentScene()->GetPolygonNames();
-    const std::vector<LDDrift::Actors::Line*> lines = core->sceneManager.GetCurrentScene()->GetLines_ptr();
-    static std::vector<bool> checkBoxState_line;
+    const std::pmr::vector<std::string> polygons_name = core->sceneManager.GetCurrentScene()->GetPolygonNames();
+    const std::pmr::vector<LDDrift::Actors::Line*> lines = core->sceneManager.GetCurrentScene()->GetLines_ptr();
+    static std::pmr::vector<bool> checkBoxState_line;
     // end - line
     //-------------//
     // start - polygon
-    const std::vector<std::string> lines_name = core->sceneManager.GetCurrentScene()->GetLineNames();
-    const std::vector<LDDrift::Actors::Polygon*> polygons = core->sceneManager.GetCurrentScene()->GetPolygons_ptr();
-    static std::vector<bool> checkBoxState_polygon;
+    const std::pmr::vector<std::string> lines_name = core->sceneManager.GetCurrentScene()->GetLineNames();
+    const std::pmr::vector<LDDrift::Actors::Polygon*> polygons = core->sceneManager.GetCurrentScene()->GetPolygons_ptr();
+    static std::pmr::vector<bool> checkBoxState_polygon;
     // end - polygon
 
     // circle objects
@@ -2078,7 +2079,7 @@ void LDDrift::GUI::TextureManagerWindowHandler(DefaultWindowsData* window) const
     ImGui::Separator();
 
     constexpr int point_count = 4;
-    static std::vector<float> vert; // vertices
+    static std::pmr::vector<float> vert; // vertices
     InitializeFloatVector(vert, point_count);
     ImGui::Separator();
     ImGui::TextUnformatted("position on display");
@@ -2143,7 +2144,9 @@ void LDDrift::GUI::SceneManagementWindowHandler(DefaultWindowsData* window) cons
                 std::memset(window->Buffer, '\0', sizeof(window->Buffer));
                 window->Show = false;
             } else {
-                LDDrift::Logger::WarningLog("Engine", "Scene",  Log(std::string("can not find scene with this name -> ") + window->Buffer, LogType::FindActorFailed));
+                LDDrift::Logger::WarningLog("Engine", "Scene",
+                                            Log(std::string("can not find scene with this name -> ") + window->Buffer,
+                                                LogType::FindActorFailed));
             }
         }
         ImGui::SameLine();

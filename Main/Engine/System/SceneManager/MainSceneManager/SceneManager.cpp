@@ -73,7 +73,7 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             shapeRender_ptr->DeleteActors();
             sceneAnimation.SmoothAlgorithm(scenes[indexOfScene].scene,
                                            scenes[(indexOfScene + 1) % scenes.size()].scene);
-            std::vector<LDDrift::Actors::Shape*> shapes;
+            std::pmr::vector<LDDrift::Actors::Shape*> shapes;
             for (const auto& circle : scenes[indexOfScene].scene->circleShapes) {
                 shapes.push_back(circle.circle);
             }
@@ -86,14 +86,14 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             for (const auto& polygon : scenes[(indexOfScene + 1) % scenes.size()].scene->polygonShapes) {
                 shapes.push_back(polygon.polygon);
             }
-            std::vector<LDDrift::Actors::Line*> lines;
+            std::pmr::vector<LDDrift::Actors::Line*> lines;
             for (const auto& line : scenes[indexOfScene].scene->lines) {
                 lines.push_back(line.line);
             }
             for (const auto& line : scenes[(indexOfScene + 1) % scenes.size()].scene->lines) {
                 lines.push_back(line.line);
             }
-            std::vector<LDDrift::Texture*> textures;
+            std::pmr::vector<LDDrift::Actors::Texture*> textures;
             for (const auto& texture : scenes[indexOfScene].scene->textures) {
                 textures.push_back(texture.texture);
             }

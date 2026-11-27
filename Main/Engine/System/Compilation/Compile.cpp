@@ -37,8 +37,8 @@ namespace
         return result;
     }
 
-    std::vector<LDDrift::Compile::CompileError> ParseErrors(const std::string& output) {
-        std::vector<LDDrift::Compile::CompileError> errors;
+    std::pmr::vector<LDDrift::Compile::CompileError> ParseErrors(const std::string& output) {
+        std::pmr::vector<LDDrift::Compile::CompileError> errors;
         std::istringstream stream(output);
         std::string line;
 
@@ -105,14 +105,14 @@ bool LDDrift::Compile::BuildProject() {
 
 
             if (exitCode == 0) {
-                CommandResult buildResult = RunCommand(buildCommand);
+                auto [OutPut, EXIT_CODE] = RunCommand(buildCommand);
 
-                if (!output.empty() && !buildResult.output.empty()) {
+                if (!output.empty() && !OutPut.empty()) {
                     output += '\n';
                 }
 
-                output += buildResult.output;
-                exitCode = buildResult.exitCode;
+                output += OutPut;
+                exitCode = EXIT_CODE;
             }
 
             {
@@ -139,7 +139,7 @@ bool LDDrift::Compile::BuildProject() {
     return true;
 }
 
-std::vector<LDDrift::Compile::CompileError> LDDrift::Compile::GetErrorLog() const {
+std::pmr::vector<LDDrift::Compile::CompileError> LDDrift::Compile::GetErrorLog() const {
     std::lock_guard<std::mutex> lock(errorMutex);
     return compileErrors;
 }

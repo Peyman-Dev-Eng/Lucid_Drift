@@ -24,8 +24,8 @@ namespace LDDrift
             LDDrift::VecPos3D normal;
             LDDrift::VecPos2D texCoord;
         };
-        std::vector<vertex> vertices;
-        std::vector<std::size_t> indices;
+        std::pmr::vector<vertex> vertices;
+        std::pmr::vector<std::size_t> indices;
 
     public:
         Model();

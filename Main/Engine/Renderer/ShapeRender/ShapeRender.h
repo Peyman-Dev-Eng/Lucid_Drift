@@ -41,8 +41,8 @@ namespace LDDrift
         LDDrift::Core* core;
         std::set<LDDrift::Actors::Line*> linePTRs;
         std::set<LDDrift::Actors::Shape*> shapePTRs;
-        std::vector<ReadShapeVertices> howToReadShapeData;
-        std::vector<float> vertices;
+        std::pmr::vector<ReadShapeVertices> howToReadShapeData;
+        std::pmr::vector<float> vertices;
         const char* VertexShaderSource{nullptr};
         const char* FragmentShaderSource{nullptr};
         GLuint VertexShader{}, FragmentShader{};
@@ -68,7 +68,7 @@ namespace LDDrift
         void SetHeightScreen(int HS);
         [[nodiscard]] GLuint GetProgram() const;
         void SendDataToGPU() const;
-        void Add(const std::vector<LDDrift::Actors::Shape*>&, const std::vector<LDDrift::Actors::Line*>&);
+        void Add(const std::pmr::vector<LDDrift::Actors::Shape*>&, const std::pmr::vector<LDDrift::Actors::Line*>&);
         void AddShapeToRender(LDDrift::Actors::Shape*);
         void AddLineToRender(LDDrift::Actors::Line*);
         void RemoveLineFromRender(LDDrift::Actors::Line*);

@@ -23,10 +23,10 @@ namespace LDDrift
         };
 
     public:
-        std::vector<Vertex> Vertices;
-        std::vector<VecCol> PointsColors;
+        std::pmr::vector<Vertex> Vertices;
+        std::pmr::vector<VecCol> PointsColors;
         ShapeData();
-        ShapeData(const std::vector<LDDrift::VecPos2D>& vertices, const std::vector<LDDrift::VecCol>& points_colors);
+        ShapeData(const std::pmr::vector<LDDrift::VecPos2D>& vertices, const std::pmr::vector<LDDrift::VecCol>& points_colors);
         ~ShapeData();
     };
 }

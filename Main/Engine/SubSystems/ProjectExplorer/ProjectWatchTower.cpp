@@ -94,8 +94,8 @@ const std::filesystem::path& LDDrift::ProjectWatchTower::GetBuildFolderPath() co
     return buildFolderPath;
 }
 
-std::vector<std::string> LDDrift::ProjectWatchTower::Extract::ExtractPaths(const std::filesystem::path& path) {
-    std::vector<std::string> result;
+std::pmr::vector<std::string> LDDrift::ProjectWatchTower::Extract::ExtractPaths(const std::filesystem::path& path) {
+    std::pmr::vector<std::string> result;
     const std::string pathString = path.string();
     std::size_t lastPos = path.string().size() - 1;
     std::size_t currentPos = lastPos - 1;
@@ -138,7 +138,7 @@ bool LDDrift::ProjectWatchTower::isFilePath(const std::filesystem::path& path) {
     return isFile;
 }
 
-const std::vector<std::filesystem::path>& LDDrift::ProjectWatchTower::GetPaths() {
+const std::pmr::vector<std::filesystem::path>& LDDrift::ProjectWatchTower::GetPaths() {
     return paths;
 }
 
@@ -164,7 +164,7 @@ const std::filesystem::path& LDDrift::ProjectWatchTower::GetCompileLogPath() con
 }
 
 std::string LDDrift::ProjectWatchTower::Extract::GetBodyWithoutLastFileName(
-    const std::string& fileName, std::vector<std::filesystem::path>& _paths) {
+    const std::string& fileName, std::pmr::vector<std::filesystem::path>& _paths) {
     for (std::filesystem::path& path : _paths) {
         if (std::string lastFileName = LDDrift::ProjectWatchTower::Extract::GetLastFileName(path.string());
             lastFileName == NULL_STRING || lastFileName != fileName) {
@@ -259,8 +259,8 @@ bool LDDrift::ProjectWatchTower::FindFile(const std::string& fileName) const {
     return false;
 }
 
-std::vector<std::string> LDDrift::ProjectWatchTower::GetProjectDetails() const {
-    std::vector<std::string> projectDetails;
+std::pmr::vector<std::string> LDDrift::ProjectWatchTower::GetProjectDetails() const {
+    std::pmr::vector<std::string> projectDetails;
     for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator(projectPath)) {
         projectDetails.push_back(entry.path().string());
     }

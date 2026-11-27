@@ -9,8 +9,8 @@
 
 LDDrift::ShapeData::ShapeData() = default;
 
-LDDrift::ShapeData::ShapeData(const std::vector<LDDrift::VecPos2D>& vertices,
-                              const std::vector<LDDrift::VecCol>& points_colors) {
+LDDrift::ShapeData::ShapeData(const std::pmr::vector<LDDrift::VecPos2D>& vertices,
+                              const std::pmr::vector<LDDrift::VecCol>& points_colors) {
     std::size_t vertexIndex = 0;
     this->Vertices.reserve(vertices.size());
     for (const LDDrift::VecPos2D& vertex : vertices) {

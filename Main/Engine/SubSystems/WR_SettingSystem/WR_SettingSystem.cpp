@@ -48,8 +48,8 @@ void LDDrift::WR_SettingSystem::CreateSettingFolder() {
     create_directory(settingFolderPath);
 }
 
-std::vector<float> LDDrift::WR_SettingSystem::ConvertPointsToFloats(const std::vector<LDDrift::VecPos2D>& points) {
-    std::vector<float> result;
+std::pmr::vector<float> LDDrift::WR_SettingSystem::ConvertPointsToFloats(const std::pmr::vector<LDDrift::VecPos2D>& points) {
+    std::pmr::vector<float> result;
     result.reserve(points.size() * 2);
     for (const LDDrift::VecPos2D& point : points) {
         result.push_back(point.X);
@@ -58,8 +58,8 @@ std::vector<float> LDDrift::WR_SettingSystem::ConvertPointsToFloats(const std::v
     return result;
 }
 
-std::vector<float> LDDrift::WR_SettingSystem::ConvertPointColorsToFloats(const std::vector<LDDrift::VecCol>& colors) {
-    std::vector<float> result;
+std::pmr::vector<float> LDDrift::WR_SettingSystem::ConvertPointColorsToFloats(const std::pmr::vector<LDDrift::VecCol>& colors) {
+    std::pmr::vector<float> result;
     result.reserve(colors.size() * 4);
     for (const LDDrift::VecCol& color : colors) {
         result.push_back(color.R);
@@ -82,8 +82,8 @@ std::string LDDrift::WR_SettingSystem::ConvertLineJoiningAlgorithmToString(const
     }
 }
 
-std::vector<LDDrift::VecCol> LDDrift::WR_SettingSystem::ConvertFloatColorsToVectors(const std::vector<float>& points) {
-    std::vector<LDDrift::VecCol> result;
+std::pmr::vector<LDDrift::VecCol> LDDrift::WR_SettingSystem::ConvertFloatColorsToVectors(const std::pmr::vector<float>& points) {
+    std::pmr::vector<LDDrift::VecCol> result;
     result.reserve(points.size() / 4);
     const std::size_t size = points.size() / 4;
     for (std::size_t i = 0; i < size; ++i) {
@@ -103,8 +103,8 @@ LDDrift::JoinLineType LDDrift::WR_SettingSystem::ConvertStringToLineJoiningAlgor
     return LDDrift::JoinLineType::Null;
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::WR_SettingSystem::ConvertFloatsToVectors(const std::vector<float>& points) {
-    std::vector<LDDrift::VecPos2D> result;
+std::pmr::vector<LDDrift::VecPos2D> LDDrift::WR_SettingSystem::ConvertFloatsToVectors(const std::pmr::vector<float>& points) {
+    std::pmr::vector<LDDrift::VecPos2D> result;
     const std::size_t size = points.size() / 2;
     result.reserve(size);
     for (std::size_t i = 0; i < size; ++i) {
@@ -113,16 +113,16 @@ std::vector<LDDrift::VecPos2D> LDDrift::WR_SettingSystem::ConvertFloatsToVectors
     return result;
 }
 
-std::vector<float> LDDrift::WR_SettingSystem::Convert_Point_ToVector(const LDDrift::VecPos2D& point) {
-    return std::vector<float>{point.X, point.Y};
+std::pmr::vector<float> LDDrift::WR_SettingSystem::Convert_Point_ToVector(const LDDrift::VecPos2D& point) {
+    return std::pmr::vector<float>{point.X, point.Y};
 }
 
-LDDrift::VecPos2D LDDrift::WR_SettingSystem::Convert_Vector_To_Point(const std::vector<float>& vector) {
+LDDrift::VecPos2D LDDrift::WR_SettingSystem::Convert_Vector_To_Point(const std::pmr::vector<float>& vector) {
     return LDDrift::VecPos2D{vector[0], vector[1]};
 }
 
-std::vector<float> LDDrift::WR_SettingSystem::ConvertColorToVector(const LDDrift::VecCol& color) {
-    return std::vector<float>{color.R, color.G, color.B, color.A};
+std::pmr::vector<float> LDDrift::WR_SettingSystem::ConvertColorToVector(const LDDrift::VecCol& color) {
+    return std::pmr::vector<float>{color.R, color.G, color.B, color.A};
 }
 
 
@@ -172,7 +172,7 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
         json circles_json = main_json[ACTOR][CIRCLE];
         json lines_json = main_json[ACTOR][LINE];
         json polygons_json = main_json[ACTOR][POLYGON];
-        std::vector<std::string> key_targets;
+        std::pmr::vector<std::string> key_targets;
         if (main_json.contains(KEY_TARGETS))
             key_targets = main_json[KEY_TARGETS];
         for (const auto& circle : circles_json.items()) {
@@ -214,8 +214,8 @@ void LDDrift::WR_SettingSystem::ReadSettingsOfUserProject() const {
             const json& value = polygon.value();
             const int pointCount = value["point_count"];
             const float thick = value["thickness"];
-            const std::vector<int> points = value["point_positions"];
-            const std::vector<LDDrift::VecCol> colors =
+            const std::pmr::vector<int> points = value["point_positions"];
+            const std::pmr::vector<LDDrift::VecCol> colors =
                 ConvertFloatColorsToVectors(value["point_colors"]);
             const LDDrift::JoinLineType jlt =
                 ConvertStringToLineJoiningAlgorithm(value["join_line_type"]);

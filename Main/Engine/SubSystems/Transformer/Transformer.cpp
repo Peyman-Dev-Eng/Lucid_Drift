@@ -31,9 +31,9 @@ float LDDrift::Transformer::TransformToGlobalPosition(const float pointPos, cons
     GLB_assert(posTypeInputArgumentFunctionIsNotAvailable);
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::Transformer::TransformToNDC_Position(const LDDrift::Actors::Shape* shape) {
-    std::vector<LDDrift::VecPos2D> NDC_pointPositon;
-    for (const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+std::pmr::vector<LDDrift::VecPos2D> LDDrift::Transformer::TransformToNDC_Position(const LDDrift::Actors::Shape* shape) {
+    std::pmr::vector<LDDrift::VecPos2D> NDC_pointPositon;
+    for (const std::pmr::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
          const LDDrift::VecPos2D& point : points) {
         NDC_pointPositon.push_back({
             (point.X - static_cast<float>(halfWidthScreen)) / static_cast<float>(halfWidthScreen),
@@ -43,9 +43,9 @@ std::vector<LDDrift::VecPos2D> LDDrift::Transformer::TransformToNDC_Position(con
     return NDC_pointPositon;
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::Transformer::TransformToGlobalPosition(const LDDrift::Actors::Shape* shape) {
-    std::vector<LDDrift::VecPos2D> globalPosition;
-    for (const std::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
+std::pmr::vector<LDDrift::VecPos2D> LDDrift::Transformer::TransformToGlobalPosition(const LDDrift::Actors::Shape* shape) {
+    std::pmr::vector<LDDrift::VecPos2D> globalPosition;
+    for (const std::pmr::vector<LDDrift::VecPos2D>& points = shape->GetGlobalPoints();
          const LDDrift::VecPos2D& point : points) {
         globalPosition.push_back({
             (point.X + 1.0f) * static_cast<float>(halfWidthScreen),
@@ -69,27 +69,27 @@ LDDrift::VecPos2D LDDrift::Transformer::TransformToGlobalPosition(const LDDrift:
     };
 }
 
-std::vector<LDDrift::VecPos2D>
-LDDrift::Transformer::TransformToNDC_Position(const std::vector<LDDrift::VecPos2D>& points) {
-    std::vector<LDDrift::VecPos2D> NDC_pointPositon;
+std::pmr::vector<LDDrift::VecPos2D>
+LDDrift::Transformer::TransformToNDC_Position(const std::pmr::vector<LDDrift::VecPos2D>& points) {
+    std::pmr::vector<LDDrift::VecPos2D> NDC_pointPositon;
     for (const LDDrift::VecPos2D& point : points) {
         NDC_pointPositon.push_back(LDDrift::Transformer::TransformToNDC_Position(point));
     }
     return NDC_pointPositon;
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::Transformer::TransformToGlobalPosition(
-    const std::vector<LDDrift::VecPos2D>& points) {
-    std::vector<LDDrift::VecPos2D> globalPointPosition;
+std::pmr::vector<LDDrift::VecPos2D> LDDrift::Transformer::TransformToGlobalPosition(
+    const std::pmr::vector<LDDrift::VecPos2D>& points) {
+    std::pmr::vector<LDDrift::VecPos2D> globalPointPosition;
     for (const LDDrift::VecPos2D& point : points) {
         globalPointPosition.push_back(LDDrift::Transformer::TransformToGlobalPosition(point));
     }
     return globalPointPosition;
 }
 
-std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transformer::TransformToNDC_Position(
-    const std::vector<LDDrift::Actors::Line::PNT>& points) {
-    std::vector<LDDrift::Actors::Line::PNT> NDC_pointPositon;
+std::pmr::vector<LDDrift::Actors::Line::PNT> LDDrift::Transformer::TransformToNDC_Position(
+    const std::pmr::vector<LDDrift::Actors::Line::PNT>& points) {
+    std::pmr::vector<LDDrift::Actors::Line::PNT> NDC_pointPositon;
     LDDrift::Actors::Line::PNT NDC_point;
     for (const auto& [Point_1, Point_2, Point_3] : points) {
         NDC_point.Point_1 = LDDrift::Transformer::TransformToNDC_Position(Point_1);
@@ -101,9 +101,9 @@ std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transformer::TransformToNDC_Pos
     return NDC_pointPositon;
 }
 
-std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transformer::TransformToGlobalPosition(
-    const std::vector<LDDrift::Actors::Line::PNT>& points) {
-    std::vector<LDDrift::Actors::Line::PNT> globalPosition;
+std::pmr::vector<LDDrift::Actors::Line::PNT> LDDrift::Transformer::TransformToGlobalPosition(
+    const std::pmr::vector<LDDrift::Actors::Line::PNT>& points) {
+    std::pmr::vector<LDDrift::Actors::Line::PNT> globalPosition;
     LDDrift::Actors::Line::PNT globalPoint;
     for (const auto& [Point_1, Point_2, Point_3] : points) {
         globalPoint.Point_1 = LDDrift::Transformer::TransformToGlobalPosition(Point_1);
@@ -115,8 +115,8 @@ std::vector<LDDrift::Actors::Line::PNT> LDDrift::Transformer::TransformToGlobalP
     return globalPosition;
 }
 
-std::vector<float> LDDrift::Transformer::TransformToGlobalPosition(const std::vector<float>& positions) {
-    std::vector<float> globalPosition;
+std::pmr::vector<float> LDDrift::Transformer::TransformToGlobalPosition(const std::pmr::vector<float>& positions) {
+    std::pmr::vector<float> globalPosition;
     const std::size_t vertexCount = positions.size() / 3;
     for (std::size_t point = 0; point < vertexCount; ++point) {
         globalPosition.push_back((positions[point * 3 + 0] + 1.0f) * static_cast<float>(halfWidthScreen));
@@ -126,8 +126,8 @@ std::vector<float> LDDrift::Transformer::TransformToGlobalPosition(const std::ve
     return globalPosition;
 }
 
-std::vector<float> LDDrift::Transformer::TransformToNDC_Position(const std::vector<float>& positions) {
-    std::vector<float> NDCPosition;
+std::pmr::vector<float> LDDrift::Transformer::TransformToNDC_Position(const std::pmr::vector<float>& positions) {
+    std::pmr::vector<float> NDCPosition;
     const std::size_t vertexCount = positions.size() / 3;
     for (std::size_t point = 0; point < vertexCount; ++point) {
         NDCPosition.push_back(

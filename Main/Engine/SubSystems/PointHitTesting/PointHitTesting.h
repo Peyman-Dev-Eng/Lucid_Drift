@@ -18,7 +18,7 @@ namespace LDDrift
         static bool PointInValidRange(const LDDrift::VecPos2D&, const std::pair<LDDrift::VecPos2D, LDDrift::VecPos2D>&);
 
     public:
-        static bool pointHitTesting(const LDDrift::VecPos2D&, const std::vector<LDDrift::VecPos2D>&);
+        static bool pointHitTesting(const LDDrift::VecPos2D&, const std::pmr::vector<LDDrift::VecPos2D>&);
     };
 }
 

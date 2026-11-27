@@ -27,7 +27,7 @@ namespace LDDrift
     private:
         std::filesystem::path projectPath;
         std::string projectName;
-        std::vector<std::filesystem::path> paths;
+        std::pmr::vector<std::filesystem::path> paths;
         std::filesystem::path buildFolderPath;
         std::string objectFileName;
         std::filesystem::path compileLogFilePath;
@@ -38,9 +38,9 @@ namespace LDDrift
         public:
             static std::string GetLastFileName(const std::string& _path);
             static std::string GetBodyWithoutLastFileName(const std::string& fileName,
-                                                          std::vector<std::filesystem::path>& _paths);
+                                                          std::pmr::vector<std::filesystem::path>& _paths);
             static std::string GetBodyWithoutLastFileName(const std::filesystem::path& filePath);
-            static std::vector<std::string> ExtractPaths(const std::filesystem::path& path);
+            static std::pmr::vector<std::string> ExtractPaths(const std::filesystem::path& path);
         };
         static bool isFilePath(const std::filesystem::path& path);
 
@@ -48,7 +48,7 @@ namespace LDDrift
         ProjectWatchTower();
         void SetPaths();
         static bool PathIsFile(const std::filesystem::path& path) ;
-        [[nodiscard]] const std::vector<std::filesystem::path>& GetPaths();
+        [[nodiscard]] const std::pmr::vector<std::filesystem::path>& GetPaths();
         [[nodiscard]] std::string IsAvailableFileInProject(const std::string& fileName) const;
         void CreateBuildFolder();
         void CreateCmakeListsTxtFile() const;
@@ -63,7 +63,7 @@ namespace LDDrift
         void RemoveFile(const std::string& fileName);
         [[nodiscard]] const std::filesystem::path& GetBuildFolderPath() const;
         [[nodiscard]] const std::filesystem::path& GetProjectPath() const;
-        [[nodiscard]] std::vector<std::string> GetProjectDetails() const;
+        [[nodiscard]] std::pmr::vector<std::string> GetProjectDetails() const;
         [[nodiscard]] const std::filesystem::path& GetCompileLogPath() const;
         [[nodiscard]] const std::string& GetProjectName() const;
         ~ProjectWatchTower();

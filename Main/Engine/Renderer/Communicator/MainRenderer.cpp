@@ -24,8 +24,8 @@ glm::mat4 LDDrift::MainRenderer::UpdateViewMatrix() const {
 }
 
 void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
-                                         const std::vector<LDDrift::Actors::Shape*>& shapes,
-                                         const std::vector<LDDrift::Actors::Line*>& lines) {
+                                         const std::pmr::vector<LDDrift::Actors::Shape*>& shapes,
+                                         const std::pmr::vector<LDDrift::Actors::Line*>& lines) {
     const char* const vertexShaderSource = R"(
     #version 460 core
     layout (location = 0) in vec3 aPos;
@@ -78,12 +78,12 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
         _core->camera.GetViewMatrix();
     glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 
-    std::vector<std::pair<std::size_t, std::size_t>> readDataFromGpu;
-    std::vector<float> vertices;
+    std::pmr::vector<std::pair<std::size_t, std::size_t>> readDataFromGpu;
+    std::pmr::vector<float> vertices;
 
     std::size_t lastIndex = 0;
     for (LDDrift::Actors::Shape* shape : shapes) {
-        std::vector<float> triangles;
+        std::pmr::vector<float> triangles;
         if (shape->ShapeIsConcave()) {
             const LDDrift::Triangulation_S<LDDrift::ActorType::concave> triangulation(shape);
             triangles = triangulation.CreateTriangles();
@@ -92,7 +92,7 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
             triangles = triangulation.CreateTriangles();
         }
         const std::size_t vertexCount = triangles.size() / 3;
-        const std::vector<LDDrift::VecCol>& Colors = shape->GetColorOfPoints();
+        const std::pmr::vector<LDDrift::VecCol>& Colors = shape->GetColorOfPoints();
         for (std::size_t vertex = 0; vertex < vertexCount; ++vertex) {
             vertices.push_back(triangles[vertex * 3 + 0]);
             vertices.push_back(triangles[vertex * 3 + 1]);
@@ -109,7 +109,7 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
     }
     for (const LDDrift::Actors::Line* line : lines) {
         const LDDrift::VecCol& color = line->GetColor();
-        const std::vector<LDDrift::Actors::Line::PNT>& points = line->GetPoints();
+        const std::pmr::vector<LDDrift::Actors::Line::PNT>& points = line->GetPoints();
 
         // point one | first triangle
         vertices.push_back(points[0].Point_1.X);
@@ -189,7 +189,7 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core,
     glDeleteProgram(program);
 }
 
-void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core, const std::vector<LDDrift::Texture*>& textures) {
+void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core, const std::pmr::vector<LDDrift::Actors::Texture*>& textures) {
     const char* const vertShaderSrc =
         "#version 460 core\n"
         "layout (location = 0) in vec2 position;\n"
@@ -242,16 +242,16 @@ void LDDrift::MainRenderer::StaticDrawer(const LDDrift::Core* _core, const std::
         _core->camera.GetViewMatrix();
     glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 
-    std::vector<std::pair<std::size_t, std::size_t>> readDataFromGpu;
+    std::pmr::vector<std::pair<std::size_t, std::size_t>> readDataFromGpu;
 
     std::size_t counter = 0;
-    for (const LDDrift::Texture* texture : textures) {
+    for (const LDDrift::Actors::Texture* texture : textures) {
         std::size_t textureSize = texture->GetTextureCoordinates().size() / 4;
         readDataFromGpu.push_back({counter, textureSize});
         counter += textureSize;
     }
-    std::vector<float> vertices;
-    for (const LDDrift::Texture* tex : textures) {
+    std::pmr::vector<float> vertices;
+    for (const LDDrift::Actors::Texture* tex : textures) {
         vertices.insert(vertices.end(), tex->GetTextureCoordinates().begin(), tex->GetTextureCoordinates().end());
     }
     glBindVertexArray(VAO);

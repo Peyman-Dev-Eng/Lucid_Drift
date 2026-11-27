@@ -47,7 +47,7 @@ namespace LDDrift
 
     private:
         friend void LDDrift::UserProjectSetting::SetSettings(const LDDrift::Core* _core_ptr);
-        std::vector<SCENE_DATA> scenes;
+        std::pmr::vector<SCENE_DATA> scenes;
 
     public:
         SceneManager();

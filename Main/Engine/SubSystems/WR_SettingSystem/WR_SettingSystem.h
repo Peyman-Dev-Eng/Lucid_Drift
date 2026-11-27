@@ -34,8 +34,8 @@ namespace LDDrift
     class UserProjectSetting final
     {
     public: // variables
-        std::vector<std::string> key_targets;
-        std::vector<std::pair<std::string, LDDrift::Scene*>> Scenes;
+        std::pmr::vector<std::string> key_targets;
+        std::pmr::vector<std::pair<std::string, LDDrift::Scene*>> Scenes;
 
     public:
         UserProjectSetting();
@@ -53,17 +53,17 @@ namespace LDDrift
         LDDrift::ProjectWatchTower* project_watch_tower;
 
     private:
-        static std::vector<float> ConvertPointsToFloats(const std::vector<LDDrift::VecPos2D>& points);
-        static std::vector<float> ConvertPointColorsToFloats(const std::vector<LDDrift::VecCol>& colors);
-        static std::vector<LDDrift::VecPos2D> ConvertFloatsToVectors(const std::vector<float>& points);
-        static std::vector<LDDrift::VecCol> ConvertFloatColorsToVectors(const std::vector<float>& points);
-        static std::vector<float> Convert_Point_ToVector(const LDDrift::VecPos2D& point);
-        static LDDrift::VecPos2D Convert_Vector_To_Point(const std::vector<float>& vector);
+        static std::pmr::vector<float> ConvertPointsToFloats(const std::pmr::vector<LDDrift::VecPos2D>& points);
+        static std::pmr::vector<float> ConvertPointColorsToFloats(const std::pmr::vector<LDDrift::VecCol>& colors);
+        static std::pmr::vector<LDDrift::VecPos2D> ConvertFloatsToVectors(const std::pmr::vector<float>& points);
+        static std::pmr::vector<LDDrift::VecCol> ConvertFloatColorsToVectors(const std::pmr::vector<float>& points);
+        static std::pmr::vector<float> Convert_Point_ToVector(const LDDrift::VecPos2D& point);
+        static LDDrift::VecPos2D Convert_Vector_To_Point(const std::pmr::vector<float>& vector);
         void saveKeyTargetsOfKeyboard(json& j) const;
         void saveScenes(json& j);
         static std::string ConvertLineJoiningAlgorithmToString(const LDDrift::JoinLineType& jlt);
         static LDDrift::JoinLineType ConvertStringToLineJoiningAlgorithm(const std::string& _st);
-        static std::vector<float> ConvertColorToVector(const LDDrift::VecCol& color);
+        static std::pmr::vector<float> ConvertColorToVector(const LDDrift::VecCol& color);
         static int Convert_JLT_ToInteger(const LDDrift::JoinLineType& jlt);
 
     public:

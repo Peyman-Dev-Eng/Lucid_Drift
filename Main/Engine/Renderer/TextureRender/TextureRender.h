@@ -22,7 +22,7 @@ namespace LDDrift
     class TextureRender final
     {
     private: // functions
-        bool findTexture(const LDDrift::Texture* texture) const;
+        bool findTexture(const LDDrift::Actors::Texture* texture) const;
         void SetVertexShaderSource();
         void SetFragmentShaderSource();
         static GLuint Compile(GLenum type, const char* const shaderSource);
@@ -42,18 +42,18 @@ namespace LDDrift
             std::size_t count;
         };
 
-        std::vector<readDataFrom_GPU> howToReadDataFromGPU;
+        std::pmr::vector<readDataFrom_GPU> howToReadDataFromGPU;
         std::size_t lastIndexForStart = 0; // save last index for set next start index of texture
 
     private: // to render
         struct TEXTURE
         {
             int use_U_VIEW_PROJECTION;
-            LDDrift::Texture* texture;
+            LDDrift::Actors::Texture* texture;
         };
 
         LDDrift::Core* core = nullptr;
-        std::vector<TEXTURE> textures;
+        std::pmr::vector<TEXTURE> textures;
 
     public:
         TextureRender();
@@ -63,9 +63,9 @@ namespace LDDrift
         void SetColorMultiplier(float colorMultiplier) const;
         void SetCorePTR(LDDrift::Core* core_ptr);
         void Initialize();
-        void RemoveTexture(const LDDrift::Texture* texture);
+        void RemoveTexture(const LDDrift::Actors::Texture* texture);
         void Render() const;
-        void AddTexture(LDDrift::Texture* texture, const int& use_UVP);
+        void AddTexture(LDDrift::Actors::Texture* texture, const int& use_UVP);
         void SendToGPU();
         void SetViewMatrix(const glm::mat4& u_viewProjectionMatrix) const;
     };

@@ -7,29 +7,29 @@
 
 #include "Texture.h"
 
-LDDrift::Texture::Texture() = default;
+LDDrift::Actors::Texture::Texture() = default;
 
-LDDrift::Texture::~Texture() {
+LDDrift::Actors::Texture::~Texture() {
     if (textureID != 0)
         glDeleteTextures(1, &textureID);
 }
 
-bool LDDrift::Texture::operator!=(const Texture& tex) const {
+bool LDDrift::Actors::Texture::operator!=(const Texture& tex) const {
     return !(*this == tex);
 }
 
-bool LDDrift::Texture::operator==(const Texture& tex) const {
+bool LDDrift::Actors::Texture::operator==(const Texture& tex) const {
     if (this == &tex) {
         return true;
     }
     return this->textureID == tex.textureID && image_reader.GetImage().pixels == tex.image_reader.GetImage().pixels;
 }
 
-GLuint LDDrift::Texture::GetTextureID() const {
+GLuint LDDrift::Actors::Texture::GetTextureID() const {
     return textureID;
 }
 
-void LDDrift::Texture::GenerateTexture() {
+void LDDrift::Actors::Texture::GenerateTexture() {
     const auto image = image_reader.GetImage();
     // generate texture on v_ram
     glGenTextures(1, &textureID);
@@ -62,28 +62,28 @@ void LDDrift::Texture::GenerateTexture() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 }
 
-void LDDrift::Texture::LoadTexture() const {
+void LDDrift::Actors::Texture::LoadTexture() const {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 
-void LDDrift::Texture::FreeTexture() const {
+void LDDrift::Actors::Texture::FreeTexture() const {
     if (textureID != 0)
         glDeleteTextures(1, &textureID);
 }
 
-void LDDrift::Texture::SetTextureCoordinates(const std::vector<float>& _textureCoordinates) {
+void LDDrift::Actors::Texture::SetTextureCoordinates(const std::pmr::vector<float>& _textureCoordinates) {
     textureData = _textureCoordinates;
 }
 
-const std::vector<float>& LDDrift::Texture::GetTextureCoordinates() const {
+const std::pmr::vector<float>& LDDrift::Actors::Texture::GetTextureCoordinates() const {
     return textureData;
 }
 
-void LDDrift::Texture::SetColorMultiplierForTexture(const float _colorMultiplier) {
+void LDDrift::Actors::Texture::SetColorMultiplierForTexture(const float _colorMultiplier) {
     colorMulti = _colorMultiplier;
 }
 
-float LDDrift::Texture::GetColorMultiplierOfTexture() const {
+float LDDrift::Actors::Texture::GetColorMultiplierOfTexture() const {
     return colorMulti;
 }

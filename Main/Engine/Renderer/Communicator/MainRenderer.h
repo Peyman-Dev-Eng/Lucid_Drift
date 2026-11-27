@@ -28,9 +28,9 @@ namespace LDDrift
         MainRenderer();
         ~MainRenderer();
         static void StaticDrawer(const LDDrift::Core* _core,
-                                 const std::vector<LDDrift::Actors::Shape*>& shapes,
-                                 const std::vector<LDDrift::Actors::Line*>& lines);
-        static void StaticDrawer(const LDDrift::Core* _core, const std::vector<LDDrift::Texture*>& textures);
+                                 const std::pmr::vector<LDDrift::Actors::Shape*>& shapes,
+                                 const std::pmr::vector<LDDrift::Actors::Line*>& lines);
+        static void StaticDrawer(const LDDrift::Core* _core, const std::pmr::vector<LDDrift::Actors::Texture*>& textures);
         void SetCorePTR(LDDrift::Core* core_ptr);
         [[nodiscard]] glm::mat4 UpdateViewMatrix() const;
     };

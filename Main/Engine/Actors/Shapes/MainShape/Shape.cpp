@@ -6,7 +6,7 @@
 // See LICENSE and ADDITIONAL-TERMS.md.
 
 #include "Shape.h"
-#include "SubSystems/Transform/Transform.h"
+#include "SubSystems/Transformer/Transformer.h"
 
 LDDrift::Actors::Shape::Shape() : joinLineAlgorithm(LDDrift::JoinLineType::Null), screenSize(0, 0), OriginalPosition(0, 0),
                                   PointCount(0), Speed(0.01),
@@ -47,16 +47,16 @@ void LDDrift::Actors::Shape::SetOriginalPosition(const LDDrift::VecPos2D& pos) {
 void LDDrift::Actors::Shape::Rotate(const Angle& angle) {
     const float radians = angle.GetAngleRadians();
 
-    const float cinRadians = std::cos(radians);
+    const float cosRadians = std::cos(radians);
     const float sinRadians = std::sin(radians);
 
-    std::vector<LDDrift::VecPos2D> globalPoints = this->GetGlobalPoints();
+    std::pmr::vector<LDDrift::VecPos2D> globalPoints = this->GetGlobalPoints();
     for (LDDrift::VecPos2D& point : globalPoints) {
         const float x = point.X - OriginalPosition.X;
         const float y = point.Y - OriginalPosition.Y;
 
-        const float rotatedX = x * cinRadians - y * sinRadians;
-        const float rotatedY = x * sinRadians + y * cinRadians;
+        const float rotatedX = x * cosRadians - y * sinRadians;
+        const float rotatedY = x * sinRadians + y * cosRadians;
 
         point.X = rotatedX + OriginalPosition.X;
         point.Y = rotatedY + OriginalPosition.Y;
@@ -158,7 +158,7 @@ void LDDrift::Actors::Shape::SetSpeed(const float spd) {
     SpeedNDC_Y = Speed / screenSize.Y;
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetNDC_Points() const {
+std::pmr::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::GetNDC_Points() const {
     return LDDrift::Transformer::TransformToNDC_Position(Points);
 }
 
@@ -225,7 +225,7 @@ void LDDrift::Actors::Shape::Move(const Dir direction) {
     }
 }
 
-const std::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetGlobalPoints() const {
+const std::pmr::vector<LDDrift::VecPos2D>& LDDrift::Actors::Shape::GetGlobalPoints() const {
     return Points;
 }
 
@@ -273,10 +273,10 @@ LDDrift::VecPos2D LDDrift::Actors::Shape::CalculateAveragePointPosition() const 
     return LDDrift::Transformer::TransformToGlobalPosition(averagePoint);
 }
 
-std::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::TransformPoints() const {
+std::pmr::vector<LDDrift::VecPos2D> LDDrift::Actors::Shape::TransformPoints() const {
     const float halfWidthScreen = screenSize.X / 2;
     const float halfHeightScreen = screenSize.Y / 2;
-    std::vector<LDDrift::VecPos2D> tPoints;
+    std::pmr::vector<LDDrift::VecPos2D> tPoints;
     tPoints.reserve(Points.size());
     std::size_t index = 0;
     for (const LDDrift::VecPos2D& point : Points) {
@@ -296,7 +296,7 @@ const LDDrift::VecPos2D& LDDrift::Actors::Shape::GetScreenSize() const {
     return screenSize;
 }
 
-const std::vector<LDDrift::VecCol>& LDDrift::Actors::Shape::GetColorOfPoints() const {
+const std::pmr::vector<LDDrift::VecCol>& LDDrift::Actors::Shape::GetColorOfPoints() const {
     return ColorOfPoints;
 }
 

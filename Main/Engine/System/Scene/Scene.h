@@ -68,7 +68,7 @@ namespace LDDrift
         struct TEXTURE_INFORMATION
         {
             std::string textureName;
-            LDDrift::Texture* texture;
+            LDDrift::Actors::Texture* texture;
             bool render = true;
         };
 
@@ -88,19 +88,19 @@ namespace LDDrift
     public:
         // defaults
         bool hasData = false;
-        std::vector<std::pair<LDDrift::Actors::Circle*, std::vector<LDDrift::VecCol>>> circle_colors;
-        std::vector<std::pair<LDDrift::Actors::Polygon*, std::vector<LDDrift::VecCol>>> polygon_colors;
-        std::vector<std::pair<LDDrift::Actors::Line*, LDDrift::VecCol>> line_colors;
-        std::vector<std::pair<LDDrift::Texture*, float>> texture_multipliers;
+        std::pmr::vector<std::pair<LDDrift::Actors::Circle*, std::pmr::vector<LDDrift::VecCol>>> circle_colors;
+        std::pmr::vector<std::pair<LDDrift::Actors::Polygon*, std::pmr::vector<LDDrift::VecCol>>> polygon_colors;
+        std::pmr::vector<std::pair<LDDrift::Actors::Line*, LDDrift::VecCol>> line_colors;
+        std::pmr::vector<std::pair<LDDrift::Actors::Texture*, float>> texture_multipliers;
         // main
-        std::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
-        std::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
-        std::vector<LINE_ACTOR_INFORMATION> lines;
-        std::vector<TEXTURE_INFORMATION> textures;
+        std::pmr::vector<CIRCLE_SHAPE_INFORMATION> circleShapes;
+        std::pmr::vector<POLYGON_SHAPE_INFORMATION> polygonShapes;
+        std::pmr::vector<LINE_ACTOR_INFORMATION> lines;
+        std::pmr::vector<TEXTURE_INFORMATION> textures;
 
     private:
-        LDDrift::Texture backgroundTexture;
-        std::vector<QueueManagement> managements;
+        LDDrift::Actors::Texture backgroundTexture;
+        std::pmr::vector<QueueManagement> managements;
         void DeleteWithIndexFromManagements(const char type, const std::size_t index);
 
     private:
@@ -143,8 +143,8 @@ namespace LDDrift
                                const LDDrift::VecCol& color,
                                float thickness);
         bool DeleteCircleShape(const std::string& name);
-        [[nodiscard]] std::vector<std::string> GetCircleNames() const;
-        [[nodiscard]] std::vector<LDDrift::Actors::Circle*> GetCircles_ptr() const;
+        [[nodiscard]] std::pmr::vector<std::string> GetCircleNames() const;
+        [[nodiscard]] std::pmr::vector<LDDrift::Actors::Circle*> GetCircles_ptr() const;
         // polygon
         [[nodiscard]] bool FindPolygonWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Polygon* GetPolygon(const std::string& name) const;
@@ -159,12 +159,12 @@ namespace LDDrift
                                 int _pointCount,
                                 int _speed,
                                 const int* pos,
-                                const std::vector<LDDrift::VecCol>& colors,
+                                const std::pmr::vector<LDDrift::VecCol>& colors,
                                 float thickness,
                                 int joinLine_A);
         bool DeletePolygonShape(const std::string& name);
-        [[nodiscard]] std::vector<std::string> GetPolygonNames() const;
-        [[nodiscard]] std::vector<LDDrift::Actors::Polygon*> GetPolygons_ptr() const;
+        [[nodiscard]] std::pmr::vector<std::string> GetPolygonNames() const;
+        [[nodiscard]] std::pmr::vector<LDDrift::Actors::Polygon*> GetPolygons_ptr() const;
         // Line
         [[nodiscard]] bool FindLineWithName(const std::string& name) const;
         [[nodiscard]] LDDrift::Actors::Line* GetLine(const std::string& name) const;
@@ -174,17 +174,17 @@ namespace LDDrift
                              const int* endPos,
                              const LDDrift::VecCol& color);
         bool DeleteLineShape(const std::string& name);
-        [[nodiscard]] std::vector<std::string> GetLineNames() const;
-        [[nodiscard]] std::vector<LDDrift::Actors::Line*> GetLines_ptr() const;
+        [[nodiscard]] std::pmr::vector<std::string> GetLineNames() const;
+        [[nodiscard]] std::pmr::vector<LDDrift::Actors::Line*> GetLines_ptr() const;
         // texture
         [[nodiscard]] int FindTextureWithName(const std::string& name) const;
-        [[nodiscard]] LDDrift::Texture* GetTexture(const std::string& name) const;
+        [[nodiscard]] LDDrift::Actors::Texture* GetTexture(const std::string& name) const;
         void CreateTexture(const std::string& name,
                            const std::filesystem::path& TexturePath,
-                           const std::vector<float>& vertices);
+                           const std::pmr::vector<float>& vertices);
         void DeleteTexture(const std::string& name);
-        [[nodiscard]] std::vector<LDDrift::Texture*> GetTextures_Ptr() const;
-        [[nodiscard]] std::vector<std::string> GetTextureNames() const;
+        [[nodiscard]] std::pmr::vector<LDDrift::Actors::Texture*> GetTextures_Ptr() const;
+        [[nodiscard]] std::pmr::vector<std::string> GetTextureNames() const;
         // scene background
         void SetSceneBackground(const std::filesystem::path& path);
         ~Scene();

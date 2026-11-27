@@ -8,7 +8,7 @@
 #include "TextureRender.h"
 #include <System/Core/Core.h>
 
-#include "Transform.h"
+#include "Transformer.h"
 
 LDDrift::TextureRender::TextureRender() = default;
 
@@ -30,7 +30,7 @@ GLuint LDDrift::TextureRender::Compile(const GLenum type, const char* const shad
     return shader;
 }
 
-bool LDDrift::TextureRender::findTexture(const LDDrift::Texture* texture) const {
+bool LDDrift::TextureRender::findTexture(const LDDrift::Actors::Texture* texture) const {
     for (const auto [use_U_VIEW_PROJECTION, _texture] : textures) {
         if (_texture == texture) {
             return true;
@@ -140,7 +140,7 @@ void LDDrift::TextureRender::Initialize() {
     glUniformMatrix4fv(viewProjectionLocation, 1, GL_FALSE, value_ptr(viewProjection));
 }
 
-void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture, const int& use_UVP) {
+void LDDrift::TextureRender::AddTexture(LDDrift::Actors::Texture* texture, const int& use_UVP) {
     if (!findTexture(texture)) {
         textures.push_back({.use_U_VIEW_PROJECTION = use_UVP, .texture = texture});
         const std::size_t textureDataSize = texture->GetTextureCoordinates().size() / 4;
@@ -150,7 +150,7 @@ void LDDrift::TextureRender::AddTexture(LDDrift::Texture* texture, const int& us
 }
 
 void LDDrift::TextureRender::SendToGPU() {
-    std::vector<float> vertices;
+    std::pmr::vector<float> vertices;
     for (const auto [use_U_VIEW_PROJECTION, texture] : textures) {
         vertices.insert(vertices.end(), texture->GetTextureCoordinates().begin(),
                         texture->GetTextureCoordinates().end());
@@ -168,7 +168,7 @@ void LDDrift::TextureRender::SendToGPU() {
     glEnableVertexAttribArray(1);
 }
 
-void LDDrift::TextureRender::RemoveTexture(const LDDrift::Texture* texture) {
+void LDDrift::TextureRender::RemoveTexture(const LDDrift::Actors::Texture* texture) {
     for (std::size_t Index = 0; Index < textures.size(); ++Index) {
         if (textures[Index].texture == texture) {
             textures.erase(textures.begin() + Index);

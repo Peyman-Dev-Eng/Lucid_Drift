@@ -22,7 +22,10 @@ namespace
 
 namespace LDDrift
 {
-    class Texture;
+    namespace Actors
+    {
+        class Texture;
+    }
 
     namespace Actors
     {

@@ -41,14 +41,14 @@ namespace LDDrift
         std::string errorLog;
         LDDrift::ProjectWatchTower* projectWatchTower = nullptr;
         std::thread compileProjectThread;
-        std::vector<CompileError> compileErrors;
+        std::pmr::vector<CompileError> compileErrors;
         mutable std::mutex errorMutex;
 
     public:
         Compile();
         void init(LDDrift::ProjectWatchTower* projectWatchTowerPTR);
         bool BuildProject();
-        [[nodiscard]] std::vector<CompileError> GetErrorLog() const;
+        [[nodiscard]] std::pmr::vector<CompileError> GetErrorLog() const;
         [[nodiscard]] CompileBuildStatus GetStatus() const;
         ~Compile();
     };

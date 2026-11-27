@@ -240,7 +240,7 @@ bool LDDrift::Scene::FindLineWithName(const std::string& name) const {
 
 void LDDrift::Scene::CreatePolygonShape(const std::string& name, const int _pointCount, const int _speed,
                                         const int* pos,
-                                        const std::vector<LDDrift::VecCol>& colors, const float thickness,
+                                        const std::pmr::vector<LDDrift::VecCol>& colors, const float thickness,
                                         const int joinLine_A) {
     const POLYGON_SHAPE_INFORMATION newPolygon{
         .polygonName = name, .polygon = new LDDrift::Actors::Polygon(), .render = true
@@ -346,64 +346,64 @@ bool LDDrift::Scene::DeleteCircleShape(const std::string& name) {
     return false;
 }
 
-std::vector<std::string> LDDrift::Scene::GetCircleNames() const {
-    std::vector<std::string> circleNames;
+std::pmr::vector<std::string> LDDrift::Scene::GetCircleNames() const {
+    std::pmr::vector<std::string> circleNames;
     for (const auto& [circleName, circle,Render] : circleShapes) {
         circleNames.push_back(circleName);
     }
     return circleNames;
 }
 
-std::vector<std::string> LDDrift::Scene::GetPolygonNames() const {
-    std::vector<std::string> polygonNames;
+std::pmr::vector<std::string> LDDrift::Scene::GetPolygonNames() const {
+    std::pmr::vector<std::string> polygonNames;
     for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         polygonNames.push_back(polygonName);
     }
     return polygonNames;
 }
 
-std::vector<std::string> LDDrift::Scene::GetLineNames() const {
-    std::vector<std::string> lineNames;
+std::pmr::vector<std::string> LDDrift::Scene::GetLineNames() const {
+    std::pmr::vector<std::string> lineNames;
     for (const auto& [lineName, line,Render] : lines) {
         lineNames.push_back(lineName);
     }
     return lineNames;
 }
 
-std::vector<LDDrift::Actors::Circle*> LDDrift::Scene::GetCircles_ptr() const {
-    std::vector<LDDrift::Actors::Circle*> circles;
+std::pmr::vector<LDDrift::Actors::Circle*> LDDrift::Scene::GetCircles_ptr() const {
+    std::pmr::vector<LDDrift::Actors::Circle*> circles;
     for (const auto& [circleName, circle,Render] : circleShapes) {
         circles.push_back(circle);
     }
     return circles;
 }
 
-std::vector<LDDrift::Actors::Polygon*> LDDrift::Scene::GetPolygons_ptr() const {
-    std::vector<LDDrift::Actors::Polygon*> polygons;
+std::pmr::vector<LDDrift::Actors::Polygon*> LDDrift::Scene::GetPolygons_ptr() const {
+    std::pmr::vector<LDDrift::Actors::Polygon*> polygons;
     for (const auto& [polygonName, polygon,Render] : polygonShapes) {
         polygons.push_back(polygon);
     }
     return polygons;
 }
 
-std::vector<LDDrift::Actors::Line*> LDDrift::Scene::GetLines_ptr() const {
-    std::vector<LDDrift::Actors::Line*> Lines;
+std::pmr::vector<LDDrift::Actors::Line*> LDDrift::Scene::GetLines_ptr() const {
+    std::pmr::vector<LDDrift::Actors::Line*> Lines;
     for (const auto& [lineName, line,Render] : lines) {
         Lines.push_back(line);
     }
     return Lines;
 }
 
-std::vector<LDDrift::Texture*> LDDrift::Scene::GetTextures_Ptr() const {
-    std::vector<LDDrift::Texture*> r; // result
+std::pmr::vector<LDDrift::Actors::Texture*> LDDrift::Scene::GetTextures_Ptr() const {
+    std::pmr::vector<LDDrift::Actors::Texture*> r; // result
     for (const auto& [textureName, texture,Render] : textures) {
         r.push_back(texture);
     }
     return r;
 }
 
-std::vector<std::string> LDDrift::Scene::GetTextureNames() const {
-    std::vector<std::string> r; // result
+std::pmr::vector<std::string> LDDrift::Scene::GetTextureNames() const {
+    std::pmr::vector<std::string> r; // result
     for (const auto& [textureName, texture,Render] : textures) {
         r.push_back(textureName);
     }
@@ -421,7 +421,7 @@ int LDDrift::Scene::FindTextureWithName(const std::string& name) const {
     return -1;
 }
 
-LDDrift::Texture* LDDrift::Scene::GetTexture(const std::string& name) const {
+LDDrift::Actors::Texture* LDDrift::Scene::GetTexture(const std::string& name) const {
     for (const auto& [textureName, texture, Render] : textures) {
         if (textureName == name) {
             return texture;
@@ -431,8 +431,8 @@ LDDrift::Texture* LDDrift::Scene::GetTexture(const std::string& name) const {
 }
 
 void LDDrift::Scene::CreateTexture(const std::string& name, const std::filesystem::path& TexturePath,
-                                   const std::vector<float>& vertices) {
-    const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Texture(), .render = true};
+                                   const std::pmr::vector<float>& vertices) {
+    const TEXTURE_INFORMATION newTexture{.textureName = name, .texture = new LDDrift::Actors::Texture(), .render = true};
     newTexture.texture->image_reader.LoadImage(TexturePath);
     newTexture.texture->SetTextureCoordinates(vertices);
     texture_render->AddTexture(newTexture.texture, 1);
@@ -502,7 +502,7 @@ void LDDrift::Scene::ChangeColorLinesToBlack() const {
 void LDDrift::Scene::ChangeColorTexturesToBlack() const {
     const std::size_t textureCount = texture_multipliers.size();
     for (std::size_t textureNumber = 0; textureNumber < textureCount; ++textureNumber) {
-        LDDrift::Texture* texturePtr = texture_multipliers[textureNumber].first;
+        LDDrift::Actors::Texture* texturePtr = texture_multipliers[textureNumber].first;
         texturePtr->SetColorMultiplierForTexture(static_cast<float>(1.0f - func()));
     }
 }
@@ -567,7 +567,7 @@ void LDDrift::Scene::ChangeColorLinesToMainColor() const {
 void LDDrift::Scene::ChangeColorTexturesToMainColor() const {
     const std::size_t textureCount = texture_multipliers.size();
     for (std::size_t textureNumber = 0; textureNumber < textureCount; ++textureNumber) {
-        LDDrift::Texture* texturePtr = texture_multipliers[textureNumber].first;
+        LDDrift::Actors::Texture* texturePtr = texture_multipliers[textureNumber].first;
         texturePtr->SetColorMultiplierForTexture(static_cast<float>(func()));
     }
 }
@@ -601,7 +601,7 @@ void LDDrift::Scene::ChangeColorShapesFromBlackToMainColor() {
 void LDDrift::Scene::SetSceneBackground(const std::filesystem::path& path) {
     backgroundTexture.FreeTexture();
     backgroundTexture.image_reader.LoadImage(path);
-    backgroundTexture.SetTextureCoordinates(std::vector<float>{
+    backgroundTexture.SetTextureCoordinates(std::pmr::vector<float>{
         //position      tex coord
         -1, 1, 0, 1,
         1, 1, 1, 1,

@@ -49,7 +49,7 @@ namespace LDDrift::Actors
         [[nodiscard]] float GetThickness() const;
         [[nodiscard]] LDDrift::VecPos2D GetFirstPoint() const;
         [[nodiscard]] LDDrift::VecPos2D GetSecondPoint() const;
-        [[nodiscard]] const std::vector<PNT>& GetPoints() const;
+        [[nodiscard]] const std::pmr::vector<PNT>& GetPoints() const;
         [[nodiscard]] const LDDrift::VecCol& GetColor() const;
         void SetLineColor(const LDDrift::VecCol& color);
         void SetThickness(float);
@@ -58,14 +58,14 @@ namespace LDDrift::Actors
 
     private:
         LDDrift::VecCol lineColor;
-        std::vector<PNT> Points;
+        std::pmr::vector<PNT> Points;
         LDDrift::VecPos2D FirstPoint;
         LDDrift::VecPos2D SecondPoint;
         int WidthScreen{500}, HeightScreen{500};
         float Thick{1};
 
     private: // functions
-        [[nodiscard]] std::vector<PNT> Translate() const;
+        [[nodiscard]] std::pmr::vector<PNT> Translate() const;
     };
 }
 

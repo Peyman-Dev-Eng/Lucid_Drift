@@ -58,8 +58,8 @@ namespace LDDrift::Actors
         std::optional<LDDrift::JoinLineType> joinLineAlgorithm;
         LDDrift::VecPos2D screenSize;
         LDDrift::VecPos2D OriginalPosition;
-        std::vector<LDDrift::VecPos2D> Points;
-        std::vector<LDDrift::VecCol> ColorOfPoints;
+        std::pmr::vector<LDDrift::VecPos2D> Points;
+        std::pmr::vector<LDDrift::VecCol> ColorOfPoints;
         uint PointCount;
         float Speed;
         float SpeedNDC_X;
@@ -89,8 +89,8 @@ namespace LDDrift::Actors
         }
 
         Shape();
-        [[nodiscard]] const std::vector<VecPos2D>& GetGlobalPoints() const;
-        [[nodiscard]] std::vector<LDDrift::VecPos2D> GetNDC_Points() const;
+        [[nodiscard]] const std::pmr::vector<VecPos2D>& GetGlobalPoints() const;
+        [[nodiscard]] std::pmr::vector<LDDrift::VecPos2D> GetNDC_Points() const;
         void SetPointCount(std::size_t point_count);
         [[nodiscard]] std::size_t GetPointCount() const;
         void SetPoint(std::size_t point_index, const LDDrift::VecPos2D& pos);
@@ -109,7 +109,7 @@ namespace LDDrift::Actors
         [[nodiscard]] LDDrift::VecPos2D GetOriginalPositionToCenter_global() const;
         void SetPointColor(uint point_index, const LDDrift::VecCol& color);
         [[nodiscard]] const LDDrift::VecCol& GetPointColor(std::size_t point_index) const;
-        [[nodiscard]] const std::vector<LDDrift::VecCol>& GetColorOfPoints() const;
+        [[nodiscard]] const std::pmr::vector<LDDrift::VecCol>& GetColorOfPoints() const;
         [[nodiscard]] std::optional<LDDrift::JoinLineType> GetJoinLineAlgorithm() const;
         void ResetPointCount();
         void ResetPoints();
@@ -123,7 +123,7 @@ namespace LDDrift::Actors
         [[nodiscard]] bool IsFillShape() const;
         [[nodiscard]] bool IsHaveThickness() const;
         [[nodiscard]] float GetThickness() const;
-        [[nodiscard]] std::vector<LDDrift::VecPos2D> TransformPoints() const;
+        [[nodiscard]] std::pmr::vector<LDDrift::VecPos2D> TransformPoints() const;
         [[nodiscard]] virtual LDDrift::VecCol CalculateAverageVertexColor() = 0;
         [[nodiscard]] LDDrift::VecPos2D CalculateAveragePointPosition() const;
         virtual void Rebuild() = 0;

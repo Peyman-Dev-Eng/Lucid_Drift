@@ -54,7 +54,7 @@ namespace LDDrift
             std::string title;
             int FramerateLimit;
             LDDrift::VecCol FillColorScreen;
-            LDDrift::Texture background;
+            LDDrift::Actors::Texture background;
             float moveBackground; // move
             int direction; // 0 = left | 1 = right | 10 = up | 11 = down
             bool IsOpen;

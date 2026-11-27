@@ -16,7 +16,7 @@ bool LDDrift::PointHitTesting::PointInValidRange(
 
 bool LDDrift::PointHitTesting::pointHitTesting(
     const LDDrift::VecPos2D& targetPoint,
-    const std::vector<LDDrift::VecPos2D>& pointsOfTargetShape) {
+    const std::pmr::vector<LDDrift::VecPos2D>& pointsOfTargetShape) {
     const std::size_t shapePointCount = pointsOfTargetShape.size();
     bool pointInsideShape = false;
     for (std::size_t currentPoint = 0; currentPoint < shapePointCount;

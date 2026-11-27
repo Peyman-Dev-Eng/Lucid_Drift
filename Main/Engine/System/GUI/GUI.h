@@ -46,7 +46,7 @@ namespace LDDrift
 {
     class Core;
 
-    inline void init_std_vector(std::vector<float>& vector, const std::size_t size) {
+    inline void init_std_vector(std::pmr::vector<float>& vector, const std::size_t size) {
         if (size * 4 == vector.size()) return;
         vector.clear();
         vector.assign(size * 4, 0);
@@ -82,12 +82,12 @@ namespace LDDrift
         };
 
     private:
-        std::vector<std::string> options; // options for save key targets
+        std::pmr::vector<std::string> options; // options for save key targets
     public:
         std::thread reloadCmakeFileThread;
 
     private: // editor window handing functions
-        bool DrawCodeSuggestionPopup(bool& shouldOpen, const std::vector<std::string>& suggestions,
+        bool DrawCodeSuggestionPopup(bool& shouldOpen, const std::pmr::vector<std::string>& suggestions,
                                      std::string& selectedSuggestion, ImVec2 position = ImVec2(-1.0f, -1.0f)
         );
 
@@ -115,7 +115,7 @@ namespace LDDrift
         Core* core = nullptr;
 
     public:
-        static std::vector<std::string> ExtractTextFromString(const std::string& text);
+        static std::pmr::vector<std::string> ExtractTextFromString(const std::string& text);
 
     public:
         struct EditorWindowsData
@@ -131,7 +131,7 @@ namespace LDDrift
         LDDrift::ProjectWatchTower_GraphicalWindow projectWatchTowerWindow;
         LDDrift::Main_GraphicalWindow mainWindow;
         EditorWindowsData ImGuiEditorWindow;
-        std::vector<DefaultWindowsData> defaultWindows;
+        std::pmr::vector<DefaultWindowsData> defaultWindows;
         LDDrift::ProjectWatchTower* ProjectWatchTower_PTR = nullptr;
         LDDrift::Compile* CompilePTR = nullptr;
         bool runGame = false;
@@ -171,7 +171,7 @@ namespace LDDrift
         void PolygonConfigureWindowHandler(DefaultWindowsData* window) const;
         void LineConfigureWindowHandler(DefaultWindowsData* window) const;
         void SetKeyTargetWindowHandler(DefaultWindowsData* window);
-        static bool SearchableCombo(char* buffer, const std::vector<std::string>& options);
+        static bool SearchableCombo(char* buffer, const std::pmr::vector<std::string>& options);
     };
 }
 #endif

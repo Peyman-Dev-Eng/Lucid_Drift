@@ -12,7 +12,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-namespace LDDrift
+namespace LDDrift::Actors
 {
     class Texture final
     {
@@ -21,7 +21,7 @@ namespace LDDrift
 
     public: // variables
         LDDrift::ImageReader image_reader;
-        std::vector<float> textureData;
+        std::pmr::vector<float> textureData;
         float colorMulti = 1.0f;
 
     public: // functions
@@ -31,8 +31,8 @@ namespace LDDrift
         [[nodiscard]] float GetColorMultiplierOfTexture() const;
         bool operator!=(const Texture& tex) const;
         bool operator==(const Texture& tex) const;
-        void SetTextureCoordinates(const std::vector<float>& _textureCoordinates);
-        [[nodiscard]] const std::vector<float>& GetTextureCoordinates() const;
+        void SetTextureCoordinates(const std::pmr::vector<float>& _textureCoordinates);
+        [[nodiscard]] const std::pmr::vector<float>& GetTextureCoordinates() const;
         void GenerateTexture();
         void LoadTexture() const;
         void FreeTexture() const;
