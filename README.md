@@ -340,11 +340,11 @@ When opening an issue, please include:
 - 🔁 Minimal steps to reproduce the issue
 - 📋 Relevant build output or runtime logs
 
-## 📄 License
+## License
 
-This project is licensed under the **Apache License** — see the [LICENSE](LICENSE) file for details.
-
-Third-party components (Dear ImGui, ImGuiColorTextEdit, stb, GLFW, GLM, etc.) retain their own licenses.
+Lucid Drift is licensed under the GNU General Public License
+v3.0 (GPL-3.0), together with the additional terms specified
+in [ADDITIONAL-TERMS.md](ADDITIONAL-TERMS.md).
 
 ---
 
