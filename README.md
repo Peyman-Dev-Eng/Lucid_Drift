@@ -20,7 +20,7 @@
 [![C++](https://img.shields.io/badge/C%2B%2B-23%2F26-00599C?style=for-the-badge&logo=cplusplus&logoColor=white)](https://isocpp.org/)
 [![OpenGL](https://img.shields.io/badge/OpenGL-4.6-5586A4?style=for-the-badge&logo=opengl&logoColor=white)](https://www.opengl.org/)
 [![CMake](https://img.shields.io/badge/CMake-4.3%2B-064F8C?style=for-the-badge&logo=cmake&logoColor=white)](https://cmake.org/)
-[![License](https://img.shields.io/badge/license-Apache-green?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/license-GPL-red?style=for-the-badge)](LICENSE)
 [![Status](https://img.shields.io/badge/status-experimental-orange?style=for-the-badge)]()
 [![Focus](https://img.shields.io/badge/focus-2D%20engine-7B61FF?style=for-the-badge)]()
 
@@ -88,54 +88,53 @@ The tree below highlights the main subsystems and how the code is organized. It 
 <summary><b>📁 Explore the codebase</b></summary>
 
 ```text
+
 Lucid_Drift/
-├── CMakeLists.txt                 # Root CMake configuration
-├── main.cpp                       # Application entry point
-├── glad.c                         # GLAD implementation
-├── glad/                          # OpenGL loader headers
-├── LICENSE                        # Apache License
-│
+├── CMakeLists.txt          # Root CMake configuration
+├── main.cpp                # Application entry point
+├── glad.c                  # GLAD implementation
+├── glad/                   # OpenGL loader headers
+├── LICENSE                 # GPL3.0 License
 ├── Main/
 │   ├── CMakeLists.txt
-│   ├── Assertion/                  # Assertion helpers
+│   ├── Assertion/          # Assertion helpers
 │   ├── EngineLibraries/
-│   │   ├── Angle/                  # Angle utilities
-│   │   ├── ShapeData/              # Shape-related data
-│   │   ├── VecColor/               # Color utilities
-│   │   └── VecPosition/            # 2D position/vector utilities
-│   │
+│   │   ├── Angle/          # Angle utilities
+│   │   ├── ShapeData/      # Shape-related data
+│   │   ├── VecColor/       # Color utilities
+│   │   └── VecPosition/    # 2D position/vector utilities
 │   └── Engine/
 │       ├── Actors/
-│       │   ├── Line/               # Line shape
-│       │   └── Shapes/
-│       │       ├── MainShape/      # Shared shape foundation (convex/concave helpers)
-│       │       ├── Circle/         # Circle shape
-│       │       └── Polygon/        # Polygon shape
-│       │
-│       ├── Renderer/               # OpenGL rendering
-│       ├── API/                    # Engine-facing game API
-│       ├── Functions/              # Shared engine functions
+│       │   ├── Line/       # Line shape
+│       │   ├── Model/      # Model actor
+│       │   ├── Shapes/
+│       │   │   ├── MainShape/   # Shared shape foundation (convex/concave helpers)
+│       │   │   ├── Circle/      # Circle shape
+│       │   │   └── Polygon/     # Polygon shape
+│       │   └── Texture/    # Texture actor
+│       ├── Renderer/       # OpenGL rendering
+│       │   └── TextureRender/   # Texture rendering
+│       ├── API/            # Engine-facing game API
+│       ├── Functions/      # Shared engine functions
 │       ├── SubSystems/
 │       │   ├── GraphicalUserInterfaceWindowHandler/  # GUI window handling logic
-│       │   ├── PointHitTesting/    # Point / shape hit testing
-│       │   ├── ProjectExplorer/    # Project Watch Tower / file browsing
-│       │   ├── Transform/          # Transform-related logic
-│       │   └── WR_SettingSystem/   # Window/render + user-project settings (read/write)
-│       │
+│       │   ├── PointHitTesting/   # Point / shape hit testing
+│       │   ├── ProjectExplorer/   # Project Watch Tower / file browsing
+│       │   ├── Transform/         # Transform-related logic
+│       │   └── WR_SettingSystem/  # Window/render + user-project settings (read/write)
 │       └── System/
-│           ├── Camera/             # Camera movement, zoom, view matrix
-│           ├── CodePathfinder/     # Code path / suggestion support
-│           ├── Compilation/        # User-project build and module loading
-│           ├── Core/               # Main engine coordination
-│           ├── GUI/                # Dear ImGui windows and editor UI
-│           ├── Input/              # Keyboard and mouse input
-│           ├── Scene/              # Scene-related functionality
-│           ├── Triangulation/      # Polygon triangulation
-│           └── Window/             # Window/context management
-│
+│           ├── Camera/          # Camera movement, zoom, view matrix
+│           ├── CodePathfinder/  # Code path / suggestion support
+│           ├── Compilation/     # User-project build and module loading
+│           ├── Core/            # Main engine coordination
+│           ├── GUI/             # Dear ImGui windows and editor UI
+│           ├── Input/           # Keyboard and mouse input
+│           ├── Scene/           # Scene-related functionality
+│           ├── Triangulation/   # Polygon triangulation
+│           └── Window/          # Window/context management
 └── ThirdParty/
-    ├── imgui/                      # Dear ImGui sources
-    └── ImGuiColorTextEdit/         # Embedded code-editor component
+    ├── imgui/               # Dear ImGui sources
+    └── ImGuiColorTextEdit/  # Embedded code-editor component
 ```
 
 </details>
@@ -263,7 +262,7 @@ This is not guaranteed to be an exhaustive dependency list for every revision. I
 ### 2. Clone the repository
 
 ```bash
-git clone --branch master --single-branch https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
+git clone --branch engine --single-branch https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
 cd Lucid_Drift
 ```
 
