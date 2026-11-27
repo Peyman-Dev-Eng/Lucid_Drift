@@ -263,7 +263,7 @@ This is not guaranteed to be an exhaustive dependency list for every revision. I
 ### 2. Clone the repository
 
 ```bash
-git clone --branch master --single-branch https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
+git clone --branch engine --single-branch https://github.com/Peyman-Dev-Eng/Lucid_Drift.git
 cd Lucid_Drift
 ```
 
