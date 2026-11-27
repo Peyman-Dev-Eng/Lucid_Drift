@@ -7,6 +7,7 @@
 
 #ifndef LUCID_DRIFT_CMP_COLLIDER_H
 #define LUCID_DRIFT_CMP_COLLIDER_H
+#include <thread>
 #include <vector>
 #include <VecPos2D.h>
 #include <type_traits>
@@ -21,7 +22,8 @@ namespace LDDrift
 
     public:
         CMP_Collider();
-        void Initialize();
+        void Load(const std::pmr::vector<LDDrift::VecPos2D>& vertices);
+        void unLoad();
         ~CMP_Collider();
     };
 } // LDDrift
