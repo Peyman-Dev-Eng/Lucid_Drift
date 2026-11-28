@@ -11,6 +11,8 @@
 
 #include "EngineAPI.h"
 
+#include "Compile.h"
+
 namespace {
     LDDrift::Core* core;
 }
@@ -54,10 +56,10 @@ void LDDrift::EngineAPI::DestroyEngineAPI() {
 #endif
 }
 
-void LDDrift::EngineAPI::ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode) {
-    core->sceneManager.ChangeScene(mode);
+bool LDDrift::EngineAPI::ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode) {
+    return CORE_PTR->sceneManager.ChangeScene(mode);
 }
 
 bool LDDrift::EngineAPI::AnimationIsPlayingFunction() {
-    return core->sceneManager.HasPlayingAnimation();
+    return CORE_PTR->sceneManager.HasPlayingAnimation();
 }

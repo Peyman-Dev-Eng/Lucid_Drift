@@ -59,7 +59,7 @@ namespace LDDrift::EngineAPI
     void DestroyEngineAPI();
 
     // user functions
-    void ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode);
+    bool ChangeSceneFunction(const LDDrift::ChangeSceneMode& mode);
     bool AnimationIsPlayingFunction();
 
 }
