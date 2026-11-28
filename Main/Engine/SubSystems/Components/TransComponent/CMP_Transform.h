@@ -41,6 +41,9 @@ namespace LDDrift
         void SetScale(const Scale& Scale_);
         void SetPoints(const std::pmr::vector<LDDrift::VecPos2D>& Points_);
         void SetTranslation(const LDDrift::VecPos2D& Translation_);
+        [[nodiscard]] const std::pmr::vector<LDDrift::VecPos2D>& GetPoints() const noexcept;
+        [[nodiscard]] const Scale& GetScale() const noexcept;
+        [[nodiscard]] const LDDrift::VecPos2D& GetTranslation() const noexcept;
         void Calculate();
         ~CMP_Transform();
     };

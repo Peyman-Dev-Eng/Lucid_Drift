@@ -63,3 +63,15 @@ void LDDrift::CMP_Transform::Calculate() {
         point += translation;
     }
 }
+
+const std::pmr::vector<LDDrift::VecPos2D>& LDDrift::CMP_Transform::GetPoints() const noexcept {
+    return points;
+}
+
+const LDDrift::CMP_Transform::Scale& LDDrift::CMP_Transform::GetScale() const noexcept {
+    return scale;
+}
+
+const LDDrift::VecPos2D& LDDrift::CMP_Transform::GetTranslation() const noexcept {
+    return translation;
+}
