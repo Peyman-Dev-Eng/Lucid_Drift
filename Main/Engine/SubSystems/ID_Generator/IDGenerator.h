@@ -22,10 +22,12 @@ namespace LDDrift
         std::uint32_t id;
         std::uint32_t Generation;
     };
+
     class IDGenerator
     {
     private:
         [[nodiscard]] std::uint32_t GetMaxID() const;
+
     private:
         std::pmr::vector<ID> ActivatedIDs;
         std::queue<ID> DeactivatedIDs;
