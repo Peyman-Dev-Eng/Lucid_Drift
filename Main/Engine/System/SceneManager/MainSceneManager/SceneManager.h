@@ -65,7 +65,7 @@ namespace LDDrift
         void CreateNewScene(const std::string& name);
         void DeleteScene(const std::string& name);
         void ChangeScene(const std::string& name);
-        void ChangeScene(const LDDrift::ChangeSceneMode& mode);
+        bool ChangeScene(const LDDrift::ChangeSceneMode& mode);
         [[nodiscard]] bool HasPlayingAnimation() const;
         LDDrift::Scene* GetDefaultScene();
         [[nodiscard]] std::string GetCurrentSceneName() const;

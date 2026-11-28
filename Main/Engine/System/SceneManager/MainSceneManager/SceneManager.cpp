@@ -36,7 +36,7 @@ void LDDrift::SceneManager::CreateDefaultScene() {
     currentSceneName = "default";
 }
 
-void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
+bool LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
     if (mode == LDDrift::ChangeSceneMode::Suddenly) {
         try {
             textureRender_ptr->DeleteTextures();
@@ -63,13 +63,16 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             }
             currentScene = scenes[indexOfScene].scene;
             currentSceneName = scenes[indexOfScene].name;
+            return true;
         } catch (const std::runtime_error& e) {
             LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
                                       Log(std::string("scenes size: ") + std::to_string(scenes.size()) + "    ---    " +
                                           e.what(), LDDrift::LogType::ZeroDivideFailed));
+            return false;
         } catch (const std::exception& e) {
             LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
                                       Log(std::string("Error: ") + e.what(), LDDrift::LogType::Null));
+            return false;
         }
     } else if (mode == LDDrift::ChangeSceneMode::Smooth) {
         try {
@@ -128,15 +131,19 @@ void LDDrift::SceneManager::ChangeScene(const LDDrift::ChangeSceneMode& mode) {
             shapeRender_ptr->UpdateShapeData();
             shapeRender_ptr->SendDataToGPU();
             textureRender_ptr->SendToGPU();
+            return true;
         } catch (const std::runtime_error& e) {
             LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
                                       Log(std::string("scenes size: ") + std::to_string(scenes.size()) + "    ---    " +
                                           e.what(), LDDrift::LogType::ZeroDivideFailed));
+            return false;
         } catch (const std::exception& e) {
             LDDrift::Logger::ErrorLog("Engine", "Scene Manager",
                                       Log(std::string("Error: ") + e.what(), LDDrift::LogType::Null));
+            return false;
         }
     }
+    return false;
 }
 
 LDDrift::Scene* LDDrift::SceneManager::GetCurrentScene() const {

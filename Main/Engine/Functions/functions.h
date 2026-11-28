@@ -3,7 +3,7 @@
 #include <filesystem>
 #include <string>
 #ifdef _WIN32
-#include <Windows.h>
+#include <windows.h>
 #endif
 #include "/home/Develepment/CLionProjects/Lucid_Drift/glad/include/glad/glad.h"
 #include <GLFW/glfw3.h>
