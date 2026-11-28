@@ -14,6 +14,8 @@
 LDDrift::Core::Core() = default;
 
 void LDDrift::Core::InitCore() {
+    // save core object address in memory
+    CORE_PTR = this;
     // save default C_OUT buffer
     oldC_outBuf = std::cout.rdbuf(consoleBuffer.rdbuf());
     // create default project
@@ -64,7 +66,6 @@ void LDDrift::Core::InitCore() {
     mainRenderer.SetCorePTR(this);
     // api initialization
     LDDrift::EngineAPI::SetProjectWatchTowerPTR(&projectWatchTower);
-    CORE_PTR = this;
 }
 
 void LDDrift::Core::Begin() {

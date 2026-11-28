@@ -58,6 +58,7 @@ void LDDrift::CMP_Transform::Calculate() {
     if (translation.X == 0 && translation.Y == 0) {
         return;
     }
+    // use translation
     for (LDDrift::VecPos2D& point : points) {
         point += translation;
     }

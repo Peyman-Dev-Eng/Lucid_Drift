@@ -20,14 +20,19 @@ namespace LDDrift
 {
     class CMP_Collider
     {
-    private:
+    public:
         std::pmr::vector<LDDrift::VecPos2D> normals;
         std::pmr::vector<LDDrift::VecPos2D> BoundingBox; // vertices of rectangle
+
+    private:
+        bool Active = true;
+        bool Loaded = false;
 
     public:
         CMP_Collider();
         void Load(const std::pmr::vector<LDDrift::VecPos2D>& vertices);
         void unLoad();
+        void SetActive(bool active_);
         ~CMP_Collider();
     };
 } // LDDrift
